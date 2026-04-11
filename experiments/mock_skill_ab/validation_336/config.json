@@ -1,0 +1,20 @@
+{
+  "agents_per_dsl": 24,
+  "dsls": [
+    "croqtile",
+    "cuda",
+    "cute",
+    "triton",
+    "tilelang",
+    "helion",
+    "cutile"
+  ],
+  "generated_at": "2026-04-11T04:54:02.423940+00:00",
+  "round_target": 336,
+  "seed": 20260409,
+  "shape_length": 30,
+  "variants": [
+    "strict",
+    "control"
+  ]
+}

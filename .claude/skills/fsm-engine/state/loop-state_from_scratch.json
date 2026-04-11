@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "fsm": {
+    "current_state": "IMPLEMENT",
+    "iteration": 1,
+    "max_iteration": 150,
+    "shape_key": "f16_768x768x768_fs",
+    "dtype": "f16",
+    "shape": [
+      768,
+      768,
+      768
+    ],
+    "mode": "from_scratch"
+  },
+  "guard_flags": {
+    "gpu_health_checked": true,
+    "ncu_ran_this_iter": true,
+    "bottleneck_identified": true,
+    "idea_is_novel": true,
+    "idea_logged": true,
+    "compile_succeeded": false,
+    "correctness_verified": false,
+    "timing_captured": false,
+    "decision_made": false,
+    "results_appended": false,
+    "checkpoint_written": false,
+    "git_committed": false
+  },
+  "metrics": {
+    "baseline_tflops": 34.92,
+    "current_best_tflops": 34.92,
+    "current_best_iter": 0,
+    "current_best_kernel": "tuning/srcs/f16_768x768x768_fs/baseline.co",
+    "this_iter_tflops": null,
+    "this_iter_decision": null,
+    "consecutive_discards": 0,
+    "last_bottleneck": "grid_too_small",
+    "last_idea_category": "macro"
+  },
+  "paths": {
+    "shape_dir_logs": "tuning/logs/f16_768x768x768_fs",
+    "shape_dir_srcs": "tuning/srcs/f16_768x768x768_fs",
+    "shape_dir_perf": "tuning/perf/f16_768x768x768_fs",
+    "checkpoint_file": "tuning/checkpoints/f16_768x768x768_fs.json",
+    "idea_log": "tuning/logs/f16_768x768x768_fs/idea-log.jsonl"
+  },
+  "completion_promise": "iteration >= max_iteration AND best kernel registered AND state.json updated",
+  "last_updated": "2026-04-03T15:10:12Z"
+}

@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "fsm": {
+    "current_state": "INIT",
+    "iteration": 0,
+    "max_iteration": 50,
+    "shape_key": "e4m3_4096x4096x1024_pm",
+    "dtype": "e4m3",
+    "shape": [
+      4096,
+      4096,
+      1024
+    ],
+    "mode": "push_marginal"
+  },
+  "guard_flags": {
+    "gpu_health_checked": false,
+    "ncu_ran_this_iter": false,
+    "bottleneck_identified": false,
+    "idea_is_novel": false,
+    "idea_logged": false,
+    "compile_succeeded": false,
+    "correctness_verified": false,
+    "timing_captured": false,
+    "decision_made": false,
+    "results_appended": false,
+    "checkpoint_written": false,
+    "git_committed": false
+  },
+  "metrics": {
+    "baseline_tflops": null,
+    "current_best_tflops": null,
+    "current_best_iter": null,
+    "current_best_kernel": null,
+    "this_iter_tflops": null,
+    "this_iter_decision": null,
+    "consecutive_discards": 0,
+    "last_bottleneck": null,
+    "last_idea_category": null
+  },
+  "paths": {
+    "shape_dir_logs": "tuning/push_marginal_logs/e4m3_4096x4096x1024_pm",
+    "shape_dir_srcs": "tuning/srcs/e4m3_4096x4096x1024_pm",
+    "shape_dir_perf": "tuning/perf/e4m3_4096x4096x1024_pm",
+    "checkpoint_file": "tuning/checkpoints/e4m3_4096x4096x1024_pm.json",
+    "idea_log": "tuning/push_marginal_logs/e4m3_4096x4096x1024_pm/idea-log.jsonl"
+  },
+  "completion_promise": "iteration >= max_iteration AND best kernel registered AND state.json updated",
+  "last_updated": "2026-04-06T06:58:43Z"
+}

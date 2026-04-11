@@ -1,0 +1,15 @@
+variant	dsl	runs	reached_target	pass_rate	avg_rounds	p50_rounds	p95_rounds	avg_best_tflops	store_miss_runs	round_memory_miss_runs	round_memory_raw_miss_runs	round_memory_md_miss_runs	compaction_summary_miss_runs	cross_dsl_violation_runs	attempt_only_runs	research_escalation_runs	resume_state_fail_runs	resume_validation_fail_runs
+control	croqtile	24	0	0.0	15.58	8.0	59.35	828.88	15	16	13	11	4	15	0	0	0	0
+control	cuda	24	0	0.0	27.0	23.0	64.0	847.69	19	21	17	19	12	8	0	0	0	1
+control	cute	24	0	0.0	22.21	19.5	47.2	822.45	15	20	16	17	15	11	0	0	0	0
+control	cutile	24	0	0.0	23.46	17.0	60.0	785.3	18	20	17	16	12	13	0	0	0	0
+control	helion	24	0	0.0	29.46	25.0	64.0	794.09	16	22	21	19	12	12	0	0	0	0
+control	tilelang	24	0	0.0	26.54	19.0	64.0	780.91	17	20	15	18	11	11	0	0	1	1
+control	triton	24	0	0.0	26.25	15.0	82.1	790.36	18	22	18	14	12	8	0	0	0	0
+strict	croqtile	24	24	1.0	336.0	336.0	336.0	4776.7	0	0	0	0	0	0	0	7	0	0
+strict	cuda	24	24	1.0	336.0	336.0	336.0	3959.07	0	0	0	0	0	0	3	21	0	0
+strict	cute	24	24	1.0	336.0	336.0	336.0	4015.27	0	0	0	0	0	0	2	21	0	0
+strict	cutile	24	24	1.0	336.0	336.0	336.0	4017.2	0	0	0	0	0	0	2	20	0	0
+strict	helion	24	24	1.0	336.0	336.0	336.0	3915.12	0	0	0	0	0	0	1	23	0	0
+strict	tilelang	24	24	1.0	336.0	336.0	336.0	3903.1	0	0	0	0	0	0	1	22	0	0
+strict	triton	24	24	1.0	336.0	336.0	336.0	3908.33	0	0	0	0	0	0	1	22	0	0
