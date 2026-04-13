@@ -1,0 +1,26 @@
+{
+  "bench": {
+    "median_tflops": 473.7888977608383,
+    "median_time_ms": 0.5801695823669434,
+    "samples": [
+      {
+        "sample": 1,
+        "tflops": 474.8995041789253,
+        "time_ms": 0.5788127899169921
+      },
+      {
+        "sample": 2,
+        "tflops": 473.7888977608383,
+        "time_ms": 0.5801695823669434
+      },
+      {
+        "sample": 3,
+        "tflops": 472.06781689549814,
+        "time_ms": 0.5822847843170166
+      }
+    ]
+  },
+  "kernel": "framework/torch_mm_bf16_to_f32_out",
+  "shape_key": "f16_512x16384x16384",
+  "timestamp": "2026-04-13T17:06:33.681145+00:00"
+}

@@ -1,0 +1,140 @@
+---
+name: croq-tune
+description: Canonical tuning entry skill with a concrete round contract and TodoWrite-driven continuation guard.
+argument-hint: <dsl: croqtile|cuda|cute|triton|tilelang|helion|cutile> <dtype: f16|e4m3|all> [shape_key]
+---
+
+# Croq-Tune
+
+`croq-tune` is the only tuning entrypoint.
+Do not use `croq-tuner` or `ai-tune-*`.
+
+## Main Loop (Authoritative)
+
+1. Parse `dsl`, `dtype`, optional `shape_key`
+2. Startup/resume decision (load `croq-resume`)
+3. Run `PREPARATION_ONCE` for this `(dsl, operator, dtype, shape_key)` (load `croq-baseline`)
+4. Repeat round loop until a valid stop condition is met
+
+## Hard Constraints
+
+1. Keep exactly one continuation node in progress: `continue-croq-tune`
+2. Trigger proactive compaction at `>= 80%` context, but only after continuation node is present
+3. Compile-fail debug/fix retries are bounded to 4-7 (default target: 6); then discard attempt and return to `IDEA`
+4. Exactly one new idea per round
+5. `STORE` executes on both KEEP and DISCARD
+
+Round-loop preamble on every round:
+
+1. Ensure there is an in-progress todo: `Continue /croq-tune <dsl> <dtype> [shape_key]`
+2. If context usage is `>= 80%`, trigger proactive compaction:
+   - if the continuation todo is missing, add it first
+   - then trigger compaction
+   - after resume, re-issue `/croq-tune ...` from that todo
+
+## Continuation Anchor (Framework-Specific)
+
+Keep one persistent continuation node:
+
+- `Continue /croq-tune <dsl> <dtype> [shape_key]`
+
+Keep at most one round-step node in progress (`round-step`).
+
+### Cursor IDE (with `TodoWrite`)
+
+Use `TodoWrite` with ids:
+
+- `continue-croq-tune` (`in_progress`)
+- `round-step` (`completed` after STORE)
+
+### OpenCode
+
+Use same ids and refresh semantics.
+If no todo tool is available, persist equivalent state in `.agent/todo.json`.
+
+### Copilot VSCode IDE
+
+Use file-backed state in `.agent/todo.json` with the same ids/statuses.
+
+Todo state controls workflow continuity only; it does not replace persisted tuning artifacts.
+
+Exact payload templates are defined in:
+
+- `.claude/skills/croq-tune/todo-payloads.md`
+
+## Per-Round Contract (Detailed)
+
+### 1) PROFILE
+
+- Load `croq-profile`
+- Gather the lightest evidence that answers current bottleneck
+- Produce explicit `bottleneck` and `confidence`
+
+### 2) IDEA
+
+- Generate one model-proposed idea from the current bottleneck and local history
+- Run targeted web search for the same bottleneck to collect 1-3 external inspirations
+- Merge into exactly one testable idea with expected gain and risk
+
+### 3) IMPLEMENT
+
+- Apply only the current round's single idea
+- If editing `.co`, load `choreo-syntax` before changing code
+- Compile and run verification
+- If compile fails, debug/fix and retry with bounded budget:
+  - target budget: 6 retries (allowed range: 4-7 by error severity)
+- If retries exhausted, mark as failed attempt and return to `IDEA`
+
+### 4) VERIFY
+
+- Correctness must pass before performance measurement can count
+
+### 5) MEASURE
+
+- Run benchmark, collect stable timing samples, compute TFLOPS
+
+### 6) DECIDE
+
+- KEEP only if candidate beats current best
+- Otherwise DISCARD
+
+### 7) STORE
+
+- Load `croq-store` (and `croq-artifacts` through it)
+- Persist round outcome for both KEEP and DISCARD
+- Compile-failed attempts use `attempt<AAAA>` and do not consume public `iter<NNN>`
+
+### 8) CONTINUE
+
+- Advance immediately to next round (or next shape)
+
+## PREPARATION_ONCE (Per Shape, Outside Round Count)
+
+Preparation is one-time and outside round counting.
+Load `croq-baseline`, run its env-prep CLI, then follow its baseline workspace contract.
+
+## Step-to-Skill References
+
+- Startup/resume: `croq-resume`
+- Preparation once: `croq-baseline`
+- Profile step: `croq-profile`
+- Store step: `croq-store` -> `croq-artifacts`
+- `.co` implementation path only: `choreo-syntax`
+
+## How to Treat Unexpected Events
+
+Timeout: Each experiment should take ~5 minutes total (+ a few seconds for startup and eval overhead). If a run exceeds 10 minutes, kill it and treat it as a failure (discard and revert).
+
+Crashes: If a run crashes (OOM, or a bug, or etc.), use your judgment: If it's something dumb and easy to fix (e.g. a typo, a missing import), fix it and re-run. If the idea itself is fundamentally broken, just skip it, log "crash" as the status in the tsv, and move on.
+
+## MOST IMPORTANT!!!!
+
+NEVER STOP: Once the experiment loop has begun (after the initial setup), do NOT pause to ask the human if you should continue. Do NOT ask "should I keep going?" or "is this a good stopping point?". The human might be asleep, or gone from a computer and expects you to continue working indefinitely until you are manually stopped. You are autonomous. If you run out of ideas, think harder — read papers referenced in the code, re-read the in-scope files for new angles, try combining previous near-misses, try more radical architectural changes. The loop runs until the human interrupts you, period.
+
+As an example use case, a user might leave you running while they sleep. If each experiment takes you ~5 minutes then you can run approx 12/hour, for a total of about 100 over the duration of the average human sleep. The user then wakes up to experimental results, all completed by you while they slept!
+
+## Valid Stop Conditions Only
+
+1. User explicitly interrupts
+2. All scheduled shapes are done
+3. Systemic GPU failure blocks progress after remediation attempts

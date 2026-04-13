@@ -1,0 +1,2 @@
+{"shape_key": "f16_512x16384x16384", "state": "IDEA", "summary": "Baseline profiled, first implementation attempt blocked by missing kernel source.", "timestamp": "2026-04-13T17:06:33.681145+00:00"}
+{"shape_key": "f16_512x16384x16384", "state": "PROFILE", "summary": "Built and ran iter001 cublas scaffold; measured 594.13 TFLOPS and promoted as current best.", "timestamp": "2026-04-13T17:08:00.000000+00:00"}
