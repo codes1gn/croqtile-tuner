@@ -34,6 +34,9 @@ which ncu || ls /usr/local/cuda*/bin/ncu
 # Check perf_event_paranoid (MUST be <= 2)
 cat /proc/sys/kernel/perf_event_paranoid
 
+# Check nvidia driver allows non-root profiling (MUST be 0)
+cat /proc/driver/nvidia/params | grep RmProfilingAdminOnly
+
 # Test ncu actually works (run on a simple kernel)
 ncu --version
 ```
@@ -42,6 +45,14 @@ ncu --version
 - STOP immediately
 - Tell user: "ncu profiling blocked by kernel.perf_event_paranoid=X"
 - Ask user to run: `sudo sysctl -w kernel.perf_event_paranoid=2`
+- DO NOT proceed until fixed
+
+**If `RmProfilingAdminOnly != 0`:**
+- STOP immediately
+- Tell user: "ncu profiling blocked by nvidia driver setting"
+- Check `/etc/modprobe.d/nvidia*.conf` has `options nvidia NVreg_RestrictProfilingToAdminUsers=0`
+- If config exists but not applied: GPU needs module reload or reboot
+- Ask user to reload: `sudo rmmod nvidia_uvm nvidia && sudo modprobe nvidia nvidia_uvm`
 - DO NOT proceed until fixed
 
 ### 2. CUDA Compiler
