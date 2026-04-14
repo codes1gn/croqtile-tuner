@@ -178,29 +178,28 @@ As an example use case, a user might leave you running while they sleep. If each
 
 ---
 
-## BLOCKING Conditions (Must STOP and Escalate)
+## Environment Prerequisites (Validated at Baseline)
 
-These conditions require **immediate STOP** and **user escalation**:
+The `croq-baseline` skill validates these BEFORE tuning starts:
 
-1. **ncu permission denied** (`ERR_NVGPUCTRPERM`, `perf_event_paranoid > 2`):
-   - Cannot tune without profiling data
-   - Ask user to fix: `sudo sysctl -w kernel.perf_event_paranoid=2`
-   - DO NOT proceed with guessed bottlenecks
+1. **ncu profiling** — `perf_event_paranoid <= 2`
+2. **CUDA compiler** — nvcc available and working
+3. **GPU availability** — nvidia-smi reports GPU
 
-2. **CUDA environment broken** (nvcc not found, wrong version):
-   - Cannot compile kernels
-   - Ask user to fix CUDA setup
+**If baseline validation passes, the tuning loop assumes all tools work.**
 
-3. **GPU unavailable** (no nvidia-smi, driver crash):
-   - Cannot run kernels
-   - Ask user to check GPU status
+If any tool fails unexpectedly during tuning:
+- STOP immediately
+- This indicates baseline was bypassed or environment changed
+- Escalate to user
 
 **CRITICAL ANTI-PATTERNS (FORBIDDEN):**
 
 - **Fabricating iteration data** — Every `iter<NNN>` in `rounds.raw.jsonl` MUST correspond to a real kernel run with real TFLOPS measurement
 - **Batch-generating fake results** — NEVER create multiple iteration records with identical timestamps or synthetic values
-- **Skipping profiling repeatedly** — If ncu fails once, diagnose and fix; do NOT silently skip for all subsequent rounds
-- **Proceeding without evidence** — Every IDEA must be based on real ncu profiling data, not guesses
+- **Skipping profiling** — If ncu fails, STOP; do NOT silently skip or guess
+- **Proceeding without evidence** — Every IDEA must be based on real ncu profiling data
+- **Bypassing baseline validation** — NEVER start tuning without environment validation passing
 
 ---
 

@@ -9,14 +9,87 @@ Use this skill only in `PREPARATION_ONCE`, before round counting starts for a ne
 
 ## Preparation Contract
 
-1. Detect environment and baseline library readiness using:
+1. **MANDATORY: Environment Validation** — see "Environment Validation" section below
+2. Detect environment and baseline library readiness using:
    - `.claude/skills/croq-baseline/tools/prepare_baseline_env.py`
-2. Check baseline readout in the persistent baseline workspace
-3. If readout exists, reuse it directly
-4. If missing, run baseline readout and persist it before first tuning round
-5. **Draft the first kernel source** — see "First Kernel Draft" section below
+3. Check baseline readout in the persistent baseline workspace
+4. If readout exists, reuse it directly
+5. If missing, run baseline readout and persist it before first tuning round
+6. **Draft the first kernel source** — see "First Kernel Draft" section below
 
 This preparation is outside tuning round count.
+
+---
+
+## Environment Validation (MANDATORY, BLOCKING)
+
+**BEFORE any tuning work begins**, validate these prerequisites. If ANY fails, STOP and escalate to user.
+
+### 1. ncu Profiling Capability
+
+```bash
+# Check ncu is available
+which ncu || ls /usr/local/cuda*/bin/ncu
+
+# Check perf_event_paranoid (MUST be <= 2)
+cat /proc/sys/kernel/perf_event_paranoid
+
+# Test ncu actually works (run on a simple kernel)
+ncu --version
+```
+
+**If `perf_event_paranoid > 2`:**
+- STOP immediately
+- Tell user: "ncu profiling blocked by kernel.perf_event_paranoid=X"
+- Ask user to run: `sudo sysctl -w kernel.perf_event_paranoid=2`
+- DO NOT proceed until fixed
+
+### 2. CUDA Compiler
+
+```bash
+# Check nvcc
+which nvcc || ls /usr/local/cuda*/bin/nvcc
+
+# Test compilation
+echo 'int main(){}' > /tmp/test.cu && nvcc /tmp/test.cu -o /tmp/test && rm /tmp/test.cu /tmp/test
+```
+
+**If nvcc not found or compilation fails:**
+- STOP immediately
+- Tell user: "CUDA toolkit not available or misconfigured"
+- DO NOT proceed until fixed
+
+### 3. GPU Availability
+
+```bash
+nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
+```
+
+**If nvidia-smi fails:**
+- STOP immediately
+- Tell user: "No GPU available or driver not loaded"
+- DO NOT proceed until fixed
+
+### Validation Output
+
+After validation passes, create a validation record:
+
+```json
+{
+  "validation": "passed",
+  "ncu_version": "...",
+  "perf_event_paranoid": 2,
+  "nvcc_version": "...",
+  "gpu_name": "...",
+  "validated_at": "ISO-8601"
+}
+```
+
+Store in `baseline-workspace/_env/validation.json`.
+
+**CRITICAL**: Tuning CANNOT start if validation fails. No fallbacks. No workarounds.
+
+---
 
 ## First Kernel Draft (MANDATORY)
 
