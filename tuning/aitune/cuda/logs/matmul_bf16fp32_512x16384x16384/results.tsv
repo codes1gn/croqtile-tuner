@@ -71,3 +71,5 @@ iter065	iter065_cache_config	22.23	58.35	DISCARD	cache_config	cudaFuncCachePrefe
 iter066	iter066_prefer_l1	8.94	23.46	DISCARD	cache_config	cudaFuncCachePreferL1. -60.5%.	./iter066_prefer_l1 5 10
 iter067	iter067_aligned	21.89	57.45	DISCARD	alignment	Static smem + 128B align. -3.4%.	./iter067_aligned 5 10
 iter068	iter068_warp_sync	21.94	57.59	DISCARD	sync_overhead	__syncwarp() added. -3.1%.	./iter068_warp_sync 5 10
+iter069	iter069_ldg	21.34	56.01	DISCARD	no_benefit	__ldg() for global loads. -5.8%.	./iter069_ldg 5 10
+iter070	iter070_k32	17.04	44.72	DISCARD	smem_reg_pressure	BLOCK_K=32. -24.8%.	./iter070_k32 5 10
