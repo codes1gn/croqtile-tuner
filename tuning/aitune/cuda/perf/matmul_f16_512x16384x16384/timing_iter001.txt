@@ -1,3 +1,0 @@
-Shape: 512x16384x16384
-Time: 33.374 ms
-TFLOPS: 8.24
