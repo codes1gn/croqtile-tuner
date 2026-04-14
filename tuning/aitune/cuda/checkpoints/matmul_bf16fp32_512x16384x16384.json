@@ -7,9 +7,10 @@
     "torch_mm_bf16fp32_cast": 11.18,
     "torch_mm_fp32": 12.53
   },
-  "current_iter": 2,
+  "current_iter": 8,
   "current_best_custom": 18.90,
   "current_best_kernel": "iter002_no_bank_conflict",
+  "consecutive_discards": 6,
   "dsl": "cuda",
   "dtype": "bf16fp32",
   "last_attempt": "iter001_draft",
