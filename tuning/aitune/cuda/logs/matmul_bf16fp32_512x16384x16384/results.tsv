@@ -20,3 +20,4 @@ iter014	iter014_larger_output	11.17	29.32	DISCARD	compute_bound	128x64 tile, 8 w
 iter015	iter015_tall_shape	9.61	25.22	DISCARD	compute_bound	32x128 tile for tall shape. A broadcast inefficient. -49.2%.	./iter015_tall_shape 5 10
 iter016	iter016_pad4	18.72	49.13	DISCARD	latency_bound	PAD=4 (vs PAD=8). Slightly worse. -1.0%.	./iter016_pad4 5 10
 iter017	iter017_warp_tile_64	4.54	11.92	DISCARD	compute_bound	64x64 per warp. 255 regs + 1 warp/block. -76.0%.	./iter017_warp_tile_64 5 10
+iter018	iter018_ldmatrix	18.62	48.87	DISCARD	latency_bound	__align__(16) shared mem. No improvement. -1.5%.	./iter018_ldmatrix 5 10
