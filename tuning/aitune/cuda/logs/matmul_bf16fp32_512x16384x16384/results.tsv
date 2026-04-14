@@ -6,3 +6,5 @@ iter000_torch_fp32	torch.mm_fp32	12.53	32.89	BASELINE	n/a	torch.mm pure fp32 (no
 iter001	iter001_draft_wmma	9.91	26.01	DISCARD	latency_bound	First WMMA bf16 kernel draft. 5-way bank conflict (79.56%).	./iter001_draft 5 10
 iter002	iter002_no_bank_conflict	18.90	49.61	KEEP	latency_bound	Fix shared memory bank conflicts with padding (+8 bf16 per row). +90.7% gain.	./iter002_no_bank_conflict 5 10
 iter003	iter003_low_register	12.96	34.02	DISCARD	compute_bound	Reduce register pressure (126->64), larger block (512 threads). -31.4%.	./iter003_low_register 5 10
+iter004	iter004_vectorized_ldg	14.40	37.80	DISCARD	compute_bound	Vectorized bf162 loads with __ldg. Complex bounds checking hurts perf. -23.8%.	./iter004_vectorized_ldg 5 10
+iter005	iter005_double_buffer	15.73	41.29	DISCARD	compute_bound	Double buffering to hide latency. Extra register/smem pressure. -16.8%.	./iter005_double_buffer 5 10
