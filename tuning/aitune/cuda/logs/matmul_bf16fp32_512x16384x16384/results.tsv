@@ -39,3 +39,6 @@ iter033	iter033_grid_swap	21.65	56.82	KEEP	latency_bound	Grid (M,N) swap. +0.1%.
 iter034	iter034_nosync	21.47	56.35	DISCARD	overhead	Restructured K-loop. More code. -0.8%.	./iter034_nosync 5 10
 iter035	iter035_cg_sync	21.38	56.12	DISCARD	overhead	cg::sync slower than __syncthreads. -1.2%.	./iter035_cg_sync 5 10
 iter036	iter036_restrict	22.10	58.01	KEEP	latency_bound	extern smem + __restrict__. +2.1%.	./iter036_restrict 5 10
+iter037	iter037_nopad	18.33	48.11	DISCARD	bank_conflict	SMEM_PAD=0 severe conflicts. -17.1%.	./iter037_nopad 5 10
+iter038	iter038_maxreg	21.73	57.03	DISCARD	reg_limit	--maxrregcount=64. -1.7%.	./iter038_maxreg 5 10
+iter039	iter039_vec_store	21.65	56.82	DISCARD	overhead	smem staging for C. -2.0%.	./iter039_vec_store 5 10
