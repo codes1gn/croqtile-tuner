@@ -25,3 +25,8 @@ iter019	iter019_ptx_mma	11.62	30.50	DISCARD	compute_bound	Direct PTX mma.sync. K
 iter020	iter020_large_tile	9.87	25.91	DISCARD	register_spill	128x128 tile too large. Register pressure. -47.8%.	./iter020_large_tile 5 10
 iter021	iter021_k32	10.24	26.88	DISCARD	smem_bound	K=32 increases smem. No compute benefit. -45.8%.	./iter021_k32 5 10
 iter022	iter022_bcol	19.51	51.21	KEEP	latency_bound	B col-major in smem. +3.2% from iter002.	./iter022_bcol 5 10
+iter023	iter023_bcol_vec	19.35	50.79	DISCARD	latency_bound	Added __ldg. No improvement. -0.8%.	./iter023_bcol_vec 5 10
+iter024	iter024_8warps	17.65	46.32	DISCARD	register_pressure	8 warps. Occupancy drop. -9.5%.	./iter024_8warps 5 10
+iter025	iter025_prefetch	17.84	46.82	DISCARD	smem_pressure	Double buffer prefetch. smem 2x. -8.6%.	./iter025_prefetch 5 10
+iter026	iter026_32x64	13.28	34.86	DISCARD	coverage_issue	32x64 tile. Wrong warp coverage. -31.9%.	./iter026_32x64 5 10
+iter027	iter027_unroll	20.81	54.62	KEEP	latency_bound	No bounds check. Direct store. +6.7%.	./iter027_unroll 5 10
