@@ -30,3 +30,7 @@ iter024	iter024_8warps	17.65	46.32	DISCARD	register_pressure	8 warps. Occupancy 
 iter025	iter025_prefetch	17.84	46.82	DISCARD	smem_pressure	Double buffer prefetch. smem 2x. -8.6%.	./iter025_prefetch 5 10
 iter026	iter026_32x64	13.28	34.86	DISCARD	coverage_issue	32x64 tile. Wrong warp coverage. -31.9%.	./iter026_32x64 5 10
 iter027	iter027_unroll	20.81	54.62	KEEP	latency_bound	No bounds check. Direct store. +6.7%.	./iter027_unroll 5 10
+iter028	iter028_bcol_unroll	20.97	55.04	KEEP	latency_bound	B col-major + no bounds. +0.8%.	./iter028_bcol_unroll 5 10
+iter029	iter029_pad4	21.62	56.75	KEEP	latency_bound	SMEM_PAD=4 (from 8). +3.1%.	./iter029_pad4 5 10
+iter030	iter030_pad2	21.11	55.41	DISCARD	bank_conflict	SMEM_PAD=2 too small. -2.4%.	./iter030_pad2 5 10
+iter031	iter031_occ8	2.39	6.27	DISCARD	register_spill	launch_bounds 8. Catastrophic spill. -88.9%.	./iter031_occ8 5 10
