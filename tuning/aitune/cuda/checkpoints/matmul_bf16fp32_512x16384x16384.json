@@ -7,10 +7,10 @@
     "torch_mm_bf16fp32_cast": 11.18,
     "torch_mm_fp32": 12.53
   },
-  "current_iter": 36,
+  "current_iter": 39,
   "current_best_custom": 22.10,
   "current_best_kernel": "iter036_restrict",
-  "consecutive_discards": 0,
+  "consecutive_discards": 3,
   "explored_directions": [
     "bank_conflict_padding (iter002 - BEST)",
     "register_reduction (iter003)",
