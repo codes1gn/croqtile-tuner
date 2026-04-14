@@ -5,3 +5,4 @@ iter000_torch_cast	torch.mm_fp32_cast	11.18	29.34	BASELINE	n/a	torch.mm with bf1
 iter000_torch_fp32	torch.mm_fp32	12.53	32.89	BASELINE	n/a	torch.mm pure fp32 (no tensor cores).	python3 -c "torch.mm(a_fp32, b_fp32)"
 iter001	iter001_draft_wmma	9.91	26.01	DISCARD	latency_bound	First WMMA bf16 kernel draft. 5-way bank conflict (79.56%).	./iter001_draft 5 10
 iter002	iter002_no_bank_conflict	18.90	49.61	KEEP	latency_bound	Fix shared memory bank conflicts with padding (+8 bf16 per row). +90.7% gain.	./iter002_no_bank_conflict 5 10
+iter003	iter003_low_register	12.96	34.02	DISCARD	compute_bound	Reduce register pressure (126->64), larger block (512 threads). -31.4%.	./iter003_low_register 5 10
