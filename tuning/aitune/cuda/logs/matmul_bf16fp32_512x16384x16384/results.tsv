@@ -56,3 +56,5 @@ iter050	iter050_maxreg108	21.71	56.98	DISCARD	reg_limit	maxrregcount=108. -4.2%.
 iter051	iter051_maxreg116	22.30	58.53	DISCARD	reg_limit	maxrregcount=116. -1.5%.	./iter051_maxreg116 5 10
 iter052	iter052_fastmath	21.78	57.17	DISCARD	precision	--use_fast_math. -3.8%.	./iter052_fastmath 5 10
 iter053	iter053_lb3	22.45	58.92	DISCARD	launch_bounds	launch_bounds(128,3). -0.9%.	./iter053_lb3 5 10
+iter054	iter054_persistent	16.39	43.02	DISCARD	loop_overhead	Persistent kernel. Grid-stride overhead. -27.6%.	./iter054_persistent 5 10
+iter055	iter055_6warps	5.61	14.72	DISCARD	reg_pressure	64x96 with 6 warps. Severe issues. -75.2%.	./iter055_6warps 5 10
