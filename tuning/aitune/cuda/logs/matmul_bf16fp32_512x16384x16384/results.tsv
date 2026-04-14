@@ -75,3 +75,4 @@ iter069	iter069_ldg	21.34	56.01	DISCARD	no_benefit	__ldg() for global loads. -5.
 iter070	iter070_k32	17.04	44.72	DISCARD	smem_reg_pressure	BLOCK_K=32. -24.8%.	./iter070_k32 5 10
 iter071	iter071_stream_k	22.12	58.06	DISCARD	memset_overhead	Stream-K 2-split. Avg 22.12 vs 22.65.	./iter071_stream_k 5 10
 iter072	iter072_2x1_tiles	14.92	39.16	DISCARD	grid_overhead	64x32 block, 2x1 tiles. -34.1%.	./iter072_2x1_tiles 5 10
+iter073	iter073_asm_ld	-	-	SEGFAULT	alignment	PTX 128-bit global load. SEGFAULT.	./iter073_asm_ld 5 10
