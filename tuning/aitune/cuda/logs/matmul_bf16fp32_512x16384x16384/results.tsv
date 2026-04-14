@@ -14,3 +14,4 @@ attempt0005	iter008_async	0.00	0.00	SEGFAULT	n/a	cp.async single bf16 load - ali
 iter009	iter009_coalesced_load	6.17	16.19	DISCARD	compute_bound	Complex load pattern with branches. -67.4%.	./iter009_coalesced_load 5 10
 iter010	iter010_2warp_3x2	5.73	15.04	DISCARD	compute_bound	2 warps, 3x2 tiles each. 162 regs, small grid. -69.7%.	./iter010_2warp_3x2 5 10
 iter011	iter011_swizzle	15.20	39.90	DISCARD	compute_bound	XOR swizzle for bank conflict. WMMA needs contiguous mem. -19.6%.	./iter011_swizzle 5 10
+iter012	iter012_simple_opt	11.14	29.24	DISCARD	compute_bound	launch_bounds(128,4) forces 104 regs. Register spill. -41.1%.	./iter012_simple_opt 5 10
