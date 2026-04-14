@@ -43,3 +43,4 @@ iter037	iter037_nopad	18.33	48.11	DISCARD	bank_conflict	SMEM_PAD=0 severe confli
 iter038	iter038_maxreg	21.73	57.03	DISCARD	reg_limit	--maxrregcount=64. -1.7%.	./iter038_maxreg 5 10
 iter039	iter039_vec_store	21.65	56.82	DISCARD	overhead	smem staging for C. -2.0%.	./iter039_vec_store 5 10
 iter040	iter040_unroll2	21.17	55.56	DISCARD	code_size	Manual K-loop unroll x2. -4.2%.	./iter040_unroll2 5 10
+iter041	iter041_swizzle	20.88	54.80	DISCARD	correctness	XOR swizzle breaks WMMA layout. -5.5%.	./iter041_swizzle 5 10
