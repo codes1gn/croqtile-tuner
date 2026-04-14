@@ -52,3 +52,5 @@ iter046	iter046_maxreg160	21.38	56.12	DISCARD	low_occ	maxrregcount=160. -4.6%.	.
 iter047	iter047_maxreg112	22.65	59.45	KEEP	latency_bound	maxrregcount=112. +1.0%.	./iter047_maxreg112 5 10
 iter048	iter048_maxreg104	21.73	57.03	DISCARD	reg_limit	maxrregcount=104. -4.1%.	./iter048_maxreg104 5 10
 iter049	iter049_maxreg120	21.86	57.38	DISCARD	reg_limit	maxrregcount=120. -3.5%.	./iter049_maxreg120 5 10
+iter050	iter050_maxreg108	21.71	56.98	DISCARD	reg_limit	maxrregcount=108. -4.2%.	./iter050_maxreg108 5 10
+iter051	iter051_maxreg116	22.30	58.53	DISCARD	reg_limit	maxrregcount=116. -1.5%.	./iter051_maxreg116 5 10
