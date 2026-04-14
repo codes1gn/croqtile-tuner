@@ -1,0 +1,1 @@
+{"bottleneck": "unknown_pre_ncu", "category": "structural", "expected_gain": "Enable IMPLEMENT path and measured iter001 candidate.", "idea": "No kernel source found in repo; next action is to create first compilable custom matmul kernel scaffold for this shape.", "round": 1, "timestamp": "2026-04-14T10:03:56.744421+00:00"}

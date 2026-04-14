@@ -1,0 +1,18 @@
+{
+  "best_kernel": "framework/torch_mm_bf16fp32",
+  "best_tflops": 11.17,
+  "current_iter": 1,
+  "dsl": "cuda",
+  "dtype": "bf16fp32",
+  "last_attempt": "iter001_draft",
+  "last_iter_tflops": 9.91,
+  "next_state": "PROFILE",
+  "schema": "croq-tune-checkpoint-v1",
+  "shape": {
+    "k": 16384,
+    "m": 512,
+    "n": 16384
+  },
+  "shape_key": "matmul_bf16fp32_512x16384x16384",
+  "timestamp": "2026-04-14T10:03:56.744421+00:00"
+}

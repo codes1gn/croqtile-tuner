@@ -1,0 +1,2 @@
+iter	kernel	tflops	hw_eff_pct	decision	bottleneck	idea_summary	run_command
+iter000	framework/torch_mm_bf16fp32	11.17	0.00	KEEP	baseline_profile	Bootstrap baseline profile with torch.mm BF16FP32.	python3 .claude/skills/croq-tune/tools/bootstrap_tuning_round.py --dsl cuda --dtype bf16fp32 --shape 512x16384x16384
