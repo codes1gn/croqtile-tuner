@@ -1,3 +1,4 @@
 iter	kernel	tflops	hw_eff_pct	decision	bottleneck	idea_summary	run_command
 iter000	framework/torch_mm_f16	34.26	0.00	KEEP	baseline_profile	Bootstrap baseline profile with torch.mm FP16.	python3 .claude/skills/croq-tune/tools/bootstrap_tuning_round.py --dsl cuda --dtype f16 --shape 512x16384x16384
 iter001	iter001_draft.cu	8.24	24.0	DISCARD	memory_bandwidth	First pure CUDA tiled matmul draft - naive shared memory blocking (32x32x32 tiles)	bash tuning/aitune/cuda/cmd/matmul_f16_512x16384x16384/run_iter001.sh
+iter005	iter005_wmma.cu	15.29	44.6	KEEP	tensor_core	WMMA tensor core matmul with 64x64 tiles, 16 warps per block	bash run_iter005.sh

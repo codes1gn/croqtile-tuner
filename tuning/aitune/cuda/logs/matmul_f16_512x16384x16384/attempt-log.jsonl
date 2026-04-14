@@ -1,2 +1,3 @@
 {"attempt_id": "attempt0001", "next_state": "IDEA", "reason": "no_kernel_source_in_repo", "status": "failed", "timestamp": "2026-04-14T05:48:39.906542+00:00"}
 {"timestamp": "2026-04-14T06:11:14.000000+00:00", "attempt_id": "attempt0002", "status": "failed", "reason": "segfault", "next_state": "IDEA"}
+{"timestamp": "2026-04-14T06:14:53.000000+00:00", "attempt_id": "attempt0003", "status": "failed", "reason": "segfault_double_buffer", "next_state": "IDEA"}
