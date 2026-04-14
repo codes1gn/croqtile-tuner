@@ -63,3 +63,5 @@ iter057	iter057_vec	21.77	57.14	DISCARD	degradation	-extra-device-vectorization.
 iter058	iter058_cpasync	-	-	SEGFAULT	mem_error	cp.async single element. SEGFAULT.	./iter058_cpasync 5 10
 iter059	iter059_cpasync16	20.42	53.59	DISCARD	bank_conflict	cp.async 16B + no pad. -9.8%.	./iter059_cpasync16 5 10
 iter060	iter060_4warp_4x4	20.61	54.09	DISCARD	reg_pressure	128x64 block, 8 tiles/warp. -9.0%.	./iter060_4warp_4x4 5 10
+iter061	iter061_32x64_occ	16.23	42.60	DISCARD	reg_pressure	32x64 2 warps, 163 regs. -28.3%.	./iter061_32x64_occ 5 10
+iter062	iter062_1tile_warp	5.60	14.70	DISCARD	grid_overhead	32x32 1 tile/warp, too many blocks. -75.3%.	./iter062_1tile_warp 5 10
