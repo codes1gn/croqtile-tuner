@@ -1,6 +1,12 @@
 {
-  "best_kernel": "framework/torch_mm_bf16fp32",
-  "best_tflops": 11.17,
+  "best_kernel": "cublas_bf16fp32",
+  "best_tflops": 38.10,
+  "baseline": {
+    "cublas_bf16fp32": 38.10,
+    "torch_mm_bf16bf16": 41.43,
+    "torch_mm_bf16fp32_cast": 11.18,
+    "torch_mm_fp32": 12.53
+  },
   "current_iter": 1,
   "dsl": "cuda",
   "dtype": "bf16fp32",
