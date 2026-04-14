@@ -13,3 +13,4 @@ iter007	iter007_k32	9.88	25.93	DISCARD	memory_bound	K-tile 32. More loads per co
 attempt0005	iter008_async	0.00	0.00	SEGFAULT	n/a	cp.async single bf16 load - alignment issue.	./iter008_async 5 10
 iter009	iter009_coalesced_load	6.17	16.19	DISCARD	compute_bound	Complex load pattern with branches. -67.4%.	./iter009_coalesced_load 5 10
 iter010	iter010_2warp_3x2	5.73	15.04	DISCARD	compute_bound	2 warps, 3x2 tiles each. 162 regs, small grid. -69.7%.	./iter010_2warp_3x2 5 10
+iter011	iter011_swizzle	15.20	39.90	DISCARD	compute_bound	XOR swizzle for bank conflict. WMMA needs contiguous mem. -19.6%.	./iter011_swizzle 5 10
