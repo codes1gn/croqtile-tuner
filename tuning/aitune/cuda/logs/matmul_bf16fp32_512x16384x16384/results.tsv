@@ -58,3 +58,5 @@ iter052	iter052_fastmath	21.78	57.17	DISCARD	precision	--use_fast_math. -3.8%.	.
 iter053	iter053_lb3	22.45	58.92	DISCARD	launch_bounds	launch_bounds(128,3). -0.9%.	./iter053_lb3 5 10
 iter054	iter054_persistent	16.39	43.02	DISCARD	loop_overhead	Persistent kernel. Grid-stride overhead. -27.6%.	./iter054_persistent 5 10
 iter055	iter055_6warps	5.61	14.72	DISCARD	reg_pressure	64x96 with 6 warps. Severe issues. -75.2%.	./iter055_6warps 5 10
+iter056	iter056_funroll	22.46	58.95	DISCARD	no_effect	-Xcompiler -funroll-loops. -0.8%.	./iter056_funroll 5 10
+iter057	iter057_vec	21.77	57.14	DISCARD	degradation	-extra-device-vectorization. -3.9%.	./iter057_vec 5 10
