@@ -68,7 +68,20 @@ Provide this JSON to IDEA step:
 1. Check GPU availability: `nvidia-smi`
 2. Check ncu path: `which ncu` or `/usr/local/cuda/bin/ncu`
 3. Retry with reduced metrics: `ncu --set basic`
-4. If still fails: log error, skip this PROFILE, continue with last known bottleneck
+4. **If ncu fails due to PERMISSION issues (e.g., `ERR_NVGPUCTRPERM`, `perf_event_paranoid`):**
+   - **STOP THE TUNING LOOP IMMEDIATELY**
+   - **ESCALATE TO USER** — Ask them to fix permissions:
+     ```bash
+     sudo sysctl -w kernel.perf_event_paranoid=2
+     ```
+   - **DO NOT PROCEED** without ncu profiling capability
+   - **DO NOT "work around" by guessing bottlenecks**
+5. If ncu fails for OTHER reasons (GPU busy, CUDA version mismatch):
+   - Log error with full output
+   - Wait 30 seconds and retry once
+   - If still fails: STOP and escalate
+
+**CRITICAL**: Permission errors are BLOCKING. You cannot tune without profiling.
 
 ## FORBIDDEN
 
@@ -76,3 +89,6 @@ Provide this JSON to IDEA step:
 - Guessing bottleneck without ncu data
 - Using only compiler output as "profiling"
 - Proceeding to IDEA without ncu evidence
+- **Working around permission errors by skipping profiling**
+- **Continuing tuning when ncu is non-functional**
+- **Generating fake iteration data to meet stop conditions**

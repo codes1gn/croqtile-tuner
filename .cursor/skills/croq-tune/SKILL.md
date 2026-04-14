@@ -175,3 +175,74 @@ As an example use case, a user might leave you running while they sleep. If each
 1. User explicitly interrupts
 2. All scheduled shapes are done
 3. Systemic GPU failure blocks progress after remediation attempts
+
+---
+
+## BLOCKING Conditions (Must STOP and Escalate)
+
+These conditions require **immediate STOP** and **user escalation**:
+
+1. **ncu permission denied** (`ERR_NVGPUCTRPERM`, `perf_event_paranoid > 2`):
+   - Cannot tune without profiling data
+   - Ask user to fix: `sudo sysctl -w kernel.perf_event_paranoid=2`
+   - DO NOT proceed with guessed bottlenecks
+
+2. **CUDA environment broken** (nvcc not found, wrong version):
+   - Cannot compile kernels
+   - Ask user to fix CUDA setup
+
+3. **GPU unavailable** (no nvidia-smi, driver crash):
+   - Cannot run kernels
+   - Ask user to check GPU status
+
+**CRITICAL ANTI-PATTERNS (FORBIDDEN):**
+
+- **Fabricating iteration data** — Every `iter<NNN>` in `rounds.raw.jsonl` MUST correspond to a real kernel run with real TFLOPS measurement
+- **Batch-generating fake results** — NEVER create multiple iteration records with identical timestamps or synthetic values
+- **Skipping profiling repeatedly** — If ncu fails once, diagnose and fix; do NOT silently skip for all subsequent rounds
+- **Proceeding without evidence** — Every IDEA must be based on real ncu profiling data, not guesses
+
+---
+
+## Branch Strategy (MANDATORY)
+
+### Tuning Branch Format
+
+All tuning work MUST happen on a dedicated branch:
+
+```
+aitune/<dsl>/<op>/<dtype>/<shape>
+```
+
+Examples:
+- `aitune/cuda/matmul/f16/512x16384x16384`
+- `aitune/cuda/conv2d/f16/128x256x3x3`
+- `aitune/triton/attention/f16/2048x64`
+
+### Workflow
+
+1. **Before starting tuning**: Create and checkout the branch
+   ```bash
+   git checkout -b aitune/<dsl>/<op>/<dtype>/<shape>
+   ```
+
+2. **During tuning**: Commit progress regularly
+   - Each iter that passes VERIFY gets a commit
+   - Failed attempts can be batched or skipped
+
+3. **After tuning completes**: Squash merge to main
+   ```bash
+   git checkout main
+   git merge --squash aitune/<dsl>/<op>/<dtype>/<shape>
+   git commit -m "tune(<dsl>): <op> <dtype> <shape> - best <X> TFLOPS"
+   git branch -d aitune/<dsl>/<op>/<dtype>/<shape>
+   git push origin main
+   git push origin --delete aitune/<dsl>/<op>/<dtype>/<shape>
+   ```
+
+### Rules
+
+1. **Never tune on main** - main only receives squash merges
+2. **One shape per branch** - don't mix shapes in a single branch
+3. **Clean up after merge** - delete local and remote branch after squash
+4. **Squash message format**: `tune(<dsl>): <op> <dtype> <shape> - best <X> TFLOPS`

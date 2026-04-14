@@ -178,6 +178,32 @@ As an example use case, a user might leave you running while they sleep. If each
 
 ---
 
+## BLOCKING Conditions (Must STOP and Escalate)
+
+These conditions require **immediate STOP** and **user escalation**:
+
+1. **ncu permission denied** (`ERR_NVGPUCTRPERM`, `perf_event_paranoid > 2`):
+   - Cannot tune without profiling data
+   - Ask user to fix: `sudo sysctl -w kernel.perf_event_paranoid=2`
+   - DO NOT proceed with guessed bottlenecks
+
+2. **CUDA environment broken** (nvcc not found, wrong version):
+   - Cannot compile kernels
+   - Ask user to fix CUDA setup
+
+3. **GPU unavailable** (no nvidia-smi, driver crash):
+   - Cannot run kernels
+   - Ask user to check GPU status
+
+**CRITICAL ANTI-PATTERNS (FORBIDDEN):**
+
+- **Fabricating iteration data** — Every `iter<NNN>` in `rounds.raw.jsonl` MUST correspond to a real kernel run with real TFLOPS measurement
+- **Batch-generating fake results** — NEVER create multiple iteration records with identical timestamps or synthetic values
+- **Skipping profiling repeatedly** — If ncu fails once, diagnose and fix; do NOT silently skip for all subsequent rounds
+- **Proceeding without evidence** — Every IDEA must be based on real ncu profiling data, not guesses
+
+---
+
 ## Branch Strategy (MANDATORY)
 
 ### Tuning Branch Format
