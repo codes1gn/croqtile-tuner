@@ -1,2 +1,6 @@
 iter	kernel	tflops	hw_eff_pct	decision	bottleneck	idea_summary	run_command
-iter000	framework/torch_mm_bf16fp32	11.17	0.00	KEEP	baseline_profile	Bootstrap baseline profile with torch.mm BF16FP32.	python3 .claude/skills/croq-tune/tools/bootstrap_tuning_round.py --dsl cuda --dtype bf16fp32 --shape 512x16384x16384
+iter000_cublas	cublas_gemmex_bf16_fp32	38.10	100.00	BASELINE	n/a	cuBLAS bf16->fp32 with tensor core and fp32 accumulation. Primary baseline.	./baseline_cublas 10 20
+iter000_torch_bf16	torch.mm_bf16	41.43	108.74	BASELINE	n/a	torch.mm pure bf16 (wrong output dtype but fastest).	python3 -c "torch.mm(a_bf16, b_bf16)"
+iter000_torch_cast	torch.mm_fp32_cast	11.18	29.34	BASELINE	n/a	torch.mm with bf16->fp32 cast before matmul (slow).	python3 -c "torch.mm(a.float(), b.float())"
+iter000_torch_fp32	torch.mm_fp32	12.53	32.89	BASELINE	n/a	torch.mm pure fp32 (no tensor cores).	python3 -c "torch.mm(a_fp32, b_fp32)"
+iter001	iter001_draft_wmma	9.91	26.01	DISCARD	unknown_pre_ncu	First WMMA bf16 kernel draft.	./iter001_draft 5 10
