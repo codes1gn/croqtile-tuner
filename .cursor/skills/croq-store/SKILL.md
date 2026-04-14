@@ -25,18 +25,66 @@ For a public measured `iter<NNN>` result, persist:
 - build and run scripts
 - timing output
 - profile output when profiling ran
-- results row
-- checkpoint or session summary update
-- round log entry
+- results row in `logs/<key>/results.tsv`
+- checkpoint update in `checkpoints/<key>.json`
+- **MANDATORY memory updates** (see Memory Files section below)
 
 For a failed internal `attempt<AAAA>`, persist:
 
 - attempted source snapshot
 - build script
 - build log or stderr
-- failure metadata
+- failure metadata in `logs/<key>/attempt-log.jsonl`
+- **MANDATORY memory updates** (see Memory Files section below)
 
 Attempt records do not consume the public measured iteration sequence.
+
+## Memory Files (MANDATORY)
+
+**Every STORE step MUST update these files:**
+
+1. `memory/<key>/rounds.raw.jsonl` — Append one JSON line:
+   ```json
+   {"iter": "iter<NNN>", "kernel": "<kernel_name>", "tflops": <float>, "decision": "<KEEP|DISCARD|SEGFAULT|HANG>", "bottleneck": "<bottleneck>", "idea": "<idea_summary>", "timestamp": "<ISO8601>"}
+   ```
+
+2. `memory/<key>/rounds.md` — Append markdown section:
+   ```markdown
+   ## iter<NNN> - <timestamp>
+   - kernel: `<kernel_name>`
+   - tflops: `<tflops>`
+   - decision: **<decision>**
+   - bottleneck: `<bottleneck>`
+   - idea: <idea_summary>
+   ```
+
+3. `logs/<key>/idea-log.jsonl` — Append one JSON line:
+   ```json
+   {"round": <N>, "iter": "iter<NNN>", "bottleneck": "<bottleneck>", "idea": "<idea>", "category": "<category>", "expected_gain": "<gain>", "timestamp": "<ISO8601>"}
+   ```
+
+**Failure to update these files breaks session resumption and history tracking.**
+
+## Raw Session Transcript (MANDATORY)
+
+**At session end or context compaction, MUST preserve the raw chat transcript:**
+
+1. Locate the current session JSONL file:
+   ```
+   ~/.cursor/projects/<project-slug>/agent-transcripts/<session-id>/<session-id>.jsonl
+   ```
+
+2. Copy to tuning memory:
+   ```
+   memory/<key>/sessions/<session-id>.jsonl
+   ```
+
+3. Create/update session index `memory/<key>/sessions/index.jsonl`:
+   ```json
+   {"session_id": "<uuid>", "start_iter": <N>, "end_iter": <M>, "tokens_approx": <bytes/4>, "timestamp": "<ISO8601>"}
+   ```
+
+**Why:** Raw transcripts enable post-hoc analysis of token usage, reasoning quality, and idea generation patterns across tuning runs.
 
 ## Post-STORE Continuation Update
 
