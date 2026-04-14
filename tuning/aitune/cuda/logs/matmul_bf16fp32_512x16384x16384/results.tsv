@@ -45,3 +45,4 @@ iter039	iter039_vec_store	21.65	56.82	DISCARD	overhead	smem staging for C. -2.0%
 iter040	iter040_unroll2	21.17	55.56	DISCARD	code_size	Manual K-loop unroll x2. -4.2%.	./iter040_unroll2 5 10
 iter041	iter041_swizzle	20.88	54.80	DISCARD	correctness	XOR swizzle breaks WMMA layout. -5.5%.	./iter041_swizzle 5 10
 iter042	iter042_min_smem	1.57	4.12	DISCARD	register_spill	32x32 block + high occ. Severe spill. -92.9%.	./iter042_min_smem 5 10
+iter043	iter043_splitk	20.99	55.09	DISCARD	atomic_overhead	Split-K=4. Atomic add overhead. -5.0%.	./iter043_splitk 5 10
