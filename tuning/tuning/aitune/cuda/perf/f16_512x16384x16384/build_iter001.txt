@@ -1,0 +1,1 @@
+tuning/aitune/cuda/cmd/matmul_f16_512x16384x16384/build_iter001.sh: line 23: nvcc: command not found

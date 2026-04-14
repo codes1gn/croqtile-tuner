@@ -1,12 +1,16 @@
 #!/bin/bash
-# Run script for iter001_draft - f16 matmul 512x16384x16384
+# Run script for iter001_draft - matmul f16 512x16384x16384
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../../../../.." && pwd)"
+SHAPE_KEY="matmul_f16_512x16384x16384"
 
-PERF_DIR="$REPO_ROOT/tuning/aitune/cuda/perf/f16_512x16384x16384"
+PERF_DIR="$REPO_ROOT/tuning/aitune/cuda/perf/$SHAPE_KEY"
 BIN_FILE="$PERF_DIR/iter001_draft"
+
+# CUDA runtime library path
+export LD_LIBRARY_PATH="/usr/local/cuda/lib64:${LD_LIBRARY_PATH:-}"
 
 WARMUP="${1:-5}"
 ITERS="${2:-10}"
