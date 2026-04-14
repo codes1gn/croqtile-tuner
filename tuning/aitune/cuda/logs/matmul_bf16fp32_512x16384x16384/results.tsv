@@ -10,3 +10,4 @@ iter004	iter004_vectorized_ldg	14.40	37.80	DISCARD	compute_bound	Vectorized bf16
 iter005	iter005_double_buffer	15.73	41.29	DISCARD	compute_bound	Double buffering to hide latency. Extra register/smem pressure. -16.8%.	./iter005_double_buffer 5 10
 iter006	iter006_large_tile	2.73	7.17	DISCARD	compute_bound	4x4 WMMA tiles per warp. 252 registers -> spill to local mem. -85.6%.	./iter006_large_tile 5 10
 iter007	iter007_k32	9.88	25.93	DISCARD	memory_bound	K-tile 32. More loads per compute. -47.7%.	./iter007_k32 5 10
+attempt0005	iter008_async	0.00	0.00	SEGFAULT	n/a	cp.async single bf16 load - alignment issue.	./iter008_async 5 10
