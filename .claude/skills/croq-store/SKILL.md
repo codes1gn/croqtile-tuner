@@ -25,18 +25,45 @@ For a public measured `iter<NNN>` result, persist:
 - build and run scripts
 - timing output
 - profile output when profiling ran
-- results row
-- checkpoint or session summary update
-- round log entry
+- results row in `logs/<key>/results.tsv`
+- checkpoint update in `checkpoints/<key>.json`
+- **MANDATORY memory updates** (see Memory Files section below)
 
 For a failed internal `attempt<AAAA>`, persist:
 
 - attempted source snapshot
 - build script
 - build log or stderr
-- failure metadata
+- failure metadata in `logs/<key>/attempt-log.jsonl`
+- **MANDATORY memory updates** (see Memory Files section below)
 
 Attempt records do not consume the public measured iteration sequence.
+
+## Memory Files (MANDATORY)
+
+**Every STORE step MUST update these files:**
+
+1. `memory/<key>/rounds.raw.jsonl` — Append one JSON line:
+   ```json
+   {"iter": "iter<NNN>", "kernel": "<kernel_name>", "tflops": <float>, "decision": "<KEEP|DISCARD|SEGFAULT|HANG>", "bottleneck": "<bottleneck>", "idea": "<idea_summary>", "timestamp": "<ISO8601>"}
+   ```
+
+2. `memory/<key>/rounds.md` — Append markdown section:
+   ```markdown
+   ## iter<NNN> - <timestamp>
+   - kernel: `<kernel_name>`
+   - tflops: `<tflops>`
+   - decision: **<decision>**
+   - bottleneck: `<bottleneck>`
+   - idea: <idea_summary>
+   ```
+
+3. `logs/<key>/idea-log.jsonl` — Append one JSON line:
+   ```json
+   {"round": <N>, "iter": "iter<NNN>", "bottleneck": "<bottleneck>", "idea": "<idea>", "category": "<category>", "expected_gain": "<gain>", "timestamp": "<ISO8601>"}
+   ```
+
+**Failure to update these files breaks session resumption and history tracking.**
 
 ## Post-STORE Continuation Update
 
