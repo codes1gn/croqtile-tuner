@@ -175,3 +175,48 @@ As an example use case, a user might leave you running while they sleep. If each
 1. User explicitly interrupts
 2. All scheduled shapes are done
 3. Systemic GPU failure blocks progress after remediation attempts
+
+---
+
+## Branch Strategy (MANDATORY)
+
+### Tuning Branch Format
+
+All tuning work MUST happen on a dedicated branch:
+
+```
+aitune/<dsl>/<op>/<dtype>/<shape>
+```
+
+Examples:
+- `aitune/cuda/matmul/f16/512x16384x16384`
+- `aitune/cuda/conv2d/f16/128x256x3x3`
+- `aitune/triton/attention/f16/2048x64`
+
+### Workflow
+
+1. **Before starting tuning**: Create and checkout the branch
+   ```bash
+   git checkout -b aitune/<dsl>/<op>/<dtype>/<shape>
+   ```
+
+2. **During tuning**: Commit progress regularly
+   - Each iter that passes VERIFY gets a commit
+   - Failed attempts can be batched or skipped
+
+3. **After tuning completes**: Squash merge to main
+   ```bash
+   git checkout main
+   git merge --squash aitune/<dsl>/<op>/<dtype>/<shape>
+   git commit -m "tune(<dsl>): <op> <dtype> <shape> - best <X> TFLOPS"
+   git branch -d aitune/<dsl>/<op>/<dtype>/<shape>
+   git push origin main
+   git push origin --delete aitune/<dsl>/<op>/<dtype>/<shape>
+   ```
+
+### Rules
+
+1. **Never tune on main** - main only receives squash merges
+2. **One shape per branch** - don't mix shapes in a single branch
+3. **Clean up after merge** - delete local and remote branch after squash
+4. **Squash message format**: `tune(<dsl>): <op> <dtype> <shape> - best <X> TFLOPS`
