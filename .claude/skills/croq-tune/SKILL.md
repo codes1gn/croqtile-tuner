@@ -23,6 +23,43 @@ Do not use `croq-tuner` or `ai-tune-*`.
 3. Compile-fail debug/fix retries are bounded to 4-7 (default target: 6); then discard attempt and return to `IDEA`
 4. Exactly one new idea per round
 5. `STORE` executes on both KEEP and DISCARD
+6. **NO LIBRARY CALLS IN TUNING ITERATIONS** — see "Pure Implementation Rule" below
+
+## Pure Implementation Rule (INVIOLABLE)
+
+All tuning iterations (`iter001` and beyond) MUST use **pure kernel code**:
+
+### Allowed in Tuning Iterations
+
+- Raw CUDA C++ kernel code
+- CUDA intrinsics (`__shfl_sync`, `__ldg`, etc.)
+- PTX inline assembly (`asm volatile`)
+- Cooperative groups, warp-level primitives
+- CuTe/CUTLASS **primitives only** (MMA atoms, copy atoms, layouts) — not library GEMM calls
+- Choreo DSL primitives for `dsl=croqtile`
+
+### FORBIDDEN in Tuning Iterations
+
+- cuBLAS calls (`cublasSgemm`, `cublasGemmEx`, etc.)
+- cuTLASS library GEMM calls (`cutlass::gemm::device::Gemm`)
+- cuSPARSELt, cuDNN, or any other library compute calls
+- PyTorch/TensorFlow ops
+- Any code that delegates the core compute to an external library
+
+### Where Library Calls ARE Allowed
+
+- **iter000 baseline only**: Framework/library calls are permitted for baseline measurement
+- **Verification reference**: Library calls can be used to generate ground truth for correctness checking
+- **Never in iter001+**: The tuning loop optimizes YOUR code, not library code
+
+### Enforcement
+
+If an IMPLEMENT step produces code that calls a library for the core compute:
+1. Reject the implementation immediately
+2. Log as `attempt<AAAA>` with reason `library_call_forbidden`
+3. Return to IDEA with explicit guidance to use pure kernel code
+
+This rule exists because **the goal is to tune custom kernel implementations**, not to benchmark existing libraries.
 
 Round-loop preamble on every round:
 

@@ -1,2 +1,0 @@
-{"attempt_id": "attempt0001", "next_state": "IDEA", "reason": "no_kernel_source_in_repo", "status": "failed", "timestamp": "2026-04-13T17:06:33.681145+00:00"}
-{"attempt_id": "attempt0002", "next_state": "PROFILE", "reason": "compiled_and_measured", "status": "success", "timestamp": "2026-04-13T17:08:00.000000+00:00"}

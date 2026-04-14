@@ -1,9 +1,0 @@
-{
-  "shape_key": "f16_512x16384x16384",
-  "iter": "iter001",
-  "kernel": "iter001_cublas_scaffold",
-  "run_command": "bash tuning/aitune/cuda/cmd/f16_512x16384x16384/run_iter001.sh",
-  "stdout": "time_ms=0.462656,tflops=594.13",
-  "time_ms": 0.462656,
-  "tflops": 594.13
-}

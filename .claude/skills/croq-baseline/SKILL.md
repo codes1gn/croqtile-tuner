@@ -1,6 +1,6 @@
 ---
 name: croq-baseline
-description: One-time baseline preparation contract for croq-tune, with persistent workspace path, naming, and schema.
+description: One-time baseline preparation contract for croq-tune, with persistent workspace path, naming, schema, and first kernel draft.
 ---
 
 # Croq-Baseline
@@ -14,8 +14,42 @@ Use this skill only in `PREPARATION_ONCE`, before round counting starts for a ne
 2. Check baseline readout in the persistent baseline workspace
 3. If readout exists, reuse it directly
 4. If missing, run baseline readout and persist it before first tuning round
+5. **Draft the first kernel source** — see "First Kernel Draft" section below
 
 This preparation is outside tuning round count.
+
+## First Kernel Draft (MANDATORY)
+
+Before `croq-tune` enters the round loop, this skill MUST produce the first compilable kernel source:
+
+1. Create `tuning/aitune/<dsl>/srcs/<shape_key>/iter001_draft.<cu|co>`
+2. The draft must be a **real implementation**, not a library wrapper
+3. For `dsl=cuda`: write pure CUDA C++ using CUDA intrinsics, PTX inline asm, or raw kernel code
+4. For `dsl=croqtile`: write pure `.co` using Choreo DSL primitives
+
+### What the Draft MUST Contain
+
+- A complete, compilable kernel function for the target operator (e.g., matmul)
+- Proper thread/block indexing
+- Memory access patterns appropriate for the shape
+- Basic tiling strategy (even if naive)
+
+### What the Draft MUST NOT Contain
+
+- Calls to external libraries (cuBLAS, cuTLASS, cuSPARSELt, etc.)
+- Wrapper code that delegates compute to library functions
+- Framework calls (PyTorch, TensorFlow ops)
+
+Library calls are **only** permitted in baseline measurement (iter000), never in tuning iterations.
+
+### Draft Output Contract
+
+After this skill completes, the following must exist:
+
+- `tuning/aitune/<dsl>/srcs/<shape_key>/iter001_draft.<cu|co>` — compilable source
+- `tuning/aitune/<dsl>/cmd/<shape_key>/build_iter001.sh` — build script
+- `tuning/aitune/<dsl>/cmd/<shape_key>/run_iter001.sh` — run script
+- Checkpoint updated with `next_state: "PROFILE"` pointing to iter001
 
 ## Trigger Rules
 
