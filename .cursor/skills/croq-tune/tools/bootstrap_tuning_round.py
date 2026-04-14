@@ -21,8 +21,8 @@ def parse_shape(shape: str) -> tuple[int, int, int]:
     return int(parts[0]), int(parts[1]), int(parts[2])
 
 
-def shape_key(dtype: str, m: int, n: int, k: int) -> str:
-    return f"{dtype}_{m}x{n}x{k}"
+def shape_key(operator: str, dtype: str, m: int, n: int, k: int) -> str:
+    return f"{operator}_{dtype}_{m}x{n}x{k}"
 
 
 def bench_torch_mm_f16(m: int, n: int, k: int, warmup: int, iters: int, samples: int) -> dict:
@@ -59,6 +59,7 @@ def bench_torch_mm_f16(m: int, n: int, k: int, warmup: int, iters: int, samples:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Bootstrap first tuning round artifacts for croq-tune.")
     parser.add_argument("--dsl", default="cuda")
+    parser.add_argument("--operator", default="matmul", help="Operator type (matmul, spmm, conv2d, attention)")
     parser.add_argument("--dtype", default="f16")
     parser.add_argument("--shape", required=True, help="MxNxK")
     parser.add_argument("--warmup", type=int, default=5)
@@ -70,7 +71,7 @@ def main() -> int:
         raise SystemExit("bootstrap_tuning_round currently supports --dsl cuda only")
 
     m, n, k = parse_shape(args.shape)
-    key = shape_key(args.dtype, m, n, k)
+    key = shape_key(args.operator, args.dtype, m, n, k)
     root = repo_root()
     now = datetime.now(timezone.utc).isoformat()
 

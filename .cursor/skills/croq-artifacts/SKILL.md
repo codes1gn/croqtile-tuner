@@ -16,6 +16,30 @@ All tuning artifacts must be kept under:
 
 `tuning/aitune/<dsl>/`
 
+## Shape Key Naming Convention
+
+Shape keys MUST include the operator/kernel type:
+
+```
+<operator>_<dtype>_<dimensions>
+```
+
+Examples:
+- `matmul_f16_512x16384x16384` (dense matmul)
+- `spmm_f16_4096x8192x8192` (sparse matmul)
+- `conv2d_f16_128x64x3x3` (2D convolution)
+- `attention_f16_2048x64x64` (attention kernel)
+
+Components:
+- `operator`: kernel type (matmul, spmm, conv2d, attention, etc.)
+- `dtype`: data type (f16, e4m3, bf16, f32)
+- `dimensions`: shape parameters (MxNxK for matmul, etc.)
+
+This naming convention ensures:
+1. Clear identification of what operation is being tuned
+2. No confusion between different operator types with same dimensions
+3. Easier filtering and grouping of tuning results
+
 Per shape key `<key>`:
 
 - `logs/<key>/results.tsv`

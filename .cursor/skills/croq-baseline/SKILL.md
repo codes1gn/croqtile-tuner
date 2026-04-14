@@ -101,7 +101,7 @@ Persistent root:
 
 Naming:
 
-- `shape_key`: `<dtype>_<M>x<N>x<K>` (for example `f16_4096x8192x8192`)
+- `shape_key`: `<operator>_<dtype>_<dimensions>` (for example `matmul_f16_4096x8192x8192`)
 - readout file: `readouts/<shape_key>.json`
 - optional profile file: `profiles/<shape_key>/ncu_baseline.txt`
 - summary table: `tables/readouts.tsv`
