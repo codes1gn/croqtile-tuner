@@ -73,3 +73,4 @@ iter067	iter067_aligned	21.89	57.45	DISCARD	alignment	Static smem + 128B align. 
 iter068	iter068_warp_sync	21.94	57.59	DISCARD	sync_overhead	__syncwarp() added. -3.1%.	./iter068_warp_sync 5 10
 iter069	iter069_ldg	21.34	56.01	DISCARD	no_benefit	__ldg() for global loads. -5.8%.	./iter069_ldg 5 10
 iter070	iter070_k32	17.04	44.72	DISCARD	smem_reg_pressure	BLOCK_K=32. -24.8%.	./iter070_k32 5 10
+iter071	iter071_stream_k	22.12	58.06	DISCARD	memset_overhead	Stream-K 2-split. Avg 22.12 vs 22.65.	./iter071_stream_k 5 10
