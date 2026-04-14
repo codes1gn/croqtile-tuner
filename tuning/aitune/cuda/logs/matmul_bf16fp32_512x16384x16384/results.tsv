@@ -37,3 +37,5 @@ iter031	iter031_occ8	2.39	6.27	DISCARD	register_spill	launch_bounds 8. Catastrop
 iter032	iter032_48x64	SEGFAULT	N/A	DISCARD	bounds_error	48x64 block. M=512 not divisible by 48.	./iter032_48x64 5 10
 iter033	iter033_grid_swap	21.65	56.82	KEEP	latency_bound	Grid (M,N) swap. +0.1%.	./iter033_grid_swap 5 10
 iter034	iter034_nosync	21.47	56.35	DISCARD	overhead	Restructured K-loop. More code. -0.8%.	./iter034_nosync 5 10
+iter035	iter035_cg_sync	21.38	56.12	DISCARD	overhead	cg::sync slower than __syncthreads. -1.2%.	./iter035_cg_sync 5 10
+iter036	iter036_restrict	22.10	58.01	KEEP	latency_bound	extern smem + __restrict__. +2.1%.	./iter036_restrict 5 10
