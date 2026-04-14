@@ -65,6 +65,27 @@ Attempt records do not consume the public measured iteration sequence.
 
 **Failure to update these files breaks session resumption and history tracking.**
 
+## Raw Session Transcript (MANDATORY)
+
+**At session end or context compaction, MUST preserve the raw chat transcript:**
+
+1. Locate the current session JSONL file:
+   ```
+   ~/.cursor/projects/<project-slug>/agent-transcripts/<session-id>/<session-id>.jsonl
+   ```
+
+2. Copy to tuning memory:
+   ```
+   memory/<key>/sessions/<session-id>.jsonl
+   ```
+
+3. Create/update session index `memory/<key>/sessions/index.jsonl`:
+   ```json
+   {"session_id": "<uuid>", "start_iter": <N>, "end_iter": <M>, "tokens_approx": <bytes/4>, "timestamp": "<ISO8601>"}
+   ```
+
+**Why:** Raw transcripts enable post-hoc analysis of token usage, reasoning quality, and idea generation patterns across tuning runs.
+
 ## Post-STORE Continuation Update
 
 After STORE finishes, refresh workflow continuation state:
