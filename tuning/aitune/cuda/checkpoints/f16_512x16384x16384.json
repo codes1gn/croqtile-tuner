@@ -1,14 +1,17 @@
 {
   "schema": "croq-tune-checkpoint-v1",
-  "timestamp": "2026-04-14T00:00:00.000000+00:00",
+  "timestamp": "2026-04-14T05:48:39.906542+00:00",
   "dsl": "cuda",
   "dtype": "f16",
   "shape_key": "f16_512x16384x16384",
   "shape": { "m": 512, "n": 16384, "k": 16384 },
   "current_iter": 1,
-  "best_tflops": 0.0,
-  "best_kernel": "tuning/aitune/cuda/srcs/f16_512x16384x16384/iter001_draft.cu",
+  "baseline_tflops": 34.26,
+  "baseline_kernel": "framework/torch_mm_f16",
+  "best_tflops": 34.26,
+  "best_kernel": "framework/torch_mm_f16",
   "next_state": "PROFILE",
-  "last_attempt": "attempt0000",
-  "notes": "Preparation complete. First kernel draft ready. Baseline not measured (no GPU). Next: PROFILE to establish baseline and identify bottlenecks."
+  "candidate_kernel": "tuning/aitune/cuda/srcs/f16_512x16384x16384/iter001_draft.cu",
+  "last_attempt": "attempt0001",
+  "notes": "Baseline measured. iter001_draft ready for compilation and profiling."
 }

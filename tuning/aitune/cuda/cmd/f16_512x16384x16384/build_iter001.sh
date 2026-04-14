@@ -13,9 +13,9 @@ mkdir -p "$PERF_DIR"
 SRC_FILE="$SRC_DIR/iter001_draft.cu"
 OUT_FILE="$PERF_DIR/iter001_draft"
 
-# Compile with optimizations for Hopper (sm_90) or Ampere (sm_80)
-# Auto-detect GPU architecture if possible
-GPU_ARCH="${GPU_ARCH:-sm_80}"
+# Compile with optimizations for Ampere (RTX 3070 = sm_86)
+# Override with GPU_ARCH env var if needed
+GPU_ARCH="${GPU_ARCH:-sm_86}"
 
 echo "[build] Compiling $SRC_FILE -> $OUT_FILE"
 echo "[build] Target architecture: $GPU_ARCH"

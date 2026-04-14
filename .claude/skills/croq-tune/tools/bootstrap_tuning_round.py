@@ -25,23 +25,23 @@ def shape_key(dtype: str, m: int, n: int, k: int) -> str:
     return f"{dtype}_{m}x{n}x{k}"
 
 
-def bench_torch_mm_bf16_fp32(m: int, n: int, k: int, warmup: int, iters: int, samples: int) -> dict:
+def bench_torch_mm_f16(m: int, n: int, k: int, warmup: int, iters: int, samples: int) -> dict:
     import torch  # type: ignore
 
     sample_rows = []
     for sample_id in range(1, samples + 1):
-        a = torch.randn(m, k, device="cuda", dtype=torch.bfloat16)
-        b = torch.randn(k, n, device="cuda", dtype=torch.bfloat16)
+        a = torch.randn(m, k, device="cuda", dtype=torch.float16)
+        b = torch.randn(k, n, device="cuda", dtype=torch.float16)
 
         for _ in range(warmup):
-            torch.mm(a, b, out_dtype=torch.float32)
+            torch.mm(a, b)
         torch.cuda.synchronize()
 
         start = torch.cuda.Event(enable_timing=True)
         end = torch.cuda.Event(enable_timing=True)
         start.record()
         for _ in range(iters):
-            torch.mm(a, b, out_dtype=torch.float32)
+            torch.mm(a, b)
         end.record()
         torch.cuda.synchronize()
 
@@ -82,14 +82,14 @@ def main() -> int:
     for directory in [log_dir, perf_dir, mem_dir, ckpt_dir]:
         directory.mkdir(parents=True, exist_ok=True)
 
-    bench = bench_torch_mm_bf16_fp32(m, n, k, args.warmup, args.iters, args.samples)
+    bench = bench_torch_mm_f16(m, n, k, args.warmup, args.iters, args.samples)
 
     results_path = log_dir / "results.tsv"
     results_lines = [
         "iter\tkernel\ttflops\thw_eff_pct\tdecision\tbottleneck\tidea_summary\trun_command",
         (
-            f"iter000\tframework/torch_mm_bf16_to_f32_out\t{bench['median_tflops']:.2f}\t0.00\tKEEP\tbaseline_profile\t"
-            "Bootstrap baseline profile with torch.mm BF16->FP32 out_dtype.\t"
+            f"iter000\tframework/torch_mm_f16\t{bench['median_tflops']:.2f}\t0.00\tKEEP\tbaseline_profile\t"
+            "Bootstrap baseline profile with torch.mm FP16.\t"
             f"python3 .claude/skills/croq-tune/tools/bootstrap_tuning_round.py --dsl {args.dsl} --dtype {args.dtype} --shape {args.shape}"
         ),
     ]
@@ -117,7 +117,7 @@ def main() -> int:
     perf_payload = {
         "timestamp": now,
         "shape_key": key,
-        "kernel": "framework/torch_mm_bf16_to_f32_out",
+        "kernel": "framework/torch_mm_f16",
         "bench": bench,
     }
     (perf_dir / "timing_iter000_baseline.json").write_text(
@@ -154,7 +154,7 @@ def main() -> int:
         "shape": {"m": m, "n": n, "k": k},
         "current_iter": 0,
         "best_tflops": round(bench["median_tflops"], 2),
-        "best_kernel": "framework/torch_mm_bf16_to_f32_out",
+        "best_kernel": "framework/torch_mm_f16",
         "next_state": "IDEA",
         "last_attempt": "attempt0001",
     }
