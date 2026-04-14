@@ -65,3 +65,5 @@ iter059	iter059_cpasync16	20.42	53.59	DISCARD	bank_conflict	cp.async 16B + no pa
 iter060	iter060_4warp_4x4	20.61	54.09	DISCARD	reg_pressure	128x64 block, 8 tiles/warp. -9.0%.	./iter060_4warp_4x4 5 10
 iter061	iter061_32x64_occ	16.23	42.60	DISCARD	reg_pressure	32x64 2 warps, 163 regs. -28.3%.	./iter061_32x64_occ 5 10
 iter062	iter062_1tile_warp	5.60	14.70	DISCARD	grid_overhead	32x32 1 tile/warp, too many blocks. -75.3%.	./iter062_1tile_warp 5 10
+iter063	iter063_prefetch_reg	21.63	56.77	DISCARD	smem_overhead	Double buffer prefetch, 2x smem. -4.5%.	./iter063_prefetch_reg 5 10
+iter064	iter064_pragma	21.15	55.51	DISCARD	code_size	#pragma unroll 4 on K-loop. -6.6%.	./iter064_pragma 5 10
