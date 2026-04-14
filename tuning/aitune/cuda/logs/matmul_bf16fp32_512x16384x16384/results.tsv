@@ -18,3 +18,4 @@ iter012	iter012_simple_opt	11.14	29.24	DISCARD	compute_bound	launch_bounds(128,4
 attempt0006	iter013_warp_spec	0.00	0.00	HANG	n/a	Warp specialization with atomicExch sync. Deadlock.	./iter013_warp_spec 2 5
 iter014	iter014_larger_output	11.17	29.32	DISCARD	compute_bound	128x64 tile, 8 warps. More warps but worse perf. -40.9%.	./iter014_larger_output 5 10
 iter015	iter015_tall_shape	9.61	25.22	DISCARD	compute_bound	32x128 tile for tall shape. A broadcast inefficient. -49.2%.	./iter015_tall_shape 5 10
+iter016	iter016_pad4	18.72	49.13	DISCARD	latency_bound	PAD=4 (vs PAD=8). Slightly worse. -1.0%.	./iter016_pad4 5 10
