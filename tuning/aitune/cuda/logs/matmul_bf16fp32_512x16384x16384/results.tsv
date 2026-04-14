@@ -60,3 +60,6 @@ iter054	iter054_persistent	16.39	43.02	DISCARD	loop_overhead	Persistent kernel. 
 iter055	iter055_6warps	5.61	14.72	DISCARD	reg_pressure	64x96 with 6 warps. Severe issues. -75.2%.	./iter055_6warps 5 10
 iter056	iter056_funroll	22.46	58.95	DISCARD	no_effect	-Xcompiler -funroll-loops. -0.8%.	./iter056_funroll 5 10
 iter057	iter057_vec	21.77	57.14	DISCARD	degradation	-extra-device-vectorization. -3.9%.	./iter057_vec 5 10
+iter058	iter058_cpasync	-	-	SEGFAULT	mem_error	cp.async single element. SEGFAULT.	./iter058_cpasync 5 10
+iter059	iter059_cpasync16	20.42	53.59	DISCARD	bank_conflict	cp.async 16B + no pad. -9.8%.	./iter059_cpasync16 5 10
+iter060	iter060_4warp_4x4	20.61	54.09	DISCARD	reg_pressure	128x64 block, 8 tiles/warp. -9.0%.	./iter060_4warp_4x4 5 10
