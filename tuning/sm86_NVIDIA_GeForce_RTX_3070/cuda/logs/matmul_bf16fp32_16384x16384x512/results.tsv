@@ -1,0 +1,3 @@
+iter	kernel	tflops	decision	bottleneck	idea
+iter000	iter000_baseline	38.73	KEEP	baseline	cuBLAS reference 38.73 TFLOPS
+iter001	iter001_draft	17.17	KEEP	draft	First WMMA 128x128 draft

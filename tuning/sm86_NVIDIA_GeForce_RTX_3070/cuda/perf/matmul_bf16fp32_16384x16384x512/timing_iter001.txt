@@ -1,0 +1,8 @@
+VERIFY: FAIL max_abs_err=29.7319
+sample 1: time=13.808 ms, tflops=19.91
+sample 2: time=13.921 ms, tflops=19.75
+sample 3: time=13.826 ms, tflops=19.88
+sample 4: time=13.844 ms, tflops=19.86
+sample 5: time=13.868 ms, tflops=19.82
+
+TFLOPS: 19.84   time_ms: 13.853

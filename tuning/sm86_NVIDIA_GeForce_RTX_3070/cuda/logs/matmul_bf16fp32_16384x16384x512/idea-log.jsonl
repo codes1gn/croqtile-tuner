@@ -1,0 +1,2 @@
+{"iter":"iter000","kernel":"iter000_baseline","tflops":38.73,"decision":"KEEP","bottleneck":"baseline","idea":"cuBLAS reference","round":0,"timestamp":"2026-04-15T09:40:03Z"}
+{"iter":"iter001","kernel":"iter001_draft","tflops":17.17,"decision":"KEEP","bottleneck":"draft","idea":"First WMMA 128x128 BK=16 double-buffer draft","round":1,"timestamp":"2026-04-15T09:40:03Z"}
