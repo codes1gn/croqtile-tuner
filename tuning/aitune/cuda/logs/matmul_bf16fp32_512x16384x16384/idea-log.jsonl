@@ -1,0 +1,1 @@
+{"round": 68, "iter": "iter068", "bottleneck": "compute_bound", "idea": "PTX MMA inline assembly to try wgmma-like scheduling on sm_86", "category": "compute", "expected_gain": "+2% TFLOPS", "decision": "DISCARD", "tflops": 35.1, "timestamp": "2026-04-15T05:06:02Z"}

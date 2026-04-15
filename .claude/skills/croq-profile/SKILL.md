@@ -1,15 +1,27 @@
 ---
 name: croq-profile
 description: Mandatory ncu profiling contract for croq-tune. Every PROFILE step MUST run ncu.
+strict: true
+enforcement: mandatory
+skip-penalty: protocol-violation-stop
 ---
 
 # Croq-Profile
 
-## The One Rule
+## The One Rule (INVIOLABLE)
 
 **Every PROFILE step MUST run `ncu` on the current best kernel.**
 
 No exceptions. No "lightweight alternatives". No skipping.
+
+**SELF-ENFORCEMENT CHECKPOINT:**
+Before proceeding from PROFILE to IDEA, verify:
+- [ ] ncu command was executed (not just planned)
+- [ ] ncu output was parsed for bottleneck identification
+- [ ] Bottleneck is one of: memory_bound, compute_bound, latency_bound, launch_bound
+- [ ] Evidence JSON is prepared for IDEA step
+
+If ANY checkbox is not met, DO NOT proceed to IDEA.
 
 ## Why This Is Mandatory
 
