@@ -56,14 +56,38 @@ If the user asked for a fresh restart, or the local state is stale or ambiguous,
 python3 .claude/skills/croq-resume/tools/clean_kernel_work_state.py --dsl "$CROQTUNER_DSL" --reset-all
 ```
 
-## Resume Read Set
+## Resume Read Set — Use the Harness (MANDATORY)
 
-After choosing resume, keep the read set minimal:
+**DO NOT manually read rounds.raw.jsonl, results.tsv, etc. to reconstruct state.**  
+Use `resume_state.sh` instead. It reads all sources and emits a single JSON snapshot:
 
-1. active session state
-2. current best kernel
-3. recent results
-4. recent round log entries
-5. active checkpoint or summary
+```bash
+STATE=$(bash .claude/skills/croq-resume/resume_state.sh \
+    --dsl <dsl> --shape-key <shape_key>)
+echo "$STATE"
+```
+
+The JSON contains everything needed to continue:
+
+| Field | Meaning |
+|---|---|
+| `current_best_tflops` | Best custom kernel performance so far |
+| `current_best_kernel` | Name of the best kernel file |
+| `last_round` | Round number of the last stored result |
+| `last_iter` | Last iter name (may be DISCARD) |
+| `last_decision` | KEEP or DISCARD |
+| `last_bottleneck` | Bottleneck from last round |
+| `next_iter_number` | What number to use for the next `iter<NNN>` |
+| `src_count` | Total iter source files present |
+| `open_checkpoint` | Non-null if IDEA wrote a plan but VERIFY was not completed |
+| `memory_files_ok` | true if all 4 memory/log files are present |
+| `warnings` | List of issues detected (malformed JSON, missing files, etc.) |
+
+**After loading state:**
+
+1. If `open_checkpoint` is non-null: the last IDEA wrote a plan but implementation was interrupted.
+   Resume from IMPLEMENT using that checkpoint (call `checkpoint_write.sh read`).
+2. If `warnings` is non-empty: address each warning before continuing the loop.
+3. Otherwise: pick up from `last_round + 1`, using `next_iter_number` for the next IMPLEMENT.
 
 Do not reload the entire protocol tree just to resume one active round.
