@@ -2,8 +2,6 @@
 name: croq-tune
 description: Canonical tuning entry skill with a concrete round contract and TodoWrite-driven continuation guard.
 argument-hint: <dsl: croqtile|cuda|cute|triton|tilelang|helion|cutile> <dtype: f16|e4m3|all> [shape_key]
-strict: true
-enforcement: mandatory
 ---
 
 # Croq-Tune
@@ -103,28 +101,43 @@ Exact payload templates are defined in:
 
 ## Per-Round Contract (Detailed)
 
-**STRICT ENFORCEMENT: EVERY round MUST execute steps 1-8 in order. NO SKIPPING.**
+### 1) PROFILE
 
-### 1) PROFILE (MANDATORY - NO EXCEPTIONS)
+- Load `croq-profile`
+- Gather the lightest evidence that answers current bottleneck
+- Produce explicit `bottleneck` and `confidence`
 
-- **MUST run `ncu`** on current best kernel BEFORE generating any idea
-- Load `croq-profile` skill and follow its exact protocol
-- Produce explicit `bottleneck`, `confidence`, and ncu evidence
-- **VIOLATION**: Proceeding to IDEA without ncu data = protocol breach, STOP immediately
+### 2) IDEA
 
-### 2) IDEA (MANDATORY - NO EXCEPTIONS)
-
-- **MUST run web search** for bottleneck-specific optimization techniques
-- Generate one model-proposed idea informed by:
-  a) ncu profile data from step 1
-  b) Web search results (1-3 external sources)
-  c) Local history of what worked/failed
+- Generate one model-proposed idea from the current bottleneck and local history
+- Run targeted web search for the same bottleneck to collect 1-3 external inspirations
 - Merge into exactly one testable idea with expected gain and risk
-- **VIOLATION**: Generating idea without web search = protocol breach
+- **Last action of IDEA**: write the checkpoint (MANDATORY before moving to IMPLEMENT):
+  ```bash
+  bash .claude/skills/croq-store/checkpoint_write.sh write \
+      --dsl <dsl> --shape-key <key> \
+      --iter <planned_iter> \
+      --bottleneck <bottleneck> \
+      --idea "<one-line description of the single change>" \
+      --expected-gain "<+X TFLOPS estimate>" \
+      --levers "<comma-separated parameter names being changed>"
+  ```
 
 ### 3) IMPLEMENT
 
-- Apply only the current round's single idea
+- **First action**: read back the checkpoint to confirm the contract:
+  ```bash
+  bash .claude/skills/croq-store/checkpoint_write.sh read \
+      --dsl <dsl> --shape-key <key>
+  ```
+  The checkpoint JSON shows exactly what was planned. Build THAT, not something else.
+- **Second action**: call `next_iter.sh` to get the canonical iteration name
+  ```bash
+  ITER=$(bash .claude/skills/croq-store/next_iter.sh --dsl <dsl> --shape-key <key> --tag <short_idea_tag>)
+  ```
+  Use `$ITER` as the source filename, build script name, and run script name.
+  For compile-fail retries, call with `--attempt` flag instead.
+- Apply only the current round's single idea (exactly what was written in the checkpoint)
 - If editing `.co`, load `choreo-syntax` before changing code
 - Compile and run verification
 - If compile fails, debug/fix and retry with bounded budget:
@@ -133,6 +146,12 @@ Exact payload templates are defined in:
 
 ### 4) VERIFY
 
+- **First action**: verify the implementation matches the plan:
+  ```bash
+  bash .claude/skills/croq-store/checkpoint_write.sh verify \
+      --dsl <dsl> --shape-key <key> --iter <actual_iter_built>
+  ```
+  Exit 3 = significant drift — investigate before continuing.
 - Correctness must pass before performance measurement can count
 
 ### 5) MEASURE
@@ -212,76 +231,39 @@ If any tool fails unexpectedly during tuning:
 
 ---
 
-## Branch Strategy (MANDATORY)
+## Branch Strategy
 
-### Tuning Branch Format
-
-All tuning work MUST happen on a dedicated branch:
-
-```
-aitune/<dsl>/<op>/<dtype>/<shape>
-```
-
-Examples:
-- `aitune/cuda/matmul/f16/512x16384x16384`
-- `aitune/cuda/conv2d/f16/128x256x3x3`
-- `aitune/triton/attention/f16/2048x64`
+This workspace is a container for all tuning results and visualization.
+**Tuning directly on `main` is allowed.** No branch ceremony required.
 
 ### Workflow
 
-1. **Before starting tuning**: Create and checkout the branch
-   ```bash
-   git checkout -b aitune/<dsl>/<op>/<dtype>/<shape>
-   ```
+Commit tuning progress directly to `main`:
 
-2. **During tuning**: Commit progress regularly
-   - Each iter that passes VERIFY gets a commit
-   - Failed attempts can be batched or skipped
+```bash
+git add -A
+git commit -m "tune(<dsl>): <op> <dtype> <shape> - iter<NNN> <X> TFLOPS"
+git push origin main
+```
 
-3. **After tuning completes**: Squash merge to main
-   ```bash
-   git checkout main
-   git merge --squash aitune/<dsl>/<op>/<dtype>/<shape>
-   git commit -m "tune(<dsl>): <op> <dtype> <shape> - best <X> TFLOPS"
-   git branch -d aitune/<dsl>/<op>/<dtype>/<shape>
-   git push origin main
-   git push origin --delete aitune/<dsl>/<op>/<dtype>/<shape>
-   ```
+### Commit Message Format
+
+```
+tune(<dsl>): <op> <dtype> <shape> - iter<NNN> <X> TFLOPS
+```
+
+Examples:
+- `tune(cuda): matmul bf16fp32 512x16384x16384 - iter044 35.20 TFLOPS (best)`
+- `tune(triton): attention f16 2048x64 - iter012 182.3 TFLOPS`
+
+### When to Commit
+
+- Each `iter<NNN>` that passes VERIFY: commit immediately
+- Failed `attempt<AAAA>` sources: batch commit with the next passing iter
+- After each STORE step, a commit should exist for the round
 
 ### Rules
 
-1. **Never tune on main** - main only receives squash merges
-2. **One shape per branch** - don't mix shapes in a single branch
-3. **Clean up after merge** - delete local and remote branch after squash
-4. **Squash message format**: `tune(<dsl>): <op> <dtype> <shape> - best <X> TFLOPS`
-
----
-
-## Self-Enforcement Checklist (MANDATORY per Round)
-
-Before advancing from PROFILE to IDEA:
-```
-[ ] ncu was EXECUTED (not just mentioned)
-[ ] ncu output was PARSED (bottleneck identified)
-[ ] Bottleneck evidence is CONCRETE (metrics, not guesses)
-```
-
-Before advancing from IDEA to IMPLEMENT:
-```
-[ ] WebSearch tool was CALLED (not skipped)
-[ ] Search results were INCORPORATED into idea
-[ ] Single testable idea is DOCUMENTED with expected gain
-```
-
-**VIOLATION PROTOCOL:**
-If any checkbox above is not met:
-1. STOP the current round immediately
-2. Go back to the skipped step
-3. Execute the skipped step fully
-4. Only then continue forward
-
-**AUDIT TRAIL:**
-At the end of each tuning session, verify:
-- Number of ncu profiles ≈ Number of distinct ideas attempted
-- Number of web searches ≈ Number of distinct ideas attempted
-- Significant deviation (>30%) indicates protocol violation
+1. **Push to main** — no long-lived feature branches
+2. **Commit after each measured iter** — ensures no work is lost
+3. **One commit per measured iter minimum** — do not batch multiple measured iters

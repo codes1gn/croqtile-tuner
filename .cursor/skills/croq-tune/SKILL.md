@@ -112,16 +112,32 @@ Exact payload templates are defined in:
 - Generate one model-proposed idea from the current bottleneck and local history
 - Run targeted web search for the same bottleneck to collect 1-3 external inspirations
 - Merge into exactly one testable idea with expected gain and risk
+- **Last action of IDEA**: write the checkpoint (MANDATORY before moving to IMPLEMENT):
+  ```bash
+  bash .claude/skills/croq-store/checkpoint_write.sh write \
+      --dsl <dsl> --shape-key <key> \
+      --iter <planned_iter> \
+      --bottleneck <bottleneck> \
+      --idea "<one-line description of the single change>" \
+      --expected-gain "<+X TFLOPS estimate>" \
+      --levers "<comma-separated parameter names being changed>"
+  ```
 
 ### 3) IMPLEMENT
 
-- **First action**: call `next_iter.sh` to get the canonical iteration name
+- **First action**: read back the checkpoint to confirm the contract:
+  ```bash
+  bash .claude/skills/croq-store/checkpoint_write.sh read \
+      --dsl <dsl> --shape-key <key>
+  ```
+  The checkpoint JSON shows exactly what was planned. Build THAT, not something else.
+- **Second action**: call `next_iter.sh` to get the canonical iteration name
   ```bash
   ITER=$(bash .claude/skills/croq-store/next_iter.sh --dsl <dsl> --shape-key <key> --tag <short_idea_tag>)
   ```
   Use `$ITER` as the source filename, build script name, and run script name.
   For compile-fail retries, call with `--attempt` flag instead.
-- Apply only the current round's single idea
+- Apply only the current round's single idea (exactly what was written in the checkpoint)
 - If editing `.co`, load `choreo-syntax` before changing code
 - Compile and run verification
 - If compile fails, debug/fix and retry with bounded budget:
@@ -130,6 +146,12 @@ Exact payload templates are defined in:
 
 ### 4) VERIFY
 
+- **First action**: verify the implementation matches the plan:
+  ```bash
+  bash .claude/skills/croq-store/checkpoint_write.sh verify \
+      --dsl <dsl> --shape-key <key> --iter <actual_iter_built>
+  ```
+  Exit 3 = significant drift — investigate before continuing.
 - Correctness must pass before performance measurement can count
 
 ### 5) MEASURE
