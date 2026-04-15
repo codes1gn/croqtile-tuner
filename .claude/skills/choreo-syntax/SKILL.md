@@ -1,66 +1,120 @@
 ---
 name: choreo-syntax
-description: Reference CroqTile/Choreo `.co` syntax, implementation policy, and imported optimization patterns for croqtile tuning.
+description: Reference Choreo `.co` syntax, primitives, and repo patterns. Use before creating, editing, or reviewing any `.co` source file, especially when choosing DMA/TMA/MMA forms, storage qualifiers, tiling, test directives, or hybrid host/device structure.
 ---
 
-# Choreo Syntax and Implementation Policy
+# Choreo syntax
 
-Use this skill whenever `dsl=croqtile` and an iteration may modify `.co`.
+Use this skill whenever the task touches a `.co` file. Treat it as the first syntax pass before editing, then pair it with `compile-and-test` for build/run validation or `develop-feature` / `develop-compiler` for broader implementation work.
 
-## Required Reference
+## Required Environment Variables
 
-Before editing `.co`, also read:
+```bash
+export CHOREO_HOME=/home/albert/workspace/croqtile   # choreo compiler repo
+export CUTE_HOME=$CHOREO_HOME/extern/cutlass         # CUTLASS headers
+export CUDA_HOME=/usr/local/cuda                     # CUDA toolkit
+```
 
-- `.claude/skills/choreo-syntax/choreo-syntax-reference.md`
+## When this skill should trigger
 
-That reference was imported from the sibling CroqTile repo so this tuner repo has the same syntax and performance guidance available locally.
+- The user asks to create, edit, refactor, fix, or explain a `.co` file.
+- The task mentions Choreo syntax, primitives, tiling, DMA/TMA/MMA, `parallel`, `with`, `foreach`, or parser behavior for `.co` code.
+- The agent is about to modify `.co` tests under `tests/`, samples under `samples/`, or benchmarks under `benchmark/`.
 
-## Core Behavior
+## Core behavior
 
-- Treat this skill as CroqTile-specific guidance layered on top of the shared FSM loop.
-- Match existing CroqTile/Choreo syntax instead of inventing new spellings.
-- Prefer repo-observed patterns for tiling, copy primitives, and MMA forms.
-- Keep the target DSL pure: this skill only applies when `dsl=croqtile`.
+- Read nearby `.co` files first and match their local dialect, backend, and comment conventions.
+- Use `choreo-syntax-reference.md` as the cross-repo inventory of observed syntax; treat it as evidence-based guidance, not a license to invent new syntax.
+- Prefer an existing repo pattern over a novel spelling when both could work.
+- Preserve hybrid `.co` structure when present: `#include`, macros, `main()`, `__cok__`, and `__co_device__` blocks are part of the file format in some areas.
+- If validation is requested, also load `compile-and-test`.
 
-## CroqTile Implementation Priority
+## Performance-critical GPU rule
 
-For each new idea:
+- For new GPU GEMM-like or blockscaled GEMM kernels, prefer `mma.op` as the tensor-core compute primitive.
+- `mma.op` is the unified MMA primitive. Lowering chooses `wgmma`, `wmma`, `mma.sync`, `mma.sync.sp`, or `wgmma.sp` from the MMA shape plus the target GPU hardware.
+- Do not ask the user which hardware MMA mnemonic to use for performance GEMM work; choose the right MMA shape and let lowering align it to the GPU.
+- **Use `choreo-kernel-examples/matmul/` and `choreo-kernel-examples/blockscale_gemm*/` as the first performance references** for tiling, staging, `tma.copy(.async)`, swizzle, `group-4`, events, and `mma.commit` patterns.
+- Prefer programming with data tiles via `tma.copy` / `dma.copy` and tile-shaped buffers or views. Treat `.at()` as the most conservative access form and avoid making it the default in hot paths when tiled copy/view forms can express the work.
+- Many current benchmark files still use legacy explicit forms such as `mma.row.row` and `mma.row.row.scale`; use them as structural references, but prefer `mma.op` for new GEMM-like code unless the task explicitly preserves legacy syntax.
 
-1. First ask whether the idea can be implemented in pure `.co`.
-2. If yes, implement it in `.co` first.
-3. If partial low-level logic is needed, use inlined `__cpp__` inside `.co` for CUDA/CuTe/PTX fragments.
-4. If lower-level control is still needed, compile the chosen `.co` base and modify the generated `.cu` from that base.
-5. Only if the idea is not representable through `.co` plus generation should you modify the selected base `.cu` directly.
+## gemm_sp Constraints (Sparse GEMM)
 
-Do not jump directly to `.cu` for CroqTile unless steps 1-4 are truly infeasible.
+For gemm_sp (sparse GEMM) f16 kernels on SM90, these constraints are INVIOLABLE:
+- `SPMM_WARP_M` MUST be 64 (WGMMA constraint — never change)
+- `SPMM_WARP_K` MUST be 32 for f16 (never change)
+- `SPMM_TILE_K` MUST equal `2 * SPMM_PACKED_TILE_K`
+- `SPMM_META_TILE_COLS` MUST equal `SPMM_TILE_K / 32`
+- Compiler flags: `-t cute -arch=sm_90a --use-warpspec --use-prepack`
 
-## Performance-Critical Guidance
+## Copy-pattern selection
 
-- Prefer `mma.op` as the compute primitive for new GEMM-like CroqTile kernels unless a legacy form must be preserved.
-- Prefer tile-level `tma.copy` or `dma.copy` programming over scalar `.at()` in hot paths.
-- Use the imported CroqTile benchmark references for staging, swizzle, event, and warp-specialized pipeline patterns.
-- Reuse reference patterns before guessing on async copies, barriers, or tiled view construction.
+- The same shaping patterns can appear around both `dma.copy` and `tma.copy`; choose the copy primitive for backend/hardware, and choose the shaping pattern for the access semantics and inference behavior.
+- Prefer `chunkat(...)` for natural chunks driven by bounded indices or `#p`-style partitioning.
+- Prefer `view(...).from(...)` when the window shape, stride, or starting offset must be stated explicitly.
+- Prefer `subspan(...).at(...)` when the tile extents are known and only the anchor changes.
+- Prefer `subspan(...).step(...).at(...)` when tiles repeat with explicit spacing or staged/swizzled layout, especially in persistent or warp-specialized kernels.
+- These are not just cosmetic rewrites. They can take different shape/stride inference paths and sometimes bypass non-trivial shape constraints.
+- If a copy is hard to type or infer, first try rewriting it with another shaping pattern before assuming the declared shape is wrong, unless the compiler clearly reports inconsistent size, contiguity failure, or out-of-bounds.
 
-## Ask Instead of Guessing
+## File mapping
 
-Stop and ask only when one answer would materially change the code shape, such as:
+- `tests/parse/`, `tests/infer/`, `tests/check/`: parser, inference, and diagnostic-oriented syntax examples.
+- `tests/gpu/`, `samples/cuda/`, `benchmark/` GPU kernels: CUDA/CuTe-oriented `tma`, `mma`, swizzle, and role-qualified `parallel` forms.
+- `tests/gcu/`, `samples/topscc/`: GCU/TOPSCC-oriented syntax, often with hybrid host/device code.
+- `samples/factor/`, `samples/cse/`: transformation-heavy examples for `span_as`, `subspan`, multibuffering, and named indices.
 
-- pure `.co` vs `.co` plus `__cpp__`
-- async vs sync pipeline
-- `dma` vs `tma`
-- the `mma.op` shape or scale semantics
-- tile-level copy/view form vs conservative scalar fallback
+## Editing workflow
 
-Do all non-blocked work first.
+1. Classify the `.co` file as parser test, infer/check test, end-to-end kernel, benchmark, or hybrid sample.
+2. Find 2-3 nearby files in the same directory/backend and mirror their spelling.
+3. Reuse observed forms for types, qualifiers, index decomposition, and primitives.
+4. If copy typing or shape inference is hard, first try `chunkat`, `view(...).from(...)`, `subspan(...).at(...)`, or `subspan(...).step(...).at(...)` before changing declared shapes.
+5. If a needed form is still unclear, search the wider `.co` corpus before guessing.
+6. Keep the change minimal and stylistically local to the target file.
 
-## Documentation Requirement
+## Ask instead of guessing
 
-When fallback to `.cu` is used, record the reason in `idea-log.jsonl`:
+Use a single inline choice question (`question`) when one answer would materially change the code shape:
 
-- `co_supported: false`
-- `fallback_reason: "<why .co/__cpp__ is insufficient>"`
-- `fallback_base: "generated_cu_from_co|existing_iter_base_cu"`
+- backend or dialect: generic frontend, CUDA/CuTe, or GCU/TOPSCC
+- pure DSL vs hybrid host/device `.co`
+- sync vs async copy/future pipeline
+- `dma` vs `tma` vs `mma` family
+- `local`, `shared`, or `global` storage destination
+- tiling/index decomposition or named-dim layout
+- which copy-shaping pattern should carry the access: `chunkat`, `view(...).from(...)`, `subspan(...).at(...)`, or `subspan(...).step(...).at(...)`
+- the `mma.op` shape, accumulator type, transpose/sparsity semantics, or scale operands
+- whether a hot path should remain tile-based with `tma.copy` / `dma.copy` or needs conservative scalar `.at()` handling only for edges
+- parser/infer/check test vs executable sample expectations
 
-## Scope Guardrail
+When asking:
 
-When the target DSL is not CroqTile, do not use `.co` as the implementation language.
+- do all non-blocked work first
+- offer concise choices with the recommended default first
+- state what changes based on the answer
+- keep the conversation moving instead of stopping for open-ended clarification
+
+## Guardrails
+
+- Preserve existing `RUN`, `REQUIRES`, `CHECK`, `CHECK-NOT`, `CHKINF`, `VALNO`, and `GDB` conventions.
+- Do not normalize a file from one backend style into another just because both are valid Choreo.
+- For tests, prefer syntax already exercised nearby so diagnostics stay stable.
+- For new performance GEMM-like GPU kernels, prefer `mma.op` even if nearby older files use explicit `mma.row.row`-style spellings.
+- Prefer tile-level `tma.copy` / `dma.copy` programming over scalar `.at()` in performance-sensitive code; use `.at()` as the conservative fallback, not the default strategy.
+- If copy typing is difficult, try changing `chunkat` / `view(...).from(...)` / `subspan(...).at(...)` / `subspan(...).step(...).at(...)` before concluding the declared shape is wrong.
+- If the task is specifically about parser/codegen coverage for a legacy MMA primitive or scalar access pattern, preserve the exact syntax already used by that test.
+- If a construct does not appear in nearby files or `choreo-syntax-reference.md`, say that and ask instead of inventing it.
+
+## Supporting reference
+
+- `choreo-syntax-reference.md` inventories common constructs, primitive families, type spellings, representative files, and ambiguity checkpoints.
+
+## Related skills
+
+- `choreo-kernel-examples` — Reference kernel collection. **Study before editing `.co` files.**
+- `croq-dsl` — DSL-specific tuning contract for croqtile.
+- `base-tune` — Alternative tuning protocol (simpler, branch-based).
+- `compile-and-test` for running or debugging `.co` files.
+- `develop-feature` for broader multi-file feature work that includes `.co` changes.
+- `develop-compiler` when compiler sources under `lib/` or `tools/` also change.

@@ -230,6 +230,70 @@ If any tool fails unexpectedly during tuning:
 - **Skipping profiling** — If ncu fails, STOP; do NOT silently skip or guess
 - **Proceeding without evidence** — Every IDEA must be based on real ncu profiling data
 - **Bypassing baseline validation** — NEVER start tuning without environment validation passing
+- **`unknown` as bottleneck** — The `bottleneck` field MUST contain a real category (`memory_bound`, `compute_bound`, `latency_bound`, `l2_thrash`, `bank_conflict`, `register_pressure`). `unknown` is FORBIDDEN.
+- **Repeating failed combinations** — Before every IDEA, check `idea-log.jsonl`. If the exact combination (base kernel × parameter set × structural change) was tried before, choose a different idea.
+- **Random base-hopping** — Always hill-climb from ONE current best. You are FORBIDDEN from picking a different base kernel each iteration.
+- **Macro-only sweeps** — After 2 consecutive macro-only changes (`#define` values only), you MUST try a STRUCTURAL change.
+
+---
+
+## Mandatory Behavioral Rules (from ai-tune)
+
+These rules are ABSOLUTE. Violating any renders the experiment worthless.
+
+### Rule 1: PROFILE BEFORE EVERY IDEA — no exceptions
+
+Before proposing ANY optimization idea, you MUST run ncu on the current best kernel
+and read the report. If you cannot profile, STOP and report — do NOT guess.
+
+### Rule 2: ONE current best, hill-climb from it
+
+Every new candidate MUST be derived from the current best. When a candidate beats
+the current best, it becomes the new current best. When it doesn't, revert.
+
+### Rule 3: DIVERSE optimizations — macro sweeps alone are not optimization
+
+After at most 2 consecutive macro-only changes, you MUST try a STRUCTURAL change.
+See `croq-dsl` for the list of structural changes per DSL.
+
+### Rule 4: NEVER repeat a failed combination
+
+Before every iteration, check `idea-log.jsonl`. If the exact combination was tried
+before, choose a different idea.
+
+### Rule 5: ABANDON stuck ideas after 3 attempts
+
+If an optimization idea fails to compile or pass verification after 3 distinct fix
+attempts, ABANDON it. Revert to current best and propose a completely different idea.
+
+### Rule 6: UNDERSTAND the kernel before mutating it
+
+Before making any change, you MUST read and understand:
+1. The current best kernel source code (full kernel function)
+2. The generated output (at least kernel launch signature)
+3. The ncu profiling data from the PROFILE step
+
+Each mutation must be accompanied by a 1-sentence hypothesis explaining WHY.
+
+### Rule 7: COMMIT messages must encode the optimization
+
+Every commit message and `idea-log.jsonl` entry MUST include:
+1. What was changed
+2. Why it was expected to help
+3. The measured TFLOPS result
+4. KEEP or DISCARD decision
+
+The idea_summary MUST be human-readable, NOT a raw command line.
+
+### Rule 8: USE the compile+run workflow
+
+Compile and run using the workflow described in `croq-dsl`. Do NOT delegate to
+external wrapper scripts as black boxes. You need to see compiler output directly.
+
+### Rule 9: TRACK iteration counter monotonically
+
+Each iteration gets a unique, monotonically increasing number. Do not reuse numbers.
+Do not skip large ranges. Use `next_iter.sh` to get the canonical name.
 
 ---
 

@@ -1,0 +1,12 @@
+==PROF== Connected to process 642102 (/home/albert/workspace/croqtile-tuner/tuning/sm86_NVIDIA_GeForce_RTX_3070/cuda/bin/matmul_bf16fp32_16384x16384x512/iter003_maxr60)
+==PROF== Profiling "matmul_bf16_fp32_draft" - 0 (1/1): 0%....50%....100% - 34 passes
+==PROF== Disconnected from process 642102
+VERIFY: PASS max_rel_err=0.00001
+sample 1: time=15.998 ms, tflops=17.18
+sample 2: time=16.019 ms, tflops=17.16
+sample 3: time=16.049 ms, tflops=17.13
+sample 4: time=16.047 ms, tflops=17.13
+sample 5: time=16.023 ms, tflops=17.16
+
+TFLOPS: 17.15   time_ms: 16.027
+==PROF== Report: /home/albert/workspace/croqtile-tuner/tuning/sm86_NVIDIA_GeForce_RTX_3070/cuda/perf/matmul_bf16fp32_16384x16384x512/ncu_iter003_maxr60_round4.ncu-rep

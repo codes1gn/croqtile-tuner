@@ -76,6 +76,8 @@ with open(csv_path, newline='', encoding='utf-8-sig') as f:
         metric_name = row[0].strip().strip('"')
         if metric_name == target and len(row) >= 5:
             val = row[4].strip().strip('"')
+            # Newer ncu may emit thousands separators.
+            val = val.replace(',', '')
             try:
                 print(float(val))
             except ValueError:
@@ -86,11 +88,20 @@ PYEOF
 
 # Primary metrics
 DRAM_PCT=$(extract_metric "dram__throughput.avg.pct_of_peak_sustained_elapsed")
+if [[ -z "$DRAM_PCT" ]]; then
+    DRAM_PCT=$(extract_metric "gpu__dram_throughput.avg.pct_of_peak_sustained_elapsed")
+fi
+if [[ -z "$DRAM_PCT" ]]; then
+    DRAM_PCT=$(extract_metric "gpu__compute_memory_throughput.avg.pct_of_peak_sustained_elapsed")
+fi
 COMPUTE_PCT=$(extract_metric "sm__throughput.avg.pct_of_peak_sustained_elapsed")
 OCCUPANCY_PCT=$(extract_metric "sm__warps_active.avg.pct_of_peak_sustained_elapsed")
 # Hopper / newer arch fallback for occupancy
 if [[ -z "$OCCUPANCY_PCT" ]]; then
     OCCUPANCY_PCT=$(extract_metric "ipc_occupancy.avg.pct")
+fi
+if [[ -z "$OCCUPANCY_PCT" ]]; then
+    OCCUPANCY_PCT=$(extract_metric "sm__warps_active.avg.pct_of_peak_sustained_active")
 fi
 # BW in GB/s (reported metric name varies by ncu version)
 BW_GBS=$(extract_metric "dram__bytes.sum.per_second" 2>/dev/null || echo "")
@@ -100,6 +111,9 @@ fi
 
 # Stall cycles (latency proxy)
 STALL_PCT=$(extract_metric "smsp__warp_issue_stalled_long_scoreboard_pct")
+if [[ -z "$STALL_PCT" ]]; then
+    STALL_PCT=$(extract_metric "smsp__average_warps_issue_stalled_long_scoreboard_per_issue_active.ratio")
+fi
 if [[ -z "$STALL_PCT" ]]; then
     STALL_PCT="0"
 fi

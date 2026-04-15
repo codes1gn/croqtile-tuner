@@ -1,0 +1,18 @@
+{
+  "schema": "croq-checkpoint-v1",
+  "timestamp": "2026-04-15T11:01:05Z",
+  "dsl": "cuda",
+  "shape_key": "matmul_bf16fp32_16384x16384x512",
+  "iter": "iter005_bk32",
+  "bottleneck": "compute_bound",
+  "idea": "Increase BK from 16 to 32 and execute two WMMA K-slices per stage to reduce loop/sync overhead and improve tensor-core issue utilization.",
+  "expected_gain": "+0.6 TFLOPS",
+  "levers": [
+    "BK",
+    "num_k",
+    "inner_mma_k_slices"
+  ],
+  "status": "VERIFIED",
+  "verified_iter": "iter005_bk32",
+  "drift_score": 1
+}

@@ -1,0 +1,16 @@
+tuning/sm86_NVIDIA_GeForce_RTX_3070/cuda/srcs/matmul_bf16fp32_16384x16384x512/iter004_maxr56.cu(39): warning #177-D: variable "SMEM_A_SZ" was declared but never referenced
+  static const int SMEM_A_SZ=BM*A_LD;
+                   ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+tuning/sm86_NVIDIA_GeForce_RTX_3070/cuda/srcs/matmul_bf16fp32_16384x16384x512/iter004_maxr56.cu(40): warning #177-D: variable "SMEM_B_SZ" was declared but never referenced
+  static const int SMEM_B_SZ=BK*B_LD;
+                   ^
+
+ptxas info    : Overriding global maxrregcount 56 with entry-specific value 64 computed using thread count
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_Z22matmul_bf16_fp32_draftPK13__nv_bfloat16S1_Pfiii' for 'sm_86'
+ptxas info    : Function properties for _Z22matmul_bf16_fp32_draftPK13__nv_bfloat16S1_Pfiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, 20992 bytes smem, 388 bytes cmem[0]

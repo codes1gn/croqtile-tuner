@@ -26,7 +26,7 @@ This inventory is derived from observed `.co` files in `tests/`, `samples/`, and
 - For new GPU GEMM-like and blockscaled GEMM code, prefer `mma.op` as the compute primitive.
 - `mma.op` is the unified MMA primitive. Lowering chooses `wgmma`, `wmma`, `mma.sync`, `mma.sync.sp`, or `wgmma.sp` from the MMA shape plus the target GPU hardware.
 - Use `benchmark/performance/matmul/` and `benchmark/performance/blockscale_gemm/` as the primary performance references for pipeline structure, staging, swizzle, and event patterns.
-- Prefer programming with data tiles through `tma.copy` or `dma.copy`, `chunkat`, `subspan`, `span_as`, and `view(...).from(...)` rather than scalarized `.at()` hot paths.
+- Prefer programming with data tiles through `tma.copy` / `dma.copy`, `chunkat`, `subspan`, `span_as`, and `view(...).from(...)` rather than scalarized `.at()` hot paths.
 - Treat `.at()` as the most conservative access form. Reserve it for edge handling, scalar glue, or places where tiled copy/view forms cannot express the access.
 - Existing performance files still contain legacy explicit MMA forms such as `mma.row.row` and `mma.row.row.scale`; reuse their surrounding pipeline structure, but prefer `mma.op` in new GEMM-like code unless preserving a legacy test or benchmark exactly is the goal.
 
@@ -46,6 +46,7 @@ This inventory is derived from observed `.co` files in `tests/`, `samples/`, and
 - `foreach index { ... }`
 - `foreach idx, m { ... }`
 - Slice controls: `foreach m(1:-1)`, `foreach m(2:)`, `foreach m(:-2)`, `foreach m(:)`
+- `yield;`: make the device function return (without any safety check!)
 
 ## Shapes and bounded expressions
 
@@ -74,7 +75,7 @@ This inventory is derived from observed `.co` files in `tests/`, `samples/`, and
 - `tma.copy src => dst;`
 - `tma.copy.async src => shared;`
 - Swizzled variants: `tma.copy.swiz<128> ...`, `tma.copy.async<full[stage]>.swiz<MATMUL_SWIZ> ...`
-- Preferred hot-path style: move data as tiles with `tma.copy` or `dma.copy`, then compute on tile-shaped buffers.
+- Preferred hot-path style: move data as tiles with `tma.copy` / `dma.copy`, then compute on tile-shaped buffers.
 - Observed helpers:
   - `chunkat(...)`
   - `subspan(...)`
