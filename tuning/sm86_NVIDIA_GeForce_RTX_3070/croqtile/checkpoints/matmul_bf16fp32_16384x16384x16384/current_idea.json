@@ -1,15 +1,15 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-15T14:20:52Z",
+  "timestamp": "2026-04-15T14:23:14Z",
   "dsl": "croqtile",
   "shape_key": "matmul_bf16fp32_16384x16384x16384",
-  "iter": "iter006_f16pattern",
+  "iter": "iter007_swizzle",
   "bottleneck": "register_pressure",
-  "idea": "Mirror exact F16 reference kernel structure (mma.fill 0.0 not 0.0f)",
-  "expected_gain": "unknown - test if F16 pattern generates better code for BF16",
+  "idea": "Add swizzle pattern (swiz<128>) to reduce shared memory bank conflicts",
+  "expected_gain": "+5-15% TFLOPS if bank conflicts are reduced",
   "levers": [
-    "accumulator_init",
-    "kernel_structure"
+    "swizzle",
+    "smem_layout"
   ],
   "status": "PLANNED"
 }

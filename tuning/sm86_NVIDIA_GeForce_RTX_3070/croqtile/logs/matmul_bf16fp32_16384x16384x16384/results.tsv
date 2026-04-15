@@ -5,3 +5,4 @@ round	iter	kernel	tflops	decision	bottleneck	idea	timestamp
 4	iter004	iter004_tilek64	0.027	DISCARD	register_pressure	TILE_K=64 severe regression smem spills	2026-04-15T22:25:00Z
 5	iter005	iter005_dmapattern	0.153	DISCARD	register_pressure	simplified DMA pattern no improvement	2026-04-15T22:35:00Z
 6	iter006	iter006_f16pattern	0	DISCARD	compile_error	F16 pattern mma.fill 0.0 SM86 needs FP32 accum	2026-04-15T22:45:00Z
+7	iter007	iter007_swizzle	0.1543	DISCARD	register_pressure	swiz<128> bank conflict reduction no improvement	2026-04-15T22:55:00Z
