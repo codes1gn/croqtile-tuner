@@ -1,22 +1,36 @@
 {
   "schema": "croq-tune-checkpoint-v1",
-  "timestamp": "2026-04-15T01:55:00Z",
+  "timestamp": "2026-04-15T02:10:00Z",
   "dsl": "cuda",
   "dtype": "bf16fp32",
   "shape_key": "matmul_bf16fp32_512x16384x16384",
   "shape": {"m": 512, "n": 16384, "k": 16384},
-  "current_iter": 6,
+  "current_iter": 9,
   "best_tflops": 41.86,
   "best_kernel": "cuBLAS_GemmEx_bf16fp32",
-  "best_custom_tflops": 7.45,
-  "best_custom_kernel": "iter005_classic",
+  "best_custom_tflops": 7.49,
+  "best_custom_kernel": "iter005_classic / iter007_tallskinny",
   "next_state": "IDEA",
-  "last_attempt": "iter006",
+  "last_attempt": "iter009_ptx_failed",
   "tuning_summary": {
-    "rounds_completed": 6,
+    "rounds_completed": 9,
     "baseline_tflops": 41.86,
-    "best_custom_tflops": 7.45,
+    "best_custom_tflops": 7.49,
     "gap_to_baseline": "5.6x slower",
-    "main_bottleneck": "Small M dimension (512) limits parallelism and makes WMMA overhead significant"
+    "main_bottleneck": "Small M dimension (512) limits parallelism and makes WMMA overhead significant",
+    "approaches_tried": [
+      "WMMA 128x128 tiles (14.35 TFLOPS, register pressure)",
+      "Smaller 64x64 tiles (1.12 TFLOPS, poor arithmetic intensity)",
+      "Shared memory swizzling (1.24 TFLOPS, memory bound)",
+      "Split-K with atomics (0.93 TFLOPS, atomic contention)",
+      "64x64 with BK=16 (7.45-7.49 TFLOPS, best approach)",
+      "BK=32/64 variations (worse due to smem pressure)",
+      "PTX mma.sync (failed verification)"
+    ],
+    "recommendations": [
+      "Consider using cuBLAS for this specific shape",
+      "Explore stream-K or persistent kernel approaches",
+      "Try CuTe/CUTLASS for optimized tile scheduling"
+    ]
   }
 }
