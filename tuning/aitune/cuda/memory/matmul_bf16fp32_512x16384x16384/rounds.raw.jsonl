@@ -34,3 +34,4 @@
 {"timestamp": "2026-04-15T04:00:00Z", "shape_key": "matmul_bf16fp32_512x16384x16384", "round": 33, "state": "STORE", "iter": "iter033", "kernel": "iter033_swz_3stage", "tflops": 25.48, "decision": "DISCARD", "bottleneck": "smem_occupancy", "summary": "3-stage with swizzle worse"}
 {"timestamp": "2026-04-15T04:05:00Z", "shape_key": "matmul_bf16fp32_512x16384x16384", "round": 34, "state": "STORE", "iter": "iter034", "kernel": "iter034_final", "tflops": 33.57, "decision": "KEEP", "bottleneck": "load_efficiency", "summary": "MASSIVE BREAKTHROUGH 33.57 TFLOPS 80.2% of cuBLAS"}
 2026-04-15T11:17:00+08:00: iter044_best 35.20 TFLOPS (84.1% of cuBLAS) - no boundary checks + launch_bounds(128,4)
+{"iter": "iter068", "kernel": "iter068_ptxmma", "tflops": 35.1, "decision": "DISCARD", "bottleneck": "compute_bound", "idea": "PTX MMA inline assembly to try wgmma-like scheduling on sm_86", "round": 68, "timestamp": "2026-04-15T05:06:02Z"}
