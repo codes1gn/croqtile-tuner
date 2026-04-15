@@ -39,11 +39,22 @@ Exit code 0 = all pass. Exit code 1 = one or more failed.
 
 ```bash
 # Harness unit tests
-bash testing/harness/test_next_iter.sh     # 11 tests for next_iter.sh
-bash testing/harness/test_store_round.sh   # 19 tests for store_round.sh
+bash testing/harness/test_next_iter.sh       # 11 tests for next_iter.sh
+bash testing/harness/test_store_round.sh     # 19 tests for store_round.sh
+bash testing/harness/test_profile_extract.sh # 14 tests for profile_extract.sh
 
-# E2E session marker check (requires a session JSONL file)
-bash testing/e2e/grep_session_markers.sh ~/.cursor/projects/.../agent-transcripts/<uuid>/<uuid>.jsonl
+# E2E Mode 1: session transcript markers (requires a session JSONL file)
+bash testing/e2e/grep_session_markers.sh \
+    --session ~/.cursor/projects/.../agent-transcripts/<uuid>/<uuid>.jsonl
+
+# E2E Mode 2: filesystem artifact checks (authentic criteria)
+bash testing/e2e/grep_session_markers.sh \
+    --fs --dsl cuda --shape-key matmul_bf16fp32_512x16384x16384
+
+# E2E Both modes together
+bash testing/e2e/grep_session_markers.sh \
+    --session <uuid>.jsonl \
+    --fs --dsl cuda --shape-key matmul_bf16fp32_512x16384x16384
 ```
 
 ## What the Tests Cover
