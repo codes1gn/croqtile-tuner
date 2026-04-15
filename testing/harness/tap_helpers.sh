@@ -77,7 +77,7 @@ done_testing() {
     echo "1..$_TAP_COUNT"
   fi
   if [ "$_TAP_FAIL" -gt 0 ]; then
-    echo "# FAILED $_{TAP_FAIL} tests"
+    echo "# FAILED $_TAP_FAIL tests"
     exit 1
   fi
 }

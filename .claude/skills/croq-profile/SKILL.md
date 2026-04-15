@@ -1,27 +1,15 @@
 ---
 name: croq-profile
 description: Mandatory ncu profiling contract for croq-tune. Every PROFILE step MUST run ncu.
-strict: true
-enforcement: mandatory
-skip-penalty: protocol-violation-stop
 ---
 
 # Croq-Profile
 
-## The One Rule (INVIOLABLE)
+## The One Rule
 
 **Every PROFILE step MUST run `ncu` on the current best kernel.**
 
 No exceptions. No "lightweight alternatives". No skipping.
-
-**SELF-ENFORCEMENT CHECKPOINT:**
-Before proceeding from PROFILE to IDEA, verify:
-- [ ] ncu command was executed (not just planned)
-- [ ] ncu output was parsed for bottleneck identification
-- [ ] Bottleneck is one of: memory_bound, compute_bound, latency_bound, launch_bound
-- [ ] Evidence JSON is prepared for IDEA step
-
-If ANY checkbox is not met, DO NOT proceed to IDEA.
 
 ## Why This Is Mandatory
 
@@ -47,33 +35,63 @@ ncu --import tuning/aitune/<dsl>/perf/<shape_key>/ncu_iter<NNN>.ncu-rep \
 
 After PROFILE, you MUST have:
 
-1. `ncu_iter<NNN>.ncu-rep` - full ncu report file
-2. `ncu_iter<NNN>.csv` - extracted metrics in CSV
-3. Bottleneck identification from ncu data:
-   - memory_bound: DRAM throughput > 80%, compute < 50%
-   - compute_bound: SM occupancy issues, low IPC
-   - latency_bound: high stall cycles, poor instruction mix
-   - launch_bound: kernel launch overhead > kernel time
+1. `ncu_iter<NNN>_<tag>.ncu-rep` — full ncu report file
+2. `ncu_iter<NNN>_<tag>.csv` — extracted metrics in CSV
 
-## Handoff to IDEA
+## Bottleneck Classification — Use the Harness (MANDATORY)
 
-Provide this JSON to IDEA step:
+**DO NOT manually read the CSV and guess a bottleneck.** Use `profile_extract.sh`:
+
+```bash
+bash .claude/skills/croq-profile/profile_extract.sh \
+    --csv  tuning/aitune/<dsl>/perf/<shape_key>/ncu_iter<NNN>_<tag>.csv \
+    --iter iter<NNN>_<tag>
+```
+
+The script emits one-line JSON to stdout:
 
 ```json
 {
-  "bottleneck": "<memory_bound|compute_bound|latency_bound|launch_bound>",
+  "iter": "iter012_myname",
+  "bottleneck": "memory_bound",
   "confidence": "high",
   "evidence": {
-    "ncu_report": "tuning/aitune/<dsl>/perf/<shape_key>/ncu_iter<NNN>.ncu-rep",
+    "ncu_csv": "tuning/aitune/.../ncu_iter012_myname.csv",
     "key_metrics": {
-      "dram_throughput_pct": <value>,
-      "sm_occupancy_pct": <value>,
-      "compute_throughput_pct": <value>,
-      "achieved_bandwidth_gb_s": <value>
+      "dram_throughput_pct": 91.3,
+      "compute_throughput_pct": 38.2,
+      "sm_occupancy_pct": 62.5,
+      "achieved_bandwidth_gb_s": 2890.1
     }
   }
 }
 ```
+
+Capture the output and pass the JSON verbatim to the IDEA step:
+
+```bash
+PROFILE_JSON=$(bash .claude/skills/croq-profile/profile_extract.sh \
+    --csv  tuning/aitune/<dsl>/perf/<shape_key>/ncu_iter<NNN>_<tag>.csv \
+    --iter iter<NNN>_<tag>)
+echo "PROFILE: $PROFILE_JSON"
+```
+
+**Classification thresholds (fixed — do not override):**
+
+| Bottleneck | Condition |
+|---|---|
+| `memory_bound` | DRAM% > 80 AND compute% < 50 |
+| `compute_bound` | compute% > 70 AND DRAM% < 60 |
+| `launch_bound` | occupancy% < 15 AND DRAM% < 40 AND compute% < 40 |
+| `latency_bound` | stall% > 40 AND DRAM% < 60 AND compute% < 60 |
+| `mixed` | none of the above (highest% wins) |
+
+**Exit codes:** 0=ok, 1=usage error, 2=CSV missing, 3=metrics not found.  
+If exit code ≠ 0: fix the CSV path or re-run ncu. Do NOT proceed to IDEA without valid output.
+
+## Handoff to IDEA
+
+Use the JSON object from `profile_extract.sh` verbatim. No manual re-interpretation.
 
 ## ncu Failure Handling
 
