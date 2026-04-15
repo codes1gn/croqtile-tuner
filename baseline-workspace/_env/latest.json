@@ -13,8 +13,8 @@
       "metadata": {
         "cuda_available": true,
         "cuda_device_count": 1,
-        "torch_cuda_version": "13.0",
-        "torch_version": "2.11.0+cu130"
+        "torch_cuda_version": "12.1",
+        "torch_version": "2.5.1+cu121"
       },
       "name": "torch-cuda",
       "present": true
@@ -23,15 +23,14 @@
   "dsl": "cuda",
   "gpu_env": {
     "cuda_runtime": "",
-    "driver": "590.48.01",
+    "driver": "535.86.10",
     "gpu_rows": [
-      "NVIDIA H800 PCIe, 590.48.01",
-      "NVIDIA H800 PCIe, 590.48.01"
+      "NVIDIA GeForce RTX 3070, 535.86.10"
     ],
     "nvidia_smi": true
   },
   "install_attempted": false,
-  "kernel": "dense_gemm",
+  "kernel": "matmul_bf16fp32",
   "missing_libs": [],
   "operator": "matmul",
   "schema": "baseline-env-prepare-v1",
@@ -39,6 +38,6 @@
     "cublas",
     "torch-cuda"
   ],
-  "shape_key": "f16_16384x512x16384",
-  "timestamp": "2026-04-13T17:03:26.697659+00:00"
+  "shape_key": "matmul_bf16fp32_512x16384x16384",
+  "timestamp": "2026-04-15T01:20:37.002889+00:00"
 }

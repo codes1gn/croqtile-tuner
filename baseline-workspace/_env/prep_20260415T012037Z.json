@@ -1,0 +1,43 @@
+{
+  "checks": [
+    {
+      "detail": "found-in-ldconfig",
+      "install_hint": "Install CUDA toolkit/runtime with cuBLAS libraries visible to loader.",
+      "metadata": {},
+      "name": "cublas",
+      "present": true
+    },
+    {
+      "detail": "import-ok",
+      "install_hint": "python3 -m pip install --upgrade torch --index-url https://download.pytorch.org/whl/cu124",
+      "metadata": {
+        "cuda_available": true,
+        "cuda_device_count": 1,
+        "torch_cuda_version": "12.1",
+        "torch_version": "2.5.1+cu121"
+      },
+      "name": "torch-cuda",
+      "present": true
+    }
+  ],
+  "dsl": "cuda",
+  "gpu_env": {
+    "cuda_runtime": "",
+    "driver": "535.86.10",
+    "gpu_rows": [
+      "NVIDIA GeForce RTX 3070, 535.86.10"
+    ],
+    "nvidia_smi": true
+  },
+  "install_attempted": false,
+  "kernel": "matmul_bf16fp32",
+  "missing_libs": [],
+  "operator": "matmul",
+  "schema": "baseline-env-prepare-v1",
+  "selected_libs": [
+    "cublas",
+    "torch-cuda"
+  ],
+  "shape_key": "matmul_bf16fp32_512x16384x16384",
+  "timestamp": "2026-04-15T01:20:37.002889+00:00"
+}

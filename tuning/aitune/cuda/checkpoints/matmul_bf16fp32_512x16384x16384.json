@@ -1,0 +1,22 @@
+{
+  "schema": "croq-tune-checkpoint-v1",
+  "timestamp": "2026-04-15T01:55:00Z",
+  "dsl": "cuda",
+  "dtype": "bf16fp32",
+  "shape_key": "matmul_bf16fp32_512x16384x16384",
+  "shape": {"m": 512, "n": 16384, "k": 16384},
+  "current_iter": 6,
+  "best_tflops": 41.86,
+  "best_kernel": "cuBLAS_GemmEx_bf16fp32",
+  "best_custom_tflops": 7.45,
+  "best_custom_kernel": "iter005_classic",
+  "next_state": "IDEA",
+  "last_attempt": "iter006",
+  "tuning_summary": {
+    "rounds_completed": 6,
+    "baseline_tflops": 41.86,
+    "best_custom_tflops": 7.45,
+    "gap_to_baseline": "5.6x slower",
+    "main_bottleneck": "Small M dimension (512) limits parallelism and makes WMMA overhead significant"
+  }
+}
