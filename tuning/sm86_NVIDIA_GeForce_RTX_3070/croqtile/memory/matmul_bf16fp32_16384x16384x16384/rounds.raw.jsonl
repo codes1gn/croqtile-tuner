@@ -1,0 +1,1 @@
+{"round":1,"iter":"iter001","kernel":"iter001_draft","tflops":0.115,"decision":"BASELINE","bottleneck":"launch_bound","idea":"initial draft with 16x16 tiles, K-major inputs","timestamp":"2026-04-15T13:35:00Z"}

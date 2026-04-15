@@ -1,0 +1,2 @@
+round	iter	kernel	tflops	decision	bottleneck	idea	timestamp
+1	iter001	iter001_draft	0.115	BASELINE	unknown	initial draft with 16x16 tiles	2026-04-15T13:35:00Z
