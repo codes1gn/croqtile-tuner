@@ -207,6 +207,7 @@ if [[ "$DO_FS" -eq 1 ]]; then
         result_pass "rounds.raw.jsonl exists ($LINES lines)"
 
         # Validate every line is parseable JSON with required fields
+        # (note-type records and baseline records are exempt)
         BAD_JSON=$(python3 -c "
 import sys, json
 bad = 0
@@ -216,6 +217,9 @@ for i, line in enumerate(sys.stdin, 1):
     if not line: continue
     try:
         obj = json.loads(line)
+        # Exempt: note records (recovered from bad lines) and baseline records
+        if obj.get('type') == 'note': continue
+        if not str(obj.get('kernel','')).startswith('iter'): continue
         missing = [k for k in required if k not in obj]
         if missing:
             print(f'  line {i}: missing fields {missing}')
@@ -233,15 +237,17 @@ sys.exit(bad)
             echo "$BAD_JSON" | head -10 | sed 's/^/    /'
         fi
 
-        # Check iters in rounds match tagged src files
+        # Check iter kernel names in rounds are tagged (skip baseline/note records)
         BARE_ITERS=$(python3 -c "
-import sys, json
+import sys, json, re
 bad = []
 for line in sys.stdin:
     try:
         obj = json.loads(line.strip())
+        if obj.get('type') == 'note': continue
         k = obj.get('kernel','')
-        if k and not __import__('re').match(r'^iter[0-9]{3}_[a-z][a-z0-9_]{1,15}$', k):
+        if not k or not k.startswith('iter'): continue  # skip baseline entries
+        if not re.match(r'^iter[0-9]{3}_[a-z][a-z0-9_]{1,15}$', k):
             bad.append(k)
     except: pass
 for b in bad: print(b)
