@@ -30,21 +30,41 @@ Shape keys MUST include the operator/kernel type:
 <operator>_<dtype>_<dimensions>
 ```
 
+### Dimension Ordering Is CANONICAL — NEVER Permute
+
+**For matmul**, dimensions are ALWAYS ordered **MxNxK** (rows of A × cols of B × inner dimension).
+
+- `matmul_bf16fp32_16384x16384x512` → M=16384, N=16384, K=512
+- `matmul_bf16fp32_512x16384x16384` → M=512, N=16384, K=16384
+
+These are **completely different shapes** with different memory access patterns, tile strategies,
+and performance characteristics. They MUST NEVER be treated as interchangeable or equivalent,
+even though they use the same set of numbers. The user's requested shape dimensions are the
+ground truth — always map them left-to-right as M, N, K.
+
+**CRITICAL AGENT RULE**: Before any resume decision, compare the user's requested dimensions
+character-by-character against existing `shape_key` directories. A mismatch in any digit or
+position means a fresh session is required for the new shape. Do NOT infer equivalence from
+"same numbers, different order."
+
 Examples:
-- `matmul_f16_512x16384x16384` (dense matmul)
+- `matmul_bf16fp32_16384x16384x512` (M=16384, N=16384, K=512 — wide square output, small K)
+- `matmul_bf16fp32_512x16384x16384` (M=512, N=16384, K=16384 — tall-skinny A, large K)
+- `matmul_f16_4096x8192x8192` (M=4096, N=8192, K=8192)
 - `spmm_f16_4096x8192x8192` (sparse matmul)
 - `conv2d_f16_128x64x3x3` (2D convolution)
 - `attention_f16_2048x64x64` (attention kernel)
 
 Components:
 - `operator`: kernel type (matmul, spmm, conv2d, attention, etc.)
-- `dtype`: data type (f16, e4m3, bf16, f32)
-- `dimensions`: shape parameters (MxNxK for matmul, etc.)
+- `dtype`: data type (f16, e4m3, bf16, bf16fp32, f32)
+- `dimensions`: shape parameters in canonical order (MxNxK for matmul)
 
 This naming convention ensures:
 1. Clear identification of what operation is being tuned
 2. No confusion between different operator types with same dimensions
-3. Easier filtering and grouping of tuning results
+3. No confusion between same dimensions in different orders (e.g. `16384x16384x512` ≠ `512x16384x16384`)
+4. Easier filtering and grouping of tuning results
 
 Per shape key `<key>`:
 

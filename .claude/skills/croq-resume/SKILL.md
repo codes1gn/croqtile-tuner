@@ -20,6 +20,26 @@ Use this skill only at startup, restart, or compaction recovery.
 - do not trust stale summaries without validating local artifacts
 - do not rebuild history from scratch if a valid local active session exists
 
+## Shape-Key Exact-Match Guard (MANDATORY, RUNS FIRST)
+
+**Before ANY resume decision**, verify the requested shape exactly matches an existing session.
+
+The shape key derived from the user's request MUST match the on-disk directory name character-
+for-character. Dimension order is part of the identity — `16384x16384x512` and `512x16384x16384`
+are different shapes and MUST NOT be conflated.
+
+```
+requested_key = matmul_<dtype>_<M>x<N>x<K>   ← from user input, left-to-right
+existing_keys = ls tuning/<gpu>/<dsl>/srcs/    ← from disk
+```
+
+If `requested_key` is NOT in `existing_keys` → **fresh start** for the new shape. Do not resume
+any session with a different key, even if the same numbers appear in a different order.
+
+**Failure mode that triggered this rule**: Agent saw `16384x16384x512` in the user request,
+found an existing `512x16384x16384` session, and incorrectly treated them as the same because
+"the numbers are the same". This is WRONG. The user's dimension string is canonical.
+
 ## Continuation Node Before Compaction/Resume
 
 Before proactive compaction or explicit resume handoff, ensure a continuation node exists:
