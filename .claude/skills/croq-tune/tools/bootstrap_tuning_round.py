@@ -25,23 +25,46 @@ def shape_key(operator: str, dtype: str, m: int, n: int, k: int) -> str:
     return f"{operator}_{dtype}_{m}x{n}x{k}"
 
 
-def bench_torch_mm_f16(m: int, n: int, k: int, warmup: int, iters: int, samples: int) -> dict:
+def get_torch_dtype(dtype_str: str) -> "torch.dtype":
+    import torch
+    dtype_map = {
+        "f16": torch.float16,
+        "bf16": torch.bfloat16,
+        "f32": torch.float32,
+        "bf16fp32": torch.bfloat16,
+    }
+    if dtype_str not in dtype_map:
+        raise SystemExit(f"Unsupported dtype '{dtype_str}', supported: {list(dtype_map.keys())}")
+    return dtype_map[dtype_str]
+
+
+def bench_torch_mm(m: int, n: int, k: int, dtype: str, warmup: int, iters: int, samples: int) -> dict:
     import torch  # type: ignore
+
+    input_dtype = get_torch_dtype(dtype)
+    use_fp32_output = dtype == "bf16fp32"
 
     sample_rows = []
     for sample_id in range(1, samples + 1):
-        a = torch.randn(m, k, device="cuda", dtype=torch.float16)
-        b = torch.randn(k, n, device="cuda", dtype=torch.float16)
+        a = torch.randn(m, k, device="cuda", dtype=input_dtype)
+        b = torch.randn(k, n, device="cuda", dtype=input_dtype)
 
-        for _ in range(warmup):
-            torch.mm(a, b)
+        if use_fp32_output:
+            for _ in range(warmup):
+                torch.mm(a.float(), b.float())
+        else:
+            for _ in range(warmup):
+                torch.mm(a, b)
         torch.cuda.synchronize()
 
         start = torch.cuda.Event(enable_timing=True)
         end = torch.cuda.Event(enable_timing=True)
         start.record()
         for _ in range(iters):
-            torch.mm(a, b)
+            if use_fp32_output:
+                torch.mm(a.float(), b.float())
+            else:
+                torch.mm(a, b)
         end.record()
         torch.cuda.synchronize()
 
@@ -53,6 +76,8 @@ def bench_torch_mm_f16(m: int, n: int, k: int, warmup: int, iters: int, samples:
         "samples": sample_rows,
         "median_time_ms": statistics.median([row["time_ms"] for row in sample_rows]),
         "median_tflops": statistics.median([row["tflops"] for row in sample_rows]),
+        "input_dtype": str(input_dtype),
+        "output_dtype": "torch.float32" if use_fp32_output else str(input_dtype),
     }
 
 
@@ -83,14 +108,14 @@ def main() -> int:
     for directory in [log_dir, perf_dir, mem_dir, ckpt_dir]:
         directory.mkdir(parents=True, exist_ok=True)
 
-    bench = bench_torch_mm_f16(m, n, k, args.warmup, args.iters, args.samples)
+    bench = bench_torch_mm(m, n, k, args.dtype, args.warmup, args.iters, args.samples)
 
     results_path = log_dir / "results.tsv"
     results_lines = [
         "iter\tkernel\ttflops\thw_eff_pct\tdecision\tbottleneck\tidea_summary\trun_command",
         (
-            f"iter000\tframework/torch_mm_f16\t{bench['median_tflops']:.2f}\t0.00\tKEEP\tbaseline_profile\t"
-            "Bootstrap baseline profile with torch.mm FP16.\t"
+            f"iter000\tframework/torch_mm_{args.dtype}\t{bench['median_tflops']:.2f}\t0.00\tKEEP\tbaseline_profile\t"
+            f"Bootstrap baseline profile with torch.mm {args.dtype.upper()}.\t"
             f"python3 .claude/skills/croq-tune/tools/bootstrap_tuning_round.py --dsl {args.dsl} --dtype {args.dtype} --shape {args.shape}"
         ),
     ]
@@ -118,7 +143,7 @@ def main() -> int:
     perf_payload = {
         "timestamp": now,
         "shape_key": key,
-        "kernel": "framework/torch_mm_f16",
+        "kernel": f"framework/torch_mm_{args.dtype}",
         "bench": bench,
     }
     (perf_dir / "timing_iter000_baseline.json").write_text(
@@ -155,7 +180,7 @@ def main() -> int:
         "shape": {"m": m, "n": n, "k": k},
         "current_iter": 0,
         "best_tflops": round(bench["median_tflops"], 2),
-        "best_kernel": "framework/torch_mm_f16",
+        "best_kernel": f"framework/torch_mm_{args.dtype}",
         "next_state": "IDEA",
         "last_attempt": "attempt0001",
     }
