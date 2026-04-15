@@ -2,6 +2,8 @@
 name: croq-tune
 description: Canonical tuning entry skill with a concrete round contract and TodoWrite-driven continuation guard.
 argument-hint: <dsl: croqtile|cuda|cute|triton|tilelang|helion|cutile> <dtype: f16|e4m3|all> [shape_key]
+strict: true
+enforcement: mandatory
 ---
 
 # Croq-Tune
@@ -101,17 +103,24 @@ Exact payload templates are defined in:
 
 ## Per-Round Contract (Detailed)
 
-### 1) PROFILE
+**STRICT ENFORCEMENT: EVERY round MUST execute steps 1-8 in order. NO SKIPPING.**
 
-- Load `croq-profile`
-- Gather the lightest evidence that answers current bottleneck
-- Produce explicit `bottleneck` and `confidence`
+### 1) PROFILE (MANDATORY - NO EXCEPTIONS)
 
-### 2) IDEA
+- **MUST run `ncu`** on current best kernel BEFORE generating any idea
+- Load `croq-profile` skill and follow its exact protocol
+- Produce explicit `bottleneck`, `confidence`, and ncu evidence
+- **VIOLATION**: Proceeding to IDEA without ncu data = protocol breach, STOP immediately
 
-- Generate one model-proposed idea from the current bottleneck and local history
-- Run targeted web search for the same bottleneck to collect 1-3 external inspirations
+### 2) IDEA (MANDATORY - NO EXCEPTIONS)
+
+- **MUST run web search** for bottleneck-specific optimization techniques
+- Generate one model-proposed idea informed by:
+  a) ncu profile data from step 1
+  b) Web search results (1-3 external sources)
+  c) Local history of what worked/failed
 - Merge into exactly one testable idea with expected gain and risk
+- **VIOLATION**: Generating idea without web search = protocol breach
 
 ### 3) IMPLEMENT
 
@@ -245,3 +254,34 @@ Examples:
 2. **One shape per branch** - don't mix shapes in a single branch
 3. **Clean up after merge** - delete local and remote branch after squash
 4. **Squash message format**: `tune(<dsl>): <op> <dtype> <shape> - best <X> TFLOPS`
+
+---
+
+## Self-Enforcement Checklist (MANDATORY per Round)
+
+Before advancing from PROFILE to IDEA:
+```
+[ ] ncu was EXECUTED (not just mentioned)
+[ ] ncu output was PARSED (bottleneck identified)
+[ ] Bottleneck evidence is CONCRETE (metrics, not guesses)
+```
+
+Before advancing from IDEA to IMPLEMENT:
+```
+[ ] WebSearch tool was CALLED (not skipped)
+[ ] Search results were INCORPORATED into idea
+[ ] Single testable idea is DOCUMENTED with expected gain
+```
+
+**VIOLATION PROTOCOL:**
+If any checkbox above is not met:
+1. STOP the current round immediately
+2. Go back to the skipped step
+3. Execute the skipped step fully
+4. Only then continue forward
+
+**AUDIT TRAIL:**
+At the end of each tuning session, verify:
+- Number of ncu profiles ≈ Number of distinct ideas attempted
+- Number of web searches ≈ Number of distinct ideas attempted
+- Significant deviation (>30%) indicates protocol violation
