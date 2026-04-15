@@ -1,0 +1,20 @@
+# iter000 baseline timing
+# shape_key: matmul_bf16fp32_512x16384x16384
+# timestamp: 2026-04-14T10:03:56.744421+00:00
+
+kernel: cublas_gemmex_bf16_fp32
+TFLOPS: 38.10   time_ms: 7.214
+# Native tensor core bf16 with fp32 accumulation. True baseline for bf16->fp32 matmul.
+
+kernel: torch.mm_bf16
+TFLOPS: 41.43   time_ms: 6.635
+# Fastest torch.mm variant, but output is bf16 not fp32.
+
+kernel: torch.mm_fp32_cast
+TFLOPS: 11.18   time_ms: 24.588
+# torch.mm(a.float(), b.float()) - casts bf16 to fp32 before matmul. Slow.
+
+kernel: torch.mm_fp32
+TFLOPS: 12.53   time_ms: 21.938
+# Pure fp32 matmul. No tensor cores.
+

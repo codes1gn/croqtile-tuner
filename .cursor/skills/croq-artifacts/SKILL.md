@@ -14,7 +14,13 @@ path in another skill is not sufficient.
 
 All tuning artifacts must be kept under:
 
-`tuning/aitune/<dsl>/`
+`tuning/<gpu>/<dsl>/`
+
+where `<gpu>` is the GPU key emitted by:
+```
+bash .claude/skills/croq-tune/tools/detect_gpu.sh
+```
+e.g. `sm90_H100`, `sm80_A100`, `sm89_L40S`.
 
 ## Shape Key Naming Convention
 
@@ -77,6 +83,28 @@ Global per-DSL:
 - Failed attempts must be saved, but they do not consume the measured iteration sequence.
 - Keep all attempts and all measured iterations, including discarded measured candidates.
 
+### Tag Is MANDATORY (INVIOLABLE)
+
+Every source artifact for a public `iter<NNN>` MUST include a descriptive `<tag>`:
+
+```
+iter<NNN>_<tag>.<ext>     ← CORRECT
+iter<NNN>.<ext>            ← FORBIDDEN — no tag
+```
+
+The tag MUST be:
+- Lowercase alphanumeric + underscores only
+- 2–16 characters
+- Descriptive of the optimization idea (e.g. `swizzle`, `pipeline`, `ldmatrix`, `maxreg`)
+
+**If the agent writes `iter<NNN>.cu` (no tag), it MUST immediately rename it** before committing:
+```bash
+mv iter<NNN>.cu iter<NNN>_<descriptive_tag>.cu
+# update build/run/profile scripts to match
+```
+
+This rule exists because bare-number filenames prevent post-hoc reconstruction of what each iteration tested. The tag is the only human-readable record of the idea associated with each source file.
+
 ## STORE-Step Requirements
 
 Every STORE step (KEEP or DISCARD) must:
@@ -106,6 +134,14 @@ Every failed `attempt<AAAA>` must retain:
 
 ## Branch Rule
 
-Use only one long-lived branch per DSL: `aitune/<dsl>`.
+**Tuning directly on `main` is allowed.** No branch ceremony required.
 
-No date branches and no resume suffixes.
+Commit tuning progress directly to `main` after each measured iter:
+
+```bash
+git add -A
+git commit -m "tune(<dsl>): <op> <dtype> <shape> - iter<NNN> <X> TFLOPS"
+git push origin main
+```
+
+No date branches, no DSL branches, no resume suffixes.

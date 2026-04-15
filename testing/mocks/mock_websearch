@@ -1,0 +1,282 @@
+#!/usr/bin/env python3
+# mock_websearch — Canned web search responses for subagent tests.
+#
+# USAGE:
+#   mock_websearch "<query string>"
+#   mock_websearch --topic <topic_key>
+#
+# TOPICS (auto-detected from query keywords, or set with --topic):
+#   memory_bound      — shared memory, async copy, prefetching, vectorized loads
+#   compute_bound     — register pressure, warp efficiency, tensor cores, MMA
+#   launch_bound      — occupancy, thread block size, waves, persistent kernels
+#   latency_bound     — software pipelining, cp.async, double buffering, TMA
+#   bank_conflict     — shared memory padding, swizzled layout, stride alignment
+#   swizzle           — threadblock swizzle, L2 locality, tile rasterization
+#   generic           — general GEMM optimization, CUTLASS, CUDA best practices
+#
+# OUTPUT: JSON array of 1-3 search result objects:
+#   [{"title": "...", "url": "...", "snippet": "..."}]
+#
+# EXIT: 0 always (mock never fails)
+#
+# INTEGRATION: Subagent test scripts can source this tool as a PATH shim or call
+# it directly. The agent's IDEA step should call it (or a wrapper) to get
+# web search results without hitting the real internet.
+
+import sys
+import json
+import re
+
+RESULTS_DB = {
+    "memory_bound": [
+        {
+            "title": "Optimizing Memory Access in CUDA Kernels — NVIDIA Developer Blog",
+            "url":   "https://developer.nvidia.com/blog/cuda-pro-tip-write-flexible-kernels-grid-stride-loops/",
+            "snippet": (
+                "Memory-bound kernels benefit most from vectorized loads (float4 / uint4), "
+                "cp.async for asynchronous global→shared transfers, and increasing tile sizes "
+                "BM/BN/BK to improve arithmetic intensity. On Hopper, TMA (Tensor Memory "
+                "Accelerator) can hide DRAM latency via bulk-transfer descriptors."
+            ),
+        },
+        {
+            "title": "CUTLASS 3.x: Async Pipelines and cp.async",
+            "url":   "https://github.com/NVIDIA/cutlass/blob/main/media/docs/pipeline.md",
+            "snippet": (
+                "Software pipelining with cp.async.bulk / cp.async allows overlapping global "
+                "memory loads with compute. Using 2–4 pipeline stages hides ~200–400 cycle DRAM "
+                "latency on A100/H100. The producer–consumer barrier pattern (mbarrier) "
+                "coordinates stage handoffs without spinning."
+            ),
+        },
+        {
+            "title": "H100 GPU Architecture Whitepaper — Memory Subsystem",
+            "url":   "https://resources.nvidia.com/en-us-tensor-core/gtc22-whitepaper-hopper",
+            "snippet": (
+                "H100 HBM3 peak bandwidth is 3.35 TB/s. To sustain >80% utilization, "
+                "access patterns must be coalesced (128-byte transactions). Shared memory "
+                "bandwidth is 32× higher; staging data via shared memory is essential for "
+                "memory-bound GEMM when arithmetic intensity < roofline crossover."
+            ),
+        },
+    ],
+    "compute_bound": [
+        {
+            "title": "Maximizing Matrix Multiplication Performance with Tensor Cores",
+            "url":   "https://developer.nvidia.com/blog/programming-tensor-cores-cuda-9/",
+            "snippet": (
+                "Compute-bound kernels should maximize tensor core utilization via mma.sync "
+                "(WMMA API) or CuTe MMA atoms. Register pressure is the primary limiter: "
+                "use #pragma unroll with care, and consider --maxrregcount=128 to increase "
+                "occupancy when compute throughput plateaus."
+            ),
+        },
+        {
+            "title": "Understanding GPU Occupancy and Register Usage — NVIDIA",
+            "url":   "https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#occupancy",
+            "snippet": (
+                "For compute-bound kernels, SM occupancy > 50% is often sufficient because "
+                "arithmetic latency is hidden by ILP within warps. Reducing register count "
+                "via spilling (--maxrregcount) can increase occupancy but hurts IPC. "
+                "Profile smsp__sass_thread_inst_executed_op_ffma_pred_on_pct to measure "
+                "actual FFMA utilization."
+            ),
+        },
+        {
+            "title": "CUTLASS Warp-Level MMA and Accumulator Layout",
+            "url":   "https://github.com/NVIDIA/cutlass/blob/main/media/docs/layout.md",
+            "snippet": (
+                "H100 Tensor Core shapes: m16n8k16 (fp16), m16n8k32 (int8), m16n8k8 (fp64). "
+                "Using larger K-dimension accumulates more partial sums per mma.sync, "
+                "reducing the fraction of instructions spent on epilogue operations. "
+                "Split-K decomposition can balance compute across SMs for skinny GEMMs."
+            ),
+        },
+    ],
+    "launch_bound": [
+        {
+            "title": "CUDA Occupancy Calculator and Thread Block Configuration",
+            "url":   "https://docs.nvidia.com/cuda/cuda-occupancy-calculator/index.html",
+            "snippet": (
+                "Launch-bound kernels have low active warp counts. Increasing threads per block "
+                "(e.g. 128→256) or reducing register/shared memory usage can raise occupancy. "
+                "Persistent kernels using cooperative groups avoid re-launch overhead when "
+                "grid size is small relative to SM count."
+            ),
+        },
+        {
+            "title": "Wave Quantization and Tail Effect in GPU Kernels",
+            "url":   "https://docs.nvidia.com/deeplearning/performance/dl-performance-matrix-multiplication/index.html",
+            "snippet": (
+                "When grid size is not a multiple of the SM count, the last 'wave' of blocks "
+                "underutilizes the GPU. Reducing tile size (BM/BN) increases grid count and "
+                "reduces quantization loss. For very small M/N, stream-K or split-K "
+                "decomposition spreads work more evenly across SMs."
+            ),
+        },
+    ],
+    "latency_bound": [
+        {
+            "title": "Software Pipelining and Double Buffering in CUDA",
+            "url":   "https://developer.nvidia.com/blog/cuda-pro-tip-pipeline-loads-stores/",
+            "snippet": (
+                "Latency-bound kernels stall waiting on memory or cross-warp dependencies. "
+                "Double buffering (2 shared memory buffers, alternating fill/drain) hides "
+                "latency with 2 pipeline stages. cp.async with mbarrier.arrive/wait "
+                "enables non-blocking loads on Ampere/Hopper, increasing memory-level parallelism."
+            ),
+        },
+        {
+            "title": "NVIDIA Hopper TMA (Tensor Memory Accelerator) Guide",
+            "url":   "https://docs.nvidia.com/cuda/hopper-tuning-guide/index.html",
+            "snippet": (
+                "On H100, TMA allows the warpgroup to issue bulk memory transfers "
+                "asynchronously. A single thread issues tma.load.im2col or tma.load.bulk; "
+                "compute warps proceed immediately. Measured latency reduction: 40–60% "
+                "in pipeline stall cycles compared to cp.async on A100."
+            ),
+        },
+    ],
+    "bank_conflict": [
+        {
+            "title": "Avoiding Shared Memory Bank Conflicts in CUDA",
+            "url":   "https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#shared-memory",
+            "snippet": (
+                "Shared memory has 32 banks (4-byte wide). Bank conflict occurs when multiple "
+                "threads in a warp access the same bank. Fix: pad rows by +1 or +8 elements "
+                "(e.g. __shared__ float smem[BLOCK_M][BLOCK_K + 4]). For bf16, pad by +2 "
+                "to align to 4-byte boundary. Swizzled layouts (XOR-based remapping) "
+                "eliminate conflicts without padding waste."
+            ),
+        },
+        {
+            "title": "CuTe Swizzled Shared Memory Layouts",
+            "url":   "https://github.com/NVIDIA/cutlass/blob/main/include/cute/atom/mma_atom.hpp",
+            "snippet": (
+                "CuTe provides compose(Swizzle<B,M,S>{}, layout) to generate conflict-free "
+                "shared memory layouts for MMA operands. The XOR-swizzle remaps thread indices "
+                "so no two threads in a warp access the same bank, even for large tile widths."
+            ),
+        },
+    ],
+    "swizzle": [
+        {
+            "title": "Threadblock Swizzle for L2 Cache Locality in Matrix Multiply",
+            "url":   "https://github.com/NVIDIA/cutlass/blob/main/include/cutlass/gemm/threadblock/threadblock_swizzle.h",
+            "snippet": (
+                "L2 locality swizzle remaps CTA launch order so adjacent CTAs share L2 cache "
+                "lines. CUTLASS IdentityThreadblockSwizzle uses row-major launch; "
+                "HorizontalThreadblockSwizzle groups CTAs in 8× strips to improve L2 reuse. "
+                "On A100/H100, this can improve effective L2 bandwidth by 20–40% for "
+                "memory-bound GEMM with large N."
+            ),
+        },
+        {
+            "title": "Persistent Kernels and Tile Rasterization for GEMM",
+            "url":   "https://arxiv.org/abs/2301.03598",
+            "snippet": (
+                "Stream-K and Split-K decompositions change tile assignment to SMs to balance "
+                "workload and improve L2 locality. Stream-K achieves near-optimal wave "
+                "utilization by assigning K-slices rather than output tiles. Empirically "
+                "improves performance 10–25% for non-square GEMMs."
+            ),
+        },
+    ],
+    "generic": [
+        {
+            "title": "NVIDIA CUTLASS Performance Tuning Guide",
+            "url":   "https://github.com/NVIDIA/cutlass/blob/main/media/docs/fundamental_types.md",
+            "snippet": (
+                "Key levers for GEMM tuning: tile shapes (BM/BN/BK), pipeline stages (1–5), "
+                "warp count per block, epilogue type, and shared memory layout. "
+                "Start with BM=BN=128, BK=64, stages=3 for balanced occupancy, then "
+                "profile ncu to find the dominant bottleneck."
+            ),
+        },
+        {
+            "title": "Nsight Compute Metric Reference — Throughput Metrics",
+            "url":   "https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html",
+            "snippet": (
+                "Key ncu metrics: dram__throughput.avg.pct_of_peak_sustained_elapsed (DRAM%), "
+                "sm__throughput.avg.pct_of_peak_sustained_elapsed (SM%), "
+                "sm__warps_active.avg.pct_of_peak_sustained_elapsed (occupancy). "
+                "DRAM% > 80 with SM% < 50 = memory-bound. SM% > 70 with DRAM% < 60 = compute-bound."
+            ),
+        },
+    ],
+}
+
+KEYWORD_MAP = {
+    "memory":       "memory_bound",
+    "dram":         "memory_bound",
+    "bandwidth":    "memory_bound",
+    "coalesce":     "memory_bound",
+    "async":        "latency_bound",
+    "pipeline":     "latency_bound",
+    "prefetch":     "latency_bound",
+    "stall":        "latency_bound",
+    "tma":          "latency_bound",
+    "compute":      "compute_bound",
+    "tensor core":  "compute_bound",
+    "mma":          "compute_bound",
+    "register":     "compute_bound",
+    "throughput":   "compute_bound",
+    "launch":       "launch_bound",
+    "occupancy":    "launch_bound",
+    "wave":         "launch_bound",
+    "persistent":   "launch_bound",
+    "bank":         "bank_conflict",
+    "conflict":     "bank_conflict",
+    "pad":          "bank_conflict",
+    "swizzle":      "swizzle",
+    "rasteriz":     "swizzle",
+    "l2":           "swizzle",
+    "locality":     "swizzle",
+}
+
+
+def detect_topic(query: str) -> str:
+    q = query.lower()
+    for keyword, topic in KEYWORD_MAP.items():
+        if keyword in q:
+            return topic
+    return "generic"
+
+
+def main():
+    args = sys.argv[1:]
+    topic = None
+    query = ""
+
+    i = 0
+    while i < len(args):
+        if args[i] == "--topic" and i + 1 < len(args):
+            topic = args[i + 1]
+            i += 2
+        else:
+            query += " " + args[i]
+            i += 1
+
+    query = query.strip()
+
+    if topic is None:
+        if not query:
+            topic = "generic"
+        else:
+            topic = detect_topic(query)
+
+    if topic not in RESULTS_DB:
+        known = ", ".join(sorted(RESULTS_DB.keys()))
+        print(
+            json.dumps(
+                {"error": f"Unknown topic '{topic}'. Known topics: {known}"}
+            )
+        )
+        sys.exit(0)
+
+    results = RESULTS_DB[topic]
+    print(json.dumps(results, indent=2))
+
+
+if __name__ == "__main__":
+    main()

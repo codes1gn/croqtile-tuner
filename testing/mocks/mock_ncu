@@ -1,0 +1,146 @@
+#!/usr/bin/env bash
+# mock_ncu — Drop-in shim for `ncu` for use in subagent tests without a real GPU.
+#
+# USAGE (install in PATH before real ncu):
+#   export PATH="$(git rev-parse --show-toplevel)/testing/mocks:$PATH"
+#
+# SCENARIOS (set via env var MOCK_NCU_SCENARIO, default: memory_bound):
+#   memory_bound   — DRAM=92%, compute=32%, occupancy=65%, stall=15%
+#   compute_bound  — DRAM=28%, compute=88%, occupancy=72%, stall=10%
+#   launch_bound   — DRAM=18%, compute=14%, occupancy= 8%, stall= 5%
+#   latency_bound  — DRAM=45%, compute=35%, occupancy=50%, stall=58%
+#   mixed          — DRAM=55%, compute=52%, occupancy=48%, stall=22%
+#
+# TWO OPERATION MODES (matching real ncu usage in croq-profile):
+#
+# Mode 1 — PROFILE (write .ncu-rep):
+#   ncu --set full --export <path>.ncu-rep --force-overwrite <binary> [args]
+#   → Creates a sentinel .ncu-rep marker file (binary stub; content unused by harness)
+#   → Exits 0 quickly (~no-op)
+#
+# Mode 2 — EXPORT CSV (read .ncu-rep, write CSV to stdout):
+#   ncu --import <path>.ncu-rep --csv --page raw
+#   → Reads MOCK_NCU_SCENARIO and writes synthetic ncu-compatible CSV to stdout
+#
+# MOCK_NCU_TFLOPS (optional): if set, the mock also writes a timing_*.txt file
+# containing "TFLOPS: <value>   time_ms: <value>" to MOCK_NCU_TIMING_OUT (if set).
+#
+# EXIT CODES:
+#   0  success
+#   1  unrecognised invocation (safety net)
+
+set -euo pipefail
+
+SCENARIO="${MOCK_NCU_SCENARIO:-memory_bound}"
+
+# ── metric tables per scenario ────────────────────────────────────────────────
+case "$SCENARIO" in
+    memory_bound)
+        DRAM=92.0; COMPUTE=32.0; OCC=65.0; STALL=15.0 ;;
+    compute_bound)
+        DRAM=28.0; COMPUTE=88.0; OCC=72.0; STALL=10.0 ;;
+    launch_bound)
+        DRAM=18.0; COMPUTE=14.0; OCC=8.0;  STALL=5.0  ;;
+    latency_bound)
+        DRAM=45.0; COMPUTE=35.0; OCC=50.0; STALL=58.0 ;;
+    mixed)
+        DRAM=55.0; COMPUTE=52.0; OCC=48.0; STALL=22.0 ;;
+    *)
+        echo "[mock_ncu] ERROR: unknown MOCK_NCU_SCENARIO='$SCENARIO'" >&2
+        echo "[mock_ncu] Valid: memory_bound compute_bound launch_bound latency_bound mixed" >&2
+        exit 1 ;;
+esac
+
+# ── parse invocation mode ─────────────────────────────────────────────────────
+MODE=""
+EXPORT_PATH=""
+IMPORT_PATH=""
+
+args=("$@")
+i=0
+while [[ $i -lt ${#args[@]} ]]; do
+    arg="${args[$i]}"
+    case "$arg" in
+        --export)
+            MODE="profile"
+            i=$((i+1))
+            EXPORT_PATH="${args[$i]}"
+            ;;
+        --import)
+            MODE="csv"
+            i=$((i+1))
+            IMPORT_PATH="${args[$i]}"
+            ;;
+        --set|--force-overwrite|--csv|--page|--target-processes)
+            # consume next token if it's a value (not a flag)
+            if [[ $((i+1)) -lt ${#args[@]} && "${args[$((i+1))]}" != --* ]]; then
+                i=$((i+1))
+            fi
+            ;;
+        --version)
+            echo "NVIDIA (R) Nsight Compute Command Line Profiler"
+            echo "mock_ncu 1.0.0 (testing shim)"
+            exit 0
+            ;;
+        *)
+            # positional: binary path or extra arg — ignore
+            ;;
+    esac
+    i=$((i+1))
+done
+
+# ── Mode 1: PROFILE — write .ncu-rep sentinel ─────────────────────────────────
+if [[ "$MODE" == "profile" ]]; then
+    if [[ -z "$EXPORT_PATH" ]]; then
+        echo "[mock_ncu] ERROR: --export path required in profile mode" >&2
+        exit 1
+    fi
+    mkdir -p "$(dirname "$EXPORT_PATH")"
+    # Write a stub .ncu-rep file: real ncu-rep is binary; harness only checks existence
+    printf "MOCK_NCU_REP scenario=%s\n" "$SCENARIO" > "$EXPORT_PATH"
+    echo "[mock_ncu] Wrote mock .ncu-rep: $EXPORT_PATH (scenario=$SCENARIO)" >&2
+    exit 0
+fi
+
+# ── Mode 2: CSV EXPORT — write synthetic ncu CSV to stdout ────────────────────
+if [[ "$MODE" == "csv" ]]; then
+    if [[ -z "$IMPORT_PATH" ]]; then
+        echo "[mock_ncu] ERROR: --import path required in csv mode" >&2
+        exit 1
+    fi
+    if [[ ! -f "$IMPORT_PATH" ]]; then
+        echo "[mock_ncu] ERROR: .ncu-rep not found: $IMPORT_PATH" >&2
+        exit 2
+    fi
+
+    # Emit CSV matching the exact column format that profile_extract.sh expects:
+    #   "Metric Name","Metric Unit","Maximum","Minimum","Average"
+    python3 - "$DRAM" "$COMPUTE" "$OCC" "$STALL" "$IMPORT_PATH" <<'PYEOF'
+import sys
+
+dram, compute, occ, stall, rep_path = sys.argv[1:6]
+dram = float(dram); compute = float(compute)
+occ = float(occ); stall = float(stall)
+
+# Simulate a small achieved bandwidth from DRAM%
+bw_gbs = dram * 32.0  # rough: 32 GB/s per 1% on H100
+
+rows = [
+    ("dram__throughput.avg.pct_of_peak_sustained_elapsed", "%",     dram),
+    ("sm__throughput.avg.pct_of_peak_sustained_elapsed",   "%",     compute),
+    ("sm__warps_active.avg.pct_of_peak_sustained_elapsed", "%",     occ),
+    ("smsp__warp_issue_stalled_long_scoreboard_pct",       "%",     stall),
+    ("dram__bytes.sum.per_second",                          "byte/s", bw_gbs * 1e9),
+]
+
+print('"Metric Name","Metric Unit","Maximum","Minimum","Average"')
+for name, unit, val in rows:
+    print(f'"{name}","{unit}","{val:.2f}","{val:.2f}","{val:.2f}"')
+PYEOF
+    exit 0
+fi
+
+# ── Unrecognised invocation ───────────────────────────────────────────────────
+echo "[mock_ncu] ERROR: could not determine mode from arguments: $*" >&2
+echo "[mock_ncu] Expected --export <path> (profile mode) or --import <path> --csv (csv mode)" >&2
+exit 1

@@ -1,9 +1,0 @@
-iter	kernel	tflops	hw_eff_pct	decision	bottleneck	idea_summary	run_command
-iter000	cuBLAS_GemmEx_bf16fp32	41.86	0.00	KEEP	baseline	cuBLAS baseline with BF16 inputs, FP32 compute/output	bash tuning/aitune/cuda/cmd/matmul_bf16fp32_512x16384x16384/run_iter000.sh
-iter001	iter001_draft_wmma	14.35	34.3	DISCARD	register_pressure	WMMA-based kernel with 128x128 tiles, 168 regs/thread, 16.67% occupancy	bash tuning/aitune/cuda/cmd/matmul_bf16fp32_512x16384x16384/run_iter001.sh
-iter002	iter002_lean_wmma	1.12	2.7	DISCARD	poor_arithmetic_intensity	Smaller 64x64 tiles caused more memory traffic	tuning/aitune/cuda/bin/.../iter002_lean
-iter003	iter003_swizzle_wmma	1.24	3.0	DISCARD	memory_bound	128x64 tiles, padded smem, 84% mem throughput	tuning/aitune/cuda/bin/.../iter003_swizzle
-iter004	iter004_splitk	0.93	2.2	DISCARD	atomic_overhead	Split-K with atomic reduction, severe contention	tuning/aitune/cuda/bin/.../iter004_split
-iter005	iter005_classic	7.45	17.8	DISCARD	insufficient_parallelism	64x64 tiles, BK=16, 4 warps, best custom kernel	tuning/aitune/cuda/bin/.../iter005_classic
-iter006	iter006_largebk	5.53	13.2	DISCARD	shared_mem_pressure	BK=32 increases smem, reduces occupancy	tuning/aitune/cuda/bin/.../iter006_largebk
-iter068	iter068_ptxmma	35.10	DISCARD	compute_bound	PTX MMA inline assembly to try wgmma-like scheduling on sm_86

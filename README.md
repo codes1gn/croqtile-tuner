@@ -57,10 +57,10 @@ python3 scripts/clean_kernel_work_state.py --dsl all
 
 At every `STORE` step, the system must update:
 
-- `tuning/aitune/<dsl>/logs/<key>/results.tsv`
-- `tuning/aitune/<dsl>/checkpoints/<key>.json`
-- `tuning/aitune/<dsl>/memory/<key>/rounds.raw.jsonl`
-- `tuning/aitune/<dsl>/memory/<key>/rounds.md`
+- `tuning/<gpu>/<dsl>/logs/<key>/results.tsv`
+- `tuning/<gpu>/<dsl>/checkpoints/<key>.json`
+- `tuning/<gpu>/<dsl>/memory/<key>/rounds.raw.jsonl`
+- `tuning/<gpu>/<dsl>/memory/<key>/rounds.md`
 - `.claude/skills/fsm-engine/state/<dsl>/compaction-summary.md`
 
 These files are what make crash-safe resume and post-mortem debugging possible.

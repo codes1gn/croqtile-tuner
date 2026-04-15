@@ -55,6 +55,7 @@ def has_external_include(root: Path, source_file: Path) -> bool:
 
 def should_clean_shape(
     root: Path,
+    gpu: str,
     dsl: str,
     shape_key: str,
     entry: dict,
@@ -77,7 +78,7 @@ def should_clean_shape(
 
     active_state = root / ".claude" / "skills" / "fsm-engine" / "state" / dsl / "loop-state.json"
     if not active_state.exists():
-        checkpoint = root / "tuning" / "aitune" / dsl / "checkpoints" / f"{shape_key}.json"
+        checkpoint = root / "tuning" / gpu / dsl / "checkpoints" / f"{shape_key}.json"
         if checkpoint.exists():
             return True
     return False
@@ -91,7 +92,7 @@ def reset_entry(entry: dict) -> None:
     entry["best_kernel"] = ""
 
 
-def clean_dsl(root: Path, dsl: str, invalid_only: bool, reset_all: bool) -> list[str]:
+def clean_dsl(root: Path, gpu: str, dsl: str, invalid_only: bool, reset_all: bool) -> list[str]:
     actions: list[str] = []
     state_dir = root / ".claude" / "skills" / "fsm-engine" / "state" / dsl
     for transient in [state_dir / "loop-state.json", state_dir / "compaction-summary.md"]:
@@ -99,7 +100,7 @@ def clean_dsl(root: Path, dsl: str, invalid_only: bool, reset_all: bool) -> list
             transient.unlink()
             actions.append(f"removed {transient.relative_to(root)}")
 
-    tuning_root = root / "tuning" / "aitune" / dsl
+    tuning_root = root / "tuning" / gpu / dsl
     state_path = tuning_root / "state.json"
     state = load_json(state_path)
 
@@ -123,7 +124,7 @@ def clean_dsl(root: Path, dsl: str, invalid_only: bool, reset_all: bool) -> list
 
     changed = False
     for shape_key, entry in state.items():
-        if not should_clean_shape(root, dsl, shape_key, entry, invalid_only, reset_all):
+        if not should_clean_shape(root, gpu, dsl, shape_key, entry, invalid_only, reset_all):
             continue
 
         reset_entry(entry)
@@ -149,6 +150,7 @@ def clean_dsl(root: Path, dsl: str, invalid_only: bool, reset_all: bool) -> list
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Clean active or invalid kernel work state.")
+    parser.add_argument("--gpu", required=True, help="GPU key from detect_gpu.sh, e.g. sm90_H100")
     parser.add_argument("--dsl", default="all", help="Single DSL or 'all'.")
     parser.add_argument("--invalid-only", action="store_true", help="Only clean in-progress shapes with clearly invalid external resume sources.")
     parser.add_argument(
@@ -166,7 +168,7 @@ def main() -> int:
 
     actions: list[str] = []
     for dsl in dsls:
-        actions.extend(clean_dsl(root, dsl, args.invalid_only, args.reset_all))
+        actions.extend(clean_dsl(root, args.gpu, dsl, args.invalid_only, args.reset_all))
 
     if actions:
         for action in actions:

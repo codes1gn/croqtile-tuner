@@ -1,0 +1,54 @@
+#!/usr/bin/env python3
+# mock_kernel — Fake compiled CUDA kernel binary for e2e subagent tests.
+#
+# Drop-in replacement for real CUDA binaries produced by build_iter<NNN>.sh.
+# Prints VERIFY: PASS and TFLOPS output without needing a real GPU.
+#
+# USAGE:
+#   # Default: run verify + bench
+#   python3 testing/mocks/mock_kernel
+#
+#   # Explicit modes
+#   python3 testing/mocks/mock_kernel --verify
+#   python3 testing/mocks/mock_kernel --bench
+#   python3 testing/mocks/mock_kernel --verify --bench
+#
+# ENV VARS (all optional):
+#   MOCK_KERNEL_TFLOPS     float, default 28.5
+#   MOCK_KERNEL_TIME_MS    float, default 120.3
+#   MOCK_KERNEL_VERIFY     PASS or FAIL, default PASS
+#   MOCK_KERNEL_FAIL_EXIT  if set to "1", exits nonzero (simulate crash)
+#
+# OUTPUT FORMAT (matches what harness scripts parse):
+#   VERIFY: PASS              (or VERIFY: FAIL max_abs_err=0.0012)
+#   TFLOPS: 28.50   time_ms: 120.300
+#
+# EXIT: 0 on success, 1 on simulated failure
+
+import os
+import sys
+import time
+
+tflops     = float(os.environ.get("MOCK_KERNEL_TFLOPS",    "28.5"))
+time_ms    = float(os.environ.get("MOCK_KERNEL_TIME_MS",   "120.3"))
+verify_res = os.environ.get("MOCK_KERNEL_VERIFY",          "PASS")
+fail_exit  = os.environ.get("MOCK_KERNEL_FAIL_EXIT",       "0") == "1"
+
+args = set(sys.argv[1:])
+do_verify = "--verify" in args or len(args) == 0
+do_bench  = "--bench"  in args or len(args) == 0
+
+if fail_exit:
+    print("[mock_kernel] Simulated kernel crash", file=sys.stderr)
+    sys.exit(1)
+
+if do_verify:
+    if verify_res == "PASS":
+        print("VERIFY: PASS")
+    else:
+        print(f"VERIFY: FAIL max_abs_err=0.0023")
+
+if do_bench:
+    # Simulate brief runtime
+    time.sleep(0.05)
+    print(f"TFLOPS: {tflops:.2f}   time_ms: {time_ms:.3f}")

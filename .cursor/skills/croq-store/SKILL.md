@@ -7,6 +7,41 @@ description: On-demand result serialization contract for croq-tune. Use only whe
 
 Use this skill only when serializing the result of a round.
 
+## Harness Scripts
+
+**Use these scripts. Do not compute names or write files manually.**
+
+| Script | When to call | What it does |
+|---|---|---|
+| `next_iter.sh` | Start of every IMPLEMENT step | Returns canonical `iter<NNN>_<tag>` or `attempt<AAAA>_<tag>` name |
+| `store_round.sh` | Every STORE step | Writes all 4 mandatory files atomically |
+
+### next_iter.sh — canonical iteration naming
+
+```bash
+# At the START of IMPLEMENT, before writing any file:
+ITER=$(bash .claude/skills/croq-store/next_iter.sh \
+         --dsl <dsl> --shape-key <key> --tag <description>)
+# → ITER = "iter069_myoptimization"
+
+# For compile-fail attempts:
+ATTEMPT=$(bash .claude/skills/croq-store/next_iter.sh \
+            --dsl <dsl> --shape-key <key> --tag <description> --attempt)
+# → ATTEMPT = "attempt0023_myoptimization"
+```
+
+The script derives the sequence number from actual artifact files on disk,
+never from the agent's memory. The agent never manually increments iter numbers.
+
+### store_round.sh — atomic file write
+
+```bash
+bash .claude/skills/croq-store/store_round.sh \
+  --dsl <dsl> --shape-key <key> --iter iter<NNN> --kernel iter<NNN>_<tag> \
+  --tflops <float> --decision <KEEP|DISCARD|...> \
+  --bottleneck <bottleneck> --idea "<summary>" --round <N>
+```
+
 ## Load Order
 
 Before deciding artifact names or locations, load:
@@ -39,31 +74,37 @@ For a failed internal `attempt<AAAA>`, persist:
 
 Attempt records do not consume the public measured iteration sequence.
 
-## Memory Files (MANDATORY)
+## Memory Files — Use the Harness (MANDATORY)
 
-**Every STORE step MUST update these files:**
+**Every STORE step MUST call `store_round.sh`.** Do NOT manually append to individual files.
+The harness writes all 4 mandatory files atomically and verifies them before returning.
 
-1. `memory/<key>/rounds.raw.jsonl` — Append one JSON line:
-   ```json
-   {"iter": "iter<NNN>", "kernel": "<kernel_name>", "tflops": <float>, "decision": "<KEEP|DISCARD|SEGFAULT|HANG>", "bottleneck": "<bottleneck>", "idea": "<idea_summary>", "timestamp": "<ISO8601>"}
-   ```
+```bash
+bash .claude/skills/croq-store/store_round.sh \
+  --dsl        <dsl> \
+  --shape-key  <shape_key> \
+  --iter       iter<NNN> \
+  --kernel     iter<NNN>_<tag> \
+  --tflops     <float> \
+  --decision   <KEEP|DISCARD|SEGFAULT|HANG|COMPILE_FAIL> \
+  --bottleneck <bottleneck> \
+  --idea       "<one-line idea summary>" \
+  --round      <N> \
+  --category   "<tiling|pipeline|memory|compute|misc>" \
+  --expected-gain "<e.g. +5% TFLOPS>"
+```
 
-2. `memory/<key>/rounds.md` — Append markdown section:
-   ```markdown
-   ## iter<NNN> - <timestamp>
-   - kernel: `<kernel_name>`
-   - tflops: `<tflops>`
-   - decision: **<decision>**
-   - bottleneck: `<bottleneck>`
-   - idea: <idea_summary>
-   ```
+The harness writes and verifies:
+1. `memory/<key>/rounds.raw.jsonl` — JSON line per round
+2. `memory/<key>/rounds.md` — markdown section per round
+3. `logs/<key>/idea-log.jsonl` — JSON line per round
+4. `logs/<key>/results.tsv` — TSV row per round (creates header if missing)
 
-3. `logs/<key>/idea-log.jsonl` — Append one JSON line:
-   ```json
-   {"round": <N>, "iter": "iter<NNN>", "bottleneck": "<bottleneck>", "idea": "<idea>", "category": "<category>", "expected_gain": "<gain>", "timestamp": "<ISO8601>"}
-   ```
+If the harness exits non-zero, fix the error before proceeding to CONTINUE.
+Do NOT proceed to CONTINUE until the harness prints `[store_round] STORE complete`.
 
-**Failure to update these files breaks session resumption and history tracking.**
+**NEVER bypass the harness by writing files manually.** Manual writes have been
+the root cause of missing memory files across sessions.
 
 ## Raw Session Transcript (MANDATORY)
 
@@ -97,7 +138,7 @@ Use the framework-specific ids/payload rules defined in `croq-tune` -> `Continua
 
 ## Path Rule
 
-- keep artifacts under `tuning/aitune/<dsl>/...`
+- keep artifacts under `tuning/<gpu>/<dsl>/...`
 - never invent external artifact roots
 - never serialize resume-critical state outside the current repo
 

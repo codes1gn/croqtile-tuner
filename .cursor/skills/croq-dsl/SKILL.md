@@ -37,16 +37,16 @@ All source artifacts use the `iter<NNN>_<tag>.<ext>` naming from `croq-artifacts
 #!/usr/bin/env bash
 set -e
 nvcc -O3 -arch=sm_90 -std=c++17 -I/usr/local/cuda/include \
-     -o tuning/aitune/<dsl>/bin/<shape_key>/iter<NNN>_<tag> \
-     tuning/aitune/<dsl>/srcs/<shape_key>/iter<NNN>_<tag>.cu \
-     2>&1 | tee tuning/aitune/<dsl>/perf/<shape_key>/build_iter<NNN>.txt
+     -o tuning/<gpu>/<dsl>/bin/<shape_key>/iter<NNN>_<tag> \
+     tuning/<gpu>/<dsl>/srcs/<shape_key>/iter<NNN>_<tag>.cu \
+     2>&1 | tee tuning/<gpu>/<dsl>/perf/<shape_key>/build_iter<NNN>.txt
 ```
 
 **run_iter\<NNN\>.sh**:
 ```bash
 #!/usr/bin/env bash
-tuning/aitune/<dsl>/bin/<shape_key>/iter<NNN>_<tag> \
-    2>&1 | tee tuning/aitune/<dsl>/perf/<shape_key>/timing_iter<NNN>.txt
+tuning/<gpu>/<dsl>/bin/<shape_key>/iter<NNN>_<tag> \
+    2>&1 | tee tuning/<gpu>/<dsl>/perf/<shape_key>/timing_iter<NNN>.txt
 ```
 
 Binary must print: `TFLOPS: <value>   time_ms: <value>`
@@ -58,14 +58,14 @@ Binary must print: `TFLOPS: <value>   time_ms: <value>`
 #!/usr/bin/env bash
 set -e
 # Step 1: .co → .gen.cu
-croqc tuning/aitune/croqtile/srcs/<shape_key>/iter<NNN>_<tag>.co \
-      -o tuning/aitune/croqtile/srcs/<shape_key>/iter<NNN>_<tag>.gen.cu \
-      2>&1 | tee tuning/aitune/croqtile/perf/<shape_key>/build_iter<NNN>_co.txt
+croqc tuning/<gpu>/croqtile/srcs/<shape_key>/iter<NNN>_<tag>.co \
+      -o tuning/<gpu>/croqtile/srcs/<shape_key>/iter<NNN>_<tag>.gen.cu \
+      2>&1 | tee tuning/<gpu>/croqtile/perf/<shape_key>/build_iter<NNN>_co.txt
 # Step 2: .gen.cu → binary
 nvcc -O3 -arch=sm_90 -std=c++17 \
-     -o tuning/aitune/croqtile/bin/<shape_key>/iter<NNN>_<tag> \
-     tuning/aitune/croqtile/srcs/<shape_key>/iter<NNN>_<tag>.gen.cu \
-     2>&1 | tee tuning/aitune/croqtile/perf/<shape_key>/build_iter<NNN>_cu.txt
+     -o tuning/<gpu>/croqtile/bin/<shape_key>/iter<NNN>_<tag> \
+     tuning/<gpu>/croqtile/srcs/<shape_key>/iter<NNN>_<tag>.gen.cu \
+     2>&1 | tee tuning/<gpu>/croqtile/perf/<shape_key>/build_iter<NNN>_cu.txt
 ```
 
 Both `.co` (primary source) and `.gen.cu` (generated) are preserved as artifacts.
@@ -92,8 +92,8 @@ JIT compile failure the same as a compile failure in the compiled-binary group
 ```bash
 #!/usr/bin/env bash
 export PYTHONPATH="${PYTHONPATH}:$(pwd)"
-python3 tuning/aitune/<dsl>/srcs/<shape_key>/iter<NNN>_<tag>.py \
-    2>&1 | tee tuning/aitune/<dsl>/perf/<shape_key>/timing_iter<NNN>.txt
+python3 tuning/<gpu>/<dsl>/srcs/<shape_key>/iter<NNN>_<tag>.py \
+    2>&1 | tee tuning/<gpu>/<dsl>/perf/<shape_key>/timing_iter<NNN>.txt
 ```
 
 Script must print: `TFLOPS: <value>   time_ms: <value>`
@@ -106,13 +106,13 @@ Script must print: `TFLOPS: <value>   time_ms: <value>`
 
 ```bash
 ncu --set full \
-    --export tuning/aitune/<dsl>/perf/<shape_key>/ncu_iter<NNN>.ncu-rep \
+    --export tuning/<gpu>/<dsl>/perf/<shape_key>/ncu_iter<NNN>.ncu-rep \
     --force-overwrite \
-    tuning/aitune/<dsl>/bin/<shape_key>/iter<NNN>_<tag> [args]
+    tuning/<gpu>/<dsl>/bin/<shape_key>/iter<NNN>_<tag> [args]
 
-ncu --import tuning/aitune/<dsl>/perf/<shape_key>/ncu_iter<NNN>.ncu-rep \
+ncu --import tuning/<gpu>/<dsl>/perf/<shape_key>/ncu_iter<NNN>.ncu-rep \
     --csv --page raw \
-    > tuning/aitune/<dsl>/perf/<shape_key>/ncu_iter<NNN>.csv
+    > tuning/<gpu>/<dsl>/perf/<shape_key>/ncu_iter<NNN>.csv
 ```
 
 ### Python-JIT Group
@@ -122,13 +122,13 @@ ncu --import tuning/aitune/<dsl>/perf/<shape_key>/ncu_iter<NNN>.ncu-rep \
 ```bash
 ncu --target-processes all \
     --set full \
-    --export tuning/aitune/<dsl>/perf/<shape_key>/ncu_iter<NNN>.ncu-rep \
+    --export tuning/<gpu>/<dsl>/perf/<shape_key>/ncu_iter<NNN>.ncu-rep \
     --force-overwrite \
-    python3 tuning/aitune/<dsl>/srcs/<shape_key>/iter<NNN>_<tag>.py
+    python3 tuning/<gpu>/<dsl>/srcs/<shape_key>/iter<NNN>_<tag>.py
 
-ncu --import tuning/aitune/<dsl>/perf/<shape_key>/ncu_iter<NNN>.ncu-rep \
+ncu --import tuning/<gpu>/<dsl>/perf/<shape_key>/ncu_iter<NNN>.ncu-rep \
     --csv --page raw \
-    > tuning/aitune/<dsl>/perf/<shape_key>/ncu_iter<NNN>.csv
+    > tuning/<gpu>/<dsl>/perf/<shape_key>/ncu_iter<NNN>.csv
 ```
 
 **JIT-specific pre-profiling pins** (disable autotuning so ncu sees one kernel):

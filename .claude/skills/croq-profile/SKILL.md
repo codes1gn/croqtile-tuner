@@ -22,13 +22,13 @@ Always profile. Always use ncu.
 ```bash
 # MANDATORY: Run ncu on current best kernel
 ncu --set full \
-    --export tuning/aitune/<dsl>/perf/<shape_key>/ncu_iter<NNN>.ncu-rep \
+    --export tuning/<gpu>/<dsl>/perf/<shape_key>/ncu_iter<NNN>.ncu-rep \
     --force-overwrite \
     <kernel_binary> [args]
 
 # Extract key metrics
-ncu --import tuning/aitune/<dsl>/perf/<shape_key>/ncu_iter<NNN>.ncu-rep \
-    --csv --page raw > tuning/aitune/<dsl>/perf/<shape_key>/ncu_iter<NNN>.csv
+ncu --import tuning/<gpu>/<dsl>/perf/<shape_key>/ncu_iter<NNN>.ncu-rep \
+    --csv --page raw > tuning/<gpu>/<dsl>/perf/<shape_key>/ncu_iter<NNN>.csv
 ```
 
 ## Required Output
@@ -44,7 +44,7 @@ After PROFILE, you MUST have:
 
 ```bash
 bash .claude/skills/croq-profile/profile_extract.sh \
-    --csv  tuning/aitune/<dsl>/perf/<shape_key>/ncu_iter<NNN>_<tag>.csv \
+    --csv  tuning/<gpu>/<dsl>/perf/<shape_key>/ncu_iter<NNN>_<tag>.csv \
     --iter iter<NNN>_<tag>
 ```
 
@@ -56,7 +56,7 @@ The script emits one-line JSON to stdout:
   "bottleneck": "memory_bound",
   "confidence": "high",
   "evidence": {
-    "ncu_csv": "tuning/aitune/.../ncu_iter012_myname.csv",
+    "ncu_csv": "tuning/<gpu>/.../ncu_iter012_myname.csv",
     "key_metrics": {
       "dram_throughput_pct": 91.3,
       "compute_throughput_pct": 38.2,
@@ -71,7 +71,7 @@ Capture the output and pass the JSON verbatim to the IDEA step:
 
 ```bash
 PROFILE_JSON=$(bash .claude/skills/croq-profile/profile_extract.sh \
-    --csv  tuning/aitune/<dsl>/perf/<shape_key>/ncu_iter<NNN>_<tag>.csv \
+    --csv  tuning/<gpu>/<dsl>/perf/<shape_key>/ncu_iter<NNN>_<tag>.csv \
     --iter iter<NNN>_<tag>)
 echo "PROFILE: $PROFILE_JSON"
 ```

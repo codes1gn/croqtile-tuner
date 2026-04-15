@@ -83,6 +83,7 @@ def bench_torch_mm(m: int, n: int, k: int, dtype: str, warmup: int, iters: int, 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Bootstrap first tuning round artifacts for croq-tune.")
+    parser.add_argument("--gpu", required=True, help="GPU key from detect_gpu.sh, e.g. sm90_H100")
     parser.add_argument("--dsl", default="cuda")
     parser.add_argument("--operator", default="matmul", help="Operator type (matmul, spmm, conv2d, attention)")
     parser.add_argument("--dtype", default="f16")
@@ -100,7 +101,7 @@ def main() -> int:
     root = repo_root()
     now = datetime.now(timezone.utc).isoformat()
 
-    tuning_root = root / "tuning" / "aitune" / args.dsl
+    tuning_root = root / "tuning" / args.gpu / args.dsl
     log_dir = tuning_root / "logs" / key
     perf_dir = tuning_root / "perf" / key
     mem_dir = tuning_root / "memory" / key
@@ -116,7 +117,7 @@ def main() -> int:
         (
             f"iter000\tframework/torch_mm_{args.dtype}\t{bench['median_tflops']:.2f}\t0.00\tKEEP\tbaseline_profile\t"
             f"Bootstrap baseline profile with torch.mm {args.dtype.upper()}.\t"
-            f"python3 .claude/skills/croq-tune/tools/bootstrap_tuning_round.py --dsl {args.dsl} --dtype {args.dtype} --shape {args.shape}"
+            f"python3 .claude/skills/croq-tune/tools/bootstrap_tuning_round.py --gpu {args.gpu} --dsl {args.dsl} --dtype {args.dtype} --shape {args.shape}"
         ),
     ]
     results_path.write_text("\n".join(results_lines) + "\n", encoding="utf-8")

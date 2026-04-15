@@ -22,18 +22,19 @@ mkdir -p .claude/skills/croq-store
 cp "$ORIG_DIR/.claude/skills/croq-store/checkpoint_write.sh" .claude/skills/croq-store/
 
 # Also create a fake src/bin dir for verify tests
-mkdir -p "tuning/aitune/cuda/srcs/test_shape_4x8x8"
-touch "tuning/aitune/cuda/srcs/test_shape_4x8x8/iter007_mytag.cu"
-mkdir -p "tuning/aitune/cuda/bin/test_shape_4x8x8/iter007_mytag"
+mkdir -p "tuning/sm90_testgpu/cuda/srcs/test_shape_4x8x8"
+touch "tuning/sm90_testgpu/cuda/srcs/test_shape_4x8x8/iter007_mytag.cu"
+mkdir -p "tuning/sm90_testgpu/cuda/bin/test_shape_4x8x8/iter007_mytag"
 
 plan 18
 
 DSL="cuda"
+GPU="sm90_testgpu"
 KEY="test_shape_4x8x8"
 
 # ── write mode ────────────────────────────────────────────────────────────────
 OUT=$(bash .claude/skills/croq-store/checkpoint_write.sh write \
-    --dsl "$DSL" --shape-key "$KEY" \
+    --gpu "$GPU" --dsl "$DSL" --shape-key "$KEY" \
     --iter "iter007_mytag" \
     --bottleneck "memory_bound" \
     --idea "Increase swizzle stride to reduce L2 thrashing" \
@@ -45,7 +46,7 @@ like "write prints PLANNED" "$OUT" "PLANNED"
 like "write prints iter name" "$OUT" "iter007_mytag"
 
 # Checkpoint file created
-CP="tuning/aitune/cuda/checkpoints/test_shape_4x8x8/current_idea.json"
+CP="tuning/sm90_testgpu/cuda/checkpoints/test_shape_4x8x8/current_idea.json"
 ok "checkpoint file exists" "$([ -f "$CP" ] && echo 0 || echo 1)"
 
 # Checkpoint is valid JSON
@@ -67,14 +68,14 @@ is "checkpoint.levers correct" "$LEVERS" "SWIZZLE_STRIDE,BM"
 
 # ── read mode ─────────────────────────────────────────────────────────────────
 READ_OUT=$(bash .claude/skills/croq-store/checkpoint_write.sh read \
-    --dsl "$DSL" --shape-key "$KEY" 2>/dev/null)
+    --gpu "$GPU" --dsl "$DSL" --shape-key "$KEY" 2>/dev/null)
 ok "read exits 0" $?
 like "read outputs JSON bottleneck" "$READ_OUT" '"bottleneck"'
 like "read outputs correct iter" "$READ_OUT" '"iter007_mytag"'
 
 # ── verify mode — clean (iter matches, src exists, bin exists) ────────────────
 VERIFY_OUT=$(bash .claude/skills/croq-store/checkpoint_write.sh verify \
-    --dsl "$DSL" --shape-key "$KEY" --iter "iter007_mytag" 2>&1)
+    --gpu "$GPU" --dsl "$DSL" --shape-key "$KEY" --iter "iter007_mytag" 2>&1)
 VERIFY_RC=$?
 ok "verify exits 0 for clean match" "$VERIFY_RC"
 like "verify reports CLEAN" "$VERIFY_OUT" "CLEAN"
@@ -95,26 +96,26 @@ d['iter'] = 'iter007_mytag'
 with open('$CP', 'w') as f: json.dump(d, f)
 "
 bash .claude/skills/croq-store/checkpoint_write.sh verify \
-    --dsl "$DSL" --shape-key "$KEY" --iter "iter099_different" >/dev/null 2>&1 && DRIFT_RC=0 || DRIFT_RC=$?
+    --gpu "$GPU" --dsl "$DSL" --shape-key "$KEY" --iter "iter099_different" >/dev/null 2>&1 && DRIFT_RC=0 || DRIFT_RC=$?
 # Drift: iter name mismatch (1 point) + missing src (2 points) + missing bin (1 point) = 4 → exit 3
 is "verify exits 3 on significant drift" "$DRIFT_RC" "3"
 
 # ── write: missing --iter exits 1 ────────────────────────────────────────────
 bash .claude/skills/croq-store/checkpoint_write.sh write \
-    --dsl "$DSL" --shape-key "$KEY" \
+    --gpu "$GPU" --dsl "$DSL" --shape-key "$KEY" \
     --bottleneck "memory_bound" --idea "test" >/dev/null 2>&1 && RC=0 || RC=$?
 is "write without --iter exits 1" "$RC" "1"
 
 # ── write: bare iter (no _tag) exits 1 ───────────────────────────────────────
 bash .claude/skills/croq-store/checkpoint_write.sh write \
-    --dsl "$DSL" --shape-key "$KEY" \
+    --gpu "$GPU" --dsl "$DSL" --shape-key "$KEY" \
     --iter "iter007" --bottleneck "memory_bound" --idea "test" >/dev/null 2>&1 && RC=0 || RC=$?
 is "write with bare iter (no _tag) exits 1" "$RC" "1"
 
 # ── read: no checkpoint exits 2 ──────────────────────────────────────────────
 rm -f "$CP"
 bash .claude/skills/croq-store/checkpoint_write.sh read \
-    --dsl "$DSL" --shape-key "nonexistent_key" >/dev/null 2>&1 && RC=0 || RC=$?
+    --gpu "$GPU" --dsl "$DSL" --shape-key "nonexistent_key" >/dev/null 2>&1 && RC=0 || RC=$?
 is "read with no checkpoint exits 2" "$RC" "2"
 
 cd "$ORIG_DIR"

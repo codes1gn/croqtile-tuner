@@ -106,7 +106,7 @@ Store in `baseline-workspace/_env/validation.json`.
 
 Before `croq-tune` enters the round loop, this skill MUST produce the first compilable kernel source:
 
-1. Create `tuning/aitune/<dsl>/srcs/<shape_key>/iter001_draft.<cu|co>`
+1. Create `tuning/<gpu>/<dsl>/srcs/<shape_key>/iter001_draft.<cu|co>`
 2. The draft must be a **real implementation**, not a library wrapper
 3. For `dsl=cuda`: write pure CUDA C++ using CUDA intrinsics, PTX inline asm, or raw kernel code
 4. For `dsl=croqtile`: write pure `.co` using Choreo DSL primitives
@@ -130,9 +130,9 @@ Library calls are **only** permitted in baseline measurement (iter000), never in
 
 After this skill completes, the following must exist:
 
-- `tuning/aitune/<dsl>/srcs/<shape_key>/iter001_draft.<cu|co>` — compilable source
-- `tuning/aitune/<dsl>/cmd/<shape_key>/build_iter001.sh` — build script
-- `tuning/aitune/<dsl>/cmd/<shape_key>/run_iter001.sh` — run script
+- `tuning/<gpu>/<dsl>/srcs/<shape_key>/iter001_draft.<cu|co>` — compilable source
+- `tuning/<gpu>/<dsl>/cmd/<shape_key>/build_iter001.sh` — build script
+- `tuning/<gpu>/<dsl>/cmd/<shape_key>/run_iter001.sh` — run script
 - Checkpoint updated with `next_state: "PROFILE"` pointing to iter001
 
 ## Trigger Rules

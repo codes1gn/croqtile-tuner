@@ -1,0 +1,37 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	cuBLAS_GemmEx_bf16fp32	41.86	KEEP	baseline	cuBLAS baseline established at 41.86 TFLOPS
+iter001	iter001_draft_wmma	14.35	DISCARD	latency_bound_register_pressure	WMMA draft with 168 regs/thread, 16.67% occupancy, IPC=0.68. Severely register-l
+iter002	iter002_lean_wmma	1.12	DISCARD	poor_arithmetic_intensity	Smaller tiles (64x64) caused more memory traffic, worse performance
+iter003	iter003_swizzle_wmma	1.24	DISCARD	memory_bound_L1_thrashing	128x64 tiles with padding, still memory bound at 84%
+iter004	iter004_splitk	0.93	DISCARD	atomic_overhead	Split-K with atomic adds, severe atomic contention
+iter005	iter005_classic	7.45	DISCARD	kernel_launch_overhead	64x64 tiles, BK=16, 4 warps. Best custom so far but 5.6x slower than cuBLAS.
+iter006	iter006_largebk	5.53	DISCARD	shared_mem_pressure	BK=32 increases smem, reduces occupancy, worse than BK=16.
+iter007	iter007_tallskinny	7.49	DISCARD	same_as_iter005	Tall-skinny 128x64 tiles, 8 warps, same perf as iter005
+iter008	iter008_deepk	2.9	DISCARD	shared_mem_pressure	Deep K with BK=64, too much smem, worse perf
+iter009	iter009_ptx_failed	0.0	DISCARD	correctness_failure	PTX mma.sync attempt failed verification, fragment mapping error
+iter010	iter010_persistent	2.2	DISCARD	tile_loop_overhead	Persistent kernel worse than one-shot, loop overhead too high
+iter011	iter011_vec	22.38	KEEP	still_memory_bound	Vectorized bf16x4 loads - MAJOR BREAKTHROUGH 3x faster!
+iter012	iter012_vec128	18.9	DISCARD	lower_occupancy	128x128 tiles worse than 64x64, occupancy drops
+iter013	iter013_vec_bk32	16.75	DISCARD	smem_pressure	BK=32 worse than BK=16 due to smem pressure
+iter014	iter014_regopt	6.54	DISCARD	register_spilling	maxrregcount forced spilling hurt perf
+iter015	iter015_warp	11.02	DISCARD	low_arithmetic_intensity	2 warps smaller tiles lower perf
+iter016	iter016_widen	15.79	DISCARD	occupancy	32x128 tiles with 8 warps
+iter017	iter017_async	24.2	KEEP	memory_latency	cp.async 64x64 tiles beat iter011
+iter018	iter018_pipeline	25.3	KEEP	memory_latency	double buffer pipeline new best
+iter019	iter019_wide_pipe	13.35	DISCARD	low_compute_intensity	32x128 pipelined worse than 64x64
+iter020	iter020_stage	25.39	KEEP	memory_latency	3-stage marginal improvement
+iter021	iter021_x128	24.9	DISCARD	occupancy	64x128 8 warps not better
+iter022	iter022_bk32_pipe	25.51	KEEP	k_iterations	BK=32 pipelined new best
+iter023	iter023_bk64	24.66	DISCARD	smem_occupancy	BK=64 worse than BK=32
+iter024	iter024_bk32_3stage	25.45	DISCARD	smem_occupancy	3-stage with BK=32 slightly worse
+iter025	iter025_ldg	12.66	DISCARD	no_pipelining	__ldg without pipeline much worse
+iter026	iter026_swizzle	25.5	DISCARD	no_improvement	XOR swizzle same as baseline
+iter027	iter027_shfl	23.99	DISCARD	register_pressure	64x128 more accumulators worse
+iter028	iter028_warp	22.93	DISCARD	work_per_warp	8 warps less work each worse
+iter029	iter029_fullm	13.9	DISCARD	low_occupancy	full M in block, 20KB smem hurts
+iter030	iter030_unroll	24.67	DISCARD	register_pressure	4-stage full unroll worse
+iter031	iter031_l2swizzle	26.05	KEEP	l2_cache_misses	L2 swizzle new best 26.05
+iter032	iter032_swizzle8	26.07	KEEP	l2_cache_misses	full M zigzag best 26.07
+iter033	iter033_swz_3stage	25.48	DISCARD	smem_occupancy	3-stage with swizzle worse
+iter034	iter034_final	33.57	KEEP	load_efficiency	MASSIVE BREAKTHROUGH 33.57 TFLOPS 80.2% of cuBLAS
+iter068	iter068_ptxmma	35.1	DISCARD	compute_bound	PTX MMA inline assembly to try wgmma-like scheduling on sm_86

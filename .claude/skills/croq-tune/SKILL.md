@@ -7,7 +7,6 @@ argument-hint: <dsl: croqtile|cuda|cute|triton|tilelang|helion|cutile> <dtype: f
 # Croq-Tune
 
 `croq-tune` is the only tuning entrypoint.
-Do not use `croq-tuner` or `ai-tune-*`.
 
 ## Main Loop (Authoritative)
 
@@ -104,14 +103,14 @@ Exact payload templates are defined in:
 ### 1) PROFILE
 
 - Load `croq-profile`
-- Gather the lightest evidence that answers current bottleneck
-- Produce explicit `bottleneck` and `confidence`
+- **MANDATORY ncu run** — always execute a real ncu profiling run against the current best kernel. Do NOT use remembered or cached bottleneck data from a previous round — GPU behavior changes between iters. The croq-profile skill defines the exact ncu command to run.
+- Produce explicit `bottleneck` and `confidence` from the fresh ncu output
 
 ### 2) IDEA
 
 - Generate one model-proposed idea from the current bottleneck and local history
-- Run targeted web search for the same bottleneck to collect 1-3 external inspirations
-- Merge into exactly one testable idea with expected gain and risk
+- **MANDATORY web search** — always run at least one targeted web search before forming the final idea. Search for the identified bottleneck (e.g. "CUDA shared memory bank conflict matmul bf16", "warp divergence reduction GEMM kernel"). Collect 1-3 external inspirations (papers, blog posts, GPU ISA docs, CUTLASS source notes). Do NOT skip this even if you believe you already have a good idea — external evidence is required.
+- Merge model-proposed idea with web search findings into exactly one testable idea with expected gain and risk
 - **Last action of IDEA**: write the checkpoint (MANDATORY before moving to IMPLEMENT):
   ```bash
   bash .claude/skills/croq-store/checkpoint_write.sh write \
@@ -156,7 +155,9 @@ Exact payload templates are defined in:
 
 ### 5) MEASURE
 
-- Run benchmark, collect stable timing samples, compute TFLOPS
+- Run benchmark using the DSL-specific defaults from `croq-dsl` (default: 10 warmup + 50 timed iterations); use CUDA event timing, never wall-clock time
+- Do NOT accept a single-sample result as stable — at minimum 3 timed iterations are required, but follow the DSL default unless benchmarking time is the bottleneck
+- Compute and record TFLOPS; include the raw timing numbers in the STORE payload
 
 ### 6) DECIDE
 
@@ -165,9 +166,10 @@ Exact payload templates are defined in:
 
 ### 7) STORE
 
+- **MANDATORY — runs on every round outcome without exception (KEEP, DISCARD, and compile-failed attempts)**
 - Load `croq-store` (and `croq-artifacts` through it)
-- Persist round outcome for both KEEP and DISCARD
-- Compile-failed attempts use `attempt<AAAA>` and do not consume public `iter<NNN>`
+- Persist round outcome; compile-failed attempts use `attempt<AAAA>` and do not consume public `iter<NNN>`
+- Do NOT skip STORE on DISCARD — discarded data is still required for the history log
 
 ### 8) CONTINUE
 

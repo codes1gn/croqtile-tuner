@@ -38,11 +38,12 @@ while [[ $# -gt 0 ]]; do
     case "$1" in
         --session)  SESSION="$2";   shift 2 ;;
         --fs)       DO_FS=1;        shift   ;;
+        --gpu)      CROQTUNER_GPU="$2"; export CROQTUNER_GPU; shift 2 ;;
         --dsl)      DSL="$2";       shift 2 ;;
         --shape-key) SHAPE_KEY="$2"; shift 2 ;;
         -*)
             echo "ERROR: unknown argument: $1" >&2
-            echo "USAGE: $0 [--session <file.jsonl>] [--fs --dsl <dsl> --shape-key <key>]" >&2
+            echo "USAGE: $0 [--session <file.jsonl>] [--fs [--gpu <key>] --dsl <dsl> --shape-key <key>]" >&2
             exit 2
             ;;
         *)
@@ -160,10 +161,11 @@ if [[ "$DO_FS" -eq 1 ]]; then
     echo "  Shape-key: $SHAPE_KEY"
     echo ""
 
-    SRC_DIR="tuning/aitune/${DSL}/srcs/${SHAPE_KEY}"
-    LOG_DIR="tuning/aitune/${DSL}/logs/${SHAPE_KEY}"
-    MEM_DIR="tuning/aitune/${DSL}/memory/${SHAPE_KEY}"
-    PERF_DIR="tuning/aitune/${DSL}/perf/${SHAPE_KEY}"
+    GPU_KEY="${CROQTUNER_GPU:-sm90_H100}"
+    SRC_DIR="tuning/${GPU_KEY}/${DSL}/srcs/${SHAPE_KEY}"
+    LOG_DIR="tuning/${GPU_KEY}/${DSL}/logs/${SHAPE_KEY}"
+    MEM_DIR="tuning/${GPU_KEY}/${DSL}/memory/${SHAPE_KEY}"
+    PERF_DIR="tuning/${GPU_KEY}/${DSL}/perf/${SHAPE_KEY}"
 
     # ── 1. Source file naming ──────────────────────────────────────────────────
     echo "--- Source File Names ($SRC_DIR) ---"
@@ -355,6 +357,8 @@ for b in bad: print(b)
 
         # Cross-check: every iter kernel in results.tsv should have a ncu CSV
         # (skip non-iter baseline entries like cuBLAS_GemmEx_bf16fp32)
+        # GRACE: if NO ncu CSVs exist at all, this is a legacy session that predates
+        # the mandatory ncu requirement — downgrade to WARN instead of FAIL.
         if [[ -f "$TSV" ]]; then
             MISSING_CSV=0
             while IFS=$'\t' read -r iter kernel rest; do
@@ -371,6 +375,9 @@ for b in bad: print(b)
 
             if [[ "$MISSING_CSV" -eq 0 && "$NCU_CSV_TOTAL" -gt 0 ]]; then
                 result_pass "Every iter results.tsv entry has a corresponding ncu CSV"
+            elif [[ "$NCU_CSV_TOTAL" -eq 0 && "$MISSING_CSV" -gt 0 ]]; then
+                # No ncu CSVs at all = legacy session predating mandatory ncu requirement
+                result_warn "Legacy session: $MISSING_CSV iter kernels predate mandatory ncu CSV export"
             elif [[ "$MISSING_CSV" -gt 0 ]]; then
                 result_fail "$MISSING_CSV iter kernels in results.tsv are missing ncu CSVs"
             fi

@@ -12,8 +12,9 @@ TMP=$(mktemp -d)
 trap 'rm -rf "$TMP"' EXIT
 
 DSL="cuda"
+GPU="sm90_testgpu"
 KEY="matmul_test_4x8x8"
-BASE="$TMP/tuning/aitune/${DSL}"
+BASE="$TMP/tuning/${GPU}/${DSL}"
 mkdir -p "$BASE/memory/$KEY" "$BASE/logs/$KEY"
 
 plan 18
@@ -25,7 +26,7 @@ store() {
 
 # Test 1: successful store for iter005_swizzle
 result=$(store \
-  --dsl "$DSL" --shape-key "$KEY" \
+  --gpu "$GPU" --dsl "$DSL" --shape-key "$KEY" \
   --iter iter005 --kernel iter005_swizzle \
   --tflops 12.34 --decision KEEP \
   --bottleneck memory_bound \
@@ -67,7 +68,7 @@ like "results.tsv has iter005 row" "$(cat "$BASE/logs/$KEY/results.tsv")" "iter0
 
 # Test 11: second store call appends (does not overwrite)
 store \
-  --dsl "$DSL" --shape-key "$KEY" \
+  --gpu "$GPU" --dsl "$DSL" --shape-key "$KEY" \
   --iter iter006 --kernel iter006_pipeline \
   --tflops 13.00 --decision DISCARD \
   --bottleneck compute_bound \
@@ -85,24 +86,24 @@ ok "results.tsv has 3 lines (header+2)" $?
 # ── rejection tests ───────────────────────────────────────────────────────────
 
 # Test 13: missing --kernel
-result13=$(store --dsl "$DSL" --shape-key "$KEY" --iter iter007 \
+result13=$(store --gpu "$GPU" --dsl "$DSL" --shape-key "$KEY" --iter iter007 \
   --tflops 1.0 --decision KEEP --bottleneck mem --idea "x" --round 7 2>&1) || true
 like "missing kernel rejected" "$result13" "ERROR"
 
 # Test 14: bare-number kernel (no tag)
-result14=$(store --dsl "$DSL" --shape-key "$KEY" \
+result14=$(store --gpu "$GPU" --dsl "$DSL" --shape-key "$KEY" \
   --iter iter008 --kernel iter008 \
   --tflops 1.0 --decision KEEP --bottleneck mem --idea "x" --round 8 2>&1) || true
 like "bare-number kernel rejected" "$result14" "ERROR.*iter008"
 
 # Test 15: invalid decision value
-result15=$(store --dsl "$DSL" --shape-key "$KEY" \
+result15=$(store --gpu "$GPU" --dsl "$DSL" --shape-key "$KEY" \
   --iter iter009 --kernel iter009_test \
   --tflops 1.0 --decision BADVALUE --bottleneck mem --idea "x" --round 9 2>&1) || true
 like "invalid decision rejected" "$result15" "ERROR"
 
 # Test 16: iter format wrong (only 2 digits)
-result16=$(store --dsl "$DSL" --shape-key "$KEY" \
+result16=$(store --gpu "$GPU" --dsl "$DSL" --shape-key "$KEY" \
   --iter iter09 --kernel iter09_test \
   --tflops 1.0 --decision KEEP --bottleneck mem --idea "x" --round 9 2>&1) || true
 like "2-digit iter rejected" "$result16" "ERROR"

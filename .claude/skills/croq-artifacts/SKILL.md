@@ -14,7 +14,13 @@ path in another skill is not sufficient.
 
 All tuning artifacts must be kept under:
 
-`tuning/aitune/<dsl>/`
+`tuning/<gpu>/<dsl>/`
+
+where `<gpu>` is the GPU key emitted by:
+```
+bash .claude/skills/croq-tune/tools/detect_gpu.sh
+```
+e.g. `sm90_H100`, `sm80_A100`, `sm89_L40S`.
 
 ## Shape Key Naming Convention
 
@@ -128,6 +134,14 @@ Every failed `attempt<AAAA>` must retain:
 
 ## Branch Rule
 
-Use only one long-lived branch per DSL: `aitune/<dsl>`.
+**Tuning directly on `main` is allowed.** No branch ceremony required.
 
-No date branches and no resume suffixes.
+Commit tuning progress directly to `main` after each measured iter:
+
+```bash
+git add -A
+git commit -m "tune(<dsl>): <op> <dtype> <shape> - iter<NNN> <X> TFLOPS"
+git push origin main
+```
+
+No date branches, no DSL branches, no resume suffixes.

@@ -69,10 +69,10 @@ def scan_external_includes(root: Path, source_file: Path, dsl: str) -> list[Prob
     return problems
 
 
-def validate_dsl(root: Path, dsl: str) -> list[Problem]:
+def validate_dsl(root: Path, gpu: str, dsl: str) -> list[Problem]:
     problems: list[Problem] = []
     active_state = root / ".claude" / "skills" / "fsm-engine" / "state" / dsl / "loop-state.json"
-    tuning_state_path = root / "tuning" / "aitune" / dsl / "state.json"
+    tuning_state_path = root / "tuning" / gpu / dsl / "state.json"
     tuning_state = load_json(tuning_state_path)
     in_progress_keys: list[str] = []
 
@@ -94,7 +94,7 @@ def validate_dsl(root: Path, dsl: str) -> list[Problem]:
             if best_kernel:
                 problems.extend(scan_external_includes(root, resolve_in_repo(root, best_kernel), dsl))
 
-            checkpoint = root / "tuning" / "aitune" / dsl / "checkpoints" / f"{shape_key}.json"
+            checkpoint = root / "tuning" / gpu / dsl / "checkpoints" / f"{shape_key}.json"
             checkpoint_data = load_json(checkpoint)
             if checkpoint_data:
                 checkpoint_best = checkpoint_data.get("best_kernel", "")
@@ -111,7 +111,7 @@ def validate_dsl(root: Path, dsl: str) -> list[Problem]:
                     problems.extend(scan_external_includes(root, resolve_in_repo(root, checkpoint_best), dsl))
 
                 if entry.get("current_iter", 0) > 0:
-                    memory_dir = root / "tuning" / "aitune" / dsl / "memory" / shape_key
+                    memory_dir = root / "tuning" / gpu / dsl / "memory" / shape_key
                     raw_log = memory_dir / "rounds.raw.jsonl"
                     md_log = memory_dir / "rounds.md"
                     if not raw_log.exists():
@@ -138,6 +138,7 @@ def validate_dsl(root: Path, dsl: str) -> list[Problem]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate local-only tuning resume state.")
+    parser.add_argument("--gpu", required=True, help="GPU key from detect_gpu.sh, e.g. sm90_H100")
     parser.add_argument("--dsl", default="all", help="Single DSL or 'all'.")
     parser.add_argument("--json", action="store_true", help="Emit JSON instead of text.")
     args = parser.parse_args()
@@ -150,7 +151,7 @@ def main() -> int:
 
     problems: list[Problem] = []
     for dsl in dsls:
-        problems.extend(validate_dsl(root, dsl))
+        problems.extend(validate_dsl(root, args.gpu, dsl))
 
     if args.json:
         print(json.dumps([asdict(problem) for problem in problems], indent=2, sort_keys=True))

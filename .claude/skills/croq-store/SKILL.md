@@ -138,7 +138,7 @@ Use the framework-specific ids/payload rules defined in `croq-tune` -> `Continua
 
 ## Path Rule
 
-- keep artifacts under `tuning/aitune/<dsl>/...`
+- keep artifacts under `tuning/<gpu>/<dsl>/...`
 - never invent external artifact roots
 - never serialize resume-critical state outside the current repo
 
