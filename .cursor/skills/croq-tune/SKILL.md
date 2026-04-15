@@ -203,45 +203,39 @@ If any tool fails unexpectedly during tuning:
 
 ---
 
-## Branch Strategy (MANDATORY)
+## Branch Strategy
 
-### Tuning Branch Format
-
-All tuning work MUST happen on a dedicated branch:
-
-```
-aitune/<dsl>/<op>/<dtype>/<shape>
-```
-
-Examples:
-- `aitune/cuda/matmul/f16/512x16384x16384`
-- `aitune/cuda/conv2d/f16/128x256x3x3`
-- `aitune/triton/attention/f16/2048x64`
+This workspace is a container for all tuning results and visualization.
+**Tuning directly on `main` is allowed.** No branch ceremony required.
 
 ### Workflow
 
-1. **Before starting tuning**: Create and checkout the branch
-   ```bash
-   git checkout -b aitune/<dsl>/<op>/<dtype>/<shape>
-   ```
+Commit tuning progress directly to `main`:
 
-2. **During tuning**: Commit progress regularly
-   - Each iter that passes VERIFY gets a commit
-   - Failed attempts can be batched or skipped
+```bash
+git add -A
+git commit -m "tune(<dsl>): <op> <dtype> <shape> - iter<NNN> <X> TFLOPS"
+git push origin main
+```
 
-3. **After tuning completes**: Squash merge to main
-   ```bash
-   git checkout main
-   git merge --squash aitune/<dsl>/<op>/<dtype>/<shape>
-   git commit -m "tune(<dsl>): <op> <dtype> <shape> - best <X> TFLOPS"
-   git branch -d aitune/<dsl>/<op>/<dtype>/<shape>
-   git push origin main
-   git push origin --delete aitune/<dsl>/<op>/<dtype>/<shape>
-   ```
+### Commit Message Format
+
+```
+tune(<dsl>): <op> <dtype> <shape> - iter<NNN> <X> TFLOPS
+```
+
+Examples:
+- `tune(cuda): matmul bf16fp32 512x16384x16384 - iter044 35.20 TFLOPS (best)`
+- `tune(triton): attention f16 2048x64 - iter012 182.3 TFLOPS`
+
+### When to Commit
+
+- Each `iter<NNN>` that passes VERIFY: commit immediately
+- Failed `attempt<AAAA>` sources: batch commit with the next passing iter
+- After each STORE step, a commit should exist for the round
 
 ### Rules
 
-1. **Never tune on main** - main only receives squash merges
-2. **One shape per branch** - don't mix shapes in a single branch
-3. **Clean up after merge** - delete local and remote branch after squash
-4. **Squash message format**: `tune(<dsl>): <op> <dtype> <shape> - best <X> TFLOPS`
+1. **Push to main** — no long-lived feature branches
+2. **Commit after each measured iter** — ensures no work is lost
+3. **One commit per measured iter minimum** — do not batch multiple measured iters
