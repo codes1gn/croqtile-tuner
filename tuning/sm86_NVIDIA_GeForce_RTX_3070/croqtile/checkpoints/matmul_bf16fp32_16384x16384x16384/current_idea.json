@@ -1,0 +1,14 @@
+{
+  "schema": "croq-checkpoint-v1",
+  "timestamp": "2026-04-15T14:17:57Z",
+  "dsl": "croqtile",
+  "shape_key": "matmul_bf16fp32_16384x16384x16384",
+  "iter": "iter005_dmapattern",
+  "bottleneck": "register_pressure",
+  "idea": "Use simplified DMA pattern (=> shared) without explicit shared memory names",
+  "expected_gain": "unknown - structural change to test compiler behavior",
+  "levers": [
+    "dma_pattern"
+  ],
+  "status": "PLANNED"
+}

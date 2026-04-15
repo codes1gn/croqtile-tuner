@@ -25,10 +25,10 @@
 // RTX 3070 has 46 SMs
 #define NUM_SMS 46
 
-// Test size
-#define MATMUL_DEFAULT_M 4096
-#define MATMUL_DEFAULT_N 4096
-#define MATMUL_DEFAULT_K 4096
+// Test size (2048³ for faster iteration, ~17 GFLOPS)
+#define MATMUL_DEFAULT_M 2048
+#define MATMUL_DEFAULT_N 2048
+#define MATMUL_DEFAULT_K 2048
 
 // Row-major matmul
 __co__ void matmul_bf16(global bf16 [M, K] lhs, global bf16 [N, K] rhs, global f32 [M, N] output) {

@@ -1,0 +1,72 @@
+==PROF== Target process 1113809 terminated before first instrumented API call.
+==PROF== Target process 1113810 terminated before first instrumented API call.
+==PROF== Target process 1113811 terminated before first instrumented API call.
+==PROF== Target process 1113812 terminated before first instrumented API call.
+==PROF== Target process 1113813 terminated before first instrumented API call.
+==PROF== Target process 1113815 terminated before first instrumented API call.
+==PROF== Target process 1113816 terminated before first instrumented API call.
+/tmp/1776261859905577917_140653430118208/choreo.h(1358): warning #20014-D: calling a __host__ function from a __host__ __device__ function is not allowed
+      fill_n(this->data(), this->element_count(), static_cast<T>(value));
+      ^
+          detected during instantiation of "void choreo::spanned_data<T, Rank>::fill(U) [with T=float, Rank=2UL, U=float]" at line 312 of /tmp/1776261859905577917_140653430118208/__choreo_cute_iter003_tilek32.cu
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/tmp/1776261859905577917_140653430118208/choreo.h(1358): warning #20014-D: calling a __host__ function from a __host__ __device__ function is not allowed
+      fill_n(this->data(), this->element_count(), static_cast<T>(value));
+      ^
+          detected during instantiation of "void choreo::spanned_data<T, Rank>::fill(U) [with T=float, Rank=2UL, U=float]" at line 312 of /tmp/1776261859905577917_140653430118208/__choreo_cute_iter003_tilek32.cu
+
+/tmp/1776261859905577917_140653430118208/choreo.h(1358): warning #20011-D: calling a __host__ function("choreo::spanned_data<float, (unsigned long)2ul> ::data()") from a __host__ __device__ function("choreo::spanned_data<float, (unsigned long)2ul> ::fill<float> ") is not allowed
+
+/tmp/1776261859905577917_140653430118208/choreo.h(1358): warning #20011-D: calling a __host__ function("choreo::spanned_data<float, (unsigned long)2ul> ::element_count() const") from a __host__ __device__ function("choreo::spanned_data<float, (unsigned long)2ul> ::fill<float> ") is not allowed
+
+/tmp/1776261859905577917_140653430118208/choreo.h(1358): warning #20011-D: calling a __host__ function("void choreo::fill_n<float> (T1 *, unsigned long, const T1 &)") from a __host__ __device__ function("choreo::spanned_data<float, (unsigned long)2ul> ::fill<float> ") is not allowed
+
+/tmp/1776261859905577917_140653430118208/choreo.h(205): warning #20011-D: calling a __host__ function("void choreo::fill<unsigned long> (T1 *, T1 *, const T1 &)") from a __host__ __device__ function("choreo::_NV_ANON_NAMESPACE::SimpleArray<unsigned long, (unsigned long)2ul> ::SimpleArray") is not allowed
+
+==PROF== Target process 1113817 terminated before first instrumented API call.
+==PROF== Target process 1113818 terminated before first instrumented API call.
+==PROF== Target process 1113819 terminated before first instrumented API call.
+==PROF== Target process 1113827 terminated before first instrumented API call.
+==PROF== Target process 1113828 terminated before first instrumented API call.
+==PROF== Target process 1113814 terminated before first instrumented API call.
+==PROF== Target process 1113832 terminated before first instrumented API call.
+==PROF== Target process 1113833 terminated before first instrumented API call.
+==PROF== Target process 1113834 terminated before first instrumented API call.
+==PROF== Target process 1113842 terminated before first instrumented API call.
+==PROF== Target process 1113843 terminated before first instrumented API call.
+==PROF== Target process 1113852 terminated before first instrumented API call.
+==PROF== Target process 1113853 terminated before first instrumented API call.
+==PROF== Target process 1113855 terminated before first instrumented API call.
+==PROF== Target process 1113856 terminated before first instrumented API call.
+==PROF== Target process 1113857 terminated before first instrumented API call.
+==PROF== Target process 1113858 terminated before first instrumented API call.
+==PROF== Target process 1113859 terminated before first instrumented API call.
+==PROF== Target process 1113879 terminated before first instrumented API call.
+==PROF== Target process 1113880 terminated before first instrumented API call.
+==PROF== Target process 1113881 terminated before first instrumented API call.
+==PROF== Target process 1113882 terminated before first instrumented API call.
+==PROF== Target process 1113883 terminated before first instrumented API call.
+==PROF== Target process 1113884 terminated before first instrumented API call.
+==PROF== Target process 1113885 terminated before first instrumented API call.
+==PROF== Target process 1113886 terminated before first instrumented API call.
+==PROF== Target process 1113887 terminated before first instrumented API call.
+==PROF== Target process 1113888 terminated before first instrumented API call.
+==PROF== Target process 1113889 terminated before first instrumented API call.
+==PROF== Target process 1113890 terminated before first instrumented API call.
+==PROF== Target process 1113891 terminated before first instrumented API call.
+==PROF== Connected to process 1113892 (/tmp/1776261859905577917_140653430118208/__choreo_cute_iter003_tilek32.exe)
+==PROF== Profiling "__choreo_device_matmul_bf16" - 0: 0%
+==WARNING== Launching the workload is taking more time than expected. If this continues to hang, terminate the profile and re-try by profiling the range of all related launches using '--replay-mode range'. See https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html#replay for more details.
+....50%....100% - 34 passes
+==PROF== Profiling "__choreo_device_matmul_bf16" - 1: 0%....50%....100% - 34 passes
+Timing avg ms: 143158
+TFLOPS: 0.000960049
+HW efficiency: 0.000676091%
+VERIFY: PASS (skipped)
+Test Passed
+
+==PROF== Disconnected from process 1113892
+==PROF== Target process 1113808 terminated before first instrumented API call.
+==PROF== Report: /home/albert/workspace/croqtile-tuner/tuning/sm86_NVIDIA_GeForce_RTX_3070/croqtile/perf/matmul_bf16fp32_16384x16384x16384/ncu_iter003_tilek32_round3.ncu-rep

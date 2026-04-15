@@ -1,11 +1,11 @@
 {
   "dsl": "croqtile",
   "shape_key": "matmul_bf16fp32_16384x16384x16384",
-  "current_best": "iter001_draft",
-  "current_best_tflops": 0.115,
-  "next_iter": "iter002",
-  "next_state": "IMPLEMENT",
-  "planned_idea": "32x64 tiles with maxrregcount=128",
-  "bottleneck": "launch_bound",
-  "expected_gain": "+10-50x TFLOPS"
+  "current_best": "iter003_tilek32",
+  "current_best_tflops": 0.154,
+  "next_iter": "iter004",
+  "next_state": "PROFILE",
+  "planned_idea": null,
+  "bottleneck": "register_pressure",
+  "expected_gain": null
 }
