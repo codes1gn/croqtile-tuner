@@ -115,6 +115,12 @@ Exact payload templates are defined in:
 
 ### 3) IMPLEMENT
 
+- **First action**: call `next_iter.sh` to get the canonical iteration name
+  ```bash
+  ITER=$(bash .claude/skills/croq-store/next_iter.sh --dsl <dsl> --shape-key <key> --tag <short_idea_tag>)
+  ```
+  Use `$ITER` as the source filename, build script name, and run script name.
+  For compile-fail retries, call with `--attempt` flag instead.
 - Apply only the current round's single idea
 - If editing `.co`, load `choreo-syntax` before changing code
 - Compile and run verification

@@ -7,6 +7,41 @@ description: On-demand result serialization contract for croq-tune. Use only whe
 
 Use this skill only when serializing the result of a round.
 
+## Harness Scripts
+
+**Use these scripts. Do not compute names or write files manually.**
+
+| Script | When to call | What it does |
+|---|---|---|
+| `next_iter.sh` | Start of every IMPLEMENT step | Returns canonical `iter<NNN>_<tag>` or `attempt<AAAA>_<tag>` name |
+| `store_round.sh` | Every STORE step | Writes all 4 mandatory files atomically |
+
+### next_iter.sh — canonical iteration naming
+
+```bash
+# At the START of IMPLEMENT, before writing any file:
+ITER=$(bash .claude/skills/croq-store/next_iter.sh \
+         --dsl <dsl> --shape-key <key> --tag <description>)
+# → ITER = "iter069_myoptimization"
+
+# For compile-fail attempts:
+ATTEMPT=$(bash .claude/skills/croq-store/next_iter.sh \
+            --dsl <dsl> --shape-key <key> --tag <description> --attempt)
+# → ATTEMPT = "attempt0023_myoptimization"
+```
+
+The script derives the sequence number from actual artifact files on disk,
+never from the agent's memory. The agent never manually increments iter numbers.
+
+### store_round.sh — atomic file write
+
+```bash
+bash .claude/skills/croq-store/store_round.sh \
+  --dsl <dsl> --shape-key <key> --iter iter<NNN> --kernel iter<NNN>_<tag> \
+  --tflops <float> --decision <KEEP|DISCARD|...> \
+  --bottleneck <bottleneck> --idea "<summary>" --round <N>
+```
+
 ## Load Order
 
 Before deciding artifact names or locations, load:
