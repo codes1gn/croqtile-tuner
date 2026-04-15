@@ -3,9 +3,10 @@
   "shape_key": "matmul_bf16fp32_16384x16384x16384",
   "current_best": "iter003_tilek32",
   "current_best_tflops": 0.154,
-  "next_iter": "iter004",
+  "next_iter": "iter007",
   "next_state": "PROFILE",
   "planned_idea": null,
   "bottleneck": "register_pressure",
-  "expected_gain": null
+  "expected_gain": null,
+  "notes": "DSL limitation on SM86 - 255 regs/thread ceiling limits occupancy to 1 warp"
 }

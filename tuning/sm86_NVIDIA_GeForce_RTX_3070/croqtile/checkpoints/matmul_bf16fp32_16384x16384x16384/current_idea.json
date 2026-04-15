@@ -1,14 +1,15 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-15T14:17:57Z",
+  "timestamp": "2026-04-15T14:20:52Z",
   "dsl": "croqtile",
   "shape_key": "matmul_bf16fp32_16384x16384x16384",
-  "iter": "iter005_dmapattern",
+  "iter": "iter006_f16pattern",
   "bottleneck": "register_pressure",
-  "idea": "Use simplified DMA pattern (=> shared) without explicit shared memory names",
-  "expected_gain": "unknown - structural change to test compiler behavior",
+  "idea": "Mirror exact F16 reference kernel structure (mma.fill 0.0 not 0.0f)",
+  "expected_gain": "unknown - test if F16 pattern generates better code for BF16",
   "levers": [
-    "dma_pattern"
+    "accumulator_init",
+    "kernel_structure"
   ],
   "status": "PLANNED"
 }
