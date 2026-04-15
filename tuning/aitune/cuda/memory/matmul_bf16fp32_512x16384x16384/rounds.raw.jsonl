@@ -33,3 +33,4 @@
 {"timestamp": "2026-04-15T03:46:00Z", "shape_key": "matmul_bf16fp32_512x16384x16384", "round": 32, "state": "STORE", "iter": "iter032", "kernel": "iter032_swizzle8", "tflops": 26.07, "decision": "KEEP", "bottleneck": "l2_cache_misses", "summary": "full M zigzag best 26.07"}
 {"timestamp": "2026-04-15T04:00:00Z", "shape_key": "matmul_bf16fp32_512x16384x16384", "round": 33, "state": "STORE", "iter": "iter033", "kernel": "iter033_swz_3stage", "tflops": 25.48, "decision": "DISCARD", "bottleneck": "smem_occupancy", "summary": "3-stage with swizzle worse"}
 {"timestamp": "2026-04-15T04:05:00Z", "shape_key": "matmul_bf16fp32_512x16384x16384", "round": 34, "state": "STORE", "iter": "iter034", "kernel": "iter034_final", "tflops": 33.57, "decision": "KEEP", "bottleneck": "load_efficiency", "summary": "MASSIVE BREAKTHROUGH 33.57 TFLOPS 80.2% of cuBLAS"}
+2026-04-15T11:17:00+08:00: iter044_best 35.20 TFLOPS (84.1% of cuBLAS) - no boundary checks + launch_bounds(128,4)

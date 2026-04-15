@@ -1,36 +1,48 @@
 {
   "schema": "croq-tune-checkpoint-v1",
-  "timestamp": "2026-04-15T02:10:00Z",
+  "timestamp": "2026-04-15T03:45:00Z",
   "dsl": "cuda",
   "dtype": "bf16fp32",
   "shape_key": "matmul_bf16fp32_512x16384x16384",
   "shape": {"m": 512, "n": 16384, "k": 16384},
-  "current_iter": 9,
+  "current_iter": 45,
   "best_tflops": 41.86,
   "best_kernel": "cuBLAS_GemmEx_bf16fp32",
-  "best_custom_tflops": 33.57,
-  "best_custom_kernel": "iter034_final",
+  "best_custom_tflops": 35.20,
+  "best_custom_kernel": "iter044_best",
   "next_state": "IDEA",
-  "last_attempt": "iter009_ptx_failed",
+  "last_attempt": "iter045_minpad",
   "tuning_summary": {
-    "rounds_completed": 9,
+    "rounds_completed": 45,
     "baseline_tflops": 41.86,
-    "best_custom_tflops": 7.49,
-    "gap_to_baseline": "5.6x slower",
-    "main_bottleneck": "Small M dimension (512) limits parallelism and makes WMMA overhead significant",
-    "approaches_tried": [
-      "WMMA 128x128 tiles (14.35 TFLOPS, register pressure)",
-      "Smaller 64x64 tiles (1.12 TFLOPS, poor arithmetic intensity)",
-      "Shared memory swizzling (1.24 TFLOPS, memory bound)",
-      "Split-K with atomics (0.93 TFLOPS, atomic contention)",
-      "64x64 with BK=16 (7.45-7.49 TFLOPS, best approach)",
-      "BK=32/64 variations (worse due to smem pressure)",
-      "PTX mma.sync (failed verification)"
+    "best_custom_tflops": 35.20,
+    "efficiency_vs_baseline": "84.1%",
+    "gap_to_baseline": "6.66 TFLOPS",
+    "main_bottleneck": "Limited by sm_86 WMMA occupancy (~40%), can't access warp-group level MMA available on Hopper+",
+    "evolution": [
+      "iter000: cuBLAS baseline 41.86 TFLOPS",
+      "iter011: vectorized loads 22.38 TFLOPS (53.5%)",
+      "iter017: cp.async 24.20 TFLOPS (57.8%)",
+      "iter018: 2-stage pipeline 25.30 TFLOPS (60.4%)",
+      "iter022: BK=32 pipeline 25.51 TFLOPS (60.9%)",
+      "iter032: L2 swizzle 26.07 TFLOPS (62.3%)",
+      "iter034: optimized loads 33.57 TFLOPS (80.2%)",
+      "iter036: scoped fragments 33.67 TFLOPS (80.4%)",
+      "iter043: no boundary checks 35.04 TFLOPS (83.7%)",
+      "iter044: optimal launch_bounds 35.20 TFLOPS (84.1%)"
+    ],
+    "key_optimizations": [
+      "64x64 block tiles, BK=32, 2-stage cp.async pipeline",
+      "L2 cache zigzag block scheduling",
+      "Vectorized bf16x4 global loads",
+      "Scoped fragment declarations for register reuse",
+      "No boundary checks (exact shape division)",
+      "Optimal launch_bounds(128, 4)"
     ],
     "recommendations": [
-      "Consider using cuBLAS for this specific shape",
-      "Explore stream-K or persistent kernel approaches",
-      "Try CuTe/CUTLASS for optimized tile scheduling"
+      "84.1% of cuBLAS is excellent for WMMA on Ampere",
+      "Further gains require Hopper/Blackwell WGMMA/TMA",
+      "Shape-specific kernel tuned for 512x16384x16384"
     ]
   }
 }
