@@ -5,3 +5,4 @@
 {"round":5,"iter":"iter005","kernel":"iter005_dmapattern","tflops":0.153,"decision":"DISCARD","bottleneck":"register_pressure","idea":"Simplified DMA pattern (=> shared) - no improvement over explicit smem","timing_ms":897.65,"timestamp":"2026-04-15T22:35:00Z"}
 {"round":6,"iter":"iter006","kernel":"iter006_f16pattern","tflops":0,"decision":"DISCARD","bottleneck":"compile_error","idea":"F16 pattern with mma.fill 0.0 - SM86 requires FP32 accumulator for BF16","timing_ms":0,"timestamp":"2026-04-15T22:45:00Z"}
 {"round":7,"iter":"iter007","kernel":"iter007_swizzle","tflops":0.1543,"decision":"DISCARD","bottleneck":"register_pressure","idea":"swiz<128> for bank conflict reduction - no improvement","timing_ms":890.7,"timestamp":"2026-04-15T22:55:00Z"}
+{"round":8,"iter":"iter008","kernel":"iter008_commit","tflops":0,"decision":"DISCARD","bottleneck":"compile_error","idea":"mma.commit not supported on SM86 CuTe backend","timing_ms":0,"timestamp":"2026-04-15T23:00:00Z"}

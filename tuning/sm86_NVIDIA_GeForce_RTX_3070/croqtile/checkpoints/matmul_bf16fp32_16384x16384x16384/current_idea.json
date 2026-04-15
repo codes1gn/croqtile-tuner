@@ -1,15 +1,14 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-15T14:23:14Z",
+  "timestamp": "2026-04-15T14:25:55Z",
   "dsl": "croqtile",
   "shape_key": "matmul_bf16fp32_16384x16384x16384",
-  "iter": "iter007_swizzle",
+  "iter": "iter008_commit",
   "bottleneck": "register_pressure",
-  "idea": "Add swizzle pattern (swiz<128>) to reduce shared memory bank conflicts",
-  "expected_gain": "+5-15% TFLOPS if bank conflicts are reduced",
+  "idea": "Add mma.commit after inner K-loop to help compiler optimize register allocation",
+  "expected_gain": "+5-10% TFLOPS if register lifetimes are shortened",
   "levers": [
-    "swizzle",
-    "smem_layout"
+    "mma_commit"
   ],
   "status": "PLANNED"
 }
