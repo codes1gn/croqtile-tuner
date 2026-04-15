@@ -8,8 +8,8 @@
   "current_iter": 9,
   "best_tflops": 41.86,
   "best_kernel": "cuBLAS_GemmEx_bf16fp32",
-  "best_custom_tflops": 25.51,
-  "best_custom_kernel": "iter022_bk32_pipe",
+  "best_custom_tflops": 26.07,
+  "best_custom_kernel": "iter032_swizzle8",
   "next_state": "IDEA",
   "last_attempt": "iter009_ptx_failed",
   "tuning_summary": {
