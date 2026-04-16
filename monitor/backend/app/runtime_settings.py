@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from .config import AVAILABLE_VARIANTS, fetch_opencode_models, settings
+from .config import AVAILABLE_VARIANTS, fetch_all_models, settings
 from .models import SystemSetting
 
 DEFAULT_MODEL_KEY = "default_model"
@@ -11,7 +11,7 @@ AUTO_WAKE_KEY = "auto_wake_enabled"
 
 
 def available_models() -> list[str]:
-    return fetch_opencode_models()
+    return fetch_all_models()
 
 
 def available_variants() -> list[str]:

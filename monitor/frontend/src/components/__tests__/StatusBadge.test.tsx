@@ -21,10 +21,10 @@ describe("StatusBadge", () => {
     expect(badge.className).toContain("bg-emerald-600");
   });
 
-  it("applies failed style class", () => {
-    render(<StatusBadge status="failed" />);
-    const badge = screen.getByText("failed");
-    expect(badge.className).toContain("bg-red-600");
+  it("applies pending style class", () => {
+    render(<StatusBadge status="pending" />);
+    const badge = screen.getByText("pending");
+    expect(badge.className).toContain("bg-gray-600");
   });
 
   it("applies waiting style class", () => {

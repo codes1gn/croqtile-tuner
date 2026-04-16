@@ -1,2 +1,0 @@
-iter	kernel	tflops	decision	bottleneck	idea_summary
-iter001	iter001_baseline	0.3678	KEEP	memory_bound	Baseline bf16 matmul kernel using choreo HMMA. Single 16x16 warp tile.

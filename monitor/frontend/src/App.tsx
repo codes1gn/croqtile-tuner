@@ -38,9 +38,10 @@ export default function App() {
   useEffect(() => {
     const timer = window.setInterval(() => {
       void loadHealth();
+      void loadTasks();
     }, 10000);
     return () => window.clearInterval(timer);
-  }, [loadHealth]);
+  }, [loadHealth, loadTasks]);
 
   useSSE((event) => {
     setLastEvent(event);

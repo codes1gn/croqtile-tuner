@@ -239,13 +239,25 @@ Verification tolerance same as compiled-binary group:
 **NEVER print "Test Passed" without actual numerical comparison.**
 Timing via CUDA events. Default: 10 warmup + 50 timed.
 
-## BASELINE (iter000)
+## BASELINE (iter000 + iter001)
 
-**Baseline discovery is handled by `croq-tune` PREPARATION_ONCE step 3 via `discover_baseline.sh`.**
-The harness scans `choreo-kernel-examples/` (excluding `_aitune_` files) and `tuning/` for
+**iter000 — cuBLAS reference (PREPARATION_ONCE step 2b, MANDATORY):**
+
+Before any kernel tuning, measure cuBLAS/torch.mm performance using the harness:
+```bash
+bash .claude/skills/croq-tune/tools/cublas_baseline.sh \
+    --dtype <dtype> --m <M> --n <N> --k <K>
+```
+Record the `tflops` output as `baseline_tflops` and store as iter000 in results.tsv.
+This is your hardware ceiling — all subsequent iterations are compared against it.
+
+**iter001 — Starting kernel (PREPARATION_ONCE step 3):**
+
+Kernel discovery is handled by `discover_baseline.sh`. The harness scans
+`choreo-kernel-examples/` (excluding `_aitune_` files) and `tuning/` for
 same-operator kernels. If no candidates exist, implement from scratch using MMA primitives.
 
-Library calls (cuBLAS) allowed only in iter000 for reference performance comparison.
+Library calls (cuBLAS/torch) allowed only in iter000 for reference performance comparison.
 
 ## Reference Kernels
 

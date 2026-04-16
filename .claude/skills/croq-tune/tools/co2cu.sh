@@ -93,8 +93,13 @@ mkdir -p "$(dirname "$BUILD_LOG")"
 if ! "$CHOREO_BIN" -gs -t cute -arch="$ARCH" $CHOREO_FLAGS \
         "$CO" -o "$RESULT" 2>&1 | tee "$BUILD_LOG" >&2; then
     echo "[co2cu] ERROR: choreo compilation failed. See ${BUILD_LOG}" >&2
+    # Clean up stray a.out that choreo may leave on failure
+    rm -f a.out
     exit 2
 fi
+
+# Clean up stray a.out that choreo may leave in cwd even with -o
+rm -f a.out
 
 if [[ ! -f "$RESULT" ]]; then
     echo "[co2cu] ERROR: choreo did not produce ${RESULT}" >&2

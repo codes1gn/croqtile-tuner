@@ -1,0 +1,4 @@
+tuning/sm86_NVIDIA_GeForce_RTX_3070/croqtile/srcs/gemm_sp_f16_4096x4096x4096/opencode-big-pickle/iter003_larger_tile.co:92.11: error: MMA [f16(a)f16(b)f32(c)f32(d): m128n128k64] is not support by current architecture(SM_86).
+            mma.row.row.sp mc, ma, mb, me;
+            ^
+/home/albert/choreo/lib/target_utils.hpp:596: Assertion failed: unsupported MMA config: MMAConfig(sparsity=SPARSE, a_ty=f16, b_ty=f16, scale_ty=unknown, c_ty=f32, d_ty=f32, shape=(128, 128, 64))

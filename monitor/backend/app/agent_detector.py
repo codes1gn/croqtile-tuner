@@ -9,7 +9,7 @@ from typing import Literal
 
 from .config import settings
 
-AgentType = Literal["cursor_ide", "cursor_cli", "opencode", "copilot_ide", "unknown"]
+AgentType = Literal["cursor_cli", "opencode", "unknown"]
 
 
 @dataclass
@@ -25,10 +25,6 @@ class DetectedAgent:
 
 # Patterns to identify different agents from their command line
 AGENT_PATTERNS = {
-    "cursor_ide": [
-        re.compile(r"cursor.*--type=extensionHost"),
-        re.compile(r"Cursor Helper"),
-    ],
     "cursor_cli": [
         re.compile(r"cursor-agent"),
         re.compile(r"cursor.*run.*--print-logs"),
@@ -36,11 +32,6 @@ AGENT_PATTERNS = {
     "opencode": [
         re.compile(r"opencode\s+run"),
         re.compile(r"opencode.*--print-logs"),
-    ],
-    "copilot_ide": [
-        re.compile(r"copilot-agent"),
-        re.compile(r"github\.copilot"),
-        re.compile(r"vscode.*copilot"),
     ],
 }
 
@@ -149,12 +140,8 @@ def detect_running_agents() -> list[DetectedAgent]:
 
             working_dir = _extract_working_dir(pid)
 
-            # IDE agents (cursor_ide, copilot_ide) serve multiple workspaces
-            # from a shared extensionHost, so we can't filter by working dir.
-            # For CLI/opencode agents, check the command line for project path.
-            if agent_type not in ("cursor_ide", "copilot_ide"):
-                if project_root not in cmdline and "tuning" not in cmdline.lower():
-                    continue
+            if project_root not in cmdline and "tuning" not in cmdline.lower():
+                continue
             
             session_id = _extract_session_id(cmdline)
             kernel_path = _find_active_kernel(working_dir or project_root)
@@ -190,10 +177,8 @@ def get_all_agent_sessions() -> dict[AgentType, list[dict]]:
     agents = detect_running_agents()
     
     grouped: dict[AgentType, list[dict]] = {
-        "cursor_ide": [],
         "cursor_cli": [],
         "opencode": [],
-        "copilot_ide": [],
     }
     
     for agent in agents:

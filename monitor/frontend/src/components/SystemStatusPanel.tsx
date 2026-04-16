@@ -80,8 +80,7 @@ export function SystemStatusPanel({ health, onRefresh }: Props) {
     { label: "Waiting", value: health.task_counts.waiting ?? 0 },
     { label: "Pending", value: health.task_counts.pending ?? 0 },
     { label: "Running", value: health.task_counts.running ?? 0 },
-    { label: "Stopped", value: health.task_counts.stopped ?? 0 },
-    { label: "Failed", value: health.task_counts.failed ?? 0 },
+    { label: "Completed", value: health.task_counts.completed ?? 0 },
   ];
 
   return (

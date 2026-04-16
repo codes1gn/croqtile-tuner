@@ -33,6 +33,8 @@ class Task(Base):
     variant = Column(String(32), nullable=True, default="")
     agent_type = Column(String(32), nullable=True)
     device = Column(String(128), nullable=True)
+    request_budget = Column(Integer, nullable=False, default=1)
+    request_number = Column(Integer, nullable=False, default=0)
     respawn_count = Column(Integer, nullable=False, default=0)
     opencode_session_id = Column(String(128), nullable=True)
     error_message = Column(Text, nullable=True)
@@ -63,6 +65,8 @@ class Task(Base):
             "best_kernel": self.best_kernel,
             "model": self.model,
             "variant": self.variant or "",
+            "request_budget": self.request_budget,
+            "request_number": self.request_number,
             "agent_type": self.agent_type,
             "device": self.device,
             "opencode_session_id": self.opencode_session_id,
@@ -80,6 +84,7 @@ class IterationLog(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     task_id = Column(Integer, ForeignKey("tasks.id", ondelete="CASCADE"), nullable=False, index=True)
     iteration = Column(Integer, nullable=False)
+    request_number = Column(Integer, nullable=True)
     kernel_path = Column(String(512), nullable=True)
     tflops = Column(Float, nullable=True)
     decision = Column(String(16), nullable=True)
@@ -94,6 +99,7 @@ class IterationLog(Base):
             "id": self.id,
             "task_id": self.task_id,
             "iteration": self.iteration,
+            "request_number": self.request_number,
             "kernel_path": self.kernel_path,
             "tflops": self.tflops,
             "decision": self.decision,

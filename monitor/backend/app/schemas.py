@@ -3,7 +3,8 @@ from pydantic import BaseModel, field_validator
 from .config import is_valid_variant
 
 
-VALID_DTYPES = ("f16", "e4m3", "bf16", "bf16fp32", "f32")
+VALID_INPUT_DTYPES = ("f16", "e4m3", "e5m2", "bf16", "f32")
+VALID_OUTPUT_DTYPES = ("f16", "f32", "bf16")
 VALID_OP_TYPES = (
     "gemm_sp",
     "gemm",
@@ -17,7 +18,7 @@ VALID_OP_TYPES = (
 
 
 VALID_DSLS = ("croqtile", "cuda", "triton", "cute", "cutile", "helion", "tilelang")
-VALID_PLATFORMS = ("opencode", "cursor_ide", "cursor_cli", "copilot_ide")
+VALID_PLATFORMS = ("opencode", "cursor_cli")
 
 
 class TaskCreate(BaseModel):
@@ -30,6 +31,7 @@ class TaskCreate(BaseModel):
     mode: str = "opencode"
     model: str
     variant: str = ""
+    request_budget: int = 1
 
     @field_validator("op_type")
     @classmethod
@@ -39,9 +41,17 @@ class TaskCreate(BaseModel):
     @field_validator("dtype")
     @classmethod
     def validate_dtype(cls, v: str) -> str:
-        if v not in VALID_DTYPES:
-            raise ValueError(f"dtype must be one of {VALID_DTYPES}")
-        return v
+        if v in VALID_INPUT_DTYPES:
+            return v
+        for inp in VALID_INPUT_DTYPES:
+            if v.startswith(inp):
+                out = v[len(inp):]
+                if out in VALID_OUTPUT_DTYPES:
+                    return v
+        raise ValueError(
+            f"dtype must be a valid input type {VALID_INPUT_DTYPES} "
+            f"or input+output combo (e.g. bf16fp32, f16f32)"
+        )
 
     @field_validator("m")
     @classmethod
@@ -92,6 +102,13 @@ class TaskCreate(BaseModel):
             raise ValueError("unsupported variant")
         return v
 
+    @field_validator("request_budget")
+    @classmethod
+    def validate_request_budget(cls, v: int) -> int:
+        if v < 1:
+            raise ValueError("request_budget must be >= 1")
+        return v
+
 
 class TaskUpdate(BaseModel):
     status: str | None = None
@@ -124,9 +141,7 @@ VALID_TASK_STATUSES = (
     "pending",
     "waiting",
     "running",
-    "stopped",
     "completed",
-    "failed",
     "cancelled",
 )
 
@@ -149,6 +164,8 @@ class TaskResponse(BaseModel):
     best_kernel: str | None
     model: str | None
     variant: str | None
+    request_budget: int
+    request_number: int
     agent_type: str | None
     device: str | None
     opencode_session_id: str | None
@@ -163,6 +180,7 @@ class IterationLogResponse(BaseModel):
     id: int
     task_id: int
     iteration: int
+    request_number: int | None
     kernel_path: str | None
     tflops: float | None
     decision: str | None

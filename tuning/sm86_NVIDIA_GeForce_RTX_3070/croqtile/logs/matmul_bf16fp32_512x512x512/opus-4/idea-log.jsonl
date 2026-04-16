@@ -1,1 +1,0 @@
-{"round": 1, "iter": "iter001", "bottleneck": "memory_bound", "idea": "Baseline bf16 matmul kernel using choreo HMMA. Single 16x16 warp tile.", "category": "tiling", "expected_gain": "+10% via larger tile", "decision": "KEEP", "tflops": 0.3678, "timestamp": "2026-04-16T14:52:15Z"}

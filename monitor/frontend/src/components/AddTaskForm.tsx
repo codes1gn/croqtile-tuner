@@ -64,22 +64,44 @@ export function AddTaskForm({ availableModels, availableVariants, onCreated, onC
   const [platform, setPlatform] = useState("opencode");
   const [model, setModel] = useState(availableModels[0] ?? "");
   const [variant, setVariant] = useState(availableVariants[0] ?? "");
+  const [requestBudget, setRequestBudget] = useState("1");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    if (!model && availableModels.length > 0) {
-      setModel(availableModels[0]);
+  const platformModels = availableModels.filter((m) => {
+    if (platform === "opencode") {
+      return m.startsWith("opencode/") || m.startsWith("github-copilot/");
     }
-  }, [availableModels, model]);
+    if (platform === "cursor_cli") {
+      return m.startsWith("cursor/");
+    }
+    return true;
+  });
+
+  const platformGroups = providerGroup(platformModels);
+  const providerOrder = ["github-copilot", "opencode", "cursor"];
+  const sortedProviders = [
+    ...providerOrder.filter((p) => platformGroups[p]),
+    ...Object.keys(platformGroups).filter((p) => !providerOrder.includes(p)),
+  ];
 
   useEffect(() => {
-    if (!availableVariants.includes(variant)) {
-      setVariant(availableVariants[0] ?? "");
+    if (!platformModels.includes(model) && platformModels.length > 0) {
+      setModel(platformModels[0]);
     }
-  }, [availableVariants, variant]);
-  
-  // Compute combined dtype and shape key
+  }, [platform, platformModels, model]);
+
+  const modelHasBuiltinVariant = model.startsWith("cursor/");
+  const effectiveVariants = modelHasBuiltinVariant ? [""] : availableVariants;
+
+  useEffect(() => {
+    if (modelHasBuiltinVariant) {
+      setVariant("");
+    } else if (!effectiveVariants.includes(variant)) {
+      setVariant(effectiveVariants[0] ?? "");
+    }
+  }, [model, modelHasBuiltinVariant, effectiveVariants, variant]);
+
   const effectiveOp = opType === "custom" ? customOp : opType;
   const dtype = inputDtype === outputDtype ? inputDtype : `${inputDtype}${outputDtype}`;
   const shapeKey = `${effectiveOp}_${dtype}_${m}x${n}x${k}`;
@@ -104,6 +126,7 @@ export function AddTaskForm({ availableModels, availableVariants, onCreated, onC
 
     setSubmitting(true);
     try {
+      const budgetVal = parseInt(requestBudget) || 1;
       await api.createTask({ 
         op_type: effectiveOp, 
         dtype, 
@@ -113,7 +136,8 @@ export function AddTaskForm({ availableModels, availableVariants, onCreated, onC
         dsl,
         mode: platform, 
         model, 
-        variant 
+        variant,
+        request_budget: budgetVal,
       });
       onCreated();
     } catch (err) {
@@ -122,13 +146,6 @@ export function AddTaskForm({ availableModels, availableVariants, onCreated, onC
       setSubmitting(false);
     }
   };
-
-  const groups = providerGroup(availableModels);
-  const providerOrder = ["github-copilot", "opencode", "nvidia"];
-  const sortedProviders = [
-    ...providerOrder.filter((p) => groups[p]),
-    ...Object.keys(groups).filter((p) => !providerOrder.includes(p)),
-  ];
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
@@ -247,9 +264,7 @@ export function AddTaskForm({ availableModels, availableVariants, onCreated, onC
                 className="w-full bg-gray-700 rounded px-3 py-2 text-gray-100 border border-gray-600 focus:border-blue-500 focus:outline-none"
               >
                 <option value="opencode">OpenCode</option>
-                <option value="cursor_ide">Cursor IDE</option>
                 <option value="cursor_cli">Cursor CLI</option>
-                <option value="copilot_ide">Copilot IDE</option>
               </select>
             </div>
           </div>
@@ -260,13 +275,13 @@ export function AddTaskForm({ availableModels, availableVariants, onCreated, onC
               <select
                 value={model}
                 onChange={(e) => setModel(e.target.value)}
-                disabled={sortedProviders.length === 0}
+                disabled={platformModels.length === 0}
                 className="w-full bg-gray-700 rounded px-3 py-2 text-gray-100 border border-gray-600 focus:border-blue-500 focus:outline-none"
               >
-                {sortedProviders.length === 0 && <option value="">No models available</option>}
+                {platformModels.length === 0 && <option value="">No models for this platform</option>}
                 {sortedProviders.map((provider) => (
                   <optgroup key={provider} label={provider}>
-                    {groups[provider].map((item) => (
+                    {platformGroups[provider].map((item) => (
                       <option key={item} value={item}>{shortName(item)}</option>
                     ))}
                   </optgroup>
@@ -278,15 +293,31 @@ export function AddTaskForm({ availableModels, availableVariants, onCreated, onC
               <select
                 value={variant}
                 onChange={(e) => setVariant(e.target.value)}
-                className="w-full bg-gray-700 rounded px-3 py-2 text-gray-100 border border-gray-600 focus:border-blue-500 focus:outline-none"
+                disabled={modelHasBuiltinVariant}
+                className="w-full bg-gray-700 rounded px-3 py-2 text-gray-100 border border-gray-600 focus:border-blue-500 focus:outline-none disabled:opacity-50"
               >
-                {(availableVariants.length > 0 ? availableVariants : [""]).map((v) => (
+                {effectiveVariants.map((v) => (
                   <option key={v} value={v}>{v || "(none)"}</option>
                 ))}
               </select>
             </div>
           </div>
           <p className="text-xs text-gray-500 font-mono">{model}{variant ? ` --variant ${variant}` : ""}</p>
+
+          {/* Request Budget */}
+          <div>
+            <label className="block text-sm text-gray-400 mb-1">
+              Request Budget
+              <span className="text-gray-500 ml-1">(auto-wake consumes 1 per dispatch)</span>
+            </label>
+            <input
+              type="number"
+              value={requestBudget}
+              onChange={(e) => setRequestBudget(e.target.value)}
+              min={1}
+              className="w-32 bg-gray-700 rounded px-3 py-2 text-gray-100 border border-gray-600 focus:border-blue-500 focus:outline-none"
+            />
+          </div>
           
           {/* Shape Key Preview */}
           <div className="mt-2 p-2 rounded bg-gray-900 border border-gray-700">

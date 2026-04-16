@@ -2,9 +2,7 @@ const STATUS_STYLES: Record<string, string> = {
   pending: "bg-gray-600 text-gray-100",
   waiting: "bg-slate-600 text-slate-200 border border-slate-500",
   running: "bg-blue-600 text-white animate-pulse",
-  stopped: "bg-amber-600 text-white animate-pulse",
   completed: "bg-emerald-600 text-white",
-  failed: "bg-red-600 text-white",
   cancelled: "bg-yellow-600 text-white",
 };
 

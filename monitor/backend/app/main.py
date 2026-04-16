@@ -42,7 +42,7 @@ from .schemas import (
     TaskResponse,
     TaskUpdate,
 )
-from .artifact_scanner import scan_and_create_tasks
+from .artifact_scanner import prune_stale_tasks, scan_and_create_tasks
 from .state_seed import seed_tasks_from_state_if_empty
 from .task_runtime import apply_live_runtime
 
@@ -71,6 +71,11 @@ async def lifespan(app: FastAPI):
     await init_db()
     async with async_session() as session:
         await seed_tasks_from_state_if_empty(session)
+    async with async_session() as session:
+        pruned_ids = await prune_stale_tasks(session)
+        if pruned_ids:
+            logger.info("Startup: cleaned %d stale task(s) from DB", len(pruned_ids))
+    async with async_session() as session:
         await scan_and_create_tasks(session)
     await scheduler.start()
     yield
@@ -120,6 +125,7 @@ async def create_task(
         mode=body.mode,
         model=body.model,
         variant=body.variant,
+        request_budget=body.request_budget,
         max_iterations=max_iter,
         status="pending",
         current_iteration=0,
@@ -167,9 +173,9 @@ async def update_task(
             changed = True
 
     if body.status == "cancelled":
-        if task.status not in ("pending", "running", "waiting", "stopped"):
+        if task.status not in ("pending", "running", "waiting"):
             raise HTTPException(
-                400, "Can only cancel pending, running, waiting, or stopped tasks"
+                400, "Can only cancel pending, running, or waiting tasks"
             )
         if task.status != "cancelled":
             task.status = "cancelled"
@@ -202,7 +208,7 @@ async def delete_task(task_id: int, session: AsyncSession = Depends(get_session)
         raise HTTPException(404, "Task not found")
     if task.status == "running":
         raise HTTPException(400, "Cannot delete a running task; cancel it first")
-    if task.status not in ("pending", "waiting", "completed", "failed", "cancelled"):
+    if task.status not in ("pending", "waiting", "completed", "cancelled"):
         raise HTTPException(400, "Cannot delete this task in its current state")
     await session.delete(task)
     await session.commit()
@@ -214,9 +220,9 @@ async def retry_task(task_id: int, session: AsyncSession = Depends(get_session))
     task = await session.get(Task, task_id)
     if not task:
         raise HTTPException(404, "Task not found")
-    if task.status not in ("failed", "completed", "cancelled", "stopped"):
+    if task.status not in ("pending", "completed", "cancelled"):
         raise HTTPException(
-            400, "Can only retry failed, completed, cancelled, or stopped tasks"
+            400, "Can only retry pending, completed, or cancelled tasks"
         )
 
     retry = Task(
@@ -401,7 +407,7 @@ async def update_auto_wake_settings(
 
 @app.get("/api/events")
 async def sse_events():
-    return EventSourceResponse(event_bus.subscribe())
+    return EventSourceResponse(event_bus.subscribe(), ping=15)
 
 
 @app.get("/api/health", response_model=HealthResponse)
@@ -431,9 +437,7 @@ async def health(session: AsyncSession = Depends(get_session)):
         "waiting",
         "pending",
         "running",
-        "stopped",
         "completed",
-        "failed",
         "cancelled",
     ):
         task_counts.setdefault(status, 0)
@@ -463,7 +467,7 @@ async def trigger_scan(session: AsyncSession = Depends(get_session)):
 async def list_agents():
     """List all detected AI agents currently running.
 
-    Returns agents grouped by type: cursor_ide, cursor_cli, opencode, copilot_ide.
+    Returns agents grouped by type: cursor_cli, opencode.
     Each agent includes PID, session ID (if detected), working directory, and active kernel.
     """
     return get_all_agent_sessions()

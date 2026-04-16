@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 from sqlalchemy import select, func
 
 from .agent import poll_artifacts, run_task, terminate_stray_opencode_processes
-from .artifact_scanner import scan_and_create_tasks
+from .artifact_scanner import prune_stale_tasks, scan_and_create_tasks
 from .config import settings
 from .database import async_session
 from .events import event_bus
@@ -97,9 +97,15 @@ class Scheduler:
             await asyncio.sleep(5)
 
     async def _scan_disk(self) -> None:
-        """Periodically scan tuning dir for runs started outside the UI."""
+        """Periodically scan tuning dir for runs started outside the UI,
+        and prune tasks whose disk artifacts have been deleted."""
         try:
             async with async_session() as session:
+                pruned = await prune_stale_tasks(session)
+                if pruned:
+                    logger.info("Periodic cleanup: pruned %d stale task(s)", pruned)
+                    for task_id in pruned:
+                        await event_bus.publish("task_deleted", {"id": task_id})
                 created = await scan_and_create_tasks(session)
                 if created:
                     logger.info("Artifact scan: created %d new task(s) from disk", created)
@@ -108,33 +114,43 @@ class Scheduler:
 
     async def _try_dispatch(self) -> None:
         async with async_session() as session:
-            # Check if auto-wake is enabled
             auto_wake = await get_auto_wake_enabled(session)
-            
+
             result = await session.execute(
                 select(Task)
                 .where(Task.status == "pending")
                 .order_by(Task.created_at.asc())
-                .limit(1)
             )
-            task = result.scalar_one_or_none()
+            candidates = list(result.scalars().all())
 
-            if task is None:
+            if not candidates:
                 await self._auto_sweep(session)
                 result = await session.execute(
                     select(Task)
                     .where(Task.status == "pending")
                     .order_by(Task.created_at.asc())
-                    .limit(1)
                 )
-                task = result.scalar_one_or_none()
+                candidates = list(result.scalars().all())
 
-            if task is None:
+            if not candidates:
                 return
-            
-            # If auto-wake is disabled, only poll artifacts (monitor mode)
+
             if not auto_wake:
                 logger.debug("Auto-wake disabled, skipping task dispatch")
+                return
+
+            task = None
+            for candidate in candidates:
+                budget = candidate.request_budget if candidate.request_budget is not None else 1
+                if budget > 0:
+                    task = candidate
+                    break
+                logger.debug(
+                    "Task %d (%s) has no budget remaining, skipping",
+                    candidate.id, candidate.shape_key,
+                )
+
+            if task is None:
                 return
 
             task.status = "running"
@@ -147,7 +163,10 @@ class Scheduler:
             await session.commit()
 
             self.active_task_id = task.id
-            logger.info("Dispatching task %d (%s) model=%s variant=%s", task.id, task.shape_key, task.model, task.variant)
+            logger.info(
+                "Dispatching task %d (%s) model=%s variant=%s budget_remaining=%d",
+                task.id, task.shape_key, task.model, task.variant, task.request_budget,
+            )
             await event_bus.publish("task_update", task.to_dict())
 
             task_snapshot = _snapshot(task)
@@ -186,6 +205,19 @@ class Scheduler:
         await event_bus.publish("task_update", waiting_task.to_dict())
 
     async def _run_worker(self, task: Task) -> None:
+        async with async_session() as session:
+            db_task = await session.get(Task, task.id)
+            if db_task:
+                budget = db_task.request_budget if db_task.request_budget is not None else 1
+                db_task.request_budget = max(budget - 1, 0)
+                db_task.request_number = (db_task.request_number or 0) + 1
+                await session.commit()
+                logger.info(
+                    "Request #%d for task %d, budget_remaining=%d",
+                    db_task.request_number, task.id, db_task.request_budget,
+                )
+                task.request_number = db_task.request_number
+
         try:
             exit_code = await run_task(task, async_session)
         except asyncio.CancelledError:
@@ -199,10 +231,12 @@ class Scheduler:
 
     async def _finalize_task(self, task_id: int, exit_code: int | None, source: str = "") -> None:
         """Common finalization for both _run_worker and _adopt_worker.
-        
-        Always respawns: if the task has progress but isn't done, re-queue it.
+
+        Status transitions:
+          - max iterations reached → completed
+          - cancelled by user → stays cancelled
+          - otherwise → pending (ready for re-dispatch if budget allows)
         """
-        should_autocontinue = False
         async with async_session() as session:
             db_task = await session.get(Task, task_id)
             if not db_task:
@@ -215,23 +249,19 @@ class Scheduler:
                 db_task.status = "completed"
                 db_task.completed_at = datetime.now(timezone.utc)
                 logger.info("Task %d completed (%d/%d)", task_id, db_task.current_iteration, db_task.max_iterations)
-            elif db_task.current_iteration > 0:
-                db_task.status = "stopped"
+            else:
+                db_task.status = "pending"
                 reason = f"exit={exit_code}" if exit_code else "normally"
                 db_task.error_message = (
-                    f"opencode ended ({reason}) at iter {db_task.current_iteration}"
-                    f"/{db_task.max_iterations} [{source}] — will respawn"
+                    f"Agent ended ({reason}) at iter {db_task.current_iteration}"
+                    f"/{db_task.max_iterations} [{source}]"
                 )
-                should_autocontinue = True
+                count = (db_task.respawn_count or 0) + 1
+                db_task.respawn_count = count
                 logger.info(
-                    "Task %d stopped at iter %d/%d — will respawn",
-                    task_id, db_task.current_iteration, db_task.max_iterations,
+                    "Task %d → pending at iter %d/%d (respawn #%d)",
+                    task_id, db_task.current_iteration, db_task.max_iterations, count,
                 )
-            else:
-                db_task.status = "failed"
-                if not db_task.error_message:
-                    db_task.error_message = f"opencode exited with code {exit_code} (no progress)"
-                logger.warning("Task %d failed with no progress (exit %s)", task_id, exit_code)
 
             db_task.updated_at = datetime.now(timezone.utc)
             await session.commit()
@@ -239,66 +269,6 @@ class Scheduler:
 
         self.active_task_id = None
         logger.info("Task %d finished [%s] exit_code=%s", task_id, source, exit_code)
-
-        if should_autocontinue:
-            await self._respawn(task_id)
-
-    MAX_RESPAWNS = 5
-
-    async def _respawn(self, task_id: int) -> None:
-        """Re-queue a stopped task as pending with exponential backoff.
-
-        Caps at MAX_RESPAWNS retries, then marks the task as failed.
-        """
-        async with async_session() as session:
-            db_task = await session.get(Task, task_id)
-            if not db_task or db_task.status != "stopped":
-                return
-
-            if db_task.current_iteration >= db_task.max_iterations:
-                db_task.status = "completed"
-                db_task.completed_at = datetime.now(timezone.utc)
-                db_task.updated_at = datetime.now(timezone.utc)
-                await session.commit()
-                await event_bus.publish("task_update", db_task.to_dict())
-                return
-
-            count = db_task.respawn_count + 1
-            if count > self.MAX_RESPAWNS:
-                db_task.status = "failed"
-                db_task.error_message = (
-                    f"Max respawns exceeded ({self.MAX_RESPAWNS}) at iter "
-                    f"{db_task.current_iteration}/{db_task.max_iterations}"
-                )
-                db_task.updated_at = datetime.now(timezone.utc)
-                await session.commit()
-                await event_bus.publish("task_update", db_task.to_dict())
-                logger.warning("Task %d failed: max respawns exceeded", task_id)
-                return
-
-            delay = min(3 * (2 ** db_task.respawn_count), 120)
-            db_task.respawn_count = count
-            await session.commit()
-
-        logger.info("Respawn: waiting %ds before re-queuing task %d (attempt %d/%d)",
-                     delay, task_id, count, self.MAX_RESPAWNS)
-        await asyncio.sleep(delay)
-
-        async with async_session() as session:
-            db_task = await session.get(Task, task_id)
-            if not db_task or db_task.status != "stopped":
-                return
-            db_task.status = "pending"
-            db_task.error_message = None
-            db_task.updated_at = datetime.now(timezone.utc)
-            await session.commit()
-            await event_bus.publish("task_update", db_task.to_dict())
-            logger.info(
-                "Respawn: re-queued task %d (%s) at iter %d/%d (attempt %d/%d)",
-                db_task.id, db_task.shape_key,
-                db_task.current_iteration, db_task.max_iterations,
-                count, self.MAX_RESPAWNS,
-            )
 
     async def _adopt_worker(self, task: Task) -> None:
         """Poll artifacts for a task whose opencode subprocess is still running
@@ -351,6 +321,7 @@ def _snapshot(task: Task) -> Task:
         best_kernel=task.best_kernel,
         model=task.model,
         variant=task.variant,
+        request_number=task.request_number,
         opencode_session_id=task.opencode_session_id,
     )
 

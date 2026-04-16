@@ -27,8 +27,11 @@ class EventBus:
         self._subscribers.append(q)
         try:
             while True:
-                payload = await q.get()
-                yield json.dumps(payload)
+                try:
+                    payload = await asyncio.wait_for(q.get(), timeout=15)
+                    yield json.dumps(payload)
+                except asyncio.TimeoutError:
+                    yield json.dumps({"type": "ping", "data": {}})
         finally:
             if q in self._subscribers:
                 self._subscribers.remove(q)

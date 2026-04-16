@@ -114,6 +114,7 @@ export function TaskDetail({ sseEvent }: Props) {
             kernel_path: null,
             bottleneck: null,
             idea_summary: null,
+            request_number: (d.request_number as number | null) ?? null,
             logged_at: new Date().toISOString(),
           },
         ];
@@ -249,7 +250,7 @@ export function TaskDetail({ sseEvent }: Props) {
               Promote to queue
             </button>
           )}
-          {(task.status === "failed" || task.status === "completed" || task.status === "cancelled" || task.status === "stopped") && (
+          {(task.status === "pending" || task.status === "completed" || task.status === "cancelled") && (
             <>
               <button
                 type="button"
@@ -267,7 +268,7 @@ export function TaskDetail({ sseEvent }: Props) {
               </button>
             </>
           )}
-          {(task.status === "running" || task.status === "pending" || task.status === "waiting" || task.status === "stopped") && (
+          {(task.status === "running" || task.status === "pending" || task.status === "waiting") && (
             <button
               type="button"
               onClick={handleCancel}
@@ -386,9 +387,9 @@ export function TaskDetail({ sseEvent }: Props) {
         </div>
 
         <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
-          <h3 className="text-sm font-semibold text-gray-400 mb-2">OpenCode Session</h3>
+          <h3 className="text-sm font-semibold text-gray-400 mb-2">Agent Session</h3>
           <div className="font-mono text-sm text-cyan-300 break-all">{task.opencode_session_id ?? "Not captured yet"}</div>
-          <div className="mt-1 text-xs text-gray-500">Session ID is captured from the live opencode logs for this task.</div>
+          <div className="mt-1 text-xs text-gray-500">Session ID is captured from the live agent logs for this task.</div>
         </div>
       </div>
 
@@ -413,11 +414,41 @@ export function TaskDetail({ sseEvent }: Props) {
 
       <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
         <h3 className="text-sm font-semibold text-gray-400 mb-3">Iteration Log</h3>
+
+        {/* Request-iteration summary */}
+        {(() => {
+          const groups: Record<number, { min: number; max: number }> = {};
+          for (const log of iterLogs) {
+            const rn = log.request_number ?? 0;
+            if (!groups[rn]) groups[rn] = { min: log.iteration, max: log.iteration };
+            else {
+              groups[rn].min = Math.min(groups[rn].min, log.iteration);
+              groups[rn].max = Math.max(groups[rn].max, log.iteration);
+            }
+          }
+          const entries = Object.entries(groups)
+            .map(([k, v]) => ({ rn: Number(k), ...v }))
+            .filter(e => e.rn > 0)
+            .sort((a, b) => a.rn - b.rn);
+          if (entries.length === 0) return null;
+          return (
+            <div className="mb-3 flex flex-wrap gap-2">
+              {entries.map(e => (
+                <span key={e.rn} className="text-xs px-2 py-1 rounded bg-gray-700 text-gray-300 font-mono">
+                  Request #{e.rn}: iter{String(e.min).padStart(2, "0")}
+                  {e.max > e.min ? `–${String(e.max).padStart(2, "0")}` : ""}
+                </span>
+              ))}
+            </div>
+          );
+        })()}
+
         <div className="overflow-x-auto max-h-64 overflow-y-auto">
           <table className="w-full text-xs">
             <thead className="sticky top-0 bg-gray-800">
               <tr className="text-left text-gray-500 border-b border-gray-700">
                 <th className="py-2 px-3">#</th>
+                <th className="py-2 px-3">Req</th>
                 <th className="py-2 px-3">TFLOPS</th>
                 <th className="py-2 px-3">Decision</th>
                 <th className="py-2 px-3">Bottleneck</th>
@@ -431,6 +462,9 @@ export function TaskDetail({ sseEvent }: Props) {
                 <tr key={log.id} className={`border-b border-gray-700/50 ${isBaseline ? "bg-amber-950/20" : ""}`}>
                   <td className="py-1.5 px-3 text-gray-400">
                     {isBaseline ? <span className="text-amber-400 font-semibold">base</span> : log.iteration}
+                  </td>
+                  <td className="py-1.5 px-3 text-gray-500 font-mono">
+                    {log.request_number ? `#${log.request_number}` : "--"}
                   </td>
                   <td className={`py-1.5 px-3 font-mono ${isBaseline ? "text-amber-300" : "text-gray-200"}`}>
                     {log.tflops?.toFixed(1) ?? "--"}
@@ -452,7 +486,7 @@ export function TaskDetail({ sseEvent }: Props) {
               })}
               {iterLogs.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="py-4 text-center text-gray-600">
+                  <td colSpan={6} className="py-4 text-center text-gray-600">
                     No iterations recorded yet.
                   </td>
                 </tr>
@@ -462,24 +496,14 @@ export function TaskDetail({ sseEvent }: Props) {
         </div>
       </div>
 
-      {task.agent_type !== "cursor_ide" && task.agent_type !== "copilot_ide" && (
-        <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
-          <h3 className="text-sm font-semibold text-gray-400 mb-3">OpenCode Session History</h3>
-          <SessionHistory history={sessionHistory} />
-        </div>
-      )}
+      <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+        <h3 className="text-sm font-semibold text-gray-400 mb-3">Agent Session History</h3>
+        <SessionHistory history={sessionHistory} />
+      </div>
 
       <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
         <h3 className="text-sm font-semibold text-gray-400 mb-3">Runtime Event Log</h3>
-        {(task.agent_type === "cursor_ide" || task.agent_type === "copilot_ide") && agentLogs.length === 0 ? (
-          <div className="text-sm text-gray-500 py-4 text-center">
-            Agent runs inside {task.agent_type === "cursor_ide" ? "Cursor IDE" : "Copilot IDE"} — live logs are tracked via artifact files, not process output.
-            <br />
-            <span className="text-gray-600 text-xs">Iteration progress is updated automatically from results.tsv every 30s.</span>
-          </div>
-        ) : (
-          <LiveLog logs={agentLogs} />
-        )}
+        <LiveLog logs={agentLogs} />
       </div>
     </div>
   );

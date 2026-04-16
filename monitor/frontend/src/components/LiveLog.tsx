@@ -1,4 +1,3 @@
-import { useEffect, useRef } from "react";
 import type { AgentLogData } from "../api";
 
 interface Props {
@@ -6,12 +5,6 @@ interface Props {
 }
 
 export function LiveLog({ logs }: Props) {
-  const bottomRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView?.({ behavior: "smooth" });
-  }, [logs.length]);
-
   return (
     <div className="bg-gray-900 rounded-lg border border-gray-700 h-64 overflow-y-auto font-mono text-xs p-3">
       {logs.length === 0 && (
@@ -28,7 +21,6 @@ export function LiveLog({ logs }: Props) {
           </div>
         );
       })}
-      <div ref={bottomRef} />
     </div>
   );
 }

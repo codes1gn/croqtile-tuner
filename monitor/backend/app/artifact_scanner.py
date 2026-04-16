@@ -240,6 +240,38 @@ def _parse_results_tsv(results_path: Path) -> dict:
     return result
 
 
+async def prune_stale_tasks(session: AsyncSession) -> list[int]:
+    """Remove DB tasks whose tuning artifacts no longer exist on disk.
+
+    Called at startup and periodically by the scheduler.
+    Only prunes scanner-created tasks (compound keys with '/').
+    Never prunes running tasks to avoid race conditions.
+    Returns the list of pruned task IDs.
+    """
+    discovered = discover_shape_keys()
+
+    result = await session.execute(select(Task))
+    existing: dict[str, Task] = {t.shape_key: t for t in result.scalars().all()}
+
+    pruned_ids: list[int] = []
+    for shape_key, task in list(existing.items()):
+        if "/" not in shape_key:
+            continue
+        if shape_key in discovered:
+            continue
+        if task.status == "running":
+            continue
+        logger.info("Pruning stale task %d (%s) — disk artifacts removed", task.id, shape_key)
+        pruned_ids.append(task.id)
+        await session.delete(task)
+
+    if pruned_ids:
+        await session.commit()
+        logger.info("Pruned %d stale task(s) from DB", len(pruned_ids))
+
+    return pruned_ids
+
+
 async def scan_and_create_tasks(session: AsyncSession) -> int:
     """Discover tuning runs on disk, create tasks for new ones, and refresh metrics for existing ones.
 
@@ -260,9 +292,6 @@ async def scan_and_create_tasks(session: AsyncSession) -> int:
     created = 0
     changed = False
 
-    # Prune tasks whose disk artifacts no longer exist.
-    # Only remove scanner-created tasks (compound keys with '/'), never
-    # manually-created tasks.  Skip running tasks to avoid race conditions.
     for shape_key, task in list(existing.items()):
         if "/" not in shape_key:
             continue
@@ -278,6 +307,11 @@ async def scan_and_create_tasks(session: AsyncSession) -> int:
         if changed:
             await session.commit()
         return 0
+
+    bare_keys_with_tasks: set[str] = set()
+    for sk in existing:
+        bare = sk.split("/")[-1] if "/" in sk else sk
+        bare_keys_with_tasks.add(bare)
 
     for compound_key, info in discovered.items():
         metrics = _collect_metrics(info)
@@ -323,12 +357,19 @@ async def scan_and_create_tasks(session: AsyncSession) -> int:
                 changed = True
             continue
 
+        if bare_shape_key in bare_keys_with_tasks:
+            logger.debug(
+                "Skipping %s — a task for bare key %s already exists",
+                compound_key, bare_shape_key,
+            )
+            continue
+
         parsed = _parse_shape_key(bare_shape_key)
         if parsed is None:
             logger.debug("Skipping unparseable shape key from disk: %s", compound_key)
             continue
 
-        initial_status = "stopped" if metrics.get("current_iteration", 0) > 0 else "pending"
+        initial_status = "pending"
 
         task = Task(
             shape_key=compound_key,
@@ -392,7 +433,7 @@ async def _sync_agent_status(session: AsyncSession) -> None:
     for task in tasks:
         bare_key = task.shape_key.split("/")[-1] if "/" in task.shape_key else task.shape_key
         agent_type = active_kernels.get(bare_key) or active_kernels.get(task.shape_key)
-        if agent_type and task.status in ("pending", "stopped"):
+        if agent_type and task.status == "pending":
             task.status = "running"
             task.agent_type = agent_type
             task.started_at = task.started_at or datetime.now(timezone.utc)

@@ -1,4 +1,3 @@
-import { useEffect, useRef } from "react";
 import type { SessionHistoryData } from "../api";
 
 interface Props {
@@ -17,16 +16,11 @@ const KIND_LABELS: Record<string, string> = {
 };
 
 export function SessionHistory({ history }: Props) {
-  const bottomRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView?.({ behavior: "smooth" });
-  }, [history?.entries.length]);
 
   if (!history?.session_id) {
     return (
       <div className="rounded-lg border border-gray-700 bg-gray-900 p-4 text-sm text-gray-500">
-        OpenCode session has not been captured for this task yet.
+        Agent session has not been captured for this task yet.
       </div>
     );
   }
@@ -63,7 +57,6 @@ export function SessionHistory({ history }: Props) {
             </div>
           );
         })}
-        <div ref={bottomRef} />
       </div>
     </div>
   );

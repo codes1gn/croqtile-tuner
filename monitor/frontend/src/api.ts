@@ -18,6 +18,8 @@ export interface TaskData {
   best_kernel: string | null;
   model: string | null;
   variant: string | null;
+  request_budget: number;
+  request_number: number;
   agent_type: string | null;
   device: string | null;
   opencode_session_id: string | null;
@@ -32,6 +34,7 @@ export interface IterationLogData {
   id: number;
   task_id: number;
   iteration: number;
+  request_number: number | null;
   kernel_path: string | null;
   tflops: number | null;
   decision: string | null;
@@ -107,7 +110,7 @@ export const api = {
   listTasks: (status?: string) =>
     request<TaskData[]>(`/tasks${status ? `?status=${status}` : ""}`),
 
-  createTask: (data: { op_type: string; dtype: string; m: number; n: number; k: number; dsl: string; mode: string; model: string; variant?: string }) =>
+  createTask: (data: { op_type: string; dtype: string; m: number; n: number; k: number; dsl: string; mode: string; model: string; variant?: string; request_budget?: number }) =>
     request<TaskData>("/tasks", { method: "POST", body: JSON.stringify(data) }),
 
   updateTask: (id: number, data: { status?: string; model?: string; variant?: string }) =>

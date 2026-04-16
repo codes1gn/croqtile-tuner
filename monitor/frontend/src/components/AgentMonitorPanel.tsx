@@ -9,17 +9,13 @@ interface AgentInfo {
 }
 
 interface AgentGroups {
-  cursor_ide: AgentInfo[];
   cursor_cli: AgentInfo[];
   opencode: AgentInfo[];
-  copilot_ide: AgentInfo[];
 }
 
 const AGENT_TYPE_LABELS: Record<keyof AgentGroups, { label: string; color: string }> = {
-  cursor_ide: { label: "Cursor IDE", color: "bg-purple-500/20 text-purple-300" },
   cursor_cli: { label: "Cursor CLI", color: "bg-blue-500/20 text-blue-300" },
   opencode: { label: "OpenCode", color: "bg-green-500/20 text-green-300" },
-  copilot_ide: { label: "Copilot IDE", color: "bg-orange-500/20 text-orange-300" },
 };
 
 export function AgentMonitorPanel() {

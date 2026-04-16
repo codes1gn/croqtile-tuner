@@ -1,0 +1,14 @@
+tuning/sm86_NVIDIA_GeForce_RTX_3070/croqtile/srcs/gemm_sp_f16_4096x4096x4096/opencode-big-pickle/iter002_larger_tile_k.cu(176): warning #177-D: variable "anon_2" was declared but never referenced
+    auto anon_2 = blockIdx.x * 4 + __choreo_vgid_x;
+         ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+tuning/sm86_NVIDIA_GeForce_RTX_3070/croqtile/srcs/gemm_sp_f16_4096x4096x4096/opencode-big-pickle/iter002_larger_tile_k.cu(177): warning #177-D: variable "anon_3" was declared but never referenced
+    auto anon_3 = blockIdx.y * 8 + __choreo_vgid_y;
+         ^
+
+tuning/sm86_NVIDIA_GeForce_RTX_3070/croqtile/srcs/gemm_sp_f16_4096x4096x4096/opencode-big-pickle/iter002_larger_tile_k.cu(169): warning #177-D: variable "__choreo_device_spmm_kernel__ring__" was declared but never referenced
+    auto __choreo_device_spmm_kernel__ring__ = nullptr;
+         ^
+

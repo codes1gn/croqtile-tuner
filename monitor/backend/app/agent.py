@@ -6,14 +6,13 @@ import os
 import re
 import signal
 import subprocess
+import tempfile
 import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from .config import settings
 from .events import event_bus
 from .models import AgentLog, IterationLog, Task
@@ -26,7 +25,9 @@ TFLOPS_PATTERN = re.compile(r"(\d+(?:\.\d+)?)\s*TFLOPS", re.IGNORECASE)
 BASELINE_PATTERN = re.compile(r"[Bb]aseline.*?(\d+(?:\.\d+)?)\s*TFLOPS")
 SESSION_ID_PATTERNS = (
     re.compile(r"sessionID=([A-Za-z0-9_]+)"),
+    re.compile(r'"sessionID"\s*:\s*"([A-Za-z0-9_]+)"'),
     re.compile(r"/session/([A-Za-z0-9_]+)/message"),
+    re.compile(r"service=session\s+id=(ses_[A-Za-z0-9_]+)"),
 )
 FATAL_ERROR_PATTERN = re.compile(
     r"(ProviderModelNotFoundError|Model not found:|EACCES:|stream error|(?:^|\s)fatal error:)",
@@ -57,7 +58,7 @@ def build_prompt(task: Task) -> str:
 def build_command(task: Task) -> list[str]:
     prompt = build_prompt(task)
     project_dir = str(settings.project_dir.resolve())
-    command = [settings.opencode_bin, "run", "--print-logs"]
+    command = [settings.opencode_bin, "run", "--print-logs", "--format", "json"]
     model = task.model or settings.opencode_model
     if model:
         command.extend(["--model", model])
@@ -79,106 +80,6 @@ def extract_session_id(line: str) -> str | None:
             return match.group(1)
     return None
 
-
-async def _iter_stream_lines(stream: asyncio.StreamReader):
-    buffer = b""
-    while True:
-        chunk = await stream.read(4096)
-        if not chunk:
-            break
-        buffer += chunk
-        while True:
-            newline_index = buffer.find(b"\n")
-            if newline_index == -1:
-                if len(buffer) > 65536:
-                    yield buffer
-                    buffer = b""
-                break
-            yield buffer[:newline_index]
-            buffer = buffer[newline_index + 1 :]
-
-    if buffer:
-        yield buffer
-
-
-async def _read_stream(
-    stream: asyncio.StreamReader,
-    task_id: int,
-    level: str,
-    session_factory,
-    run_state: RunState,
-) -> None:
-    """Read subprocess output line-by-line, store as AgentLog, parse iterations."""
-    async for raw in _iter_stream_lines(stream):
-        line = raw.decode("utf-8", errors="replace").rstrip()
-        if not line:
-            continue
-
-        if run_state.fatal_error_message is None and is_fatal_agent_error(line):
-            run_state.fatal_error_message = line
-
-        async with session_factory() as session:
-            log = AgentLog(task_id=task_id, level=level, message=line)
-            session.add(log)
-            task_updated = False
-            task = None
-
-            session_id = extract_session_id(line)
-            if session_id:
-                task = await session.get(Task, task_id)
-                if task and task.opencode_session_id != session_id:
-                    task.opencode_session_id = session_id
-                    task.updated_at = datetime.now(timezone.utc)
-                    task_updated = True
-
-            m = ITER_PATTERN.search(line)
-            if m:
-                iteration = int(m.group(1))
-                tflops = float(m.group(2))
-                decision = m.group(3).upper()
-
-                existing = await session.execute(
-                    select(IterationLog).where(
-                        IterationLog.task_id == task_id,
-                        IterationLog.iteration == iteration,
-                    )
-                )
-                if not existing.scalar_one_or_none():
-                    iter_log = IterationLog(
-                        task_id=task_id,
-                        iteration=iteration,
-                        tflops=tflops,
-                        decision=decision,
-                    )
-                    session.add(iter_log)
-
-                if task is None:
-                    task = await session.get(Task, task_id)
-                if task:
-                    task.current_iteration = max(task.current_iteration, iteration)
-                    if decision == "KEEP" and (task.best_tflops is None or tflops > task.best_tflops):
-                        task.best_tflops = tflops
-                    task.updated_at = datetime.now(timezone.utc)
-                    task_updated = True
-
-            await session.commit()
-
-            if m:
-                await event_bus.publish("iteration", {
-                    "task_id": task_id,
-                    "iteration": int(m.group(1)),
-                    "tflops": float(m.group(2)),
-                    "decision": m.group(3).upper(),
-                })
-
-            if task_updated and task is not None:
-                await event_bus.publish("task_update", task.to_dict())
-
-        await event_bus.publish("agent_log", {
-            "task_id": task_id,
-            "level": level,
-            "message": line,
-        })
 
 
 def _find_artifacts(key: str) -> tuple[Path | None, Path | None]:
@@ -299,8 +200,137 @@ async def poll_artifacts(task: Task, session_factory) -> None:
                     await event_bus.publish("task_update", t.to_dict())
 
 
+async def _tail_file(
+    path: Path,
+    task_id: int,
+    level: str,
+    session_factory,
+    run_state: RunState,
+    stop_event: asyncio.Event,
+) -> None:
+    """Tail a log file line-by-line, processing each line through the parser."""
+    pos = 0
+    buf = ""
+    while not stop_event.is_set():
+        try:
+            raw = path.read_bytes()
+        except OSError:
+            await asyncio.sleep(0.5)
+            continue
+
+        if len(raw) > pos:
+            new_data = raw[pos:].decode("utf-8", errors="replace")
+            pos = len(raw)
+            buf += new_data
+
+            while "\n" in buf:
+                line, buf = buf.split("\n", 1)
+                line = line.rstrip()
+                if not line:
+                    continue
+                await _process_line(line, task_id, level, session_factory, run_state)
+        else:
+            await asyncio.sleep(0.5)
+
+    try:
+        remaining = path.read_bytes()[pos:].decode("utf-8", errors="replace")
+        buf += remaining
+        for line in buf.split("\n"):
+            line = line.rstrip()
+            if line:
+                await _process_line(line, task_id, level, session_factory, run_state)
+    except OSError:
+        pass
+
+
+async def _process_line(
+    line: str,
+    task_id: int,
+    level: str,
+    session_factory,
+    run_state: RunState,
+) -> None:
+    """Process a single output line: store as AgentLog and parse iterations."""
+    if run_state.fatal_error_message is None and is_fatal_agent_error(line):
+        run_state.fatal_error_message = line
+
+    async with session_factory() as session:
+        log = AgentLog(task_id=task_id, level=level, message=line)
+        session.add(log)
+        task_updated = False
+        task = None
+
+        session_id = extract_session_id(line)
+        if session_id:
+            task = await session.get(Task, task_id)
+            if task and task.opencode_session_id != session_id:
+                task.opencode_session_id = session_id
+                task.updated_at = datetime.now(timezone.utc)
+                task_updated = True
+
+        m = ITER_PATTERN.search(line)
+        rn = None
+        if m:
+            iteration = int(m.group(1))
+            tflops = float(m.group(2))
+            decision = m.group(3).upper()
+
+            t = await session.get(Task, task_id)
+            if t:
+                rn = t.request_number
+
+            existing = await session.execute(
+                select(IterationLog).where(
+                    IterationLog.task_id == task_id,
+                    IterationLog.iteration == iteration,
+                )
+            )
+            if not existing.scalar_one_or_none():
+                iter_log = IterationLog(
+                    task_id=task_id,
+                    iteration=iteration,
+                    request_number=rn,
+                    tflops=tflops,
+                    decision=decision,
+                )
+                session.add(iter_log)
+
+            if task is None:
+                task = t or await session.get(Task, task_id)
+            if task:
+                task.current_iteration = max(task.current_iteration, iteration)
+                if decision == "KEEP" and (task.best_tflops is None or tflops > task.best_tflops):
+                    task.best_tflops = tflops
+                task.updated_at = datetime.now(timezone.utc)
+                task_updated = True
+
+        await session.commit()
+
+        if m:
+            await event_bus.publish("iteration", {
+                "task_id": task_id,
+                "iteration": int(m.group(1)),
+                "tflops": float(m.group(2)),
+                "decision": m.group(3).upper(),
+                "request_number": rn,
+            })
+
+        if task_updated and task is not None:
+            await event_bus.publish("task_update", task.to_dict())
+
+    await event_bus.publish("agent_log", {
+        "task_id": task_id,
+        "level": level,
+        "message": line,
+    })
+
+
 async def run_task(task: Task, session_factory) -> int:
-    """Launch opencode subprocess, monitor output, return exit code."""
+    """Launch opencode subprocess, monitor output, return exit code.
+
+    Uses file-based I/O instead of pipes because opencode's default
+    formatter hangs when stdout is connected to a pipe.
+    """
     run_state = RunState()
     if settings.mock_mode:
         cmd = ["python3", str(Path(__file__).parent.parent.parent / "scripts" / "mock_opencode.py"),
@@ -308,35 +338,62 @@ async def run_task(task: Task, session_factory) -> int:
     else:
         cmd = build_command(task)
 
-    proc = await asyncio.create_subprocess_exec(
-        *cmd,
-        cwd=str(settings.project_dir.resolve()),
-        start_new_session=True,
-        env={**os.environ, "CUDA_VISIBLE_DEVICES": settings.cuda_visible_devices},
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE,
+    stdout_fd, stdout_name = tempfile.mkstemp(
+        prefix=f"croqtune_stdout_{task.id}_", suffix=".log"
     )
-
-    stdout_task = asyncio.create_task(
-        _read_stream(proc.stdout, task.id, "info", session_factory, run_state)
+    stderr_fd, stderr_name = tempfile.mkstemp(
+        prefix=f"croqtune_stderr_{task.id}_", suffix=".log"
     )
-    stderr_task = asyncio.create_task(
-        _read_stream(proc.stderr, task.id, "error", session_factory, run_state)
-    )
-
-    poll_task = asyncio.create_task(_poll_loop(task, session_factory, proc))
+    stdout_path = Path(stdout_name)
+    stderr_path = Path(stderr_name)
 
     try:
-        await asyncio.gather(stdout_task, stderr_task)
-        exit_code = await proc.wait()
-    except asyncio.CancelledError:
-        await _terminate_process(proc)
-        raise
-    finally:
-        poll_task.cancel()
+        proc = await asyncio.create_subprocess_exec(
+            *cmd,
+            cwd=str(settings.project_dir.resolve()),
+            start_new_session=True,
+            env={**os.environ, "CUDA_VISIBLE_DEVICES": settings.cuda_visible_devices},
+            stdin=asyncio.subprocess.DEVNULL,
+            stdout=stdout_fd,
+            stderr=stderr_fd,
+        )
+        os.close(stdout_fd)
+        os.close(stderr_fd)
+
+        stop_event = asyncio.Event()
+
+        stdout_task = asyncio.create_task(
+            _tail_file(stdout_path, task.id, "info", session_factory, run_state, stop_event)
+        )
+        stderr_task = asyncio.create_task(
+            _tail_file(stderr_path, task.id, "error", session_factory, run_state, stop_event)
+        )
+        poll_task = asyncio.create_task(_poll_loop(task, session_factory, proc))
+
         try:
-            await poll_task
+            exit_code = await proc.wait()
+            stop_event.set()
+            await asyncio.gather(stdout_task, stderr_task)
         except asyncio.CancelledError:
+            await _terminate_process(proc)
+            stop_event.set()
+            stdout_task.cancel()
+            stderr_task.cancel()
+            raise
+        finally:
+            poll_task.cancel()
+            try:
+                await poll_task
+            except asyncio.CancelledError:
+                pass
+    finally:
+        try:
+            stdout_path.unlink(missing_ok=True)
+        except OSError:
+            pass
+        try:
+            stderr_path.unlink(missing_ok=True)
+        except OSError:
             pass
 
     await poll_artifacts(task, session_factory)

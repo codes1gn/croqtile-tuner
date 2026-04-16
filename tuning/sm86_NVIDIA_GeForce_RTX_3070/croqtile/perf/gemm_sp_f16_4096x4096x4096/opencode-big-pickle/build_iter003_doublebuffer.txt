@@ -1,0 +1,58 @@
+tuning/sm86_NVIDIA_GeForce_RTX_3070/croqtile/srcs/gemm_sp_f16_4096x4096x4096/opencode-big-pickle/iter003_doublebuffer.co:68.21: error: symbol `lhs_buffers' has been declared already.
+        lhs_buffers = dma.copy lhs_packed
+                      ^
+tuning/sm86_NVIDIA_GeForce_RTX_3070/croqtile/srcs/gemm_sp_f16_4096x4096x4096/opencode-big-pickle/iter003_doublebuffer.co:68.21: error: symbol `lhs_buffers.data' is used before declaration.
+        lhs_buffers = dma.copy lhs_packed
+                      ^
+tuning/sm86_NVIDIA_GeForce_RTX_3070/croqtile/srcs/gemm_sp_f16_4096x4096x4096/opencode-big-pickle/iter003_doublebuffer.co:72.21: error: symbol `rhs_buffers' has been declared already.
+        rhs_buffers = dma.copy rhs
+                      ^
+tuning/sm86_NVIDIA_GeForce_RTX_3070/croqtile/srcs/gemm_sp_f16_4096x4096x4096/opencode-big-pickle/iter003_doublebuffer.co:72.21: error: symbol `rhs_buffers.data' is used before declaration.
+        rhs_buffers = dma.copy rhs
+                      ^
+tuning/sm86_NVIDIA_GeForce_RTX_3070/croqtile/srcs/gemm_sp_f16_4096x4096x4096/opencode-big-pickle/iter003_doublebuffer.co:76.22: error: symbol `meta_buffers' has been declared already.
+        meta_buffers = dma.copy lhs_meta
+                       ^
+tuning/sm86_NVIDIA_GeForce_RTX_3070/croqtile/srcs/gemm_sp_f16_4096x4096x4096/opencode-big-pickle/iter003_doublebuffer.co:76.22: error: symbol `meta_buffers.data' is used before declaration.
+        meta_buffers = dma.copy lhs_meta
+                       ^
+tuning/sm86_NVIDIA_GeForce_RTX_3070/croqtile/srcs/gemm_sp_f16_4096x4096x4096/opencode-big-pickle/iter003_doublebuffer.co:83.21: error: symbol `lhs_buffers' has been declared already.
+        lhs_buffers = dma.copy lhs_packed
+                      ^
+tuning/sm86_NVIDIA_GeForce_RTX_3070/croqtile/srcs/gemm_sp_f16_4096x4096x4096/opencode-big-pickle/iter003_doublebuffer.co:83.21: error: symbol `lhs_buffers.data' is used before declaration.
+        lhs_buffers = dma.copy lhs_packed
+                      ^
+tuning/sm86_NVIDIA_GeForce_RTX_3070/croqtile/srcs/gemm_sp_f16_4096x4096x4096/opencode-big-pickle/iter003_doublebuffer.co:87.21: error: symbol `rhs_buffers' has been declared already.
+        rhs_buffers = dma.copy rhs
+                      ^
+tuning/sm86_NVIDIA_GeForce_RTX_3070/croqtile/srcs/gemm_sp_f16_4096x4096x4096/opencode-big-pickle/iter003_doublebuffer.co:87.21: error: symbol `rhs_buffers.data' is used before declaration.
+        rhs_buffers = dma.copy rhs
+                      ^
+tuning/sm86_NVIDIA_GeForce_RTX_3070/croqtile/srcs/gemm_sp_f16_4096x4096x4096/opencode-big-pickle/iter003_doublebuffer.co:91.22: error: symbol `meta_buffers' has been declared already.
+        meta_buffers = dma.copy lhs_meta
+                       ^
+tuning/sm86_NVIDIA_GeForce_RTX_3070/croqtile/srcs/gemm_sp_f16_4096x4096x4096/opencode-big-pickle/iter003_doublebuffer.co:91.22: error: symbol `meta_buffers.data' is used before declaration.
+        meta_buffers = dma.copy lhs_meta
+                       ^
+tuning/sm86_NVIDIA_GeForce_RTX_3070/croqtile/srcs/gemm_sp_f16_4096x4096x4096/opencode-big-pickle/iter003_doublebuffer.co:119.15: error: `stage' of type "mutable s32" can not be re-assigned as "int->[0,iv_k]".
+          stage = iv_k % STAGES;
+                ^
+tuning/sm86_NVIDIA_GeForce_RTX_3070/croqtile/srcs/gemm_sp_f16_4096x4096x4096/opencode-big-pickle/iter003_doublebuffer.co:124.25: error: symbol `lhs_buffers' has been declared already.
+            lhs_buffers = dma.copy lhs_packed
+                          ^
+tuning/sm86_NVIDIA_GeForce_RTX_3070/croqtile/srcs/gemm_sp_f16_4096x4096x4096/opencode-big-pickle/iter003_doublebuffer.co:124.25: error: symbol `lhs_buffers.data' is used before declaration.
+            lhs_buffers = dma.copy lhs_packed
+                          ^
+tuning/sm86_NVIDIA_GeForce_RTX_3070/croqtile/srcs/gemm_sp_f16_4096x4096x4096/opencode-big-pickle/iter003_doublebuffer.co:128.25: error: symbol `rhs_buffers' has been declared already.
+            rhs_buffers = dma.copy rhs
+                          ^
+tuning/sm86_NVIDIA_GeForce_RTX_3070/croqtile/srcs/gemm_sp_f16_4096x4096x4096/opencode-big-pickle/iter003_doublebuffer.co:128.25: error: symbol `rhs_buffers.data' is used before declaration.
+            rhs_buffers = dma.copy rhs
+                          ^
+tuning/sm86_NVIDIA_GeForce_RTX_3070/croqtile/srcs/gemm_sp_f16_4096x4096x4096/opencode-big-pickle/iter003_doublebuffer.co:132.26: error: symbol `meta_buffers' has been declared already.
+            meta_buffers = dma.copy lhs_meta
+                           ^
+tuning/sm86_NVIDIA_GeForce_RTX_3070/croqtile/srcs/gemm_sp_f16_4096x4096x4096/opencode-big-pickle/iter003_doublebuffer.co:132.26: error: symbol `meta_buffers.data' is used before declaration.
+            meta_buffers = dma.copy lhs_meta
+                           ^
+Totally 19 errors have been detected.

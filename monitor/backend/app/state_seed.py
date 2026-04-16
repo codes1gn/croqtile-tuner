@@ -80,7 +80,7 @@ async def seed_tasks_from_state_if_empty(session: AsyncSession) -> bool:
             continue
 
         dtype, m_raw, n_raw, k_raw = match.groups()
-        mode = "cursor_ide"
+        mode = "opencode"
         max_iter = 30
         row = {
             "shape_key": key,

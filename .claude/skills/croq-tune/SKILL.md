@@ -157,14 +157,38 @@ plus DSL-specific checks (e.g. `CHOREO_HOME`/`CUTE_HOME`/`CUDA_HOME` for croqtil
 If the harness exits non-zero: **STOP and escalate to user.** Show the `errors` array
 from the JSON output. Tuning CANNOT start if validation fails. No fallbacks.
 
-### 2. Baseline Environment Setup
+### 2. Baseline Environment + cuBLAS Reference (MANDATORY)
 
-Detect environment and baseline library readiness:
+**Step 2a — Check environment libraries:**
 ```bash
 python3 .claude/skills/croq-tune/tools/prepare_baseline_env.py \
   --dsl <dsl> --operator <op> --kernel <kernel> --shape-key <shape_key> --libs auto
 ```
-Check baseline readout in `baseline-workspace/<dsl>/<operator>/<dtype>/`. If readout exists, reuse it. If missing, run baseline and persist before first round.
+
+**Step 2b — Measure cuBLAS reference TFLOPS (MANDATORY, BLOCKING):**
+
+Before any tuning starts, you MUST measure a cuBLAS/torch.mm baseline to know
+the hardware ceiling. This number is recorded as `baseline_tflops` and used for
+all KEEP/DISCARD context. Without it, you have no reference for quality of results.
+
+```bash
+GPU_STATE=$(bash .claude/skills/croq-tune/tools/gpu_check.sh)
+# Wait for idle GPU before baseline measurement
+
+BASELINE=$(bash .claude/skills/croq-tune/tools/cublas_baseline.sh \
+    --dtype <dtype> --m <M> --n <N> --k <K>)
+echo "$BASELINE"
+```
+
+The output is JSON with `tflops`, `status`, and timing data. Record the `tflops`
+value as `baseline_tflops` for this shape. If the script fails (exit != 0),
+check `torch` / CUDA availability and retry.
+
+**NEVER skip this step.** Even for small shapes, the cuBLAS baseline gives context:
+- If cuBLAS gets 0.5 TFLOPS and your kernel gets 0.4, that's 80% — good
+- Without the baseline, 0.4 TFLOPS is meaningless
+
+Persist the baseline in the checkpoint and `results.tsv` as `iter000` (round 0).
 
 ### 3. Starting Kernel Discovery (MANDATORY)
 
@@ -472,8 +496,9 @@ All paths below are relative to `tuning/<gpu>/<dsl>/`:
 
 ### Iteration Naming
 
-- `iter000` = trivial measured baseline
-- Public measured: 3-digit `iter001`, `iter002`, ...
+- `iter000` = cuBLAS/library reference baseline (from `cublas_baseline.sh`)
+- `iter001` = first custom kernel (from `discover_baseline.sh` or implemented from scratch)
+- Public measured: 3-digit `iter002`, `iter003`, ...
 - Compile-failed: `attempt<AAAA>` (do not consume iter sequence)
 
 **Tag is required:** `iter<NNN>_<tag>.<ext>` — bare `iter<NNN>.<ext>` without a tag is rejected by the harness.
@@ -496,7 +521,8 @@ Tag: 2-31 chars, lowercase alphanumeric + underscores, descriptive of the idea.
 | `ncu_profile.sh` | PROFILE step | `--out --cmd` |
 | `profile_extract.sh` | After ncu CSV | `--csv --iter` |
 | `gpu_check.sh` | Before PROFILE and MEASURE | (none), or `--wait`, `--kill-others`, `--reset` |
-| `prepare_baseline_env.py` | PREPARATION_ONCE step 2 | `--dsl --operator --kernel --shape-key --libs` |
+| `cublas_baseline.sh` | PREPARATION_ONCE step 2b | `--dtype --m --n --k [--warmup --iters]` |
+| `prepare_baseline_env.py` | PREPARATION_ONCE step 2a | `--dsl --operator --kernel --shape-key --libs` |
 
 All scripts under `.claude/skills/croq-tune/tools/`. `--gpu` is optional for store/checkpoint/next_iter (auto-detected); **required** for `resume_state.sh`.
 

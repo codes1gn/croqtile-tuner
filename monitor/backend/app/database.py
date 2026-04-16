@@ -32,6 +32,16 @@ async def init_db():
             await conn.exec_driver_sql("ALTER TABLE tasks ADD COLUMN dsl VARCHAR(32)")
         if "respawn_count" not in columns:
             await conn.exec_driver_sql("ALTER TABLE tasks ADD COLUMN respawn_count INTEGER DEFAULT 0 NOT NULL")
+        if "request_budget" not in columns:
+            await conn.exec_driver_sql("ALTER TABLE tasks ADD COLUMN request_budget INTEGER DEFAULT 1 NOT NULL")
+        if "request_number" not in columns:
+            await conn.exec_driver_sql("ALTER TABLE tasks ADD COLUMN request_number INTEGER DEFAULT 0 NOT NULL")
+        iter_columns = {
+            row[1]
+            for row in (await conn.exec_driver_sql("PRAGMA table_info(iteration_logs)")).fetchall()
+        }
+        if "request_number" not in iter_columns:
+            await conn.exec_driver_sql("ALTER TABLE iteration_logs ADD COLUMN request_number INTEGER")
 
 
 async def get_session():
