@@ -163,3 +163,10 @@
 - decision: **DISCARD**
 - bottleneck: `register_pressure`
 - idea: TILE_K=64 on directstore: 0.088 TFLOPS catastrophic regression. TILE_K=48 crashed (illegal mem access, 4096/48 non-integer). TILE_K=64 causes register spills regardless of output path.
+
+## iter013 — 2026-04-16T05:17:03Z
+- kernel: `iter013_doublebuf`
+- tflops: `0.101`
+- decision: **DISCARD**
+- bottleneck: `latency_bound`
+- idea: 4-warp block TILE_M=32/TILE_N=32 with sync dma.copy: 0.101 TFLOPS regression. Async copy with 4 warps causes 4x redundant copies. Sync copy avoids redundancy but is slower.
