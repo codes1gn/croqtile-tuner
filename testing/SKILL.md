@@ -153,22 +153,17 @@ Both tools are tested by `testing/harness/test_mock_tools.sh` (30 tests).
 | output format | Matches `iter[0-9]{3}_tag` pattern |
 | malformed JSON | Script does not crash; skips bad lines |
 
-### `test_store_round.sh` (19 tests)
+### `test_store_round.sh` (14 tests)
 
 | Test | What it checks |
 |---|---|
 | exit code 0 | Successful store exits 0 |
 | success message | `[store_round] STORE complete` printed |
-| rounds.raw.jsonl created | File exists after store |
-| rounds.raw has iter | Correct iter in file |
-| rounds.md created | File exists after store |
-| rounds.md has iter | Markdown section written |
 | idea-log.jsonl created | File exists after store |
 | idea-log has round N | Correct round number |
 | results.tsv created | File exists after store |
 | results.tsv header | Header line present |
 | results.tsv iter row | Correct iter row |
-| 2 stores = 2 lines | Appends, not overwrites |
 | header + 2 data rows | Correct TSV line count |
 | missing kernel | Rejected with ERROR |
 | bare-number kernel | `iter008` without `_tag` rejected |
@@ -205,7 +200,7 @@ Simulates one complete tuning round using mock tools without a real agent or GPU
 | dram/sm metrics | CSV has required columns for profile_extract |
 | profile_extract | Correctly classifies memory_bound from mock CSV |
 | Timing file | Has TFLOPS: and VERIFY: PASS |
-| rounds.raw.jsonl | ≥2 entries after one round |
+| idea-log.jsonl | ≥1 entry after one round |
 | results.tsv | ≥2 data rows |
 | Tag naming | No bare iter*.cu files |
 | Checkpoint | Status is VERIFIED or PROFILE |

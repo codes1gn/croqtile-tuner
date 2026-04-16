@@ -95,14 +95,8 @@ if [[ "$MOCK_ONLY" -eq 1 ]]; then
     printf "VERIFY: PASS\nTFLOPS: 28.50   time_ms: 120.300\n" \
         > "$PERF/timing_iter001_draft.txt"
 
-    # Append iter001 to memory files (as if store_round ran)
-    printf '{"iter": "iter001_draft", "kernel": "iter001_draft", "tflops": 28.5, "decision": "KEEP", "bottleneck": "memory_bound", "idea": "vectorized loads", "timestamp": "%s"}\n' \
-        "$TS" >> "$MEM/rounds.raw.jsonl"
-
-    printf '\n## iter001_draft - %s\n- kernel: `iter001_draft`\n- tflops: `28.5`\n- decision: **KEEP**\n- bottleneck: `memory_bound`\n- idea: vectorized loads\n' \
-        "$TS" >> "$MEM/rounds.md"
-
-    printf '{"round": 1, "iter": "iter001_draft", "bottleneck": "memory_bound", "idea": "vectorized loads", "category": "memory", "expected_gain": "+8 TFLOPS", "timestamp": "%s"}\n' \
+    # Append iter001 to log files (as if store_round ran)
+    printf '{"round": 1, "iter": "iter001_draft", "bottleneck": "memory_bound", "idea": "vectorized loads", "category": "memory", "expected_gain": "+8 TFLOPS", "decision": "KEEP", "tflops": 28.5, "timestamp": "%s"}\n' \
         "$TS" >> "$LOGS/idea-log.jsonl"
 
     printf 'iter001\titer001_draft\t28.5\t120.3\tKEEP\tmemory_bound\tvectorized loads\t%s\n' \
@@ -147,7 +141,7 @@ JSON
         "$(cat "$PERF/ncu_iter001_draft.csv")" "sm__throughput"
 
     # profile_extract.sh classifies correctly
-    PROFILE_JSON=$(bash .claude/skills/croq-profile/profile_extract.sh \
+    PROFILE_JSON=$(bash .claude/skills/croq-tune/tools/profile_extract.sh \
         --csv "$PERF/ncu_iter001_draft.csv" --iter "iter001_draft" 2>/dev/null)
     like "profile_extract classifies memory_bound" "$PROFILE_JSON" '"bottleneck": "memory_bound"'
     like "profile_extract produces high confidence" "$PROFILE_JSON" '"confidence"'
@@ -158,10 +152,10 @@ JSON
     like "timing file has VERIFY: PASS" \
         "$(cat "$PERF/timing_iter001_draft.txt")" "VERIFY: PASS"
 
-    # Memory files
-    LINES=$(wc -l < "$MEM/rounds.raw.jsonl")
-    [ "$LINES" -ge 2 ] && ok "rounds.raw.jsonl has ≥2 entries (baseline + round 1)" 0 \
-        || ok "rounds.raw.jsonl has ≥2 entries (baseline + round 1)" 1
+    # idea-log.jsonl
+    IDEA_LINES=$(wc -l < "$LOGS/idea-log.jsonl")
+    [ "$IDEA_LINES" -ge 1 ] && ok "idea-log.jsonl has ≥1 entry (round 1)" 0 \
+        || ok "idea-log.jsonl has ≥1 entry (round 1)" 1
 
     # results.tsv
     DATA_ROWS=$(tail -n +2 "$LOGS/results.tsv" | grep -c . || true)
@@ -254,7 +248,7 @@ echo ""
 echo "--- STORE step ---"
 check_marker "store_round.sh called"            "store_round\\.sh"
 check_marker "STORE complete message"           "\[store_round\] STORE complete"
-check_marker "rounds.raw.jsonl updated"         "rounds\.raw\.jsonl"
+check_marker "idea-log.jsonl updated"           "idea-log\.jsonl\|idea.log"
 
 echo ""
 echo "--- Anti-patterns (absent = PASS) ---"
@@ -268,12 +262,14 @@ echo ""
 echo "--- Filesystem artifacts ---"
 # Detect GPU key from the session filesystem (try sm90_H100 as default for real sessions)
 GPU_KEY="${CROQTUNER_GPU:-sm90_H100}"
-FS_ROUNDS="tuning/${GPU_KEY}/${DSL}/memory/${SHAPE_KEY}/rounds.raw.jsonl"
-if [[ -f "$FS_ROUNDS" ]]; then
-    LINES=$(wc -l < "$FS_ROUNDS")
-    [ "$LINES" -ge 2 ] && ok "rounds.raw.jsonl ≥2 entries" 0 || ok "rounds.raw.jsonl ≥2 entries" 1
+FS_RESULTS="tuning/${GPU_KEY}/${DSL}/logs/${SHAPE_KEY}"
+# Find results.tsv under any model subdir
+FS_TSV=$(find "$FS_RESULTS" -name results.tsv 2>/dev/null | head -1)
+if [[ -n "$FS_TSV" && -f "$FS_TSV" ]]; then
+    DATA_ROWS=$(tail -n +2 "$FS_TSV" | grep -c . || true)
+    [ "$DATA_ROWS" -ge 2 ] && ok "results.tsv ≥2 data rows" 0 || ok "results.tsv ≥2 data rows" 1
 else
-    ok "rounds.raw.jsonl ≥2 entries" 1
+    ok "results.tsv ≥2 data rows" 1
 fi
 
 FS_PERF="tuning/${GPU_KEY}/${DSL}/perf/${SHAPE_KEY}"

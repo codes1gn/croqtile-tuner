@@ -16,7 +16,7 @@ from .runtime_settings import get_default_model
 logger = logging.getLogger("croqtuner.state_seed")
 
 _SHAPE_KEY_PATTERN = re.compile(
-    r"^(?:matmul_)?([A-Za-z0-9_]+?)_(\d+)x(\d+)x(\d+)(_fs)?$"
+    r"^(?:matmul_)?([A-Za-z0-9_]+?)_(\d+)x(\d+)x(\d+)$"
 )
 
 
@@ -79,9 +79,9 @@ async def seed_tasks_from_state_if_empty(session: AsyncSession) -> bool:
             logger.warning("Skipping malformed shape key during seed: %s", key)
             continue
 
-        dtype, m_raw, n_raw, k_raw, fs = match.groups()
-        mode = "from_scratch" if fs else "from_current_best"
-        max_iter = 150 if mode == "from_scratch" else 30
+        dtype, m_raw, n_raw, k_raw = match.groups()
+        mode = "cursor_ide"
+        max_iter = 30
         row = {
             "shape_key": key,
             "dtype": dtype,
@@ -151,16 +151,37 @@ def _find_results_tsv_for_seed(shape_key: str) -> Path | None:
     if not tuning_dir.exists():
         return None
 
-    # Nested layout: tuning/<gpu>/<dsl>/logs/<shape_key>/results.tsv
+    parts = shape_key.split("/")
+    if len(parts) == 4:
+        candidate = tuning_dir / parts[0] / parts[1] / "logs" / parts[2] / parts[3] / "results.tsv"
+        if candidate.exists():
+            return candidate
+        return None
+
+    if len(parts) == 3:
+        logs_dir = tuning_dir / parts[0] / parts[1] / "logs" / parts[2]
+        if logs_dir.is_dir():
+            for model_dir in logs_dir.iterdir():
+                if model_dir.is_dir():
+                    candidate = model_dir / "results.tsv"
+                    if candidate.exists():
+                        return candidate
+        return None
+
+    # Nested layout: tuning/<gpu>/<dsl>/logs/<shape_key>/<model>/results.tsv
     for gpu_dir in tuning_dir.iterdir():
         if not gpu_dir.is_dir():
             continue
         for dsl_dir in gpu_dir.iterdir():
             if not dsl_dir.is_dir():
                 continue
-            candidate = dsl_dir / "logs" / shape_key / "results.tsv"
-            if candidate.exists():
-                return candidate
+            shape_dir = dsl_dir / "logs" / shape_key
+            if shape_dir.is_dir():
+                for model_dir in shape_dir.iterdir():
+                    if model_dir.is_dir():
+                        candidate = model_dir / "results.tsv"
+                        if candidate.exists():
+                            return candidate
 
     # Legacy flat: tuning/logs/<shape_key>/results.tsv
     flat = tuning_dir / "logs" / shape_key / "results.tsv"
@@ -185,33 +206,52 @@ async def _import_iteration_logs(session: AsyncSession) -> None:
             logger.warning("Failed to read results file during seed: %s", results_path)
             continue
 
+        iteration = 0
         for line in lines:
-            if not line.strip() or line.startswith("#") or line.lower().startswith("iter\t"):
+            stripped = line.strip()
+            if not stripped or stripped.startswith("#"):
                 continue
 
-            parts = line.split("\t")
-            if len(parts) < 4:
+            parts = stripped.split("\t")
+            if not parts:
                 continue
 
+            first = parts[0].lower()
+            if first in ("iter", "round"):
+                continue
+
+            # Detect format like artifact_scanner does:
+            # croqtile: round(int), iter, kernel, tflops, decision, ...
+            # cuda:     iter(str),  kernel, tflops, decision, bottleneck, ...
             try:
-                iteration = int(parts[0].strip())
+                int(parts[0])
+                tflops_idx, decision_idx, kernel_idx = 3, 4, 2
             except ValueError:
+                tflops_idx, decision_idx, kernel_idx = 2, 3, 1
+
+            if len(parts) <= tflops_idx:
                 continue
 
-            tflops = _to_float_or_none(parts[2].strip())
-            decision = parts[4].strip() if len(parts) > 4 else None
+            iteration += 1
+
+            tflops_raw = parts[tflops_idx].strip() if len(parts) > tflops_idx else ""
+            tflops = _to_float_or_none(tflops_raw)
+            decision = parts[decision_idx].strip() if len(parts) > decision_idx else None
             if decision == "BASELINE":
                 decision = None
+            kernel = parts[kernel_idx].strip() if len(parts) > kernel_idx else None
+            bottleneck = parts[decision_idx + 1].strip() if len(parts) > decision_idx + 1 else None
+            idea = parts[decision_idx + 2].strip() if len(parts) > decision_idx + 2 else None
 
             session.add(
                 IterationLog(
                     task_id=task_id,
                     iteration=iteration,
-                    kernel_path=(parts[1].strip() if len(parts) > 1 else "") or None,
+                    kernel_path=kernel or None,
                     tflops=tflops,
                     decision=decision or None,
-                    bottleneck=(parts[5].strip() if len(parts) > 5 else "") or None,
-                    idea_summary=(parts[6].strip() if len(parts) > 6 else "") or None,
+                    bottleneck=bottleneck or None,
+                    idea_summary=idea or None,
                 )
             )
 

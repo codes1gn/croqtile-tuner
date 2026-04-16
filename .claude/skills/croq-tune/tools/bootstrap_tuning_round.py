@@ -152,25 +152,11 @@ def main() -> int:
         encoding="utf-8",
     )
 
-    round_payload = {
-        "timestamp": now,
-        "shape_key": key,
-        "state": "IDEA",
-        "summary": "Baseline profiled, first implementation attempt blocked by missing kernel source.",
-    }
-    (mem_dir / "rounds.raw.jsonl").write_text(json.dumps(round_payload, sort_keys=True) + "\n", encoding="utf-8")
-    (mem_dir / "rounds.md").write_text(
-        "\n".join(
-            [
-                f"## Round bootstrap - {now}",
-                f"- shape: `{key}`",
-                f"- baseline_tflops: `{bench['median_tflops']:.2f}`",
-                "- result: baseline stored; next state returns to IDEA due to missing custom kernel source.",
-                "",
-            ]
-        ),
-        encoding="utf-8",
-    )
+    # mem_dir/sessions/ will hold raw session transcripts (copied at session end)
+    (mem_dir / "sessions").mkdir(parents=True, exist_ok=True)
+
+    # Legacy round payload removed — raw session JSONL is the primary memory.
+    # Only logs/ files (results.tsv, idea-log.jsonl, attempt-log.jsonl) are written.
 
     checkpoint = {
         "schema": "croq-tune-checkpoint-v1",

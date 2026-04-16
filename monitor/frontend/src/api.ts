@@ -9,6 +9,7 @@ export interface TaskData {
   n: number;
   k: number;
   mode: string;
+  dsl: string | null;
   max_iterations: number;
   status: string;
   current_iteration: number;
@@ -18,6 +19,7 @@ export interface TaskData {
   model: string | null;
   variant: string | null;
   agent_type: string | null;
+  device: string | null;
   opencode_session_id: string | null;
   error_message: string | null;
   created_at: string | null;
@@ -105,7 +107,7 @@ export const api = {
   listTasks: (status?: string) =>
     request<TaskData[]>(`/tasks${status ? `?status=${status}` : ""}`),
 
-  createTask: (data: { op_type: string; dtype: string; m: number; n: number; k: number; mode: string; model: string; variant?: string }) =>
+  createTask: (data: { op_type: string; dtype: string; m: number; n: number; k: number; dsl: string; mode: string; model: string; variant?: string }) =>
     request<TaskData>("/tasks", { method: "POST", body: JSON.stringify(data) }),
 
   updateTask: (id: number, data: { status?: string; model?: string; variant?: string }) =>

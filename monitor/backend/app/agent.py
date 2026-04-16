@@ -39,25 +39,18 @@ class RunState:
     fatal_error_message: str | None = None
 
 
+def _bare_shape_key(compound_key: str) -> str:
+    """Extract bare shape key from compound key: 'sm86_.../croqtile/matmul_...' → 'matmul_...'."""
+    return compound_key.split("/")[-1] if "/" in compound_key else compound_key
+
+
 def build_prompt(task: Task) -> str:
-    skills_dir = settings.skills_dir.resolve()
-    fsm_skill = skills_dir / "fsm-engine" / "SKILL.md"
-
-    if task.mode == "from_current_best":
-        mode_skill = skills_dir / "ai-tune-from-current-best" / "SKILL.md"
-    else:
-        mode_skill = skills_dir / "ai-tune-from-scratch" / "SKILL.md"
-
+    dsl = task.dsl or "cuda"
+    shape_key = _bare_shape_key(task.shape_key)
+    model = task.model or "default"
     return (
-        f"Read the CroqTuner FSM skill at {fsm_skill}. "
-        f"Then read the mode skill at {mode_skill}. "
-        f"Tune shape {task.shape_key} (M={task.m}, N={task.n}, K={task.k}, "
-        f"dtype={task.dtype}) using mode {task.mode} with max {task.max_iterations} iterations. "
-        "Follow the FSM protocol exactly. "
-        "Do not stop after a single compile, measure, or decide step. "
-        "You must persist protocol state updates to the CroqTuner artifacts, execute STORE when required, "
-        "and continue looping until the task is genuinely complete according to the FSM completion promise or an unrecoverable error occurs. "
-        f"Work in {settings.project_dir.resolve()}."
+        f"/croq-tune {dsl} {task.dtype} {shape_key} "
+        f"--model {model}"
     )
 
 
@@ -191,8 +184,9 @@ async def _read_stream(
 def _find_artifacts(key: str) -> tuple[Path | None, Path | None]:
     """Locate checkpoint and results.tsv in the nested tuning tree.
 
-    Layout: tuning/<gpu>/<dsl>/checkpoints/<key>.json
-            tuning/<gpu>/<dsl>/logs/<key>/results.tsv
+    Accepts compound keys ({gpu}/{dsl}/{shape_key}/{model}) or bare keys.
+    Layout: tuning/<gpu>/<dsl>/checkpoints/<shape_key>/<model>/current_idea.json
+            tuning/<gpu>/<dsl>/logs/<shape_key>/<model>/results.tsv
     """
     tuning_dir = settings.tuning_dir.resolve()
     checkpoint_path: Path | None = None
@@ -201,18 +195,37 @@ def _find_artifacts(key: str) -> tuple[Path | None, Path | None]:
     if not tuning_dir.exists():
         return checkpoint_path, results_path
 
+    parts = key.split("/")
+    if len(parts) == 4:
+        gpu, dsl, shape, model = parts
+        cp = tuning_dir / gpu / dsl / "checkpoints" / shape / model / "current_idea.json"
+        if cp.exists():
+            checkpoint_path = cp
+        rp = tuning_dir / gpu / dsl / "logs" / shape / model / "results.tsv"
+        if rp.exists():
+            results_path = rp
+        return checkpoint_path, results_path
+
     for gpu_dir in tuning_dir.iterdir():
         if not gpu_dir.is_dir():
             continue
         for dsl_dir in gpu_dir.iterdir():
             if not dsl_dir.is_dir():
                 continue
-            cp = dsl_dir / "checkpoints" / f"{key}.json"
-            if cp.exists() and checkpoint_path is None:
-                checkpoint_path = cp
-            rp = dsl_dir / "logs" / key / "results.tsv"
-            if rp.exists() and results_path is None:
-                results_path = rp
+            cp_dir = dsl_dir / "checkpoints" / key
+            if cp_dir.is_dir():
+                for model_dir in cp_dir.iterdir():
+                    idea = model_dir / "current_idea.json"
+                    if idea.exists() and checkpoint_path is None:
+                        checkpoint_path = idea
+                        break
+            logs_dir = dsl_dir / "logs" / key
+            if logs_dir.is_dir():
+                for model_dir in logs_dir.iterdir():
+                    rp = model_dir / "results.tsv"
+                    if rp.exists() and results_path is None:
+                        results_path = rp
+                        break
             if checkpoint_path and results_path:
                 return checkpoint_path, results_path
 
@@ -227,11 +240,7 @@ async def poll_artifacts(task: Task, session_factory) -> None:
     artifact files (e.g. state.json with status=done from a prior run) from
     prematurely completing a running task.
     """
-    key = task.shape_key
-    if task.mode == "from_scratch" and not key.endswith("_fs"):
-        key = f"{key}_fs"
-
-    checkpoint_path, results_path = _find_artifacts(key)
+    checkpoint_path, results_path = _find_artifacts(task.shape_key)
 
     update: dict = {}
 

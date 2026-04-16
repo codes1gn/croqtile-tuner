@@ -86,13 +86,14 @@ def _find_active_kernel(working_dir: str | None) -> str | None:
     tuning_dir = settings.tuning_dir
     if not tuning_dir.exists():
         return None
-    
-    checkpoints = list(tuning_dir.glob("**/checkpoints/*.json"))
+
+    checkpoints = list(tuning_dir.glob("**/checkpoints/**/current_idea.json"))
     if not checkpoints:
         return None
-    
+
     checkpoints.sort(key=lambda p: p.stat().st_mtime, reverse=True)
-    return checkpoints[0].stem
+    # Return the shape_key (grandparent of the checkpoint file)
+    return checkpoints[0].parent.parent.name
 
 
 def _is_own_user_process(pid: int) -> bool:

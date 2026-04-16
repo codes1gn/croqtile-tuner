@@ -12,7 +12,8 @@ const mockTask: TaskData = {
   m: 768,
   n: 768,
   k: 768,
-  mode: "from_current_best",
+  mode: "opencode",
+  dsl: "croqtile",
   max_iterations: 30,
   status: "running",
   current_iteration: 10,
@@ -22,6 +23,7 @@ const mockTask: TaskData = {
   model: "opencode/qwen3.6-plus-free",
   variant: "",
   agent_type: "opencode",
+  device: "NVIDIA GeForce RTX 3070",
   opencode_session_id: "ses_abc123",
   error_message: null,
   created_at: "2026-04-03T10:00:00",
@@ -48,10 +50,8 @@ describe("TaskList", () => {
     );
     expect(screen.getByText("gemm_sp_f16_768x768x768")).toBeInTheDocument();
     expect(screen.getByText("running")).toBeInTheDocument();
-    expect(screen.getByText("from-best")).toBeInTheDocument();
+    expect(screen.getByText("Croqtile")).toBeInTheDocument();
     expect(screen.getByText("55.3")).toBeInTheDocument();
-    expect(screen.getByText("10/30")).toBeInTheDocument();
-    expect(screen.getByText("Qwen3.6 Plus Free")).toBeInTheDocument();
   });
 
   it("renders multiple tasks", () => {

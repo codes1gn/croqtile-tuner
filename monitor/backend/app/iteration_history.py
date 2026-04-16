@@ -7,25 +7,49 @@ from .config import settings
 
 def _find_results_tsv(shape_key: str) -> Path | None:
     """Find results.tsv file in the croqtile-tuner tuning directory structure.
-    
-    Structure: tuning/<gpu>/<dsl>/logs/<shape_key>/results.tsv
+
+    Accepts compound keys ({gpu}/{dsl}/{bare_shape_key}/{model}),
+    legacy 3-part keys ({gpu}/{dsl}/{bare_shape_key}), and bare shape keys.
+    Structure: tuning/<gpu>/<dsl>/logs/<shape_key>/<model>/results.tsv
     """
     tuning_dir = settings.tuning_dir
     if not tuning_dir.exists():
         return None
-    
-    # Search through GPU directories
+
+    parts = shape_key.split("/")
+    if len(parts) == 4:
+        # Compound key: {gpu}/{dsl}/{bare_shape_key}/{model}
+        candidate = tuning_dir / parts[0] / parts[1] / "logs" / parts[2] / parts[3] / "results.tsv"
+        if candidate.exists():
+            return candidate
+        return None
+
+    if len(parts) == 3:
+        # Legacy 3-part key: {gpu}/{dsl}/{bare_shape_key} — search model dirs
+        logs_dir = tuning_dir / parts[0] / parts[1] / "logs" / parts[2]
+        if logs_dir.is_dir():
+            for model_dir in logs_dir.iterdir():
+                if model_dir.is_dir():
+                    candidate = model_dir / "results.tsv"
+                    if candidate.exists():
+                        return candidate
+        return None
+
+    # Bare shape key — search all gpu/dsl/model combos
     for gpu_dir in tuning_dir.iterdir():
         if not gpu_dir.is_dir():
             continue
-        # Search through DSL directories (cuda, croqtile, etc.)
         for dsl_dir in gpu_dir.iterdir():
             if not dsl_dir.is_dir():
                 continue
-            results_path = dsl_dir / "logs" / shape_key / "results.tsv"
-            if results_path.exists():
-                return results_path
-    
+            shape_dir = dsl_dir / "logs" / shape_key
+            if shape_dir.is_dir():
+                for model_dir in shape_dir.iterdir():
+                    if model_dir.is_dir():
+                        results_path = model_dir / "results.tsv"
+                        if results_path.exists():
+                            return results_path
+
     return None
 
 

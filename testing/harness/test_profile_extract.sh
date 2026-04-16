@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# test_profile_extract.sh — Unit tests for .claude/skills/croq-profile/profile_extract.sh
+# test_profile_extract.sh — Unit tests for .claude/skills/croq-tune/tools/profile_extract.sh
 #
 # Builds synthetic ncu-style CSV fixtures; no GPU required.
 
@@ -7,7 +7,7 @@ set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 source testing/harness/tap_helpers.sh
 
-SCRIPT=".claude/skills/croq-profile/profile_extract.sh"
+SCRIPT=".claude/skills/croq-tune/tools/profile_extract.sh"
 TMP=$(mktemp -d)
 trap 'rm -rf "$TMP"' EXIT
 

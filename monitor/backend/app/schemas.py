@@ -16,20 +16,24 @@ VALID_OP_TYPES = (
 )
 
 
+VALID_DSLS = ("croqtile", "cuda", "triton", "cute", "cutile", "helion", "tilelang")
+VALID_PLATFORMS = ("opencode", "cursor_ide", "cursor_cli", "copilot_ide")
+
+
 class TaskCreate(BaseModel):
     op_type: str = "gemm_sp"
     dtype: str
     m: int
     n: int
     k: int
-    mode: str
+    dsl: str = "croqtile"
+    mode: str = "opencode"
     model: str
     variant: str = ""
 
     @field_validator("op_type")
     @classmethod
     def validate_op_type(cls, v: str) -> str:
-        # Allow any op_type for custom kernels
         return v
 
     @field_validator("dtype")
@@ -60,11 +64,18 @@ class TaskCreate(BaseModel):
             raise ValueError("K must be >= 128")
         return v
 
+    @field_validator("dsl")
+    @classmethod
+    def validate_dsl(cls, v: str) -> str:
+        if v not in VALID_DSLS:
+            raise ValueError(f"dsl must be one of {VALID_DSLS}")
+        return v
+
     @field_validator("mode")
     @classmethod
     def validate_mode(cls, v: str) -> str:
-        if v not in ("from_current_best", "from_scratch"):
-            raise ValueError("mode must be 'from_current_best' or 'from_scratch'")
+        if v not in VALID_PLATFORMS:
+            raise ValueError(f"mode (agent platform) must be one of {VALID_PLATFORMS}")
         return v
 
     @field_validator("model")
@@ -129,6 +140,7 @@ class TaskResponse(BaseModel):
     n: int
     k: int
     mode: str
+    dsl: str | None
     max_iterations: int
     status: str
     current_iteration: int
@@ -138,6 +150,7 @@ class TaskResponse(BaseModel):
     model: str | None
     variant: str | None
     agent_type: str | None
+    device: str | None
     opencode_session_id: str | None
     error_message: str | None
     created_at: str | None

@@ -82,12 +82,14 @@ export function TaskDetail({ sseEvent }: Props) {
   }, [loadData]);
 
   useEffect(() => {
-    if (!task || task.status !== "running") return;
+    if (!task) return;
+    // Poll more frequently for running tasks, less often for stopped/pending tasks
+    const interval = task.status === "running" ? 5000 : 30000;
     const timer = window.setInterval(() => {
       void loadData();
-    }, 5000);
+    }, interval);
     return () => window.clearInterval(timer);
-  }, [loadData, task]);
+  }, [loadData, task?.status]);
 
   useEffect(() => {
     if (!sseEvent || isNaN(taskId)) return;
@@ -235,7 +237,7 @@ export function TaskDetail({ sseEvent }: Props) {
         <h2 className="text-xl font-bold font-mono text-gray-100">{task.shape_key}</h2>
         <StatusBadge status={task.status} />
         <span className="text-sm text-gray-500">
-          {task.mode === "from_current_best" ? "from-best" : "from-scratch"}
+          {({ croqtile: "Croqtile", cuda: "CUDA", triton: "Triton", cute: "CuTe", cutile: "CuTile", helion: "Helion", tilelang: "TileLang" } as Record<string, string>)[task.dsl ?? ""] ?? task.dsl ?? task.mode}
         </span>
         <div className="ml-auto flex items-center gap-2">
           {task.status === "waiting" && (
@@ -406,7 +408,7 @@ export function TaskDetail({ sseEvent }: Props) {
 
       <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
         <h3 className="text-sm font-semibold text-gray-400 mb-3">TFLOPS Over Iterations</h3>
-        <TflopsChart logs={iterLogs} baseline={task.baseline_tflops ?? iterLogs.find((l) => l.iteration === 0)?.tflops ?? null} />
+        <TflopsChart logs={iterLogs} baseline={task.baseline_tflops ?? null} />
       </div>
 
       <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">

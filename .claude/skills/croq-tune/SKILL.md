@@ -26,6 +26,7 @@ argument-hint: <dsl: croqtile|cuda|cute|triton|tilelang|helion|cutile> <dtype: f
 4. Exactly one new idea per round
 5. STORE executes on both KEEP and DISCARD
 6. **NO LIBRARY CALLS IN TUNING ITERATIONS** — see "Pure Implementation Rule"
+7. **NEVER ASK THE HUMAN QUESTIONS** — Make all decisions autonomously. If you encounter ambiguity, choose the most reasonable default and proceed. Never use `AskQuestion`, `question`, or any interactive prompt tool during tuning execution.
 
 ---
 
@@ -122,7 +123,7 @@ Per-DSL allowed/forbidden lists are in the loaded `croq-dsl-<dsl>` file.
 
 ## CRITICAL ANTI-PATTERNS (FORBIDDEN)
 
-- **Fabricating iteration data** — Every `iter<NNN>` in `rounds.raw.jsonl` MUST correspond to a real kernel run with real TFLOPS measurement
+- **Fabricating iteration data** — Every `iter<NNN>` in `results.tsv` / `idea-log.jsonl` MUST correspond to a real kernel run with real TFLOPS measurement
 - **Batch-generating fake results** — NEVER create multiple iteration records with identical timestamps or synthetic values
 - **Skipping profiling** — If ncu fails, STOP; do NOT silently skip or guess
 - **Proceeding without evidence** — Every IDEA must be based on real ncu profiling data
@@ -219,7 +220,7 @@ If `requested_key` is NOT in `existing_keys` → **fresh start**. Do not resume 
 
 ### Resume State — Use the Harness (MANDATORY)
 
-**DO NOT manually read rounds.raw.jsonl, results.tsv, etc. to reconstruct state.**
+**DO NOT manually read results.tsv, idea-log.jsonl, etc. to reconstruct state.**
 
 ```bash
 GPU=$(bash .claude/skills/croq-tune/tools/detect_gpu.sh)
@@ -242,7 +243,7 @@ echo "$STATE"
 | `next_iter_number` | Number for the next `iter<NNN>` |
 | `src_count` | Total iter source files present |
 | `open_checkpoint` | Non-null if IDEA wrote a plan but VERIFY not completed |
-| `memory_files_ok` | true if all 4 memory/log files present |
+| `memory_files_ok` | true if log files (results.tsv, idea-log.jsonl) present |
 | `warnings` | Issues detected (malformed JSON, missing files, etc.) |
 
 **After loading state:**
@@ -279,6 +280,20 @@ Round-loop preamble on every round:
 
 **Every PROFILE step MUST run `ncu` on the current best kernel.** No exceptions. No timing-only shortcuts.
 
+**Step 0 — GPU Contention Check (MANDATORY before profiling AND benchmarking):**
+```bash
+GPU_STATE=$(bash .claude/skills/croq-tune/tools/gpu_check.sh)
+```
+If `idle` is `false` (GPU utilization >= 15%), the performance numbers will be unreliable:
+1. Wait for the GPU to become idle: `bash .claude/skills/croq-tune/tools/gpu_check.sh --wait --timeout 120`
+2. If timeout: kill other GPU processes: `bash .claude/skills/croq-tune/tools/gpu_check.sh --kill-others`
+3. If still busy after kill: attempt GPU reset: `bash .claude/skills/croq-tune/tools/gpu_check.sh --reset`
+4. If reset fails: STOP and report to user — GPU requires manual intervention
+
+**NEVER trust TFLOPS numbers collected while the GPU is under contention.** A sudden extreme drop in performance (e.g. 50%+ below the previous best) is a strong signal of GPU contention. When this happens, re-run the GPU check and re-benchmark.
+
+**Note:** `--kill-others` and `--reset` require sudo. If sudo is not available, the agent should set up a passwordless sudoer entry for `nvidia-smi` via: `echo "$USER ALL=(ALL) NOPASSWD: /usr/bin/nvidia-smi, /usr/bin/kill" | sudo tee /etc/sudoers.d/gpu-tune`
+
 **Step 1 — Profile + Export:**
 ```bash
 NCU_BASE="tuning/<gpu>/<dsl>/perf/<shape_key>/<model>"
@@ -304,7 +319,7 @@ If the output includes a `hint` field (confidence is medium), consider deeper an
 - Load `perf-nsight-compute-analysis` skill for systematic ncu report analysis
 
 **ncu Failure Handling:**
-- Transient (GPU busy, timeout): wait 10s, retry once
+- Transient (GPU busy, timeout): run `gpu_check.sh --wait`, then retry once
 - Permission errors: STOP, report to user, do NOT continue
 - Persistent failure: STOP the tuning loop, log error, report to user
 
@@ -359,10 +374,12 @@ If the output includes a `hint` field (confidence is medium), consider deeper an
 
 ### 5) MEASURE
 
+- **GPU contention check before benchmarking** — run `gpu_check.sh` (same as PROFILE Step 0). If GPU is busy, wait or clean before measuring.
 - Run benchmark using DSL-specific defaults from `croq-dsl-<dsl>` (default: 10 warmup + 50 timed)
 - Use CUDA event timing, never wall-clock time
 - Minimum 3 timed iterations for stability
 - Compute and record TFLOPS; include raw timing in STORE payload
+- **Contention sanity check:** If measured TFLOPS is < 50% of the current best, suspect GPU contention. Re-run `gpu_check.sh`, wait for idle, then re-measure before accepting the result.
 
 ### 6) DECIDE
 
@@ -385,10 +402,8 @@ bash .claude/skills/croq-tune/tools/store_round.sh \
 ```
 
 The harness writes and verifies:
-1. `memory/<key>/<model>/rounds.raw.jsonl`
-2. `memory/<key>/<model>/rounds.md`
-3. `logs/<key>/<model>/idea-log.jsonl`
-4. `logs/<key>/<model>/results.tsv`
+1. `logs/<key>/<model>/idea-log.jsonl`
+2. `logs/<key>/<model>/results.tsv`
 
 Do NOT proceed to CONTINUE until the harness prints `[store_round] STORE complete`.
 **NEVER bypass the harness by writing files manually.**
@@ -398,7 +413,7 @@ For a failed `attempt<AAAA>`, also persist: attempted source, build script, buil
 
 **Post-STORE:** mark `round-step` as `completed`, ensure `continue-croq-tune` is `in_progress`.
 
-**Session Transcript:** At session end or context compaction, copy the session JSONL from `~/.cursor/projects/<slug>/agent-transcripts/<id>/` to `memory/<key>/<model>/sessions/`.
+**Session Transcript as Memory:** The raw chat session JSONL is the primary memory — NOT summarized round logs. At session end or context compaction, copy the full session JSONL from `~/.cursor/projects/<slug>/agent-transcripts/<id>/` to `memory/<key>/<model>/sessions/`. Do NOT generate summarized `rounds.md` — the raw transcript IS the memory.
 
 ### 8) CONTINUE
 
@@ -453,9 +468,7 @@ All paths below are relative to `tuning/<gpu>/<dsl>/`:
 - `logs/<key>/<model>/idea-log.jsonl` — JSON line per round
 - `logs/<key>/<model>/attempt-log.jsonl` — JSON line per failed attempt
 - `checkpoints/<key>/<model>/current_idea.json` — current IDEA checkpoint
-- `memory/<key>/<model>/rounds.raw.jsonl` — JSON line per round
-- `memory/<key>/<model>/rounds.md` — markdown section per round
-- `memory/<key>/<model>/sessions/<session-id>.jsonl` — raw session transcript
+- `memory/<key>/<model>/sessions/<session-id>.jsonl` — raw session transcript (primary memory)
 
 ### Iteration Naming
 
@@ -482,6 +495,7 @@ Tag: 2-31 chars, lowercase alphanumeric + underscores, descriptive of the idea.
 | `co2cu.sh` | IMPLEMENT Phase 1 (croqtile only) | `--co --arch [--flags]` |
 | `ncu_profile.sh` | PROFILE step | `--out --cmd` |
 | `profile_extract.sh` | After ncu CSV | `--csv --iter` |
+| `gpu_check.sh` | Before PROFILE and MEASURE | (none), or `--wait`, `--kill-others`, `--reset` |
 | `prepare_baseline_env.py` | PREPARATION_ONCE step 2 | `--dsl --operator --kernel --shape-key --libs` |
 
 All scripts under `.claude/skills/croq-tune/tools/`. `--gpu` is optional for store/checkpoint/next_iter (auto-detected); **required** for `resume_state.sh`.

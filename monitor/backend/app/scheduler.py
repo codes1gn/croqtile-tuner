@@ -243,30 +243,62 @@ class Scheduler:
         if should_autocontinue:
             await self._respawn(task_id)
 
+    MAX_RESPAWNS = 5
+
     async def _respawn(self, task_id: int) -> None:
-        """Re-queue a stopped task as pending so the scheduler picks it up again.
-        
-        Short delay to avoid tight respawn loops.
+        """Re-queue a stopped task as pending with exponential backoff.
+
+        Caps at MAX_RESPAWNS retries, then marks the task as failed.
         """
-        await asyncio.sleep(3)
         async with async_session() as session:
             db_task = await session.get(Task, task_id)
             if not db_task or db_task.status != "stopped":
                 return
+
             if db_task.current_iteration >= db_task.max_iterations:
                 db_task.status = "completed"
                 db_task.completed_at = datetime.now(timezone.utc)
-            else:
-                db_task.status = "pending"
-                db_task.error_message = None
-                logger.info(
-                    "Respawn: re-queuing task %d (%s) at iter %d/%d",
-                    db_task.id, db_task.shape_key,
-                    db_task.current_iteration, db_task.max_iterations,
+                db_task.updated_at = datetime.now(timezone.utc)
+                await session.commit()
+                await event_bus.publish("task_update", db_task.to_dict())
+                return
+
+            count = db_task.respawn_count + 1
+            if count > self.MAX_RESPAWNS:
+                db_task.status = "failed"
+                db_task.error_message = (
+                    f"Max respawns exceeded ({self.MAX_RESPAWNS}) at iter "
+                    f"{db_task.current_iteration}/{db_task.max_iterations}"
                 )
+                db_task.updated_at = datetime.now(timezone.utc)
+                await session.commit()
+                await event_bus.publish("task_update", db_task.to_dict())
+                logger.warning("Task %d failed: max respawns exceeded", task_id)
+                return
+
+            delay = min(3 * (2 ** db_task.respawn_count), 120)
+            db_task.respawn_count = count
+            await session.commit()
+
+        logger.info("Respawn: waiting %ds before re-queuing task %d (attempt %d/%d)",
+                     delay, task_id, count, self.MAX_RESPAWNS)
+        await asyncio.sleep(delay)
+
+        async with async_session() as session:
+            db_task = await session.get(Task, task_id)
+            if not db_task or db_task.status != "stopped":
+                return
+            db_task.status = "pending"
+            db_task.error_message = None
             db_task.updated_at = datetime.now(timezone.utc)
             await session.commit()
             await event_bus.publish("task_update", db_task.to_dict())
+            logger.info(
+                "Respawn: re-queued task %d (%s) at iter %d/%d (attempt %d/%d)",
+                db_task.id, db_task.shape_key,
+                db_task.current_iteration, db_task.max_iterations,
+                count, self.MAX_RESPAWNS,
+            )
 
     async def _adopt_worker(self, task: Task) -> None:
         """Poll artifacts for a task whose opencode subprocess is still running
@@ -309,6 +341,7 @@ def _snapshot(task: Task) -> Task:
         m=task.m,
         n=task.n,
         k=task.k,
+        dsl=task.dsl,
         mode=task.mode,
         max_iterations=task.max_iterations,
         status=task.status,

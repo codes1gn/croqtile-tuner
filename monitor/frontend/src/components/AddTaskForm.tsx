@@ -60,7 +60,8 @@ export function AddTaskForm({ availableModels, availableVariants, onCreated, onC
   const [m, setM] = useState("4096");
   const [n, setN] = useState("4096");
   const [k, setK] = useState("4096");
-  const [mode, setMode] = useState("from_current_best");
+  const [dsl, setDsl] = useState("croqtile");
+  const [platform, setPlatform] = useState("opencode");
   const [model, setModel] = useState(availableModels[0] ?? "");
   const [variant, setVariant] = useState(availableVariants[0] ?? "");
   const [error, setError] = useState("");
@@ -109,7 +110,8 @@ export function AddTaskForm({ availableModels, availableVariants, onCreated, onC
         m: mVal, 
         n: nVal, 
         k: kVal, 
-        mode, 
+        dsl,
+        mode: platform, 
         model, 
         variant 
       });
@@ -121,7 +123,6 @@ export function AddTaskForm({ availableModels, availableVariants, onCreated, onC
     }
   };
 
-  const maxIter = mode === "from_current_best" ? 30 : 150;
   const groups = providerGroup(availableModels);
   const providerOrder = ["github-copilot", "opencode", "nvidia"];
   const sortedProviders = [
@@ -221,17 +222,36 @@ export function AddTaskForm({ availableModels, availableVariants, onCreated, onC
             ))}
           </div>
 
-          <div>
-            <label className="block text-sm text-gray-400 mb-1">Mode</label>
-            <select
-              value={mode}
-              onChange={(e) => setMode(e.target.value)}
-              className="w-full bg-gray-700 rounded px-3 py-2 text-gray-100 border border-gray-600 focus:border-blue-500 focus:outline-none"
-            >
-              <option value="from_current_best">From Current Best (30 iter)</option>
-              <option value="from_scratch">From Scratch (150 iter)</option>
-            </select>
-            <p className="text-xs text-gray-500 mt-1">Max iterations: {maxIter}</p>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">DSL</label>
+              <select
+                value={dsl}
+                onChange={(e) => setDsl(e.target.value)}
+                className="w-full bg-gray-700 rounded px-3 py-2 text-gray-100 border border-gray-600 focus:border-blue-500 focus:outline-none"
+              >
+                <option value="croqtile">Croqtile</option>
+                <option value="cuda">CUDA</option>
+                <option value="triton">Triton</option>
+                <option value="cute">CuTe</option>
+                <option value="cutile">CuTile</option>
+                <option value="helion">Helion</option>
+                <option value="tilelang">TileLang</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">Agent Platform</label>
+              <select
+                value={platform}
+                onChange={(e) => setPlatform(e.target.value)}
+                className="w-full bg-gray-700 rounded px-3 py-2 text-gray-100 border border-gray-600 focus:border-blue-500 focus:outline-none"
+              >
+                <option value="opencode">OpenCode</option>
+                <option value="cursor_ide">Cursor IDE</option>
+                <option value="cursor_cli">Cursor CLI</option>
+                <option value="copilot_ide">Copilot IDE</option>
+              </select>
+            </div>
           </div>
 
           <div className="grid grid-cols-3 gap-3">

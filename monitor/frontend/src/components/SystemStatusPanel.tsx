@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { api, type HealthData } from "../api";
 
 interface Props {
@@ -31,6 +31,29 @@ function AutoWakeToggle({ enabled, onToggle, disabled }: { enabled: boolean; onT
 export function SystemStatusPanel({ health, onRefresh }: Props) {
   const [error, setError] = useState("");
   const [togglingAutoWake, setTogglingAutoWake] = useState(false);
+  const [selectedModel, setSelectedModel] = useState("");
+  const [selectedVariant, setSelectedVariant] = useState("");
+  const [savingModel, setSavingModel] = useState(false);
+
+  useEffect(() => {
+    if (health && !selectedModel) {
+      setSelectedModel(health.default_model);
+      setSelectedVariant(health.default_variant);
+    }
+  }, [health, selectedModel]);
+
+  const handleModelSave = useCallback(async () => {
+    if (!selectedModel) return;
+    setSavingModel(true);
+    try {
+      await api.setDefaultModel(selectedModel, selectedVariant);
+      await onRefresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save model");
+    } finally {
+      setSavingModel(false);
+    }
+  }, [selectedModel, selectedVariant, onRefresh]);
 
   const handleAutoWakeToggle = useCallback(async () => {
     if (!health) return;
@@ -111,8 +134,36 @@ export function SystemStatusPanel({ health, onRefresh }: Props) {
 
         <div className="lg:w-[32rem]">
           <div className="rounded-xl border border-cyan-800/60 bg-cyan-950/20 px-4 py-3">
-            <div className="text-[11px] uppercase tracking-[0.25em] text-cyan-400">Task-scoped models</div>
-            <div className="mt-1 text-sm text-cyan-50">Use <strong>+ Add Task</strong> or open a task detail page to select model + variant.</div>
+            <div className="text-[11px] uppercase tracking-[0.25em] text-cyan-400">Default Model for AutoTune</div>
+            <div className="mt-2 flex items-center gap-2">
+              <select
+                value={selectedModel}
+                onChange={(e) => setSelectedModel(e.target.value)}
+                className="flex-1 bg-gray-800 rounded px-2 py-1.5 text-sm text-gray-100 border border-gray-700 focus:border-cyan-500 focus:outline-none"
+              >
+                {(health?.available_models ?? []).map((m) => (
+                  <option key={m} value={m}>{m}</option>
+                ))}
+              </select>
+              <select
+                value={selectedVariant}
+                onChange={(e) => setSelectedVariant(e.target.value)}
+                className="w-24 bg-gray-800 rounded px-2 py-1.5 text-sm text-gray-100 border border-gray-700 focus:border-cyan-500 focus:outline-none"
+              >
+                {(health?.available_variants ?? [""]).map((v) => (
+                  <option key={v} value={v}>{v || "(none)"}</option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={handleModelSave}
+                disabled={savingModel || (selectedModel === health?.default_model && selectedVariant === health?.default_variant)}
+                className="px-3 py-1.5 rounded text-xs font-medium bg-cyan-700 hover:bg-cyan-600 text-white transition disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {savingModel ? "..." : "Save"}
+              </button>
+            </div>
+            <p className="mt-1.5 text-xs text-gray-500">Used when auto-wake creates new tasks. Per-task model can be set in task details.</p>
             {error && <p className="mt-3 rounded-lg bg-red-950/40 px-3 py-2 text-sm text-red-300">{error}</p>}
           </div>
         </div>

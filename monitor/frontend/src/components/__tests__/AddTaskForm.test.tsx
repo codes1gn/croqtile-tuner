@@ -15,7 +15,8 @@ describe("AddTaskForm", () => {
     expect(screen.getByText("Add Kernel Tuning Task")).toBeInTheDocument();
     expect(screen.getByText("Input Type")).toBeInTheDocument();
     expect(screen.getByText("Output Type")).toBeInTheDocument();
-    expect(screen.getByText("Mode")).toBeInTheDocument();
+    expect(screen.getByText("DSL")).toBeInTheDocument();
+    expect(screen.getByText("Agent Platform")).toBeInTheDocument();
     expect(screen.getByText("Model")).toBeInTheDocument();
     const spinbuttons = screen.getAllByRole("spinbutton");
     expect(spinbuttons).toHaveLength(3);
@@ -34,16 +35,10 @@ describe("AddTaskForm", () => {
     expect(onCancel).toHaveBeenCalledTimes(1);
   });
 
-  it("shows max iterations for from_current_best", () => {
+  it("renders DSL and platform dropdowns with defaults", () => {
     render(<AddTaskForm {...defaultProps} />);
-    expect(screen.getByText("Max iterations: 30")).toBeInTheDocument();
-  });
-
-  it("updates max iterations when mode changes to from_scratch", () => {
-    render(<AddTaskForm {...defaultProps} />);
-    const modeSelect = screen.getByDisplayValue("From Current Best (30 iter)");
-    fireEvent.change(modeSelect, { target: { value: "from_scratch" } });
-    expect(screen.getByText("Max iterations: 150")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("Croqtile")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("OpenCode")).toBeInTheDocument();
   });
 
   it("shows validation error for M < 128", async () => {

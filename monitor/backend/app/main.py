@@ -52,6 +52,20 @@ logging.basicConfig(
 logger = logging.getLogger("croqtuner")
 
 
+def _detect_gpu_name() -> str | None:
+    """Return the first GPU name from nvidia-smi, e.g. 'NVIDIA GeForce RTX 3070'."""
+    try:
+        result = subprocess.run(
+            ["nvidia-smi", "--query-gpu=name", "--format=csv,noheader"],
+            capture_output=True, text=True, timeout=5,
+        )
+        if result.returncode == 0:
+            return result.stdout.strip().splitlines()[0].strip() or None
+    except (FileNotFoundError, subprocess.TimeoutExpired, IndexError):
+        pass
+    return None
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()
@@ -92,10 +106,8 @@ async def create_task(
     body: TaskCreate,
     session: AsyncSession = Depends(get_session),
 ):
-    max_iter = 30 if body.mode == "from_current_best" else 150
-    suffix = "_fs" if body.mode == "from_scratch" else ""
-    # Shape key: op_type_dtype_MxNxK
-    shape_key = f"{body.op_type}_{body.dtype}_{body.m}x{body.n}x{body.k}{suffix}"
+    max_iter = 30
+    shape_key = f"{body.op_type}_{body.dtype}_{body.m}x{body.n}x{body.k}"
 
     task = Task(
         shape_key=shape_key,
@@ -104,12 +116,15 @@ async def create_task(
         m=body.m,
         n=body.n,
         k=body.k,
+        dsl=body.dsl,
         mode=body.mode,
         model=body.model,
         variant=body.variant,
         max_iterations=max_iter,
         status="pending",
         current_iteration=0,
+        agent_type=body.mode,
+        device=_detect_gpu_name(),
     )
     session.add(task)
     await session.commit()
@@ -210,6 +225,7 @@ async def retry_task(task_id: int, session: AsyncSession = Depends(get_session))
         m=task.m,
         n=task.n,
         k=task.k,
+        dsl=task.dsl,
         mode=task.mode,
         model=task.model,
         variant=task.variant,
@@ -247,6 +263,7 @@ async def resume_task(
         m=task.m,
         n=task.n,
         k=task.k,
+        dsl=task.dsl,
         mode=task.mode,
         model=task.model,
         variant=task.variant,
@@ -273,16 +290,19 @@ async def get_iteration_logs(
     if not task:
         raise HTTPException(404, "Task not found")
 
-    artifact_logs = read_iteration_history(task.shape_key, task.id)
-    if artifact_logs:
-        return [IterationLogResponse(**log) for log in artifact_logs]
-
+    # Prefer DB logs (imported from results.tsv during scan) for accuracy
     result = await session.execute(
         select(IterationLog)
         .where(IterationLog.task_id == task_id)
         .order_by(IterationLog.iteration.desc())
     )
-    return [IterationLogResponse(**log.to_dict()) for log in result.scalars().all()]
+    db_logs = result.scalars().all()
+    if db_logs:
+        return [IterationLogResponse(**log.to_dict()) for log in db_logs]
+
+    # Fallback: read directly from disk (for tasks not yet scanned)
+    artifact_logs = read_iteration_history(task.shape_key, task.id)
+    return [IterationLogResponse(**log) for log in artifact_logs]
 
 
 @app.get("/api/tasks/{task_id}/agent-logs", response_model=list[AgentLogResponse])

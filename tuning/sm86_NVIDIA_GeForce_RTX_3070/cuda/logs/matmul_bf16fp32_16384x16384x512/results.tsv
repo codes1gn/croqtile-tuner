@@ -1,7 +1,0 @@
-iter	kernel	tflops	decision	bottleneck	idea
-iter000	iter000_baseline	38.73	KEEP	baseline	cuBLAS reference 38.73 TFLOPS
-iter001	iter001_draft	17.17	KEEP	draft	First WMMA 128x128 draft
-iter002	iter002_warp2x4	16.81	DISCARD	compute_bound	Increase per-warp WMMA work by switching warp grid from 4x4 to 4x2, so each warp
-iter003	iter003_maxr60	17.20	KEEP	compute_bound	Constrain register usage with --maxrregcount=60 to improve active warps and issu
-iter004	iter004_maxr56	17.29	KEEP	compute_bound	Constrain register usage with --maxrregcount=56 to improve active warps and issu
-iter005	iter005_bk32	19.56	KEEP	compute_bound	Increase BK from 16 to 32 and execute two WMMA K-slices per stage to reduce loop

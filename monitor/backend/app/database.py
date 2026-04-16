@@ -28,6 +28,10 @@ async def init_db():
             await conn.exec_driver_sql("ALTER TABLE tasks ADD COLUMN opencode_session_id VARCHAR(128)")
         if "variant" not in columns:
             await conn.exec_driver_sql("ALTER TABLE tasks ADD COLUMN variant VARCHAR(32) DEFAULT ''")
+        if "dsl" not in columns:
+            await conn.exec_driver_sql("ALTER TABLE tasks ADD COLUMN dsl VARCHAR(32)")
+        if "respawn_count" not in columns:
+            await conn.exec_driver_sql("ALTER TABLE tasks ADD COLUMN respawn_count INTEGER DEFAULT 0 NOT NULL")
 
 
 async def get_session():

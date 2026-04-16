@@ -1,4 +1,10 @@
-# Case Study: croq-* Tuning Skill Suite
+# Case Study: croq-* Tuning Skill Suite (Pre-Refactor Snapshot)
+
+> **Note:** This case study documents the **pre-refactor** architecture where skills
+> were split across `croq-store/`, `croq-resume/`, `croq-profile/`, `croq-baseline/`,
+> etc. After the refactor, all scripts live under `croq-tune/tools/` and all skill
+> content is consolidated into `croq-tune/SKILL.md` + per-DSL `croq-dsl-<dsl>/SKILL.md`.
+> The smells described here have been remediated.
 
 This reference documents concrete examples of each smell pattern found in the
 `croq-*` skill suite. Read this file when applying `boost-harness` to the `croq-*`
@@ -217,7 +223,7 @@ split point.
 
 **Finding 4: `store_round.sh` appends unconditionally — no duplicate detection**
 
-All four output files (`rounds.raw.jsonl`, `rounds.md`, `idea-log.jsonl`,
+The log output files (`idea-log.jsonl`,
 `results.tsv`) are appended without checking if the iter+round combination already
 exists. If the agent retries STORE (context compaction, transient error, session
 resume where agent doesn't realize STORE already ran), the same round appears twice.
@@ -341,7 +347,7 @@ On session start: validate fingerprint → if match, skip 100% of detection.
 ```
 [store_round] STORE complete for iter021 (KEEP 14.2 TFLOPS)
 [store_round] Written:
-  memory/.../rounds.raw.jsonl  (18 lines)
+  logs/.../idea-log.jsonl  (18 lines)
   ...
 ```
 

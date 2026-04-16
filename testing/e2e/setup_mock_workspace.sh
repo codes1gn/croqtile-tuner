@@ -132,19 +132,8 @@ ENV
     # ── attempt-log.jsonl (empty) ─────────────────────────────────────────────
     touch "$LOGS/attempt-log.jsonl"
 
-    # ── rounds.raw.jsonl (with iter000 row) ──────────────────────────────────
-    printf '{"iter": "iter000_baseline", "kernel": "iter000_baseline", "tflops": 20.0, "decision": "KEEP", "bottleneck": "memory_bound", "idea": "cuBLAS baseline", "timestamp": "%s"}\n' \
-        "$TS" > "$MEM/rounds.raw.jsonl"
-
-    # ── rounds.md ─────────────────────────────────────────────────────────────
-    cat > "$MEM/rounds.md" <<MD
-## iter000_baseline - $TS
-- kernel: \`iter000_baseline\`
-- tflops: \`20.0\`
-- decision: **KEEP**
-- bottleneck: \`memory_bound\`
-- idea: cuBLAS baseline
-MD
+    # ── sessions/ dir for raw session transcript memory ────────────────────
+    mkdir -p "$MEM/sessions"
 
     # ── checkpoint.json (PROFILE state, ready for round 1) ───────────────────
     cat > "$CHKDIR/$SHAPE_KEY.json" <<JSON

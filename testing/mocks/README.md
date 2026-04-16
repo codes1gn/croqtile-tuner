@@ -40,7 +40,7 @@ ncu --import tuning/.../ncu_iter001.ncu-rep \
 | `latency_bound` | 45 | 35 | 50 | 58 | `latency_bound` |
 | `mixed`         | 55 | 52 | 48 | 22 | `memory_bound` (DRAM wins) |
 
-The CSV output is processed correctly by `.claude/skills/croq-profile/profile_extract.sh`.
+The CSV output is processed correctly by `.claude/skills/croq-tune/tools/profile_extract.sh`.
 
 ---
 
@@ -101,7 +101,7 @@ export MOCK_NCU_SCENARIO=memory_bound
 
 # Now run the real profile_extract harness — it will call mock_ncu transparently
 # via the profile step scripts
-bash .claude/skills/croq-profile/profile_extract.sh \
+bash .claude/skills/croq-tune/tools/profile_extract.sh \
     --csv tuning/<gpu>/cuda/perf/mykey/ncu_iter001.csv \
     --iter iter001_test
 ```

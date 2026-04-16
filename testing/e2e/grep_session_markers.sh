@@ -199,75 +199,14 @@ if [[ "$DO_FS" -eq 1 ]]; then
     fi
 
     echo ""
-    echo "--- Memory Files ($MEM_DIR) ---"
+    echo "--- Session Memory ($MEM_DIR/sessions/) ---"
 
-    RAW="$MEM_DIR/rounds.raw.jsonl"
-    MD="$MEM_DIR/rounds.md"
-
-    if [[ -f "$RAW" ]]; then
-        LINES=$(wc -l < "$RAW")
-        result_pass "rounds.raw.jsonl exists ($LINES lines)"
-
-        # Validate every line is parseable JSON with required fields
-        # (note-type records and baseline records are exempt)
-        BAD_JSON=$(python3 -c "
-import sys, json
-bad = 0
-required = ['iter','kernel','tflops','decision','bottleneck']
-for i, line in enumerate(sys.stdin, 1):
-    line = line.strip()
-    if not line: continue
-    try:
-        obj = json.loads(line)
-        # Exempt: note records (recovered from bad lines) and baseline records
-        if obj.get('type') == 'note': continue
-        if not str(obj.get('kernel','')).startswith('iter'): continue
-        missing = [k for k in required if k not in obj]
-        if missing:
-            print(f'  line {i}: missing fields {missing}')
-            bad += 1
-    except Exception as e:
-        print(f'  line {i}: invalid JSON — {e}')
-        bad += 1
-sys.exit(bad)
-" < "$RAW" 2>&1 || true)
-        BAD_COUNT=$(echo "$BAD_JSON" | grep -c '  line' || true)
-        if [[ "$BAD_COUNT" -eq 0 ]]; then
-            result_pass "rounds.raw.jsonl: all lines valid JSON with required fields"
-        else
-            result_fail "rounds.raw.jsonl: $BAD_COUNT malformed lines"
-            echo "$BAD_JSON" | head -10 | sed 's/^/    /'
-        fi
-
-        # Check iter kernel names in rounds are tagged (skip baseline/note records)
-        BARE_ITERS=$(python3 -c "
-import sys, json, re
-bad = []
-for line in sys.stdin:
-    try:
-        obj = json.loads(line.strip())
-        if obj.get('type') == 'note': continue
-        k = obj.get('kernel','')
-        if not k or not k.startswith('iter'): continue  # skip baseline entries
-        if not re.match(r'^iter[0-9]{3}_[a-z][a-z0-9_]{1,15}$', k):
-            bad.append(k)
-    except: pass
-for b in bad: print(b)
-" < "$RAW" 2>/dev/null || true)
-        if [[ -z "$BARE_ITERS" ]]; then
-            result_pass "rounds.raw.jsonl: all kernel names are tagged (iter<NNN>_<tag>)"
-        else
-            COUNT=$(echo "$BARE_ITERS" | wc -l)
-            result_fail "rounds.raw.jsonl: $COUNT kernel entries missing _tag: $(echo "$BARE_ITERS" | tr '\n' ' ')"
-        fi
+    SESSIONS_DIR="$MEM_DIR/sessions"
+    if [[ -d "$SESSIONS_DIR" ]]; then
+        SESS_COUNT=$(ls "$SESSIONS_DIR"/*.jsonl 2>/dev/null | wc -l || echo "0")
+        result_pass "sessions/ directory exists ($SESS_COUNT session transcripts)"
     else
-        result_fail "rounds.raw.jsonl does not exist at $RAW"
-    fi
-
-    if [[ -f "$MD" ]]; then
-        result_pass "rounds.md exists ($(wc -l < "$MD") lines)"
-    else
-        result_fail "rounds.md does not exist at $MD"
+        result_warn "sessions/ directory does not exist at $SESSIONS_DIR (raw session transcripts will be stored here)"
     fi
 
     echo ""

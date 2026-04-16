@@ -58,7 +58,7 @@ source "$(dirname "$0")/tap_helpers.sh"
 
 plan 3
 
-result=$(bash .claude/skills/croq-store/my_harness.sh --arg value 2>&1)
+result=$(bash .claude/skills/croq-tune/tools/my_harness.sh --arg value 2>&1)
 ok "exit 0" $?
 like "output contains expected" "$result" "expected_string"
 unlike "output does not contain error" "$result" "ERROR"

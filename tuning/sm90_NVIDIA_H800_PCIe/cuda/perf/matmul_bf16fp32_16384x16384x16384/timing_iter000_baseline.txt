@@ -1,7 +1,0 @@
-sample 1: time=19.481 ms  TFLOPS: 451.53
-sample 2: time=20.196 ms  TFLOPS: 435.53
-sample 3: time=20.284 ms  TFLOPS: 433.65
-sample 4: time=19.443 ms  TFLOPS: 452.40
-sample 5: time=20.096 ms  TFLOPS: 437.69
-
-TFLOPS: 452.40   time_ms: 19.443

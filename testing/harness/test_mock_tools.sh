@@ -14,7 +14,7 @@ source testing/harness/tap_helpers.sh
 
 MOCK_NCU="testing/mocks/mock_ncu"
 MOCK_WS="testing/mocks/mock_websearch"
-PROFILE_EXTRACT=".claude/skills/croq-profile/profile_extract.sh"
+PROFILE_EXTRACT=".claude/skills/croq-tune/tools/profile_extract.sh"
 TMP=$(mktemp -d)
 trap 'rm -rf "$TMP"' EXIT
 

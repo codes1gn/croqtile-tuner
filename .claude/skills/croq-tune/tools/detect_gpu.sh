@@ -15,11 +15,29 @@
 #   <CC>    = CUDA compute capability with the dot removed (e.g. 9.0 → 90)
 #   <MODEL> = GPU name with spaces replaced by underscores
 #
+# CACHING: Result is cached in /tmp/croq_gpu_key for the duration of the
+# session. The GPU does not change between calls. Pass --no-cache to bypass.
+#
 # EXIT CODES:
 #   0 — success, key printed to stdout
 #   1 — nvidia-smi not found or failed (prints a stub key to stdout and warns to stderr)
 
 set -euo pipefail
+
+CACHE_FILE="/tmp/croq_gpu_key"
+NO_CACHE=false
+
+if [[ "${1:-}" == "--no-cache" ]]; then
+  NO_CACHE=true
+fi
+
+if [[ "$NO_CACHE" == false && -f "$CACHE_FILE" ]]; then
+  CACHED=$(cat "$CACHE_FILE")
+  if [[ -n "$CACHED" && "$CACHED" != "sm00_unknown" ]]; then
+    echo "$CACHED"
+    exit 0
+  fi
+fi
 
 if ! command -v nvidia-smi &>/dev/null; then
   echo "WARN: nvidia-smi not found; using stub key 'sm00_unknown'" >&2
@@ -37,4 +55,8 @@ if [[ -z "$MODEL" || -z "$CC" ]]; then
   exit 0
 fi
 
-echo "sm${CC}_${MODEL}"
+GPU_KEY="sm${CC}_${MODEL}"
+
+echo "$GPU_KEY" > "$CACHE_FILE" 2>/dev/null || true
+
+echo "$GPU_KEY"

@@ -1,8 +1,0 @@
-VERIFY: PASS max_rel_err=0.00001
-sample 1: time=15.909 ms, tflops=17.28
-sample 2: time=16.008 ms, tflops=17.17
-sample 3: time=15.982 ms, tflops=17.20
-sample 4: time=15.998 ms, tflops=17.18
-sample 5: time=16.011 ms, tflops=17.17
-
-TFLOPS: 17.20   time_ms: 15.981

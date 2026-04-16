@@ -66,7 +66,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-gray-950">
       <header className="border-b border-gray-800 bg-gray-900/80 backdrop-blur sticky top-0 z-40">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-screen-2xl mx-auto px-6 py-4 flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold text-gray-100 tracking-tight">CroqTuner</h1>
             <p className="text-xs text-gray-500">GPU Kernel Tuning Agent</p>
@@ -80,7 +80,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-6 py-6">
+      <main className="max-w-screen-2xl mx-auto px-6 py-6">
         <div className="mb-6">
           <SystemStatusPanel health={health} onRefresh={loadHealth} />
         </div>

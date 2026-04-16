@@ -22,6 +22,7 @@ class Task(Base):
     n = Column(Integer, nullable=False)
     k = Column(Integer, nullable=False)
     mode = Column(String(32), nullable=False)
+    dsl = Column(String(32), nullable=True)
     max_iterations = Column(Integer, nullable=False)
     status = Column(String(16), nullable=False, default="pending", index=True)
     current_iteration = Column(Integer, nullable=False, default=0)
@@ -30,7 +31,9 @@ class Task(Base):
     best_kernel = Column(String(512), nullable=True)
     model = Column(String(128), nullable=True)
     variant = Column(String(32), nullable=True, default="")
-    agent_type = Column(String(32), nullable=True)  # cursor_ide, cursor_cli, opencode, copilot_ide
+    agent_type = Column(String(32), nullable=True)
+    device = Column(String(128), nullable=True)
+    respawn_count = Column(Integer, nullable=False, default=0)
     opencode_session_id = Column(String(128), nullable=True)
     error_message = Column(Text, nullable=True)
     created_at = Column(DateTime, nullable=False, default=_utcnow)
@@ -51,6 +54,7 @@ class Task(Base):
             "n": self.n,
             "k": self.k,
             "mode": self.mode,
+            "dsl": self.dsl,
             "max_iterations": self.max_iterations,
             "status": self.status,
             "current_iteration": self.current_iteration,
@@ -60,6 +64,7 @@ class Task(Base):
             "model": self.model,
             "variant": self.variant or "",
             "agent_type": self.agent_type,
+            "device": self.device,
             "opencode_session_id": self.opencode_session_id,
             "error_message": self.error_message,
             "created_at": self.created_at.isoformat() if self.created_at else None,
