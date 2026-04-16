@@ -149,3 +149,10 @@
 - decision: **DISCARD**
 - bottleneck: `latency_bound`
 - idea: TILE_K=16 on directstore: 0.379 TFLOPS — less arithmetic intensity without occupancy gain (still 255 regs)
+
+## iter011 — 2026-04-16T04:50:59Z
+- kernel: `iter011_swizds`
+- tflops: `0.502`
+- decision: **DISCARD**
+- bottleneck: `latency_bound`
+- idea: swiz<128> on directstore base: 0.502 TFLOPS — marginal delta from best 0.503. Bank conflicts not binding constraint on directstore path.

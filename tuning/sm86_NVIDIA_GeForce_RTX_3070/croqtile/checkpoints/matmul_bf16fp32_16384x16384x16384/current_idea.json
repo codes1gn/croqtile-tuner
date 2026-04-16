@@ -1,16 +1,16 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-16T04:34:06Z",
+  "timestamp": "2026-04-16T04:49:22Z",
   "dsl": "croqtile",
   "shape_key": "matmul_bf16fp32_16384x16384x16384",
-  "iter": "iter010_tilek16",
+  "iter": "iter011_swizds",
   "bottleneck": "latency_bound",
-  "idea": "Reduce TILE_K from 32 to 16 on directstore base: shorter accumulator lifetime may allow >8 warps/SM, improving latency hiding. ncu shows 68% no-eligible stall with 8 warps \u2014 need more warps",
-  "expected_gain": "+10-25% TFLOPS from improved occupancy if register count drops below 255",
+  "idea": "Apply mma.load.swiz<128> to lhs_s and rhs_s on directstore base (iter009): swizzle was tried before but on old output_s path; combination with directstore not yet tested. MIO throttle 0.32 + long_scoreboard 2.29 indicate bank conflicts",
+  "expected_gain": "+5-15% TFLOPS from reduced shared memory bank conflicts reducing MIO stalls",
   "levers": [
-    "MATMUL_TILE_K"
+    "mma_load_swizzle"
   ],
   "status": "VERIFIED",
-  "verified_iter": "iter010_tilek16",
+  "verified_iter": "iter011_swizds",
   "drift_score": 1
 }
