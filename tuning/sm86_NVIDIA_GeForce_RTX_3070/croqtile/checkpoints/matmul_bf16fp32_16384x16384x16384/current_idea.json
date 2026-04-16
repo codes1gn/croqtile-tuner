@@ -1,14 +1,17 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-15T14:25:55Z",
+  "timestamp": "2026-04-16T04:06:37Z",
   "dsl": "croqtile",
   "shape_key": "matmul_bf16fp32_16384x16384x16384",
-  "iter": "iter008_commit",
-  "bottleneck": "register_pressure",
-  "idea": "Add mma.commit after inner K-loop to help compiler optimize register allocation",
-  "expected_gain": "+5-10% TFLOPS if register lifetimes are shortened",
+  "iter": "iter009_directstore",
+  "bottleneck": "compute_bound",
+  "idea": "Remove output_s shared memory buffer; use mma.store directly to global memory as in gemm_sm86.co reference, eliminating 1KB smem and 2-step output write to reduce register pressure",
+  "expected_gain": "+5-15% TFLOPS from fewer registers and eliminated smem output barrier",
   "levers": [
-    "mma_commit"
+    "output_storage",
+    "mma_store_target"
   ],
-  "status": "PLANNED"
+  "status": "VERIFIED",
+  "verified_iter": "iter009_directstore",
+  "drift_score": 1
 }

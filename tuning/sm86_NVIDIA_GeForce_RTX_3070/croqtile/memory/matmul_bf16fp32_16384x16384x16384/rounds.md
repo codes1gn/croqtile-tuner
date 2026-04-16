@@ -128,3 +128,17 @@
 **Bottleneck**: Register pressure is the fundamental limit with croqtile on SM86.
 
 **Recommendation**: To achieve higher performance, consider switching to pure CUDA with explicit `__launch_bounds__` for register control, or use a different GPU architecture with better tensor core support for BF16 (e.g., SM90/Hopper).
+
+## iter008 — 2026-04-16T03:53:11Z
+- kernel: `iter008_commit`
+- tflops: `0`
+- decision: **COMPILE_FAIL**
+- bottleneck: `compile_error`
+- idea: mma.commit after inner K-loop: primitive not supported on SM86 CuTe backend (Hopper-only)
+
+## iter009 — 2026-04-16T04:18:04Z
+- kernel: `iter009_directstore`
+- tflops: `0.503`
+- decision: **KEEP**
+- bottleneck: `compute_bound`
+- idea: Direct mma.store to global memory: removed output_s shared buffer (1KB), eliminated block-level dma.copy barrier. SM92 compute_bound 92% → 3.27x speedup to new best 0.503 TFLOPS
