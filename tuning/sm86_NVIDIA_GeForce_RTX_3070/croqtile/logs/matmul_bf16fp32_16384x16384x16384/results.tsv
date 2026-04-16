@@ -9,3 +9,4 @@ round	iter	kernel	tflops	decision	bottleneck	idea	timestamp
 8	iter008	iter008_commit	0	DISCARD	compile_error	mma.commit not supported on SM86 CuTe backend	2026-04-15T23:00:00Z
 iter008	iter008_commit	0	COMPILE_FAIL	compile_error	mma.commit after inner K-loop: primitive not supported on SM86 CuTe backend (Hop
 iter009	iter009_directstore	0.503	KEEP	compute_bound	Direct mma.store to global memory: removed output_s shared buffer (1KB), elimina
+iter010	iter010_tilek16	0.379	DISCARD	latency_bound	TILE_K=16 on directstore: 0.379 TFLOPS — less arithmetic intensity without occup

@@ -142,3 +142,10 @@
 - decision: **KEEP**
 - bottleneck: `compute_bound`
 - idea: Direct mma.store to global memory: removed output_s shared buffer (1KB), eliminated block-level dma.copy barrier. SM92 compute_bound 92% → 3.27x speedup to new best 0.503 TFLOPS
+
+## iter010 — 2026-04-16T04:41:18Z
+- kernel: `iter010_tilek16`
+- tflops: `0.379`
+- decision: **DISCARD**
+- bottleneck: `latency_bound`
+- idea: TILE_K=16 on directstore: 0.379 TFLOPS — less arithmetic intensity without occupancy gain (still 255 regs)
