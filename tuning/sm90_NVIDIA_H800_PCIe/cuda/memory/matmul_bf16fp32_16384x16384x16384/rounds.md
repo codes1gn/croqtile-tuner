@@ -12,3 +12,10 @@
 - decision: **DISCARD**
 - bottleneck: `launch_bound`
 - idea: Double-buffered smem with register-cached loads, BK=32
+
+## iter004 — 2026-04-16T05:30:31Z
+- kernel: `iter004_smalltile`
+- tflops: `1.38`
+- decision: **DISCARD**
+- bottleneck: `launch_bound`
+- idea: Reduce tile to BM=64 BN=64 BK=32 for higher occupancy

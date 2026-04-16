@@ -1,16 +1,17 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-16T05:12:49Z",
+  "timestamp": "2026-04-16T05:21:06Z",
   "dsl": "cuda",
   "shape_key": "matmul_bf16fp32_16384x16384x16384",
-  "iter": "iter003_dbuf",
+  "iter": "iter004_smalltile",
   "bottleneck": "launch_bound",
-  "idea": "Double-buffered shared memory with cp.async pipeline to overlap loads and compute, BK=32",
-  "expected_gain": "+30-60 TFLOPS (2-4x over iter001)",
+  "idea": "Reduce tile to BM=64 BN=64 BK=32 to increase occupancy, 4 warps, 4x more CTAs",
+  "expected_gain": "+30-80 TFLOPS via higher occupancy",
   "levers": [
-    "PIPELINE_STAGES",
-    "CP_ASYNC",
-    "DOUBLE_BUFFER"
+    "BM",
+    "BN",
+    "NUM_WARPS",
+    "OCCUPANCY"
   ],
   "status": "PLANNED"
 }
