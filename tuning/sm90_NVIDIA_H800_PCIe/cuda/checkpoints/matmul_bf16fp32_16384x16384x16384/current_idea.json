@@ -1,16 +1,15 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-16T05:34:10Z",
+  "timestamp": "2026-04-16T05:38:04Z",
   "dsl": "cuda",
   "shape_key": "matmul_bf16fp32_16384x16384x16384",
-  "iter": "iter006_coalesced",
+  "iter": "iter007_nopad",
   "bottleneck": "launch_bound",
-  "idea": "128-bit coalesced global loads via uint4, proper thread-to-memory mapping for warp coalescing",
-  "expected_gain": "+30-60 TFLOPS via fully coalesced memory access",
+  "idea": "Remove smem padding (stride=BK exactly), reduce register usage with maxrregcount=128",
+  "expected_gain": "+5-15 TFLOPS from reduced smem + register savings",
   "levers": [
-    "LOAD_WIDTH",
-    "COALESCING",
-    "THREAD_MAPPING"
+    "SMEM_PADDING",
+    "MAXRREGCOUNT"
   ],
   "status": "PLANNED"
 }

@@ -33,3 +33,10 @@
 - decision: **DISCARD**
 - bottleneck: `launch_bound`
 - idea: 128-bit coalesced loads into padded smem - padding broke alignment
+
+## iter007 — 2026-04-16T05:46:01Z
+- kernel: `iter007_nopad`
+- tflops: `1.78`
+- decision: **DISCARD**
+- bottleneck: `launch_bound`
+- idea: Remove smem padding + maxrregcount=128 for higher occupancy
