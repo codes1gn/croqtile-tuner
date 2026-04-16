@@ -1,16 +1,14 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-16T04:49:22Z",
+  "timestamp": "2026-04-16T04:52:46Z",
   "dsl": "croqtile",
   "shape_key": "matmul_bf16fp32_16384x16384x16384",
-  "iter": "iter011_swizds",
+  "iter": "iter012_tilek48",
   "bottleneck": "latency_bound",
-  "idea": "Apply mma.load.swiz<128> to lhs_s and rhs_s on directstore base (iter009): swizzle was tried before but on old output_s path; combination with directstore not yet tested. MIO throttle 0.32 + long_scoreboard 2.29 indicate bank conflicts",
-  "expected_gain": "+5-15% TFLOPS from reduced shared memory bank conflicts reducing MIO stalls",
+  "idea": "Increase TILE_K from 32 to 48 on directstore base: 3 MMA ops per K-tile load improves arithmetic intensity, giving 8 warps more compute time to hide async copy latency (long_scoreboard 2.29)",
+  "expected_gain": "+5-15% TFLOPS from better compute/latency ratio with 3 MMA ops per load",
   "levers": [
-    "mma_load_swizzle"
+    "MATMUL_TILE_K"
   ],
-  "status": "VERIFIED",
-  "verified_iter": "iter011_swizds",
-  "drift_score": 1
+  "status": "PLANNED"
 }

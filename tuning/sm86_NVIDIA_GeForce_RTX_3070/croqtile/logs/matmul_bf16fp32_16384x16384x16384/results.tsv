@@ -11,3 +11,4 @@ iter008	iter008_commit	0	COMPILE_FAIL	compile_error	mma.commit after inner K-loo
 iter009	iter009_directstore	0.503	KEEP	compute_bound	Direct mma.store to global memory: removed output_s shared buffer (1KB), elimina
 iter010	iter010_tilek16	0.379	DISCARD	latency_bound	TILE_K=16 on directstore: 0.379 TFLOPS — less arithmetic intensity without occup
 iter011	iter011_swizds	0.502	DISCARD	latency_bound	swiz<128> on directstore base: 0.502 TFLOPS — marginal delta from best 0.503. Ba
+iter012	iter012_tilek48	0.088	DISCARD	register_pressure	TILE_K=64 on directstore: 0.088 TFLOPS catastrophic regression. TILE_K=48 crashe

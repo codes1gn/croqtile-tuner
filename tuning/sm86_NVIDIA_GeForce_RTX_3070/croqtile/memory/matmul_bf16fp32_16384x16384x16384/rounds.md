@@ -156,3 +156,10 @@
 - decision: **DISCARD**
 - bottleneck: `latency_bound`
 - idea: swiz<128> on directstore base: 0.502 TFLOPS — marginal delta from best 0.503. Bank conflicts not binding constraint on directstore path.
+
+## iter012 — 2026-04-16T04:56:45Z
+- kernel: `iter012_tilek48`
+- tflops: `0.088`
+- decision: **DISCARD**
+- bottleneck: `register_pressure`
+- idea: TILE_K=64 on directstore: 0.088 TFLOPS catastrophic regression. TILE_K=48 crashed (illegal mem access, 4096/48 non-integer). TILE_K=64 causes register spills regardless of output path.
