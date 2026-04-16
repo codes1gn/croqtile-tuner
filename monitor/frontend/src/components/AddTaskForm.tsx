@@ -1,11 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "../api";
 
 interface Props {
   availableModels: string[];
   availableVariants: string[];
-  defaultModel: string;
-  defaultVariant: string;
   onCreated: () => void;
   onCancel: () => void;
 }
@@ -54,7 +52,7 @@ const OUTPUT_DTYPES = [
   { value: "bf16", label: "BF16" },
 ];
 
-export function AddTaskForm({ availableModels, availableVariants, defaultModel, defaultVariant, onCreated, onCancel }: Props) {
+export function AddTaskForm({ availableModels, availableVariants, onCreated, onCancel }: Props) {
   const [opType, setOpType] = useState("gemm_sp");
   const [customOp, setCustomOp] = useState("");
   const [inputDtype, setInputDtype] = useState("f16");
@@ -63,10 +61,22 @@ export function AddTaskForm({ availableModels, availableVariants, defaultModel, 
   const [n, setN] = useState("4096");
   const [k, setK] = useState("4096");
   const [mode, setMode] = useState("from_current_best");
-  const [model, setModel] = useState(defaultModel);
-  const [variant, setVariant] = useState(defaultVariant);
+  const [model, setModel] = useState(availableModels[0] ?? "");
+  const [variant, setVariant] = useState(availableVariants[0] ?? "");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!model && availableModels.length > 0) {
+      setModel(availableModels[0]);
+    }
+  }, [availableModels, model]);
+
+  useEffect(() => {
+    if (!availableVariants.includes(variant)) {
+      setVariant(availableVariants[0] ?? "");
+    }
+  }, [availableVariants, variant]);
   
   // Compute combined dtype and shape key
   const effectiveOp = opType === "custom" ? customOp : opType;
@@ -83,6 +93,9 @@ export function AddTaskForm({ availableModels, availableVariants, defaultModel, 
 
     if (opType === "custom" && !customOp.trim()) {
       return setError("Custom operator name is required");
+    }
+    if (!model.trim()) {
+      return setError("Model is required");
     }
     if (isNaN(mVal) || mVal < 128) return setError("M must be >= 128");
     if (isNaN(nVal) || nVal < 256) return setError("N must be >= 256");
@@ -109,7 +122,7 @@ export function AddTaskForm({ availableModels, availableVariants, defaultModel, 
   };
 
   const maxIter = mode === "from_current_best" ? 30 : 150;
-  const groups = providerGroup(availableModels.length > 0 ? availableModels : [defaultModel]);
+  const groups = providerGroup(availableModels);
   const providerOrder = ["github-copilot", "opencode", "nvidia"];
   const sortedProviders = [
     ...providerOrder.filter((p) => groups[p]),
@@ -227,8 +240,10 @@ export function AddTaskForm({ availableModels, availableVariants, defaultModel, 
               <select
                 value={model}
                 onChange={(e) => setModel(e.target.value)}
+                disabled={sortedProviders.length === 0}
                 className="w-full bg-gray-700 rounded px-3 py-2 text-gray-100 border border-gray-600 focus:border-blue-500 focus:outline-none"
               >
+                {sortedProviders.length === 0 && <option value="">No models available</option>}
                 {sortedProviders.map((provider) => (
                   <optgroup key={provider} label={provider}>
                     {groups[provider].map((item) => (

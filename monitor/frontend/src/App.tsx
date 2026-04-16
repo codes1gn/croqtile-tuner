@@ -97,8 +97,6 @@ export default function App() {
         <AddTaskForm
           availableModels={health?.available_models ?? []}
           availableVariants={health?.available_variants ?? [""]}
-          defaultModel={health?.default_model ?? "github-copilot/gpt-5.4"}
-          defaultVariant={health?.default_variant ?? ""}
           onCreated={() => {
             setShowAdd(false);
             loadTasks();

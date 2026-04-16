@@ -17,6 +17,16 @@ interface Props {
   sseEvent: SSEEvent | null;
 }
 
+function providerGroup(models: string[]): Record<string, string[]> {
+  const groups: Record<string, string[]> = {};
+  for (const m of models) {
+    const slash = m.indexOf("/");
+    const provider = slash > 0 ? m.slice(0, slash) : "other";
+    (groups[provider] ??= []).push(m);
+  }
+  return groups;
+}
+
 export function TaskDetail({ sseEvent }: Props) {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -27,6 +37,11 @@ export function TaskDetail({ sseEvent }: Props) {
   const [error, setError] = useState("");
   const [showResume, setShowResume] = useState(false);
   const [resumeIter, setResumeIter] = useState("");
+  const [availableModels, setAvailableModels] = useState<string[]>([]);
+  const [availableVariants, setAvailableVariants] = useState<string[]>([]);
+  const [editModel, setEditModel] = useState("");
+  const [editVariant, setEditVariant] = useState("");
+  const [savingModel, setSavingModel] = useState(false);
 
   const taskId = id ? parseInt(id) : NaN;
 
@@ -42,16 +57,21 @@ export function TaskDetail({ sseEvent }: Props) {
   const loadData = useCallback(async () => {
     if (isNaN(taskId)) return;
     try {
-      const [t, il, al, sh] = await Promise.all([
+      const [t, il, al, sh, settings] = await Promise.all([
         api.getTask(taskId),
         api.getIterationLogs(taskId),
         api.getAgentLogs(taskId, 200),
         api.getSessionHistory(taskId, 400),
+        api.getModelSettings(),
       ]);
       setTask(t);
       setIterLogs(il);
       setAgentLogs(al.reverse());
       setSessionHistory(sh);
+      setAvailableModels(settings.available_models ?? []);
+      setAvailableVariants(settings.available_variants ?? [""]);
+      setEditModel(t.model ?? settings.available_models?.[0] ?? "");
+      setEditVariant(t.variant ?? settings.available_variants?.[0] ?? "");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load task");
     }
@@ -156,6 +176,24 @@ export function TaskDetail({ sseEvent }: Props) {
     }
   };
 
+  const handleSaveModel = async () => {
+    if (!task) return;
+    if (!editModel.trim()) {
+      setError("Model is required");
+      return;
+    }
+    setSavingModel(true);
+    setError("");
+    try {
+      const updated = await api.updateTask(task.id, { model: editModel, variant: editVariant });
+      setTask(updated);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update task model");
+    } finally {
+      setSavingModel(false);
+    }
+  };
+
   if (error) {
     return <div className="p-6 text-red-400">{error}</div>;
   }
@@ -176,6 +214,14 @@ export function TaskDetail({ sseEvent }: Props) {
 
   const variantSuffix = task.variant ? ` (${task.variant})` : "";
   const taskModelLabel = task.model ? modelLabel(task.model) + variantSuffix : "system default";
+  const modelEditable = task.status !== "running" && task.status !== "completed";
+  const modelChanged = editModel !== (task.model ?? "") || editVariant !== (task.variant ?? "");
+  const groups = providerGroup(availableModels);
+  const providerOrder = ["github-copilot", "opencode", "nvidia"];
+  const sortedProviders = [
+    ...providerOrder.filter((p) => groups[p]),
+    ...Object.keys(groups).filter((p) => !providerOrder.includes(p)),
+  ];
 
   return (
     <div className="space-y-5">
@@ -289,6 +335,52 @@ export function TaskDetail({ sseEvent }: Props) {
           <div className="mt-1 font-mono text-xs text-gray-500">
             {task.model ?? "inherited at dispatch"}{task.variant ? ` --variant ${task.variant}` : ""}
           </div>
+          <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_auto]">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">Model</label>
+                <select
+                  value={editModel}
+                  onChange={(e) => setEditModel(e.target.value)}
+                  disabled={!modelEditable || savingModel || sortedProviders.length === 0}
+                  className="w-full rounded bg-gray-900 border border-gray-600 px-2 py-1.5 text-sm text-gray-100 disabled:opacity-60"
+                >
+                  {sortedProviders.length === 0 && <option value="">No models available</option>}
+                  {sortedProviders.map((provider) => (
+                    <optgroup key={provider} label={provider}>
+                      {groups[provider].map((item) => (
+                        <option key={item} value={item}>{modelLabel(item)}</option>
+                      ))}
+                    </optgroup>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">Variant</label>
+                <select
+                  value={editVariant}
+                  onChange={(e) => setEditVariant(e.target.value)}
+                  disabled={!modelEditable || savingModel}
+                  className="w-full rounded bg-gray-900 border border-gray-600 px-2 py-1.5 text-sm text-gray-100 disabled:opacity-60"
+                >
+                  {availableVariants.map((v) => (
+                    <option key={v} value={v}>{v || "(none)"}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={handleSaveModel}
+              disabled={!modelEditable || savingModel || !modelChanged}
+              className="self-end px-3 py-2 rounded bg-cyan-700 hover:bg-cyan-600 disabled:opacity-50 text-white text-sm"
+            >
+              {savingModel ? "Saving..." : "Save model"}
+            </button>
+          </div>
+          {!modelEditable && (
+            <p className="mt-2 text-xs text-amber-400">Model is locked while running or after completion.</p>
+          )}
         </div>
 
         <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">

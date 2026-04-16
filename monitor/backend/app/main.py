@@ -45,7 +45,9 @@ from .schemas import (
 from .state_seed import seed_tasks_from_state_if_empty
 from .task_runtime import apply_live_runtime
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(name)s] %(levelname)s: %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s [%(name)s] %(levelname)s: %(message)s"
+)
 logger = logging.getLogger("croqtuner")
 
 
@@ -77,7 +79,10 @@ async def list_tasks(
     if status:
         stmt = stmt.where(Task.status == status)
     result = await session.execute(stmt)
-    return [TaskResponse(**apply_live_runtime(t, t.to_dict())) for t in result.scalars().all()]
+    return [
+        TaskResponse(**apply_live_runtime(t, t.to_dict()))
+        for t in result.scalars().all()
+    ]
 
 
 @app.post("/api/tasks", response_model=TaskResponse, status_code=201)
@@ -98,8 +103,8 @@ async def create_task(
         n=body.n,
         k=body.k,
         mode=body.mode,
-        model=body.model or await get_default_model(session),
-        variant=body.variant if body.variant is not None else await get_default_variant(session),
+        model=body.model,
+        variant=body.variant,
         max_iterations=max_iter,
         status="pending",
         current_iteration=0,
@@ -130,27 +135,45 @@ async def update_task(
     if not task:
         raise HTTPException(404, "Task not found")
 
+    changed = False
+
+    if body.model is not None or body.variant is not None:
+        if task.status in ("running", "completed"):
+            raise HTTPException(
+                400, "Cannot change model for running or completed tasks"
+            )
+        if body.model is not None:
+            task.model = body.model
+            changed = True
+        if body.variant is not None:
+            task.variant = body.variant
+            changed = True
+
     if body.status == "cancelled":
         if task.status not in ("pending", "running", "waiting", "stopped"):
-            raise HTTPException(400, "Can only cancel pending, running, waiting, or stopped tasks")
-        task.status = "cancelled"
-        task.updated_at = datetime.now(timezone.utc)
-        await session.commit()
-        await event_bus.publish("task_update", task.to_dict())
+            raise HTTPException(
+                400, "Can only cancel pending, running, waiting, or stopped tasks"
+            )
+        if task.status != "cancelled":
+            task.status = "cancelled"
+            changed = True
     elif body.status == "pending" and task.status == "waiting":
         task.status = "pending"
-        task.updated_at = datetime.now(timezone.utc)
-        await session.commit()
-        await event_bus.publish("task_update", task.to_dict())
+        changed = True
     elif body.status == "waiting" and task.status == "pending":
         if scheduler.active_task_id == task.id:
             raise HTTPException(400, "Cannot demote a task that is running")
         task.status = "waiting"
+        changed = True
+    elif body.status is not None and body.status != task.status:
+        raise HTTPException(
+            400, f"Cannot change task from {task.status} to {body.status}"
+        )
+
+    if changed:
         task.updated_at = datetime.now(timezone.utc)
         await session.commit()
         await event_bus.publish("task_update", task.to_dict())
-    elif body.status is not None and body.status != task.status:
-        raise HTTPException(400, f"Cannot change task from {task.status} to {body.status}")
 
     return TaskResponse(**task.to_dict())
 
@@ -175,7 +198,9 @@ async def retry_task(task_id: int, session: AsyncSession = Depends(get_session))
     if not task:
         raise HTTPException(404, "Task not found")
     if task.status not in ("failed", "completed", "cancelled", "stopped"):
-        raise HTTPException(400, "Can only retry failed, completed, cancelled, or stopped tasks")
+        raise HTTPException(
+            400, "Can only retry failed, completed, cancelled, or stopped tasks"
+        )
 
     retry = Task(
         shape_key=task.shape_key,
@@ -184,8 +209,8 @@ async def retry_task(task_id: int, session: AsyncSession = Depends(get_session))
         n=task.n,
         k=task.k,
         mode=task.mode,
-        model=await get_default_model(session),
-        variant=await get_default_variant(session),
+        model=task.model,
+        variant=task.variant,
         max_iterations=task.max_iterations,
         status="pending",
         current_iteration=0,
@@ -221,8 +246,8 @@ async def resume_task(
         n=task.n,
         k=task.k,
         mode=task.mode,
-        model=await get_default_model(session),
-        variant=await get_default_variant(session),
+        model=task.model,
+        variant=task.variant,
         max_iterations=task.max_iterations,
         status="pending",
         current_iteration=from_iter,
@@ -239,7 +264,9 @@ async def resume_task(
 
 
 @app.get("/api/tasks/{task_id}/logs", response_model=list[IterationLogResponse])
-async def get_iteration_logs(task_id: int, session: AsyncSession = Depends(get_session)):
+async def get_iteration_logs(
+    task_id: int, session: AsyncSession = Depends(get_session)
+):
     task = await session.get(Task, task_id)
     if not task:
         raise HTTPException(404, "Task not found")
@@ -309,7 +336,9 @@ async def update_model_settings(
     body: ModelSettingsUpdate,
     session: AsyncSession = Depends(get_session),
 ):
-    model, variant = await set_default_model(session, body.default_model, body.default_variant)
+    model, variant = await set_default_model(
+        session, body.default_model, body.default_variant
+    )
     await session.commit()
     return ModelSettingsResponse(
         default_model=model,
@@ -322,7 +351,7 @@ async def update_model_settings(
 @app.get("/api/settings/auto-wake", response_model=AutoWakeSettingsResponse)
 async def get_auto_wake_settings(session: AsyncSession = Depends(get_session)):
     """Get the auto-wake toggle state.
-    
+
     When enabled, the scheduler will automatically start opencode for pending tasks.
     When disabled, the monitor only observes and polls artifacts (pure monitor mode).
     """
@@ -337,7 +366,7 @@ async def update_auto_wake_settings(
     session: AsyncSession = Depends(get_session),
 ):
     """Toggle the auto-wake setting.
-    
+
     When enabled: scheduler will auto-start opencode for pending tasks.
     When disabled: pure monitor mode, no automatic task execution.
     """
@@ -376,7 +405,15 @@ async def health(session: AsyncSession = Depends(get_session)):
         select(Task.status, func.count(Task.id)).group_by(Task.status)
     )
     task_counts = {status: count for status, count in counts_result.all()}
-    for status in ("waiting", "pending", "running", "stopped", "completed", "failed", "cancelled"):
+    for status in (
+        "waiting",
+        "pending",
+        "running",
+        "stopped",
+        "completed",
+        "failed",
+        "cancelled",
+    ):
         task_counts.setdefault(status, 0)
 
     return HealthResponse(
@@ -396,7 +433,7 @@ async def health(session: AsyncSession = Depends(get_session)):
 @app.get("/api/agents")
 async def list_agents():
     """List all detected AI agents currently running.
-    
+
     Returns agents grouped by type: cursor_ide, cursor_cli, opencode, copilot_ide.
     Each agent includes PID, session ID (if detected), working directory, and active kernel.
     """

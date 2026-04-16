@@ -28,27 +28,8 @@ function AutoWakeToggle({ enabled, onToggle, disabled }: { enabled: boolean; onT
   );
 }
 
-function providerGroup(models: string[]): Record<string, string[]> {
-  const groups: Record<string, string[]> = {};
-  for (const m of models) {
-    const slash = m.indexOf("/");
-    const provider = slash > 0 ? m.slice(0, slash) : "other";
-    (groups[provider] ??= []).push(m);
-  }
-  return groups;
-}
-
-function shortName(model: string): string {
-  const slash = model.indexOf("/");
-  return slash > 0 ? model.slice(slash + 1) : model;
-}
-
 export function SystemStatusPanel({ health, onRefresh }: Props) {
-  const [expanded, setExpanded] = useState(false);
-  const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [selectedModel, setSelectedModel] = useState("");
-  const [selectedVariant, setSelectedVariant] = useState("");
   const [togglingAutoWake, setTogglingAutoWake] = useState(false);
 
   const handleAutoWakeToggle = useCallback(async () => {
@@ -72,9 +53,6 @@ export function SystemStatusPanel({ health, onRefresh }: Props) {
     );
   }
 
-  const curModel = selectedModel || health.default_model;
-  const curVariant = selectedVariant || health.default_variant;
-
   const queueItems = [
     { label: "Waiting", value: health.task_counts.waiting ?? 0 },
     { label: "Pending", value: health.task_counts.pending ?? 0 },
@@ -82,33 +60,6 @@ export function SystemStatusPanel({ health, onRefresh }: Props) {
     { label: "Stopped", value: health.task_counts.stopped ?? 0 },
     { label: "Failed", value: health.task_counts.failed ?? 0 },
   ];
-
-  const handleApply = async () => {
-    setSaving(true);
-    setError("");
-    try {
-      await api.setDefaultModel(curModel, curVariant);
-      await onRefresh();
-      setSelectedModel("");
-      setSelectedVariant("");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update model");
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const groups = providerGroup(health.available_models);
-  const providerOrder = ["github-copilot", "opencode", "nvidia"];
-  const sortedProviders = [
-    ...providerOrder.filter((p) => groups[p]),
-    ...Object.keys(groups).filter((p) => !providerOrder.includes(p)),
-  ];
-
-  const displayLabel =
-    health.default_variant
-      ? `${shortName(health.default_model)} (${health.default_variant})`
-      : shortName(health.default_model);
 
   return (
     <section className="rounded-2xl border border-gray-800 bg-gradient-to-br from-gray-900 via-gray-900 to-slate-950 p-4 shadow-[0_20px_80px_rgba(0,0,0,0.35)]">
@@ -138,8 +89,7 @@ export function SystemStatusPanel({ health, onRefresh }: Props) {
             </span>
           </div>
           <div className="mt-3 text-sm text-gray-300">
-            Default model: <span className="font-medium text-white">{displayLabel}</span>
-            <span className="ml-2 font-mono text-xs text-gray-500">{health.default_model}</span>
+            Model assignment is task-scoped. Pick model + variant when creating or editing a task.
           </div>
         </div>
 
@@ -160,69 +110,11 @@ export function SystemStatusPanel({ health, onRefresh }: Props) {
         </div>
 
         <div className="lg:w-[32rem]">
-          <button
-            type="button"
-            onClick={() => setExpanded((prev) => !prev)}
-            className="flex w-full items-center justify-between rounded-xl border border-cyan-800/60 bg-cyan-950/20 px-4 py-3 text-left transition hover:border-cyan-700 hover:bg-cyan-950/30"
-          >
-            <div>
-              <div className="text-[11px] uppercase tracking-[0.25em] text-cyan-400">Model control</div>
-              <div className="mt-1 text-sm text-cyan-50">Choose the default model + variant for new tasks</div>
-            </div>
-            <span className="text-cyan-300">{expanded ? "Hide" : "Show"}</span>
-          </button>
-
-          {expanded && (
-            <div className="mt-2 space-y-3 rounded-xl border border-gray-800 bg-black/20 p-3">
-              <div>
-                <label className="block text-[11px] uppercase tracking-[0.2em] text-gray-500 mb-1">Model</label>
-                <select
-                  value={curModel}
-                  onChange={(e) => setSelectedModel(e.target.value)}
-                  disabled={saving}
-                  className="w-full bg-gray-800 rounded-lg px-3 py-2 text-sm text-gray-100 border border-gray-700 focus:border-cyan-500 focus:outline-none"
-                >
-                  {sortedProviders.map((provider) => (
-                    <optgroup key={provider} label={provider}>
-                      {groups[provider].map((m) => (
-                        <option key={m} value={m}>{shortName(m)}</option>
-                      ))}
-                    </optgroup>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-[11px] uppercase tracking-[0.2em] text-gray-500 mb-1">Variant (reasoning effort)</label>
-                <select
-                  value={curVariant}
-                  onChange={(e) => setSelectedVariant(e.target.value)}
-                  disabled={saving}
-                  className="w-full bg-gray-800 rounded-lg px-3 py-2 text-sm text-gray-100 border border-gray-700 focus:border-cyan-500 focus:outline-none"
-                >
-                  {health.available_variants.map((v) => (
-                    <option key={v} value={v}>{v || "(none)"}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-xs text-gray-500">
-                  {curModel}{curVariant ? ` --variant ${curVariant}` : ""}
-                </span>
-                <button
-                  type="button"
-                  onClick={handleApply}
-                  disabled={saving || (curModel === health.default_model && curVariant === health.default_variant)}
-                  className="px-4 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-sm font-medium transition disabled:opacity-40"
-                >
-                  {saving ? "Saving..." : "Apply"}
-                </button>
-              </div>
-
-              {error && <p className="rounded-lg bg-red-950/40 px-3 py-2 text-sm text-red-300">{error}</p>}
-            </div>
-          )}
+          <div className="rounded-xl border border-cyan-800/60 bg-cyan-950/20 px-4 py-3">
+            <div className="text-[11px] uppercase tracking-[0.25em] text-cyan-400">Task-scoped models</div>
+            <div className="mt-1 text-sm text-cyan-50">Use <strong>+ Add Task</strong> or open a task detail page to select model + variant.</div>
+            {error && <p className="mt-3 rounded-lg bg-red-950/40 px-3 py-2 text-sm text-red-300">{error}</p>}
+          </div>
         </div>
       </div>
     </section>

@@ -51,6 +51,33 @@ Services:
 - Backend API: http://localhost:8642
 - Frontend UI: http://localhost:5173
 
+## Run as systemd services
+
+Service unit templates are provided in `monitor/deploy/systemd/`.
+
+```bash
+# Install units (root systemd)
+sudo cp /home/albert/workspace/croqtile-tuner/monitor/deploy/systemd/croqtuner-backend.service /etc/systemd/system/
+sudo cp /home/albert/workspace/croqtile-tuner/monitor/deploy/systemd/croqtuner-frontend.service /etc/systemd/system/
+
+# Ensure backend venv/deps are ready
+cd /home/albert/workspace/croqtile-tuner/monitor/backend
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+
+# Ensure frontend deps are ready
+cd /home/albert/workspace/croqtile-tuner/monitor/frontend
+npm install
+
+# Enable + start
+sudo systemctl daemon-reload
+sudo systemctl enable --now croqtuner-backend.service croqtuner-frontend.service
+
+# Check
+systemctl status croqtuner-backend.service
+systemctl status croqtuner-frontend.service
+```
+
 ## Data Compatibility
 
 The monitor reads data from the parent `croqtile-tuner` directory:
@@ -79,14 +106,13 @@ croqtile-tuner/
 - `GET /api/tasks` - List all tasks
 - `POST /api/tasks` - Create a new task
 - `GET /api/tasks/{id}` - Get task details
-- `PATCH /api/tasks/{id}` - Update task status
+- `PATCH /api/tasks/{id}` - Update task status and/or per-task model assignment
 - `DELETE /api/tasks/{id}` - Delete task
 - `POST /api/tasks/{id}/retry` - Retry a failed task
 - `POST /api/tasks/{id}/resume` - Resume from a specific iteration
 
 ### Settings
 - `GET /api/settings/model` - Get model settings
-- `PATCH /api/settings/model` - Update default model
 - `GET /api/settings/auto-wake` - Get auto-wake toggle state
 - `PATCH /api/settings/auto-wake` - Toggle auto-wake
 

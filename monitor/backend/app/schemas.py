@@ -4,7 +4,16 @@ from .config import is_valid_variant
 
 
 VALID_DTYPES = ("f16", "e4m3", "bf16", "bf16fp32", "f32")
-VALID_OP_TYPES = ("gemm_sp", "gemm", "matmul", "matmul_bf16", "blockscale_gemm", "bmm", "gemv", "fused_moe")
+VALID_OP_TYPES = (
+    "gemm_sp",
+    "gemm",
+    "matmul",
+    "matmul_bf16",
+    "blockscale_gemm",
+    "bmm",
+    "gemv",
+    "fused_moe",
+)
 
 
 class TaskCreate(BaseModel):
@@ -14,8 +23,8 @@ class TaskCreate(BaseModel):
     n: int
     k: int
     mode: str
-    model: str | None = None
-    variant: str | None = None
+    model: str
+    variant: str = ""
 
     @field_validator("op_type")
     @classmethod
@@ -58,16 +67,25 @@ class TaskCreate(BaseModel):
             raise ValueError("mode must be 'from_current_best' or 'from_scratch'")
         return v
 
+    @field_validator("model")
+    @classmethod
+    def validate_model(cls, v: str) -> str:
+        if not v.strip():
+            raise ValueError("model is required")
+        return v.strip()
+
     @field_validator("variant")
     @classmethod
-    def validate_variant(cls, v: str | None) -> str | None:
-        if v is not None and not is_valid_variant(v):
+    def validate_variant(cls, v: str) -> str:
+        if not is_valid_variant(v):
             raise ValueError("unsupported variant")
         return v
 
 
 class TaskUpdate(BaseModel):
     status: str | None = None
+    model: str | None = None
+    variant: str | None = None
 
     @field_validator("status")
     @classmethod
@@ -76,8 +94,30 @@ class TaskUpdate(BaseModel):
             raise ValueError("status must be 'pending', 'cancelled', or 'waiting'")
         return v
 
+    @field_validator("model")
+    @classmethod
+    def validate_model(cls, v: str | None) -> str | None:
+        if v is not None and not v.strip():
+            raise ValueError("model cannot be empty")
+        return v.strip() if v is not None else None
 
-VALID_TASK_STATUSES = ("pending", "waiting", "running", "stopped", "completed", "failed", "cancelled")
+    @field_validator("variant")
+    @classmethod
+    def validate_variant(cls, v: str | None) -> str | None:
+        if v is not None and not is_valid_variant(v):
+            raise ValueError("unsupported variant")
+        return v
+
+
+VALID_TASK_STATUSES = (
+    "pending",
+    "waiting",
+    "running",
+    "stopped",
+    "completed",
+    "failed",
+    "cancelled",
+)
 
 
 class TaskResponse(BaseModel):

@@ -5,8 +5,6 @@ import { AddTaskForm } from "../AddTaskForm";
 const defaultProps = {
   availableModels: ["opencode/qwen3.6-plus-free", "opencode/minimax-m2.5-free"],
   availableVariants: ["", "minimal", "low", "medium", "high", "xhigh", "max"],
-  defaultModel: "opencode/qwen3.6-plus-free",
-  defaultVariant: "",
   onCreated: vi.fn(),
   onCancel: vi.fn(),
 };
@@ -15,7 +13,8 @@ describe("AddTaskForm", () => {
   it("renders all form fields", () => {
     render(<AddTaskForm {...defaultProps} />);
     expect(screen.getByText("Add Kernel Tuning Task")).toBeInTheDocument();
-    expect(screen.getByText("Dtype")).toBeInTheDocument();
+    expect(screen.getByText("Input Type")).toBeInTheDocument();
+    expect(screen.getByText("Output Type")).toBeInTheDocument();
     expect(screen.getByText("Mode")).toBeInTheDocument();
     expect(screen.getByText("Model")).toBeInTheDocument();
     const spinbuttons = screen.getAllByRole("spinbutton");

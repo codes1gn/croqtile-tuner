@@ -105,8 +105,14 @@ export const api = {
   listTasks: (status?: string) =>
     request<TaskData[]>(`/tasks${status ? `?status=${status}` : ""}`),
 
-  createTask: (data: { op_type: string; dtype: string; m: number; n: number; k: number; mode: string; model?: string; variant?: string }) =>
+  createTask: (data: { op_type: string; dtype: string; m: number; n: number; k: number; mode: string; model: string; variant?: string }) =>
     request<TaskData>("/tasks", { method: "POST", body: JSON.stringify(data) }),
+
+  updateTask: (id: number, data: { status?: string; model?: string; variant?: string }) =>
+    request<TaskData>(`/tasks/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }),
 
   getTask: (id: number) => request<TaskData>(`/tasks/${id}`),
 
