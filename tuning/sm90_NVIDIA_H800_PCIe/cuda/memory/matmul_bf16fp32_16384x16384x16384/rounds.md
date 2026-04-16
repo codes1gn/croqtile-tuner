@@ -26,3 +26,10 @@
 - decision: **DISCARD**
 - bottleneck: `launch_bound`
 - idea: mma.sync PTX + manual B fragment loading - incorrect register layout
+
+## iter006 — 2026-04-16T05:37:36Z
+- kernel: `iter006_coalesced`
+- tflops: `8.60`
+- decision: **DISCARD**
+- bottleneck: `launch_bound`
+- idea: 128-bit coalesced loads into padded smem - padding broke alignment

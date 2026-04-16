@@ -1,16 +1,16 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-16T05:31:17Z",
+  "timestamp": "2026-04-16T05:34:10Z",
   "dsl": "cuda",
   "shape_key": "matmul_bf16fp32_16384x16384x16384",
-  "iter": "iter005_mmasync",
+  "iter": "iter006_coalesced",
   "bottleneck": "launch_bound",
-  "idea": "Replace WMMA API with mma.sync.aligned m16n8k16 PTX + ldmatrix for efficient smem-to-reg transfer",
-  "expected_gain": "+50-200 TFLOPS (ldmatrix+mma.sync much faster than WMMA)",
+  "idea": "128-bit coalesced global loads via uint4, proper thread-to-memory mapping for warp coalescing",
+  "expected_gain": "+30-60 TFLOPS via fully coalesced memory access",
   "levers": [
-    "MMA_INSTRUCTION",
-    "LDMATRIX",
-    "REGISTER_TILING"
+    "LOAD_WIDTH",
+    "COALESCING",
+    "THREAD_MAPPING"
   ],
   "status": "PLANNED"
 }
