@@ -1,12 +1,8 @@
 {
   "validation": "passed",
-  "ncu_version": "2023.2.1.0",
-  "ncu_path": "/usr/local/cuda/bin/ncu",
+  "ncu_version": "2025.3.1.0",
   "perf_event_paranoid": 2,
-  "RmProfilingAdminOnly": 0,
-  "nvcc_version": "12.2.128",
-  "nvcc_path": "/usr/local/cuda/bin/nvcc",
-  "gpu_name": "NVIDIA GeForce RTX 3070",
-  "gpu_memory": "8192 MiB",
-  "validated_at": "2026-04-15T09:20:00Z"
+  "nvcc_version": "cuda_13.0.r13.0/compiler.36424714_0",
+  "gpu_name": "NVIDIA H800 PCIe",
+  "validated_at": "2026-04-16T04:38:28.963940+00:00"
 }

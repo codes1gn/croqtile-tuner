@@ -32,9 +32,11 @@ async def main() -> None:
     from app.models import Base, IterationLog, Task
     from app.state_seed import seed_tasks_from_state_if_empty
 
-    state_path = settings.tuning_dir / "state.json"
-    if not state_path.exists():
-        print(f"Missing {state_path}", file=sys.stderr)
+    from app.state_seed import _find_state_files
+
+    state_paths = _find_state_files(settings.tuning_dir)
+    if not state_paths:
+        print(f"No state.json found under {settings.tuning_dir}", file=sys.stderr)
         sys.exit(1)
 
     await init_db()
@@ -49,7 +51,7 @@ async def main() -> None:
     async with async_session() as session:
         seeded = await seed_tasks_from_state_if_empty(session)
         if not seeded:
-            print(f"No tasks seeded from {settings.tuning_dir / 'state.json'}", file=sys.stderr)
+            print(f"No tasks seeded from {settings.tuning_dir}", file=sys.stderr)
             sys.exit(1)
 
         task_count = (await session.execute(select(func.count(Task.id)))).scalar_one()
@@ -57,7 +59,7 @@ async def main() -> None:
 
     print(
         f"Seeded {task_count} tasks and {log_count} iteration logs "
-        f"from {settings.tuning_dir / 'state.json'}."
+        f"from {settings.tuning_dir}."
     )
 
 

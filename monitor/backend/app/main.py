@@ -42,6 +42,7 @@ from .schemas import (
     TaskResponse,
     TaskUpdate,
 )
+from .artifact_scanner import scan_and_create_tasks
 from .state_seed import seed_tasks_from_state_if_empty
 from .task_runtime import apply_live_runtime
 
@@ -56,6 +57,7 @@ async def lifespan(app: FastAPI):
     await init_db()
     async with async_session() as session:
         await seed_tasks_from_state_if_empty(session)
+        await scan_and_create_tasks(session)
     await scheduler.start()
     yield
     await scheduler.stop()

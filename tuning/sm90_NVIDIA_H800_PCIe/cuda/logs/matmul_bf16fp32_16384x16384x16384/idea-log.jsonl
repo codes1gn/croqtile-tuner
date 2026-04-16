@@ -1,0 +1,1 @@
+{"round": 1, "iter": "iter002", "bottleneck": "launch_bound", "idea": "Vectorize global-to-smem loads with float4, remove launch_bounds, BK=64", "category": "memory", "expected_gain": "+20-40 TFLOPS", "decision": "DISCARD", "tflops": 5.36, "timestamp": "2026-04-16T05:11:59Z"}

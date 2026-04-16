@@ -1,6 +1,0 @@
-/home/albert/workspace/croqtile-tuner/tuning/aitune/cuda/srcs/matmul_bf16fp32_512x16384x16384/iter001_draft.cu(44): warning #177-D: variable "laneId" was declared but never referenced
-      const int laneId = threadIdx.x % WARP_SIZE;
-                ^
-
-Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
-

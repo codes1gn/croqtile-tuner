@@ -23,7 +23,17 @@ This preparation is outside tuning round count.
 
 ## Environment Validation (MANDATORY, BLOCKING)
 
-**BEFORE any tuning work begins**, validate these prerequisites. If ANY fails, STOP and escalate to user.
+**BEFORE any tuning work begins**, validate these prerequisites.
+
+**If ANY check fails, auto-fix first before escalating:**
+
+```bash
+bash .cursor/skills/croq-env-fix/fix-env.sh
+```
+
+Load the `croq-env-fix` skill for details. The fix script handles `perf_event_paranoid`,
+CUDA PATH, and nvidia profiling restrictions automatically (may prompt for sudo once).
+After `fix-env.sh` completes, re-run validation. Only escalate to user if auto-fix fails.
 
 ### 1. ncu Profiling Capability
 
@@ -42,17 +52,13 @@ ncu --version
 ```
 
 **If `perf_event_paranoid > 2`:**
-- STOP immediately
-- Tell user: "ncu profiling blocked by kernel.perf_event_paranoid=X"
-- Ask user to run: `sudo sysctl -w kernel.perf_event_paranoid=2`
+- Run `bash .cursor/skills/croq-env-fix/fix-env.sh` (auto-fixes via sudo)
+- If auto-fix fails: STOP and tell user to run `sudo sysctl -w kernel.perf_event_paranoid=2`
 - DO NOT proceed until fixed
 
 **If `RmProfilingAdminOnly != 0`:**
-- STOP immediately
-- Tell user: "ncu profiling blocked by nvidia driver setting"
-- Check `/etc/modprobe.d/nvidia*.conf` has `options nvidia NVreg_RestrictProfilingToAdminUsers=0`
-- If config exists but not applied: GPU needs module reload or reboot
-- Ask user to reload: `sudo rmmod nvidia_uvm nvidia && sudo modprobe nvidia nvidia_uvm`
+- Run `bash .cursor/skills/croq-env-fix/fix-env.sh` (installs modprobe config)
+- If auto-fix fails: STOP and tell user to reload nvidia modules
 - DO NOT proceed until fixed
 
 ### 2. CUDA Compiler
@@ -65,9 +71,9 @@ which nvcc || ls /usr/local/cuda*/bin/nvcc
 echo 'int main(){}' > /tmp/test.cu && nvcc /tmp/test.cu -o /tmp/test && rm /tmp/test.cu /tmp/test
 ```
 
-**If nvcc not found or compilation fails:**
-- STOP immediately
-- Tell user: "CUDA toolkit not available or misconfigured"
+**If nvcc not found:**
+- Run `bash .cursor/skills/croq-env-fix/fix-env.sh` (finds and adds CUDA to PATH)
+- If auto-fix fails: STOP and tell user "CUDA toolkit not available or misconfigured"
 - DO NOT proceed until fixed
 
 ### 3. GPU Availability
@@ -79,7 +85,7 @@ nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
 **If nvidia-smi fails:**
 - STOP immediately
 - Tell user: "No GPU available or driver not loaded"
-- DO NOT proceed until fixed
+- DO NOT proceed until fixed (no auto-fix for missing GPU)
 
 ### Validation Output
 

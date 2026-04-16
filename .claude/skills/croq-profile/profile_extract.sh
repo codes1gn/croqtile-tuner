@@ -63,23 +63,50 @@ fi
 
 extract_metric() {
     local name="$1"
-    # ncu CSV: columns are "Metric Name","Metric Unit","Maximum","Minimum","Average"
-    # We want the Average column (5th field).  Value may be float or "N/A".
     python3 - "$CSV" "$name" <<'PYEOF' 2>/dev/null || echo ""
-import sys, csv, re
+import sys, csv
 csv_path, target = sys.argv[1], sys.argv[2]
+
+# Mapping from internal metric IDs to human-readable ncu "details" names
+HUMAN_MAP = {
+    "dram__throughput.avg.pct_of_peak_sustained_elapsed": "DRAM Throughput",
+    "gpu__dram_throughput.avg.pct_of_peak_sustained_elapsed": "DRAM Throughput",
+    "gpu__compute_memory_throughput.avg.pct_of_peak_sustained_elapsed": "Memory Throughput",
+    "sm__throughput.avg.pct_of_peak_sustained_elapsed": "Compute (SM) Throughput",
+    "sm__warps_active.avg.pct_of_peak_sustained_elapsed": "Achieved Occupancy",
+    "ipc_occupancy.avg.pct": "Achieved Occupancy",
+    "sm__warps_active.avg.pct_of_peak_sustained_active": "Achieved Occupancy",
+    "dram__bytes.sum.per_second": "Memory Throughput",
+    "smsp__warp_issue_stalled_long_scoreboard_pct": "Stall Long Scoreboard",
+    "smsp__average_warps_issue_stalled_long_scoreboard_per_issue_active.ratio": "Stall Long Scoreboard",
+}
+human_target = HUMAN_MAP.get(target, target)
+
 with open(csv_path, newline='', encoding='utf-8-sig') as f:
     reader = csv.reader(f)
+    header = next(reader, None)
+    if not header:
+        sys.exit(0)
+
+    # Detect format: "details" page has "Metric Name" at col 12, "Metric Value" at col 14
+    #                "raw" page has metric name at col 0, value at col 4
+    if len(header) > 12 and "Metric Name" in header[12]:
+        name_col, val_col = 12, 14
+        search_names = [human_target, target]
+    else:
+        name_col, val_col = 0, 4
+        search_names = [target, human_target]
+
     for row in reader:
-        if not row:
+        if len(row) <= max(name_col, val_col):
             continue
-        metric_name = row[0].strip().strip('"')
-        if metric_name == target and len(row) >= 5:
-            val = row[4].strip().strip('"')
-            # Newer ncu may emit thousands separators.
-            val = val.replace(',', '')
+        metric_name = row[name_col].strip().strip('"')
+        if metric_name in search_names:
+            val = row[val_col].strip().strip('"').replace(',', '')
             try:
-                print(float(val))
+                v = float(val)
+                # If metric is in bytes/s and value > 1e6, it's raw throughput
+                print(v)
             except ValueError:
                 pass
             break

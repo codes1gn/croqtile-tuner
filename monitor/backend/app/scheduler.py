@@ -12,6 +12,7 @@ from datetime import datetime, timezone
 from sqlalchemy import select, func
 
 from .agent import poll_artifacts, run_task, terminate_stray_opencode_processes
+from .artifact_scanner import scan_and_create_tasks
 from .config import settings
 from .database import async_session
 from .events import event_bus
@@ -27,6 +28,7 @@ class Scheduler:
         self.active_task_id: int | None = None
         self._task: asyncio.Task | None = None
         self._worker: asyncio.Task | None = None
+        self._scan_counter: int = 0
 
     async def start(self) -> None:
         self.running = True
@@ -82,6 +84,10 @@ class Scheduler:
     async def _loop(self) -> None:
         while self.running:
             try:
+                self._scan_counter += 1
+                if self._scan_counter % 6 == 0:
+                    await self._scan_disk()
+
                 if self._worker is None or self._worker.done():
                     self._worker = None
                     self.active_task_id = None
@@ -89,6 +95,16 @@ class Scheduler:
             except Exception:
                 logger.exception("Scheduler loop error")
             await asyncio.sleep(5)
+
+    async def _scan_disk(self) -> None:
+        """Periodically scan tuning dir for runs started outside the UI."""
+        try:
+            async with async_session() as session:
+                created = await scan_and_create_tasks(session)
+                if created:
+                    logger.info("Artifact scan: created %d new task(s) from disk", created)
+        except Exception:
+            logger.exception("Artifact scan error")
 
     async def _try_dispatch(self) -> None:
         async with async_session() as session:

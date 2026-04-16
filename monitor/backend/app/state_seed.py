@@ -4,6 +4,7 @@ import json
 import logging
 import re
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
 from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -14,7 +15,29 @@ from .runtime_settings import get_default_model
 
 logger = logging.getLogger("croqtuner.state_seed")
 
-_SHAPE_KEY_PATTERN = re.compile(r"^(f16|e4m3)_(\d+)x(\d+)x(\d+)(_fs)?$")
+_SHAPE_KEY_PATTERN = re.compile(
+    r"^(?:matmul_)?([A-Za-z0-9_]+?)_(\d+)x(\d+)x(\d+)(_fs)?$"
+)
+
+
+def _find_state_files(tuning_dir: Path) -> list[Path]:
+    """Discover state.json files in tuning/<gpu>/<dsl>/state.json and legacy tuning/state.json."""
+    found: list[Path] = []
+    root_state = tuning_dir / "state.json"
+    if root_state.exists():
+        found.append(root_state)
+
+    if tuning_dir.exists():
+        for gpu_dir in tuning_dir.iterdir():
+            if not gpu_dir.is_dir():
+                continue
+            for dsl_dir in gpu_dir.iterdir():
+                if not dsl_dir.is_dir():
+                    continue
+                nested = dsl_dir / "state.json"
+                if nested.exists():
+                    found.append(nested)
+    return found
 
 
 async def seed_tasks_from_state_if_empty(session: AsyncSession) -> bool:
@@ -23,18 +46,19 @@ async def seed_tasks_from_state_if_empty(session: AsyncSession) -> bool:
     if task_count:
         return False
 
-    state_path = settings.tuning_dir / "state.json"
-    if not state_path.exists():
-        logger.info("Skipping state seed: %s does not exist", state_path)
+    state_paths = _find_state_files(settings.tuning_dir)
+    if not state_paths:
+        logger.info("Skipping state seed: no state.json found under %s", settings.tuning_dir)
         return False
 
-    try:
-        raw = json.loads(state_path.read_text())
-    except (json.JSONDecodeError, OSError):
-        logger.exception("Failed to read %s for initial seed", state_path)
-        return False
-
-    shapes: dict[str, dict] = raw.get("shapes", {})
+    shapes: dict[str, dict] = {}
+    for state_path in state_paths:
+        try:
+            raw = json.loads(state_path.read_text())
+            shapes.update(raw.get("shapes", {}))
+            logger.info("Loaded shapes from %s", state_path)
+        except (json.JSONDecodeError, OSError):
+            logger.exception("Failed to read %s for initial seed", state_path)
 
     await session.execute(delete(IterationLog))
     await session.execute(delete(Task))
@@ -121,14 +145,38 @@ def _task_from_seed_row(row: dict) -> Task:
     return task
 
 
+def _find_results_tsv_for_seed(shape_key: str) -> Path | None:
+    """Search nested tuning tree for results.tsv matching a shape key."""
+    tuning_dir = settings.tuning_dir
+    if not tuning_dir.exists():
+        return None
+
+    # Nested layout: tuning/<gpu>/<dsl>/logs/<shape_key>/results.tsv
+    for gpu_dir in tuning_dir.iterdir():
+        if not gpu_dir.is_dir():
+            continue
+        for dsl_dir in gpu_dir.iterdir():
+            if not dsl_dir.is_dir():
+                continue
+            candidate = dsl_dir / "logs" / shape_key / "results.tsv"
+            if candidate.exists():
+                return candidate
+
+    # Legacy flat: tuning/logs/<shape_key>/results.tsv
+    flat = tuning_dir / "logs" / shape_key / "results.tsv"
+    if flat.exists():
+        return flat
+
+    return None
+
+
 async def _import_iteration_logs(session: AsyncSession) -> None:
     result = await session.execute(select(Task.id, Task.shape_key))
     task_by_key = {shape_key: task_id for task_id, shape_key in result.all()}
-    logs_dir = settings.tuning_dir / "logs"
 
     for shape_key, task_id in task_by_key.items():
-        results_path = logs_dir / shape_key / "results.tsv"
-        if not results_path.exists():
+        results_path = _find_results_tsv_for_seed(shape_key)
+        if results_path is None:
             continue
 
         try:

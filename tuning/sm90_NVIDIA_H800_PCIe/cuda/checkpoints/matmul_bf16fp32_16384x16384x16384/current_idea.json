@@ -1,0 +1,18 @@
+{
+  "schema": "croq-checkpoint-v1",
+  "timestamp": "2026-04-16T05:08:07Z",
+  "dsl": "cuda",
+  "shape_key": "matmul_bf16fp32_16384x16384x16384",
+  "iter": "iter002_vecload",
+  "bottleneck": "launch_bound",
+  "idea": "Vectorize global-to-smem loads with float4, remove launch_bounds occupancy limiter, increase BK to 64",
+  "expected_gain": "+20-40 TFLOPS (2-3x over iter001)",
+  "levers": [
+    "BK",
+    "LOAD_VECTORIZATION",
+    "LAUNCH_BOUNDS"
+  ],
+  "status": "VERIFIED",
+  "verified_iter": "iter002_vecload",
+  "drift_score": 1
+}

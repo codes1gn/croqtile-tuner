@@ -188,6 +188,37 @@ async def _read_stream(
         })
 
 
+def _find_artifacts(key: str) -> tuple[Path | None, Path | None]:
+    """Locate checkpoint and results.tsv in the nested tuning tree.
+
+    Layout: tuning/<gpu>/<dsl>/checkpoints/<key>.json
+            tuning/<gpu>/<dsl>/logs/<key>/results.tsv
+    """
+    tuning_dir = settings.tuning_dir.resolve()
+    checkpoint_path: Path | None = None
+    results_path: Path | None = None
+
+    if not tuning_dir.exists():
+        return checkpoint_path, results_path
+
+    for gpu_dir in tuning_dir.iterdir():
+        if not gpu_dir.is_dir():
+            continue
+        for dsl_dir in gpu_dir.iterdir():
+            if not dsl_dir.is_dir():
+                continue
+            cp = dsl_dir / "checkpoints" / f"{key}.json"
+            if cp.exists() and checkpoint_path is None:
+                checkpoint_path = cp
+            rp = dsl_dir / "logs" / key / "results.tsv"
+            if rp.exists() and results_path is None:
+                results_path = rp
+            if checkpoint_path and results_path:
+                return checkpoint_path, results_path
+
+    return checkpoint_path, results_path
+
+
 async def poll_artifacts(task: Task, session_factory) -> None:
     """Read checkpoint and results.tsv from filesystem to update task metrics.
     
@@ -200,13 +231,11 @@ async def poll_artifacts(task: Task, session_factory) -> None:
     if task.mode == "from_scratch" and not key.endswith("_fs"):
         key = f"{key}_fs"
 
-    tuning_dir = settings.tuning_dir.resolve()
-    checkpoint_path = tuning_dir / "checkpoints" / f"{key}.json"
-    results_path = tuning_dir / "logs" / key / "results.tsv"
+    checkpoint_path, results_path = _find_artifacts(key)
 
     update: dict = {}
 
-    if checkpoint_path.exists():
+    if checkpoint_path is not None and checkpoint_path.exists():
         try:
             cp = json.loads(checkpoint_path.read_text())
             cp_iter = cp.get("iteration") or cp.get("current_iter")
@@ -224,7 +253,7 @@ async def poll_artifacts(task: Task, session_factory) -> None:
         except (json.JSONDecodeError, OSError, ValueError):
             pass
 
-    if results_path.exists():
+    if results_path is not None and results_path.exists():
         try:
             lines = results_path.read_text().strip().split("\n")
             data_lines = [l for l in lines if l and not l.startswith("#") and not l.startswith("iter\t")]

@@ -406,7 +406,7 @@ export function TaskDetail({ sseEvent }: Props) {
 
       <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
         <h3 className="text-sm font-semibold text-gray-400 mb-3">TFLOPS Over Iterations</h3>
-        <TflopsChart logs={iterLogs} baseline={task.baseline_tflops} />
+        <TflopsChart logs={iterLogs} baseline={task.baseline_tflops ?? iterLogs.find((l) => l.iteration === 0)?.tflops ?? null} />
       </div>
 
       <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
@@ -423,21 +423,31 @@ export function TaskDetail({ sseEvent }: Props) {
               </tr>
             </thead>
             <tbody>
-              {[...iterLogs].sort((a, b) => b.iteration - a.iteration).map((log) => (
-                <tr key={log.id} className="border-b border-gray-700/50">
-                  <td className="py-1.5 px-3 text-gray-400">{log.iteration}</td>
-                  <td className="py-1.5 px-3 font-mono text-gray-200">
+              {[...iterLogs].sort((a, b) => b.iteration - a.iteration).map((log) => {
+                const isBaseline = log.iteration === 0;
+                return (
+                <tr key={log.id} className={`border-b border-gray-700/50 ${isBaseline ? "bg-amber-950/20" : ""}`}>
+                  <td className="py-1.5 px-3 text-gray-400">
+                    {isBaseline ? <span className="text-amber-400 font-semibold">base</span> : log.iteration}
+                  </td>
+                  <td className={`py-1.5 px-3 font-mono ${isBaseline ? "text-amber-300" : "text-gray-200"}`}>
                     {log.tflops?.toFixed(1) ?? "--"}
+                    {isBaseline && " ★"}
                   </td>
                   <td className="py-1.5 px-3">
-                    <span className={log.decision === "KEEP" ? "text-emerald-400" : "text-red-400"}>
-                      {log.decision ?? "--"}
-                    </span>
+                    {isBaseline ? (
+                      <span className="text-amber-400 text-[10px] uppercase tracking-wider">rooftop</span>
+                    ) : (
+                      <span className={log.decision === "KEEP" ? "text-emerald-400" : "text-red-400"}>
+                        {log.decision ?? "--"}
+                      </span>
+                    )}
                   </td>
                   <td className="py-1.5 px-3 text-gray-400">{log.bottleneck ?? "--"}</td>
                   <td className="py-1.5 px-3 text-gray-400 max-w-xs truncate">{log.idea_summary ?? "--"}</td>
                 </tr>
-              ))}
+                );
+              })}
               {iterLogs.length === 0 && (
                 <tr>
                   <td colSpan={5} className="py-4 text-center text-gray-600">
