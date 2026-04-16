@@ -460,14 +460,24 @@ export function TaskDetail({ sseEvent }: Props) {
         </div>
       </div>
 
-      <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
-        <h3 className="text-sm font-semibold text-gray-400 mb-3">OpenCode Session History</h3>
-        <SessionHistory history={sessionHistory} />
-      </div>
+      {task.agent_type !== "cursor_ide" && task.agent_type !== "copilot_ide" && (
+        <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+          <h3 className="text-sm font-semibold text-gray-400 mb-3">OpenCode Session History</h3>
+          <SessionHistory history={sessionHistory} />
+        </div>
+      )}
 
       <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
         <h3 className="text-sm font-semibold text-gray-400 mb-3">Runtime Event Log</h3>
-        <LiveLog logs={agentLogs} />
+        {(task.agent_type === "cursor_ide" || task.agent_type === "copilot_ide") && agentLogs.length === 0 ? (
+          <div className="text-sm text-gray-500 py-4 text-center">
+            Agent runs inside {task.agent_type === "cursor_ide" ? "Cursor IDE" : "Copilot IDE"} — live logs are tracked via artifact files, not process output.
+            <br />
+            <span className="text-gray-600 text-xs">Iteration progress is updated automatically from results.tsv every 30s.</span>
+          </div>
+        ) : (
+          <LiveLog logs={agentLogs} />
+        )}
       </div>
     </div>
   );

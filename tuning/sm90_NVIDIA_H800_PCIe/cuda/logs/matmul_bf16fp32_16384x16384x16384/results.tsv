@@ -2,3 +2,4 @@ iter	kernel	tflops	decision	bottleneck	idea
 iter000	iter000_baseline	452.40	KEEP	baseline	cuBLAS reference 452.40 TFLOPS
 iter001	iter001_draft	24.50	KEEP	launch_bound	First WMMA bf16 draft kernel
 iter002	iter002_vecload	5.36	DISCARD	launch_bound	Vectorize global-to-smem loads with float4, remove launch_bounds, BK=64
+iter003	iter003_dbuf	2.60	DISCARD	launch_bound	Double-buffered smem with register-cached loads, BK=32

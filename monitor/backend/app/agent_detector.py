@@ -82,31 +82,31 @@ def _extract_working_dir(pid: int) -> str | None:
 
 
 def _find_active_kernel(working_dir: str | None) -> str | None:
-    """Try to find the active kernel being tuned."""
-    if not working_dir:
-        return None
-    
-    # Look for tuning state files
-    tuning_dir = Path(working_dir) / "tuning"
-    if not tuning_dir.exists():
-        # Try parent directory
-        tuning_dir = Path(working_dir).parent / "tuning"
-    
+    """Find the most recently modified kernel checkpoint in the tuning tree."""
+    tuning_dir = settings.tuning_dir
     if not tuning_dir.exists():
         return None
     
-    # Look for recent checkpoint files
     checkpoints = list(tuning_dir.glob("**/checkpoints/*.json"))
     if not checkpoints:
         return None
     
-    # Sort by modification time, newest first
     checkpoints.sort(key=lambda p: p.stat().st_mtime, reverse=True)
-    newest = checkpoints[0]
-    
-    # Extract shape_key from path
-    # Format: tuning/<gpu>/<dsl>/checkpoints/<shape_key>.json
-    return newest.stem
+    return checkpoints[0].stem
+
+
+def _is_own_user_process(pid: int) -> bool:
+    """Check if a process belongs to the current user."""
+    try:
+        stat_path = f"/proc/{pid}/status"
+        with open(stat_path) as f:
+            for line in f:
+                if line.startswith("Uid:"):
+                    real_uid = int(line.split()[1])
+                    return real_uid == os.getuid()
+    except (OSError, PermissionError, ValueError):
+        pass
+    return False
 
 
 def detect_running_agents() -> list[DetectedAgent]:
@@ -115,7 +115,6 @@ def detect_running_agents() -> list[DetectedAgent]:
     project_root = str(settings.project_dir.resolve())
     
     try:
-        # Get list of all processes
         result = subprocess.run(
             ["ps", "auxww"],
             capture_output=True,
@@ -125,7 +124,7 @@ def detect_running_agents() -> list[DetectedAgent]:
         if result.returncode != 0:
             return agents
         
-        lines = result.stdout.strip().split("\n")[1:]  # Skip header
+        lines = result.stdout.strip().split("\n")[1:]
         
         for line in lines:
             parts = line.split(None, 10)
@@ -134,10 +133,6 @@ def detect_running_agents() -> list[DetectedAgent]:
             
             pid_str = parts[1]
             cmdline = parts[10] if len(parts) > 10 else ""
-            
-            # Skip if not related to our project
-            if project_root not in cmdline and "tuning" not in cmdline.lower():
-                continue
             
             try:
                 pid = int(pid_str)
@@ -148,14 +143,25 @@ def detect_running_agents() -> list[DetectedAgent]:
             if agent_type == "unknown":
                 continue
             
+            if not _is_own_user_process(pid):
+                continue
+
             working_dir = _extract_working_dir(pid)
+
+            # IDE agents (cursor_ide, copilot_ide) serve multiple workspaces
+            # from a shared extensionHost, so we can't filter by working dir.
+            # For CLI/opencode agents, check the command line for project path.
+            if agent_type not in ("cursor_ide", "copilot_ide"):
+                if project_root not in cmdline and "tuning" not in cmdline.lower():
+                    continue
+            
             session_id = _extract_session_id(cmdline)
-            kernel_path = _find_active_kernel(working_dir)
+            kernel_path = _find_active_kernel(working_dir or project_root)
             
             agents.append(DetectedAgent(
                 agent_type=agent_type,
                 pid=pid,
-                command=cmdline[:500],  # Truncate long commands
+                command=cmdline[:500],
                 working_dir=working_dir,
                 session_id=session_id,
                 kernel_path=kernel_path,

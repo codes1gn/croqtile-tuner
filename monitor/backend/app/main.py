@@ -432,6 +432,13 @@ async def health(session: AsyncSession = Depends(get_session)):
     )
 
 
+@app.post("/api/scan", status_code=200)
+async def trigger_scan(session: AsyncSession = Depends(get_session)):
+    """Manually trigger an artifact scan to discover/refresh tasks from disk."""
+    created = await scan_and_create_tasks(session)
+    return {"created": created}
+
+
 @app.get("/api/agents")
 async def list_agents():
     """List all detected AI agents currently running.

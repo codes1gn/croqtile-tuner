@@ -1,18 +1,16 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-16T05:08:07Z",
+  "timestamp": "2026-04-16T05:12:49Z",
   "dsl": "cuda",
   "shape_key": "matmul_bf16fp32_16384x16384x16384",
-  "iter": "iter002_vecload",
+  "iter": "iter003_dbuf",
   "bottleneck": "launch_bound",
-  "idea": "Vectorize global-to-smem loads with float4, remove launch_bounds occupancy limiter, increase BK to 64",
-  "expected_gain": "+20-40 TFLOPS (2-3x over iter001)",
+  "idea": "Double-buffered shared memory with cp.async pipeline to overlap loads and compute, BK=32",
+  "expected_gain": "+30-60 TFLOPS (2-4x over iter001)",
   "levers": [
-    "BK",
-    "LOAD_VECTORIZATION",
-    "LAUNCH_BOUNDS"
+    "PIPELINE_STAGES",
+    "CP_ASYNC",
+    "DOUBLE_BUFFER"
   ],
-  "status": "VERIFIED",
-  "verified_iter": "iter002_vecload",
-  "drift_score": 1
+  "status": "PLANNED"
 }

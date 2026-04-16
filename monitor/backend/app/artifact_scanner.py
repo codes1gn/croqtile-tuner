@@ -17,6 +17,7 @@ from pathlib import Path
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from .agent_detector import detect_running_agents
 from .config import settings
 from .events import event_bus
 from .models import Task
@@ -187,7 +188,41 @@ async def scan_and_create_tasks(session: AsyncSession) -> int:
     if created or changed:
         await session.commit()
 
+    # Detect running agents and mark their tasks as "running"
+    await _sync_agent_status(session)
+
     return created
+
+
+async def _sync_agent_status(session: AsyncSession) -> None:
+    """Match detected agents to tasks and update status/agent_type."""
+    try:
+        agents = detect_running_agents()
+    except Exception:
+        return
+
+    active_kernels: dict[str, str] = {}
+    for agent in agents:
+        if agent.kernel_path:
+            active_kernels[agent.kernel_path] = agent.agent_type
+
+    if not active_kernels:
+        return
+
+    result = await session.execute(select(Task))
+    tasks = result.scalars().all()
+
+    for task in tasks:
+        agent_type = active_kernels.get(task.shape_key)
+        if agent_type and task.status in ("pending", "stopped"):
+            task.status = "running"
+            task.agent_type = agent_type
+            task.started_at = task.started_at or datetime.now(timezone.utc)
+            task.updated_at = datetime.now(timezone.utc)
+            logger.info("Agent sync: %s → running (agent=%s)", task.shape_key, agent_type)
+            await event_bus.publish("task_update", task.to_dict())
+
+    await session.commit()
 
 
 def _collect_metrics(info: dict) -> dict:
