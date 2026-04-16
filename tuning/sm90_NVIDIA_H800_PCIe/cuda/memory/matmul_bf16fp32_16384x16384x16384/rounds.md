@@ -19,3 +19,10 @@
 - decision: **DISCARD**
 - bottleneck: `launch_bound`
 - idea: Reduce tile to BM=64 BN=64 BK=32 for higher occupancy
+
+## iter005 — 2026-04-16T05:33:49Z
+- kernel: `iter005_mmasync`
+- tflops: `0.0`
+- decision: **DISCARD**
+- bottleneck: `launch_bound`
+- idea: mma.sync PTX + manual B fragment loading - incorrect register layout

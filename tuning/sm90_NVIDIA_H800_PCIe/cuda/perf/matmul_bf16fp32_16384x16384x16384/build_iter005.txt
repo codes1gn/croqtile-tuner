@@ -1,0 +1,18 @@
+tuning/sm90_NVIDIA_H800_PCIe/cuda/srcs/matmul_bf16fp32_16384x16384x16384/iter005_mmasync.cu(141): warning #177-D: variable "row_in_tile" was declared but never referenced
+                  int row_in_tile = laneId % 16;
+                      ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+tuning/sm90_NVIDIA_H800_PCIe/cuda/srcs/matmul_bf16fp32_16384x16384x16384/iter005_mmasync.cu(152): warning #177-D: variable "bv1" was declared but never referenced
+                  __nv_bfloat16 bv1 = b_ptr[(n_idx + 2) * BS_STRIDE + k_idx];
+                                ^
+
+tuning/sm90_NVIDIA_H800_PCIe/cuda/srcs/matmul_bf16fp32_16384x16384x16384/iter005_mmasync.cu(154): warning #177-D: variable "bv3" was declared but never referenced
+                  __nv_bfloat16 bv3 = b_ptr[(n_idx + 6) * BS_STRIDE + k_idx];
+                                ^
+
+tuning/sm90_NVIDIA_H800_PCIe/cuda/srcs/matmul_bf16fp32_16384x16384x16384/iter005_mmasync.cu(56): warning #177-D: variable "WARPS_M" was declared but never referenced
+  constexpr int WARPS_M = 4;
+                ^
+

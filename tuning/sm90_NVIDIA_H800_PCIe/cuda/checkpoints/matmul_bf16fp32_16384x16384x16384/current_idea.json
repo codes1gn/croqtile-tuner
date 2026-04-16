@@ -1,17 +1,16 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-16T05:21:06Z",
+  "timestamp": "2026-04-16T05:31:17Z",
   "dsl": "cuda",
   "shape_key": "matmul_bf16fp32_16384x16384x16384",
-  "iter": "iter004_smalltile",
+  "iter": "iter005_mmasync",
   "bottleneck": "launch_bound",
-  "idea": "Reduce tile to BM=64 BN=64 BK=32 to increase occupancy, 4 warps, 4x more CTAs",
-  "expected_gain": "+30-80 TFLOPS via higher occupancy",
+  "idea": "Replace WMMA API with mma.sync.aligned m16n8k16 PTX + ldmatrix for efficient smem-to-reg transfer",
+  "expected_gain": "+50-200 TFLOPS (ldmatrix+mma.sync much faster than WMMA)",
   "levers": [
-    "BM",
-    "BN",
-    "NUM_WARPS",
-    "OCCUPANCY"
+    "MMA_INSTRUCTION",
+    "LDMATRIX",
+    "REGISTER_TILING"
   ],
   "status": "PLANNED"
 }

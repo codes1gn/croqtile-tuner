@@ -4,3 +4,4 @@ iter001	iter001_draft	24.50	KEEP	launch_bound	First WMMA bf16 draft kernel
 iter002	iter002_vecload	5.36	DISCARD	launch_bound	Vectorize global-to-smem loads with float4, remove launch_bounds, BK=64
 iter003	iter003_dbuf	2.60	DISCARD	launch_bound	Double-buffered smem with register-cached loads, BK=32
 iter004	iter004_smalltile	1.38	DISCARD	launch_bound	Reduce tile to BM=64 BN=64 BK=32 for higher occupancy
+iter005	iter005_mmasync	0.0	DISCARD	launch_bound	mma.sync PTX + manual B fragment loading - incorrect register layout
