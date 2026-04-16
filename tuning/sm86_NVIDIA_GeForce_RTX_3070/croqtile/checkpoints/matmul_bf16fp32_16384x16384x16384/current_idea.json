@@ -1,13 +1,17 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-16T05:07:09Z",
+  "timestamp": "2026-04-16T05:21:11Z",
   "dsl": "croqtile",
   "shape_key": "matmul_bf16fp32_16384x16384x16384",
-  "iter": "iter013_doublebuf",
+  "iter": "iter014_ptxmma",
   "bottleneck": "latency_bound",
-  "idea": "Increase TILE_M=32, TILE_N=32 (4 warps per block, 2x2 warp grid): 4x more MMA ops per K-tile DMA load, improving arithmetic intensity and directly attacking latency_bound (hmma_active=0.55%)",
-  "expected_gain": "+30-100% TFLOPS",
+  "idea": "Use m16n8k16 bf16->f32 PTX MMA (mma.row.col, 2x2 warp grid, TILE_M=32/TILE_N=16) instead of WMMA m16n16k16: direct PTX avoids WMMA overhead, lower register pressure, more blocks/SM, better latency hiding",
+  "expected_gain": "+50-200% TFLOPS",
   "levers": [
+    "mma_shape",
+    "MATMUL_MMA_M",
+    "MATMUL_MMA_N",
+    "MATMUL_MMA_K",
     "MATMUL_TILE_M",
     "MATMUL_TILE_N"
   ],

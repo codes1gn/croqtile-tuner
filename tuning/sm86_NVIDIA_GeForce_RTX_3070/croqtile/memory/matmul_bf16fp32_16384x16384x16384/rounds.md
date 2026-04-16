@@ -170,3 +170,10 @@
 - decision: **DISCARD**
 - bottleneck: `latency_bound`
 - idea: 4-warp block TILE_M=32/TILE_N=32 with sync dma.copy: 0.101 TFLOPS regression. Async copy with 4 warps causes 4x redundant copies. Sync copy avoids redundancy but is slower.
+
+## iter014 — 2026-04-16T05:29:06Z
+- kernel: `iter014_ptxmma`
+- tflops: `0.222`
+- decision: **DISCARD**
+- bottleneck: `latency_bound`
+- idea: m16n8k16 PTX MMA with dma.transp for RHS: 0.222 TFLOPS. Direct PTX MMA (SM80_16x8x16 fma) achieved but sync transpose copy dominates overhead. Raw MMA rate ~0.272 TFLOPS without transpose but gives wrong results.

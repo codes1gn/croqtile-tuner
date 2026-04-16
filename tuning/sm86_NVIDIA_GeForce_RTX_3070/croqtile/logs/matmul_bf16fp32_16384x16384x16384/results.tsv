@@ -13,3 +13,4 @@ iter010	iter010_tilek16	0.379	DISCARD	latency_bound	TILE_K=16 on directstore: 0.
 iter011	iter011_swizds	0.502	DISCARD	latency_bound	swiz<128> on directstore base: 0.502 TFLOPS — marginal delta from best 0.503. Ba
 iter012	iter012_tilek48	0.088	DISCARD	register_pressure	TILE_K=64 on directstore: 0.088 TFLOPS catastrophic regression. TILE_K=48 crashe
 iter013	iter013_doublebuf	0.101	DISCARD	latency_bound	4-warp block TILE_M=32/TILE_N=32 with sync dma.copy: 0.101 TFLOPS regression. As
+iter014	iter014_ptxmma	0.222	DISCARD	latency_bound	m16n8k16 PTX MMA with dma.transp for RHS: 0.222 TFLOPS. Direct PTX MMA (SM80_16x
