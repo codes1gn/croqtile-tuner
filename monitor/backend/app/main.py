@@ -2,9 +2,11 @@
 
 import asyncio
 import logging
+import shutil
 import subprocess
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
+from pathlib import Path
 
 from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -43,7 +45,8 @@ from .schemas import (
     TaskUpdate,
 )
 from .artifact_scanner import prune_stale_tasks, scan_and_create_tasks
-from .config import invalidate_model_cache
+from .config import invalidate_model_cache, settings
+from .file_watcher import TuningDirWatcher
 from .state_seed import seed_tasks_from_state_if_empty
 from .task_runtime import apply_live_runtime
 
@@ -67,6 +70,9 @@ def _detect_gpu_name() -> str | None:
     return None
 
 
+_watcher = TuningDirWatcher(settings.tuning_dir)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()
@@ -78,9 +84,11 @@ async def lifespan(app: FastAPI):
             logger.info("Startup: cleaned %d stale task(s) from DB", len(pruned_ids))
     async with async_session() as session:
         await scan_and_create_tasks(session)
+    _watcher.start(asyncio.get_running_loop())
     await scheduler.start()
     yield
     await scheduler.stop()
+    _watcher.stop()
 
 
 app = FastAPI(title="CroqTuner Agent Bot", version="0.1.0", lifespan=lifespan)
@@ -202,15 +210,56 @@ async def update_task(
     return TaskResponse(**task.to_dict())
 
 
+def _delete_task_artifacts(shape_key: str) -> None:
+    """Delete disk artifacts for a scanner-created task.
+
+    Compound shape_key format: "{gpu}/{dsl}/{bare_shape_key}/{model}"
+    Maps to subdirectories under tuning/{gpu}/{dsl}/{subdir}/{bare_shape_key}/{model}
+    for subdirs: logs, srcs, checkpoints, cmd, perf, bin, memory.
+    """
+    from .config import settings
+
+    parts = shape_key.split("/")
+    if len(parts) < 3:
+        return
+
+    gpu, dsl = parts[0], parts[1]
+    bare_key = parts[2]
+    model = parts[3] if len(parts) >= 4 else None
+
+    dsl_root = settings.tuning_dir / gpu / dsl
+    if not dsl_root.exists():
+        return
+
+    subdirs = ["logs", "srcs", "checkpoints", "cmd", "perf", "bin", "memory"]
+    for subdir in subdirs:
+        if model:
+            target = dsl_root / subdir / bare_key / model
+        else:
+            target = dsl_root / subdir / bare_key
+        if target.exists():
+            shutil.rmtree(target, ignore_errors=True)
+            logger.info("Deleted artifacts: %s", target)
+            parent = target.parent
+            if parent.exists() and not any(parent.iterdir()):
+                parent.rmdir()
+
+
 @app.delete("/api/tasks/{task_id}", status_code=204)
-async def delete_task(task_id: int, session: AsyncSession = Depends(get_session)):
+async def delete_task(
+    task_id: int,
+    clean_artifacts: bool = Query(True),
+    session: AsyncSession = Depends(get_session),
+):
     task = await session.get(Task, task_id)
     if not task:
         raise HTTPException(404, "Task not found")
     if task.status == "running":
         raise HTTPException(400, "Cannot delete a running task; cancel it first")
-    if task.status not in ("pending", "waiting", "completed", "cancelled"):
-        raise HTTPException(400, "Cannot delete this task in its current state")
+
+    if clean_artifacts and "/" in task.shape_key:
+        _delete_task_artifacts(task.shape_key)
+
     await session.delete(task)
     await session.commit()
     await event_bus.publish("task_deleted", {"id": task_id})

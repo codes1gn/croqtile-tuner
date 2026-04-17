@@ -1,0 +1,104 @@
+"""File watcher that triggers artifact scans when tuning directory changes.
+
+Uses watchdog to monitor the tuning directory tree.  When a results.tsv,
+current_idea.json, or .co/.cu source file is created/modified/deleted, it
+debounces the events and triggers a scan_and_create_tasks() call, which in
+turn emits SSE events so the frontend updates in real-time.
+"""
+
+from __future__ import annotations
+
+import asyncio
+import logging
+import threading
+from pathlib import Path
+
+from watchdog.events import FileSystemEvent, FileSystemEventHandler
+from watchdog.observers import Observer
+
+logger = logging.getLogger("croqtuner.file_watcher")
+
+WATCHED_PATTERNS = {
+    "results.tsv",
+    "current_idea.json",
+    "idea-log.jsonl",
+    "attempt-log.jsonl",
+}
+WATCHED_SUFFIXES = {".co", ".cu", ".json", ".tsv"}
+
+
+class _TuningDirHandler(FileSystemEventHandler):
+    """Debounces file events and queues a scan."""
+
+    def __init__(self, loop: asyncio.AbstractEventLoop, debounce_sec: float = 2.0) -> None:
+        self._loop = loop
+        self._debounce_sec = debounce_sec
+        self._timer: threading.Timer | None = None
+        self._scan_queued = False
+
+    def _is_relevant(self, path: str) -> bool:
+        name = Path(path).name
+        if name in WATCHED_PATTERNS:
+            return True
+        suffix = Path(path).suffix
+        return suffix in WATCHED_SUFFIXES
+
+    def on_any_event(self, event: FileSystemEvent) -> None:
+        if event.is_directory:
+            return
+        src = getattr(event, "src_path", "")
+        if not self._is_relevant(src):
+            return
+        self._schedule_scan()
+
+    def _schedule_scan(self) -> None:
+        if self._timer is not None:
+            self._timer.cancel()
+        self._timer = threading.Timer(self._debounce_sec, self._fire_scan)
+        self._timer.daemon = True
+        self._timer.start()
+
+    def _fire_scan(self) -> None:
+        self._timer = None
+        asyncio.run_coroutine_threadsafe(_run_scan(), self._loop)
+
+
+async def _run_scan() -> None:
+    from .artifact_scanner import prune_stale_tasks, scan_and_create_tasks
+    from .database import async_session
+
+    try:
+        async with async_session() as session:
+            await prune_stale_tasks(session)
+            created = await scan_and_create_tasks(session)
+            if created:
+                logger.info("File watcher scan: created %d new task(s)", created)
+    except Exception:
+        logger.exception("File watcher scan error")
+
+
+class TuningDirWatcher:
+    """Manages a watchdog Observer on the tuning directory."""
+
+    def __init__(self, tuning_dir: Path) -> None:
+        self._tuning_dir = tuning_dir
+        self._observer: Observer | None = None
+
+    def start(self, loop: asyncio.AbstractEventLoop) -> None:
+        if not self._tuning_dir.exists():
+            logger.info("File watcher: tuning dir %s does not exist, skipping", self._tuning_dir)
+            return
+
+        handler = _TuningDirHandler(loop, debounce_sec=2.0)
+        self._observer = Observer()
+        self._observer.schedule(handler, str(self._tuning_dir), recursive=True)
+        self._observer.daemon = True
+        self._observer.start()
+        logger.info("File watcher started on %s", self._tuning_dir)
+
+    def stop(self) -> None:
+        if self._observer is not None:
+            self._observer.stop()
+            self._observer.join(timeout=5)
+            self._observer = None
+            logger.info("File watcher stopped")

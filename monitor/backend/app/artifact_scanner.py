@@ -491,13 +491,17 @@ async def _import_new_iteration_logs(session: AsyncSession, task_id: int, result
 
 
 async def _import_iteration_logs_from_tsv(session: AsyncSession, task_id: int, results_path: Path, start_after: int = 0) -> None:
-    """Populate IterationLog rows from results.tsv for a freshly-created task."""
+    """Populate IterationLog rows from results.tsv for a freshly-created task.
+    
+    Baseline rows (iter000/cuBLAS/torch) get iteration=0 and decision='BASELINE'.
+    Tuning iterations start at 1.
+    """
     try:
         lines = results_path.read_text(errors="replace").splitlines()
     except OSError:
         return
 
-    iteration = 0
+    tuning_iter = 0
     data_row_count = 0
     for line in lines:
         stripped = line.strip()
@@ -527,21 +531,34 @@ async def _import_iteration_logs_from_tsv(session: AsyncSession, task_id: int, r
             tflops = None
 
         decision = parts[decision_idx].strip() if len(parts) > decision_idx else None
-        bottleneck = parts[decision_idx + 1].strip() if len(parts) > decision_idx + 1 else None
+        bottleneck_raw = parts[decision_idx + 1].strip() if len(parts) > decision_idx + 1 else ""
         kernel = parts[kernel_idx].strip() if len(parts) > kernel_idx else None
         idea = parts[decision_idx + 2].strip() if len(parts) > decision_idx + 2 else None
+
+        is_baseline = (
+            bottleneck_raw.lower() in ("baseline", "baseline_profile")
+            or "baseline" in (kernel or "").lower()
+            or (kernel or "").lower().startswith("framework/")
+        )
 
         data_row_count += 1
         if data_row_count <= start_after:
             continue
-        iteration += 1
+
+        if is_baseline:
+            iter_num = 0
+            decision = "BASELINE"
+        else:
+            tuning_iter += 1
+            iter_num = start_after + tuning_iter
+
         session.add(IterationLog(
             task_id=task_id,
-            iteration=start_after + iteration,
+            iteration=iter_num,
             kernel_path=kernel,
             tflops=tflops,
             decision=decision,
-            bottleneck=bottleneck,
+            bottleneck=bottleneck_raw or None,
             idea_summary=idea,
         ))
 
