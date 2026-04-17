@@ -3,6 +3,154 @@
   "variant": "",
   "agent_type": "cursor_cli",
   "device": "NVIDIA H800 PCIe",
-  "opencode_session_id": null,
-  "sessions": []
+  "opencode_session_id": "aac1f194-60cd-4a5e-97a0-84a0e4730ad4",
+  "sessions": [
+    {
+      "id": 5,
+      "task_id": 2,
+      "session_id": "820dccd7-489f-42d4-9f21-dc3a5efa3dd2",
+      "agent_type": "cursor_cli",
+      "model": "cursor/claude-4.5-opus-high",
+      "request_number": 1,
+      "started_at": "2026-04-17T15:25:02.013997",
+      "ended_at": null
+    },
+    {
+      "id": 6,
+      "task_id": 2,
+      "session_id": "ses_264292f64ffeBKlRRpvuAv0Wlx",
+      "agent_type": "cursor_cli",
+      "model": "claude-4-5-opus-high",
+      "request_number": 1,
+      "started_at": "2026-04-17T15:25:02.013998",
+      "ended_at": null
+    },
+    {
+      "id": 7,
+      "task_id": 2,
+      "session_id": "ses_264277961ffe7tPoADLc7JSMyY",
+      "agent_type": "cursor_cli",
+      "model": "claude-4-5-opus-high",
+      "request_number": 2,
+      "started_at": "2026-04-17T15:25:02.013999",
+      "ended_at": null
+    },
+    {
+      "id": 8,
+      "task_id": 2,
+      "session_id": "ses_2642765d7ffelIFZARruDHuJL5",
+      "agent_type": "cursor_cli",
+      "model": "claude-4-5-opus-high",
+      "request_number": 3,
+      "started_at": "2026-04-17T15:25:02.014000",
+      "ended_at": null
+    },
+    {
+      "id": 9,
+      "task_id": 2,
+      "session_id": "ses_2642751d4fferSOay2HNFFFfGp",
+      "agent_type": "cursor_cli",
+      "model": "claude-4-5-opus-high",
+      "request_number": 4,
+      "started_at": "2026-04-17T15:25:02.014000",
+      "ended_at": null
+    },
+    {
+      "id": 10,
+      "task_id": 2,
+      "session_id": "ses_264273e4dffeThBkJpNFdXmYvb",
+      "agent_type": "cursor_cli",
+      "model": "claude-4-5-opus-high",
+      "request_number": 5,
+      "started_at": "2026-04-17T15:25:02.014001",
+      "ended_at": null
+    },
+    {
+      "id": 11,
+      "task_id": 2,
+      "session_id": "ses_264272a74ffeCbRQ5Mcbd3hIKh",
+      "agent_type": "cursor_cli",
+      "model": "claude-4-5-opus-high",
+      "request_number": 6,
+      "started_at": "2026-04-17T15:25:02.014001",
+      "ended_at": null
+    },
+    {
+      "id": 12,
+      "task_id": 2,
+      "session_id": "9f711a54-f2e6-4e1d-8917-77060232927e",
+      "agent_type": "cursor_cli",
+      "model": "cursor/claude-4.5-opus-high",
+      "request_number": 6,
+      "started_at": "2026-04-17T15:25:02.014002",
+      "ended_at": null
+    },
+    {
+      "id": 13,
+      "task_id": 2,
+      "session_id": "89ff289c-076d-4e7c-9213-943b216ba7cc",
+      "agent_type": "cursor_cli",
+      "model": "cursor/claude-4.5-opus-high",
+      "request_number": 6,
+      "started_at": "2026-04-17T15:25:02.014002",
+      "ended_at": null
+    },
+    {
+      "id": 14,
+      "task_id": 2,
+      "session_id": "e6c65c83-65f2-45a4-a14d-af4a2b642c49",
+      "agent_type": "cursor_cli",
+      "model": "cursor/claude-4.5-opus-high",
+      "request_number": 6,
+      "started_at": "2026-04-17T15:25:02.014003",
+      "ended_at": null
+    },
+    {
+      "id": 15,
+      "task_id": 2,
+      "session_id": "5a1351d6-2033-4d2e-bff1-593a2618642c",
+      "agent_type": "cursor_cli",
+      "model": "cursor/claude-4.5-opus-high",
+      "request_number": 6,
+      "started_at": "2026-04-17T15:25:02.014003",
+      "ended_at": null
+    },
+    {
+      "id": 16,
+      "task_id": 2,
+      "session_id": "ab2e3046-08c9-4c4c-aff1-5f9f3bcc6cb3",
+      "agent_type": "cursor_cli",
+      "model": "cursor/claude-4.5-opus-high",
+      "request_number": 7,
+      "started_at": "2026-04-17T15:25:02.014003",
+      "ended_at": null
+    },
+    {
+      "id": 17,
+      "task_id": 2,
+      "session_id": "aac1f194-60cd-4a5e-97a0-84a0e4730ad4",
+      "agent_type": "cursor_cli",
+      "model": "cursor/claude-4.5-opus-high",
+      "request_number": 7,
+      "started_at": "2026-04-17T15:25:02.014004",
+      "ended_at": null
+    },
+    {
+      "id": 19,
+      "task_id": 2,
+      "session_id": "394a9339-0a10-4331-a6d2-fc081acfa2c7",
+      "agent_type": "cursor_cli",
+      "model": "cursor/claude-4.5-opus-high",
+      "request_number": 7,
+      "started_at": "2026-04-17T15:25:17.627896+00:00",
+      "ended_at": null
+    }
+  ],
+  "task_uid": "f2b2917795ca",
+  "mode": "cursor_cli",
+  "status": "running",
+  "request_budget": 3,
+  "request_number": 7,
+  "max_iterations": 30,
+  "respawn_count": 6
 }

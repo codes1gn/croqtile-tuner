@@ -5,7 +5,7 @@ import { StatusBadge } from "./StatusBadge";
 
 interface Props {
   tasks: TaskData[];
-  activeTaskId: number | null;
+  activeTaskIds: number[];
 }
 
 function modelShortLabel(model: string): string {
@@ -42,10 +42,15 @@ function DtypeTag({ dtype }: { dtype: string }) {
   );
 }
 
-export function TaskList({ tasks, activeTaskId }: Props) {
+export function TaskList({ tasks, activeTaskIds }: Props) {
   const navigate = useNavigate();
 
-  if (tasks.length === 0) {
+  // Hide cancelled tasks with zero progress (stale/empty entries)
+  const visibleTasks = tasks.filter(
+    (t) => !(t.status === "cancelled" && t.current_iteration === 0 && t.best_tflops == null),
+  );
+
+  if (visibleTasks.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 px-6">
         <div className="w-16 h-16 rounded-2xl bg-gray-800 border border-gray-700 flex items-center justify-center mb-5">
@@ -70,6 +75,7 @@ export function TaskList({ tasks, activeTaskId }: Props) {
         <thead>
           <tr className="text-left text-gray-400 border-b border-gray-700 text-xs uppercase tracking-wider">
             <th className="py-2.5 px-3 w-24">Status</th>
+            <th className="py-2.5 px-3 w-20">UID</th>
             <th className="py-2.5 px-3 w-24">Op</th>
             <th className="py-2.5 px-3 w-36">Shape</th>
             <th className="py-2.5 px-3 w-36">Model</th>
@@ -82,7 +88,7 @@ export function TaskList({ tasks, activeTaskId }: Props) {
           </tr>
         </thead>
         <tbody>
-          {tasks.map((task) => {
+          {visibleTasks.map((task) => {
             const perfPct = task.baseline_tflops && task.best_tflops
               ? Math.min(Math.round((task.best_tflops / task.baseline_tflops) * 100), 999)
               : null;
@@ -93,9 +99,9 @@ export function TaskList({ tasks, activeTaskId }: Props) {
               : "bg-red-500";
             return (
               <tr
-                key={task.id}
+                key={task.task_uid}
                 onClick={() => navigate(`/tasks/${task.id}`)}
-                className={`border-b border-gray-800 hover:bg-gray-800/50 cursor-pointer transition ${task.id === activeTaskId ? "bg-cyan-950/20" : ""}`}
+                className={`border-b border-gray-800 hover:bg-gray-800/50 cursor-pointer transition ${activeTaskIds.includes(task.id) ? "bg-cyan-950/20" : ""}`}
               >
                 <td className="py-2 px-3">
                   <div className="flex flex-col gap-1">
@@ -110,6 +116,7 @@ export function TaskList({ tasks, activeTaskId }: Props) {
                     )}
                   </div>
                 </td>
+                <td className="py-2 px-3 font-mono text-cyan-400/80 text-[10px]" title={`UID: ${task.task_uid}`}>{task.task_uid.slice(0, 8)}</td>
                 <td className="py-2 px-3 font-mono text-gray-200 uppercase">{task.op_type ?? "—"}</td>
                 <td className="py-2 px-3 font-mono text-gray-300 text-xs whitespace-nowrap">
                   {task.m}×{task.n}×{task.k}

@@ -8,3 +8,26 @@ iter005	iter005_ws1p3c_s4	190.936	DISCARD	memory_bound	1p2c + 4-stage + 128x128 
 iter006	iter006_ws1p2c_wn256	199.811	KEEP	memory_bound	WARP_N=256 + 2-stage pipeline, larger N-tile compensates for fewer stages
 iter007	iter007_nonws_wn256	0	SEGFAULT	latency_bound	Non-warpspec design failed verification - produces incorrect results
 iter008	iter008_ws1p2c_wn224_s3	0	COMPILE_FAIL	latency_bound	WARP_N=224 + 3-stage exceeds shared memory limit (249KB > 233KB)
+iter009	iter009_ws1p3c_wn192	190.878	DISCARD	latency_bound	1p2c with WARP_N=192, TILE_M=128 - smaller N-tile hurt vs WARP_N=256
+iter010	iter010_ws1p2c_wn256_tk32	184.891	DISCARD	latency_bound	TILE_K=32 with 3 stages - smaller K-tiles hurt due to increased loop overhead
+iter011	iter011_persis_wn128_s3	215.941	KEEP	latency_bound	Persistent kernel with WARP_N=128, 3 stages - amortizes launch overhead +8% TFLO
+iter012	iter012_persis_wn256_s3	231.526	KEEP	memory_bound	Persistent kernel WARP_N=256 2-stage - larger N-tile improves TFLOPS +7%
+iter013	iter013_persis_wn256_tm64	208.009	DISCARD	latency_bound	1p1c with TILE_M=64 - insufficient parallelism hurts performance
+iter014	iter014_persis_1p3c_wn192	0	SEGFAULT	latency_bound	1p3c persistent with WARP_N=128, TILE_M=192 - verification failed (assertion)
+iter015	iter015_persis_wn256_lb	230.337	DISCARD	latency_bound	__launch_bounds__(384,1) on persistent kernel - minimal improvement, same occupa
+iter016	iter016_persis_wn256_col	234.108	KEEP	latency_bound	Column-major tile traversal improves L2 locality +1.1% TFLOPS
+iter017	iter017_persis_col_s3	230.61	DISCARD	latency_bound	WARP_N=192 + 3 stages - smaller N hurts despite extra stages
+iter018	iter018_persis_wn256_hil	227.512	DISCARD	latency_bound	XOR swizzle pattern - worse for this square matrix shape
+iter019	iter019_persis_col_1p3c	212.826	DISCARD	latency_bound	Column-major 1p2c WARP_N=128 - smaller tiles hurt
+iter020	iter020_persis_col_tm192	0	SEGFAULT	latency_bound	1p3c persistent TILE_M=192 WARP_N=128 - verification failed, boundary issue
+iter021	iter021_persis_col_reg128	215.073	DISCARD	latency_bound	Persistent col-major WARP_N=128 3-stage with maxrregcount=128 - smaller N hurts 
+iter022	iter022_persis_col_lb2	0	COMPILE_FAIL	latency_bound	launch_bounds(384,2) requires more registers than available - minBlocks=2 not ac
+iter023	iter023_persis_rowmaj	231.493	DISCARD	latency_bound	Persistent row-major traversal with WARP_N=256 - different L2 access pattern
+iter024	iter024_persis_col_s4	226.344	DISCARD	latency_bound	4-stage pipeline with TILE_K=32, WARP_N=256 col-major - smaller K tiles hurt
+iter024	iter024_persis_col_s4	0	COMPILE_FAIL	latency_bound	4-stage pipeline hit SMEM limit (278KB > 233KB)
+iter025	iter025_persis_1p3c_tm192	0	SEGFAULT	latency_bound	1p3c warp spec with TILE_M=192 WARP_N=128 - verification failed
+iter026	iter026_static_wn256	204.062	DISCARD	latency_bound	Non-persistent static CTA launch - worse than persistent
+iter027	iter027_persis_wn224	223.453	DISCARD	latency_bound	Persistent WARP_N=224 - smaller than optimal 256
+iter028	iter028_persis_regctrl	234.862	KEEP	latency_bound	maxrregcount=160 reduces register spilling improves perf +0.3%
+iter029	iter029_persis_reg200	0	SEGFAULT	latency_bound	maxrregcount=200 caused verification failure - relaxed register limit hurt corre
+iter030	iter030_persis_tm64_s3	181.6	DISCARD	latency_bound	TILE_M=64 with 3-stage pipeline and WARP_N=256 - smaller tile reduced parallelis

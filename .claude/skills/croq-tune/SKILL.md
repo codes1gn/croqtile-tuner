@@ -521,6 +521,15 @@ For a failed `attempt<AAAA>`, also persist: attempted source, build script, buil
 
 **Post-STORE:** mark `round-step` as `completed`, ensure `continue-croq-tune` is `in_progress`.
 
+**Post-STORE REINFORCEMENT (MANDATORY):** After every `store_round.sh` call, you MUST call the reinforcement gate:
+
+```bash
+bash .claude/skills/croq-tune/tools/reinforce.sh \
+  --dsl <dsl> --shape-key <shape_key> --model <model>
+```
+
+This script reads your progress, re-emits the loop contract rules, and tells you what to do next. **You MUST read its output and follow the instructions.** Do NOT skip this step. Do NOT proceed to the next iteration without calling reinforce.sh first.
+
 **Session Transcript as Memory:** The raw chat session JSONL is the primary memory — NOT summarized round logs. At session end or context compaction, copy the full session JSONL from `~/.cursor/projects/<slug>/agent-transcripts/<id>/` to `memory/<key>/<model>/sessions/`. Do NOT generate summarized `rounds.md` — the raw transcript IS the memory.
 
 ### 8) CONTINUE
@@ -601,6 +610,7 @@ Tag: 2-31 chars, lowercase alphanumeric + underscores, descriptive of the idea.
 | `checkpoint_write.sh` | End of IDEA, start of IMPLEMENT, start of VERIFY | `--dsl --shape-key --model` + action-specific |
 | `next_iter.sh` | Start of IMPLEMENT | `--dsl --shape-key --model --tag` |
 | `store_round.sh` | STORE step | `--dsl --shape-key --model --iter --kernel --tflops --decision --bottleneck --idea --round` |
+| `reinforce.sh` | After STORE (MANDATORY) | `--dsl --shape-key --model` |
 | `co2cu.sh` | IMPLEMENT Phase 1 (croqtile only) | `--co --arch [--flags]` |
 | `ncu_profile.sh` | PROFILE step | `--out --cmd` |
 | `profile_extract.sh` | After ncu CSV | `--csv --iter` |

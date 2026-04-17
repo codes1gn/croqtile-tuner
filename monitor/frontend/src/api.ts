@@ -2,6 +2,7 @@ const BASE = "/api";
 
 export interface TaskData {
   id: number;
+  task_uid: string;
   shape_key: string;
   op_type: string | null;
   dtype: string;
@@ -93,6 +94,7 @@ export interface HealthData {
   status: string;
   scheduler_running: boolean;
   active_task_id: number | null;
+  active_task_ids: number[];
   auto_wake_enabled: boolean;
   use_proxy: boolean;
   gpu_info: string | null;

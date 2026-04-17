@@ -113,7 +113,7 @@ export function SystemStatusPanel({ health, onRefresh }: Props) {
               {health.scheduler_running ? "Scheduler running" : "Scheduler stopped"}
             </span>
             <span className="text-sm text-gray-400">
-              Active task: {health.active_task_id ?? "none"}
+              Active: {health.active_task_ids?.length ? health.active_task_ids.join(", ") : "none"}
             </span>
           </div>
           <div className="mt-2 flex items-center gap-3">

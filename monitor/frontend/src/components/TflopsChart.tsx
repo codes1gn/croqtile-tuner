@@ -29,17 +29,20 @@ export function isBaselineEntry(l: IterationLogData): boolean {
 export function TflopsChart({ logs, baseline }: Props) {
   const tuningIters = [...logs]
     .filter((l) => !isBaselineEntry(l))
-    .filter((l) => (l.tflops ?? 0) > 0)
     .sort((a, b) => a.iteration - b.iteration);
 
   let runningBest = 0;
   const keepPoints: { iteration: number; tflops: number; best: number; kernel: string | null }[] = [];
   const discardPoints: { iteration: number; tflops: number; kernel: string | null }[] = [];
+  const failPoints: { iteration: number; tflops: number; decision: string; kernel: string | null }[] = [];
 
   for (const l of tuningIters) {
     const tf = l.tflops ?? 0;
     const dec = (l.decision ?? "").toUpperCase();
-    if (dec === "KEEP" && tf > runningBest) {
+    const isFail = dec === "COMPILE_FAIL" || dec === "SEGFAULT" || dec === "HANG" || tf === 0;
+    if (isFail) {
+      failPoints.push({ iteration: l.iteration, tflops: 0, decision: dec, kernel: l.kernel_path });
+    } else if (dec === "KEEP" && tf > runningBest) {
       runningBest = tf;
       keepPoints.push({ iteration: l.iteration, tflops: tf, best: runningBest, kernel: l.kernel_path });
     } else {
@@ -51,7 +54,7 @@ export function TflopsChart({ logs, baseline }: Props) {
 
   const rooftop = baseline ?? null;
 
-  if (keepPoints.length === 0 && discardPoints.length === 0) {
+  if (keepPoints.length === 0 && discardPoints.length === 0 && failPoints.length === 0) {
     return (
       <div className="h-48 flex items-center justify-center text-gray-600 text-sm">
         No iteration data yet.
@@ -63,34 +66,39 @@ export function TflopsChart({ logs, baseline }: Props) {
     ...keepPoints.map((d) => d.tflops),
     ...discardPoints.map((d) => d.tflops),
     rooftop ?? 0,
-  ];
-  const maxTflops = Math.max(...allTflops);
-  const yMax = Math.ceil(maxTflops * 1.15) || 1;
+  ].filter((t) => t > 0);
+  const maxTflops = Math.max(...allTflops, 1);
+  const minPositive = allTflops.length > 0 ? Math.min(...allTflops) : 0;
+  const yMin = Math.max(0, Math.floor(minPositive * 0.8));
+  const yMax = Math.ceil(maxTflops * 1.1) || 1;
 
   const allIters = [
     ...keepPoints.map((d) => d.iteration),
     ...discardPoints.map((d) => d.iteration),
+    ...failPoints.map((d) => d.iteration),
   ];
-  const xMin = allIters.length ? Math.min(...allIters) : 1;
   const xMax = allIters.length ? Math.max(...allIters) : 1;
+  const xDomainMax = xMax + Math.max(1, Math.ceil(xMax * 0.05));
+  const xTickCount = Math.min(xDomainMax, 20);
 
   return (
-    <ResponsiveContainer width="100%" height={280}>
+    <ResponsiveContainer width="100%" height={380}>
       <ComposedChart margin={{ top: 10, right: 130, bottom: 5, left: 10 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
         <XAxis
           type="number"
           dataKey="iteration"
-          domain={[Math.max(1, xMin), xMax]}
+          domain={[0, xDomainMax]}
           stroke="#6b7280"
           tick={{ fill: "#9ca3af", fontSize: 11 }}
           label={{ value: "Iteration", position: "insideBottom", offset: -2, fill: "#6b7280", fontSize: 11 }}
           allowDecimals={false}
           allowDataOverflow
+          tickCount={xTickCount}
         />
         <YAxis
           stroke="#6b7280"
-          domain={[0, yMax]}
+          domain={[yMin, yMax]}
           tick={{ fill: "#9ca3af", fontSize: 11 }}
           label={{ value: "TFLOPS", angle: -90, position: "insideLeft", fill: "#6b7280", fontSize: 11 }}
         />
@@ -145,7 +153,7 @@ export function TflopsChart({ logs, baseline }: Props) {
           isAnimationActive={false}
         />
 
-        {/* DISCARD / other iterations: red circles */}
+        {/* DISCARD iterations: dim red circles */}
         <Scatter
           data={discardPoints}
           dataKey="tflops"
@@ -153,6 +161,24 @@ export function TflopsChart({ logs, baseline }: Props) {
           shape={((props: unknown) => {
             const { cx, cy } = props as { cx: number; cy: number };
             return <circle cx={cx} cy={cy} r={4} fill="#f87171" stroke="#1f2937" strokeWidth={1.5} />;
+          }) as (props: unknown) => React.JSX.Element}
+          isAnimationActive={false}
+        />
+
+        {/* COMPILE_FAIL / SEGFAULT / HANG: red X marks at bottom */}
+        <Scatter
+          data={failPoints.map((p) => ({ ...p, tflops: yMin }))}
+          dataKey="tflops"
+          name="tflops"
+          shape={((props: unknown) => {
+            const { cx, cy } = props as { cx: number; cy: number };
+            const s = 5;
+            return (
+              <g>
+                <line x1={cx - s} y1={cy - s} x2={cx + s} y2={cy + s} stroke="#ef4444" strokeWidth={2.5} strokeLinecap="round" />
+                <line x1={cx + s} y1={cy - s} x2={cx - s} y2={cy + s} stroke="#ef4444" strokeWidth={2.5} strokeLinecap="round" />
+              </g>
+            );
           }) as (props: unknown) => React.JSX.Element}
           isAnimationActive={false}
         />

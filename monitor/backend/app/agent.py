@@ -19,8 +19,13 @@ from .config import settings
 from .events import event_bus
 from .models import AgentLog, IterationLog, Task
 
+STORE_PATTERN = re.compile(
+    r"\[store_round\]\s+STORE\s+complete\s+for\s+iter(\d{3,})\s+"
+    r"\((KEEP|DISCARD|SEGFAULT|COMPILE_FAIL|HANG)\s+(\d+(?:\.\d+)?)\s*TFLOPS\)",
+    re.IGNORECASE,
+)
 ITER_PATTERN = re.compile(
-    r"iter[_]?(\d+).*?(\d+(?:\.\d+)?)\s*TFLOPS.*?(KEEP|DISCARD)",
+    r"iter[_]?(\d{3,})\b.*?(\d+(?:\.\d+)?)\s*TFLOPS\s*.*?(KEEP|DISCARD|SEGFAULT|COMPILE_FAIL|HANG)",
     re.IGNORECASE,
 )
 TFLOPS_PATTERN = re.compile(r"(\d+(?:\.\d+)?)\s*TFLOPS", re.IGNORECASE)
@@ -70,8 +75,18 @@ def _build_env() -> dict[str, str]:
 
 
 def _bare_shape_key(compound_key: str) -> str:
-    """Extract bare shape key from compound key: 'sm86_.../croqtile/matmul_...' → 'matmul_...'."""
-    return compound_key.split("/")[-1] if "/" in compound_key else compound_key
+    """Extract bare shape key from compound key.
+
+    Format: '<gpu_slug>/<dsl>/<shape_key>/<model>' → '<shape_key>'
+    The shape is the third segment (index 2).  Fall back to last-but-one
+    segment if there are at least 4 parts, otherwise return the whole key.
+    """
+    parts = compound_key.split("/")
+    if len(parts) >= 4:
+        return parts[2]
+    if len(parts) >= 3:
+        return parts[2]
+    return compound_key
 
 
 def _sanitize_model_id(model: str) -> str:
@@ -83,10 +98,19 @@ def build_prompt(task: Task) -> str:
     dsl = task.dsl or "cuda"
     shape_key = _bare_shape_key(task.shape_key)
     model = _sanitize_model_id(task.model or "default")
+    uid = task.task_uid or "unknown"
+    max_iter = task.max_iterations or 30
     return (
         f"read .claude/skills/croq-tune/SKILL.md then kick off the tuning experiment, "
-        f"tune {dsl} {task.dtype} {shape_key} --model {model}. "
-        f"IMPORTANT: do NOT ask the user any questions — make all decisions autonomously."
+        f"tune {dsl} {task.dtype} {shape_key} --model {model} --task-uid {uid}. "
+        f"Target: {max_iter} iterations minimum. "
+        f"CRITICAL RULES: "
+        f"(1) Do NOT stop early — do NOT summarize and exit. "
+        f"(2) Keep iterating until you reach {max_iter} iterations or context is nearly full. "
+        f"(3) If an idea fails (COMPILE_FAIL, SEGFAULT, DISCARD), go back to IDEA stage "
+        f"and try a completely different approach — NEVER conclude the session after failures. "
+        f"(4) Do NOT ask the user any questions — make all decisions autonomously. "
+        f"(5) After 5 failed fix attempts on one idea, ABANDON it and propose a new idea."
     )
 
 
@@ -432,50 +456,66 @@ async def _process_line(
                     task.updated_at = datetime.now(timezone.utc)
                     task_updated = True
 
-        m = ITER_PATTERN.search(line)
-        rn = None
-        if m:
-            iteration = int(m.group(1))
-            tflops = float(m.group(2))
-            decision = m.group(3).upper()
+        # Prefer [store_round] output (decision before tflops) over loose regex
+        iteration = tflops = decision = None
+        sm = STORE_PATTERN.search(line)
+        if sm:
+            iteration = int(sm.group(1))
+            decision = sm.group(2).upper()
+            tflops = float(sm.group(3))
+        else:
+            im = ITER_PATTERN.search(line)
+            if im:
+                iteration = int(im.group(1))
+                tflops = float(im.group(2))
+                decision = im.group(3).upper()
 
+        rn = None
+        if iteration is not None:
             t = await session.get(Task, task_id)
             if t:
                 rn = t.request_number
 
-            existing = await session.execute(
+            existing_result = await session.execute(
                 select(IterationLog).where(
                     IterationLog.task_id == task_id,
                     IterationLog.iteration == iteration,
                 )
             )
-            if not existing.scalar_one_or_none():
-                iter_log = IterationLog(
+            existing_log = existing_result.scalar_one_or_none()
+            if existing_log:
+                # [store_round] is authoritative — overwrite regex-captured garbage
+                if sm and (existing_log.tflops != tflops or existing_log.decision != decision):
+                    existing_log.tflops = tflops
+                    existing_log.decision = decision
+                    if rn is not None:
+                        existing_log.request_number = rn
+            else:
+                session.add(IterationLog(
                     task_id=task_id,
                     iteration=iteration,
                     request_number=rn,
                     tflops=tflops,
                     decision=decision,
-                )
-                session.add(iter_log)
+                ))
 
             if task is None:
                 task = t or await session.get(Task, task_id)
             if task:
                 task.current_iteration = max(task.current_iteration, iteration)
-                if decision == "KEEP" and (task.best_tflops is None or tflops > task.best_tflops):
+                if decision == "KEEP" and tflops and (task.best_tflops is None or tflops > task.best_tflops):
                     task.best_tflops = tflops
                 task.updated_at = datetime.now(timezone.utc)
                 task_updated = True
 
         await session.commit()
 
-        if m:
+        if iteration is not None:
             await event_bus.publish("iteration", {
                 "task_id": task_id,
-                "iteration": int(m.group(1)),
-                "tflops": float(m.group(2)),
-                "decision": m.group(3).upper(),
+                "iteration": iteration,
+                "tflops": tflops,
+                "decision": decision,
                 "request_number": rn,
             })
 

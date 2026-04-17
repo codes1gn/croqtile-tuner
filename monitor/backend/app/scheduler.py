@@ -1,8 +1,12 @@
-"""Heartbeat scheduler: picks pending tasks and dispatches them one at a time.
+"""Heartbeat scheduler: dispatches pending tasks in parallel.
 
-Auto-sweep: promotes one waiting task to pending when no pending/running tasks exist.
+Tuning agents use the GPU only in short bursts (compile, profile, bench)
+via harness scripts that serialise GPU access.  The rest of the time is
+spent thinking / coding / reading, so multiple agents can interleave.
+
+Auto-sweep: promotes waiting tasks to pending when no pending/running tasks exist.
 Respawn: any stopped/failed task with progress is automatically re-queued as pending.
-Auto-wake: when enabled via web toggle, auto-starts opencode for pending tasks.
+Auto-wake: when enabled via web toggle, auto-starts agents for pending tasks.
 """
 
 import asyncio
@@ -25,10 +29,18 @@ logger = logging.getLogger("croqtuner.scheduler")
 class Scheduler:
     def __init__(self) -> None:
         self.running = False
-        self.active_task_id: int | None = None
+        self._active_workers: dict[int, asyncio.Task] = {}
         self._task: asyncio.Task | None = None
-        self._worker: asyncio.Task | None = None
         self._scan_counter: int = 0
+
+    @property
+    def active_task_id(self) -> int | None:
+        """Backward-compatible: return the first active task ID (or None)."""
+        return next(iter(self._active_workers), None)
+
+    @property
+    def active_task_ids(self) -> list[int]:
+        return list(self._active_workers.keys())
 
     async def start(self) -> None:
         self.running = True
@@ -44,40 +56,37 @@ class Scheduler:
                 await self._task
             except asyncio.CancelledError:
                 pass
-        if self._worker:
-            self._worker.cancel()
+        for tid, worker in list(self._active_workers.items()):
+            worker.cancel()
             try:
-                await self._worker
+                await worker
             except asyncio.CancelledError:
                 pass
+        self._active_workers.clear()
         logger.info("Scheduler stopped")
 
     async def cancel_active_task(self, task_id: int) -> bool:
-        """Cancel the running worker for task_id if it is the currently active task.
+        """Cancel the running worker for task_id.
 
         Returns True if a worker was cancelled, False otherwise.
-        This is called by the delete endpoint so that a deleted task's worker is
-        immediately stopped rather than blocking dispatch of subsequent tasks.
         """
-        if self.active_task_id != task_id:
+        worker = self._active_workers.get(task_id)
+        if worker is None or worker.done():
+            self._active_workers.pop(task_id, None)
             return False
-        if self._worker and not self._worker.done():
-            logger.info("Cancelling worker for deleted task %d", task_id)
-            self._worker.cancel()
-            try:
-                await asyncio.wait_for(self._worker, timeout=5)
-            except (asyncio.CancelledError, asyncio.TimeoutError):
-                pass
-            self._worker = None
-            self.active_task_id = None
-            return True
-        return False
+        logger.info("Cancelling worker for deleted task %d", task_id)
+        worker.cancel()
+        try:
+            await asyncio.wait_for(worker, timeout=5)
+        except (asyncio.CancelledError, asyncio.TimeoutError):
+            pass
+        self._active_workers.pop(task_id, None)
+        return True
 
     async def _recover_stale_tasks(self) -> None:
         from .agent_detector import detect_running_agents
 
         live_pids = _find_live_opencode_pids()
-        # Also check for cursor-agent or other agent types actively targeting any task
         live_agents = detect_running_agents()
         live_agent_kernel_paths = {ag.kernel_path for ag in live_agents if ag.kernel_path}
 
@@ -87,9 +96,7 @@ class Scheduler:
             )
             running_tasks = result.scalars().all()
 
-            adopted_task: Task | None = None
             for task in running_tasks:
-                # Check if any live agent (opencode or cursor-agent) is targeting this task
                 parts = task.shape_key.split("/")
                 task_kernel = parts[-2] if len(parts) >= 2 else task.shape_key
                 agent_is_live = (
@@ -97,12 +104,14 @@ class Scheduler:
                     or task_kernel in live_agent_kernel_paths
                 )
 
-                if (live_pids or agent_is_live) and adopted_task is None:
-                    adopted_task = task
+                if live_pids or agent_is_live:
                     logger.info(
-                        "Adopting live task %d (%s) — agent still running (opencode PIDs=%s, agent_kernel_paths=%s)",
-                        task.id, task.shape_key, live_pids, live_agent_kernel_paths,
+                        "Adopting live task %d (%s) — agent still running",
+                        task.id, task.shape_key,
                     )
+                    snapshot = _snapshot(task)
+                    worker = asyncio.create_task(self._adopt_worker(snapshot))
+                    self._active_workers[task.id] = worker
                 else:
                     task.status = "pending"
                     task.updated_at = datetime.now(timezone.utc)
@@ -110,22 +119,22 @@ class Scheduler:
 
             await session.commit()
 
-        if adopted_task is not None:
-            self.active_task_id = adopted_task.id
-            task_snapshot = _snapshot(adopted_task)
-            self._worker = asyncio.create_task(self._adopt_worker(task_snapshot))
-
     async def _loop(self) -> None:
         while self.running:
             try:
                 self._scan_counter += 1
-                if self._scan_counter % 6 == 0:
+                # Scan more frequently when tasks are running (hot scan)
+                scan_interval = 2 if self._active_workers else 6
+                if self._scan_counter % scan_interval == 0:
                     await self._scan_disk()
 
-                if self._worker is None or self._worker.done():
-                    self._worker = None
-                    self.active_task_id = None
-                    await self._try_dispatch()
+                # Clean up finished workers
+                finished = [tid for tid, w in self._active_workers.items() if w.done()]
+                for tid in finished:
+                    self._active_workers.pop(tid, None)
+
+                # Dispatch any pending tasks that aren't already running
+                await self._try_dispatch()
             except Exception:
                 logger.exception("Scheduler loop error")
             await asyncio.sleep(5)
@@ -173,16 +182,18 @@ class Scheduler:
                 logger.debug("Auto-wake disabled, skipping task dispatch")
                 return
 
-            task = None
+            to_dispatch: list[Task] = []
             exhausted: list[Task] = []
             for candidate in candidates:
+                if candidate.id in self._active_workers:
+                    continue
                 budget = candidate.request_budget if candidate.request_budget is not None else 1
                 if budget > 0:
-                    task = candidate
-                    break
-                exhausted.append(candidate)
+                    to_dispatch.append(candidate)
+                else:
+                    exhausted.append(candidate)
 
-            # Move budget-exhausted tasks to "waiting" so they don't clog the pending queue
+            # Move budget-exhausted tasks to "waiting"
             for ex in exhausted:
                 ex.status = "waiting"
                 ex.error_message = (
@@ -196,60 +207,61 @@ class Scheduler:
                 await event_bus.publish("task_update", ex.to_dict())
             if exhausted:
                 await session.commit()
+                from .artifact_config import sync_task_to_artifact
+                for ex in exhausted:
+                    await sync_task_to_artifact(session, ex)
 
-            if task is None:
-                return
+            # Dispatch all eligible tasks in parallel
+            for task in to_dispatch:
+                task.status = "running"
+                if not task.model:
+                    task.model = await get_default_model(session)
+                if not task.variant and task.variant != "":
+                    task.variant = await get_default_variant(session)
+                task.started_at = datetime.now(timezone.utc)
+                task.updated_at = datetime.now(timezone.utc)
+                await session.commit()
 
-            task.status = "running"
-            if not task.model:
-                task.model = await get_default_model(session)
-            if not task.variant and task.variant != "":
-                task.variant = await get_default_variant(session)
-            task.started_at = datetime.now(timezone.utc)
-            task.updated_at = datetime.now(timezone.utc)
-            await session.commit()
+                logger.info(
+                    "Dispatching task %d (uid=%s, %s) model=%s variant=%s budget_remaining=%d",
+                    task.id, task.task_uid, task.shape_key, task.model, task.variant, task.request_budget,
+                )
+                await event_bus.publish("task_update", task.to_dict())
 
-            self.active_task_id = task.id
-            logger.info(
-                "Dispatching task %d (%s) model=%s variant=%s budget_remaining=%d",
-                task.id, task.shape_key, task.model, task.variant, task.request_budget,
-            )
-            await event_bus.publish("task_update", task.to_dict())
+                from .artifact_config import sync_task_to_artifact
+                await sync_task_to_artifact(session, task)
 
-            task_snapshot = _snapshot(task)
-
-        self._worker = asyncio.create_task(self._run_worker(task_snapshot))
+                snapshot = _snapshot(task)
+                worker = asyncio.create_task(self._run_worker(snapshot))
+                self._active_workers[task.id] = worker
 
     async def _auto_sweep(self, session) -> None:
-        """Promote one waiting task to pending when the queue is empty."""
+        """Promote waiting tasks to pending when no pending tasks exist."""
         pending_count = (await session.execute(
             select(func.count(Task.id)).where(Task.status == "pending")
         )).scalar() or 0
-        running_count = (await session.execute(
-            select(func.count(Task.id)).where(Task.status == "running")
-        )).scalar() or 0
 
-        if pending_count > 0 or running_count > 0:
+        if pending_count > 0:
             return
 
         result = await session.execute(
             select(Task)
             .where(Task.status == "waiting")
             .order_by(Task.created_at.asc())
-            .limit(1)
         )
-        waiting_task = result.scalar_one_or_none()
-        if waiting_task is None:
+        waiting_tasks = list(result.scalars().all())
+        if not waiting_tasks:
             return
 
-        waiting_task.status = "pending"
-        waiting_task.updated_at = datetime.now(timezone.utc)
+        for wt in waiting_tasks:
+            wt.status = "pending"
+            wt.updated_at = datetime.now(timezone.utc)
+            logger.info(
+                "Auto-sweep: promoted waiting task %d (%s) to pending",
+                wt.id, wt.shape_key,
+            )
+            await event_bus.publish("task_update", wt.to_dict())
         await session.commit()
-        logger.info(
-            "Auto-sweep: promoted waiting task %d (%s) to pending",
-            waiting_task.id, waiting_task.shape_key,
-        )
-        await event_bus.publish("task_update", waiting_task.to_dict())
 
     async def _run_worker(self, task: Task) -> None:
         async with async_session() as session:
@@ -307,10 +319,17 @@ class Scheduler:
           - fast-exit with no progress (3 consecutive) → waiting
           - otherwise → pending (ready for re-dispatch if budget allows)
         """
+        # Scan disk to pick up artifact path changes the agent may have made
+        try:
+            async with async_session() as scan_session:
+                await scan_and_create_tasks(scan_session)
+        except Exception:
+            logger.exception("Post-run scan failed for task %d", task_id)
+
         async with async_session() as session:
             db_task = await session.get(Task, task_id)
             if not db_task:
-                self.active_task_id = None
+                self._active_workers.pop(task_id, None)
                 return
 
             if db_task.status == "cancelled":
@@ -385,7 +404,11 @@ class Scheduler:
             await session.commit()
             await event_bus.publish("task_update", db_task.to_dict())
 
-        self.active_task_id = None
+            # Persist final status/budget to disk so it survives DB resets
+            from .artifact_config import sync_task_to_artifact
+            await sync_task_to_artifact(session, db_task)
+
+        self._active_workers.pop(task_id, None)
         logger.info("Task %d finished [%s] exit_code=%s", task_id, source, exit_code)
 
     async def _adopt_worker(self, task: Task) -> None:
@@ -407,7 +430,7 @@ class Scheduler:
                     if db_task and db_task.status == "cancelled":
                         terminated = terminate_stray_opencode_processes()
                         logger.info("Adopt-worker: task %d cancelled, terminated %s", task.id, terminated)
-                        self.active_task_id = None
+                        self._active_workers.pop(task.id, None)
                         return
 
                 await poll_artifacts(task, async_session)
@@ -437,6 +460,7 @@ def _snapshot(task: Task) -> Task:
     """Create a detached copy of a Task for passing to worker coroutines."""
     return Task(
         id=task.id,
+        task_uid=task.task_uid,
         shape_key=task.shape_key,
         dtype=task.dtype,
         m=task.m,

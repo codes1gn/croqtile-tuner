@@ -13,6 +13,19 @@ const DTYPE_TOKENS = [
   "f64", "f32", "f16",
 ];
 
+const CANONICAL: Record<string, string> = {
+  f16: "fp16", f32: "fp32", f64: "fp64",
+  fp16: "fp16", fp32: "fp32", fp64: "fp64",
+  bf16: "bf16",
+  e4m3: "e4m3", e5m2: "e5m2",
+  int8: "int8", int16: "int16", int32: "int32", int64: "int64",
+};
+
+/** Normalize a dtype token to its canonical form (f16→fp16, f32→fp32). */
+export function canonicalDtype(tok: string): string {
+  return CANONICAL[tok.toLowerCase()] ?? tok.toLowerCase();
+}
+
 export interface ParsedDtype {
   in: string;
   out: string;
@@ -42,14 +55,14 @@ export function parseDtype(dtype: string): ParsedDtype {
   return { in: lower, out: lower, symmetric: true };
 }
 
-/** Short human-readable label for a dtype token. */
+/** Short human-readable label for a dtype token (always canonical form). */
 export function dtypeLabel(tok: string): string {
+  const canonical = canonicalDtype(tok);
   const MAP: Record<string, string> = {
     fp16: "FP16", fp32: "FP32", fp64: "FP64",
     bf16: "BF16",
-    f16: "F16", f32: "F32", f64: "F64",
     e4m3: "E4M3", e5m2: "E5M2",
     int8: "INT8", int16: "INT16", int32: "INT32", int64: "INT64",
   };
-  return MAP[tok.toLowerCase()] ?? tok.toUpperCase();
+  return MAP[canonical] ?? canonical.toUpperCase();
 }

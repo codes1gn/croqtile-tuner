@@ -180,6 +180,7 @@ class Settings(BaseSettings):
 
     # cursor-agent settings
     cursor_agent_bin: str = _resolve_cursor_agent_bin()
+    cursor_transcripts_dir: Path = Path.home() / ".cursor" / "projects" / "home-albert-workspace-croqtile-tuner" / "agent-transcripts"
     
     # GPU and execution settings
     cuda_visible_devices: str = "0"

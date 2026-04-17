@@ -159,6 +159,12 @@ print(json.dumps(checkpoint, indent=2))
     echo "[checkpoint_write] Idea: $IDEA"
     echo "[checkpoint_write] Expected gain: $EXPECTED_GAIN"
     echo "[checkpoint_write] Checkpoint: $CHECKPOINT_FILE"
+    echo ""
+    echo "================================================================"
+    echo "[REINFORCEMENT] Idea committed. Now IMPLEMENT this kernel."
+    echo "[REINFORCEMENT] After IMPLEMENT → VERIFY → MEASURE → DECIDE → STORE → PROFILE → next IDEA."
+    echo "[REINFORCEMENT] DO NOT STOP after this iteration. The loop continues."
+    echo "================================================================"
     exit 0
 fi
 

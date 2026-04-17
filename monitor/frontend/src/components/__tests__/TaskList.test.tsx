@@ -39,7 +39,7 @@ describe("TaskList", () => {
   it("shows empty state when no tasks", () => {
     render(
       <MemoryRouter>
-        <TaskList tasks={[]} activeTaskId={null} />
+        <TaskList tasks={[]} activeTaskIds={[]} />
       </MemoryRouter>,
     );
     expect(screen.getByText("No tuning tasks")).toBeInTheDocument();
@@ -48,7 +48,7 @@ describe("TaskList", () => {
   it("renders task rows with correct columns", () => {
     render(
       <MemoryRouter>
-        <TaskList tasks={[mockTask]} activeTaskId={1} />
+        <TaskList tasks={[mockTask]} activeTaskIds={[1]} />
       </MemoryRouter>,
     );
     expect(screen.getByText("gemm_sp")).toBeInTheDocument();
@@ -64,7 +64,7 @@ describe("TaskList", () => {
     ];
     render(
       <MemoryRouter>
-        <TaskList tasks={tasks} activeTaskId={null} />
+        <TaskList tasks={tasks} activeTaskIds={[]} />
       </MemoryRouter>,
     );
     const rows = screen.getAllByRole("row");

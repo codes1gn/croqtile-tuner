@@ -125,13 +125,15 @@ async def create_task(
     body: TaskCreate,
     session: AsyncSession = Depends(get_session),
 ):
+    from .artifact_scanner import _normalize_dtype
     max_iter = 30
-    shape_key = f"{body.op_type}_{body.dtype}_{body.m}x{body.n}x{body.k}"
+    canonical_dtype = _normalize_dtype(body.dtype)
+    shape_key = f"{body.op_type}_{canonical_dtype}_{body.m}x{body.n}x{body.k}"
 
     task = Task(
         shape_key=shape_key,
         op_type=body.op_type,
-        dtype=body.dtype,
+        dtype=canonical_dtype,
         m=body.m,
         n=body.n,
         k=body.k,
@@ -186,6 +188,10 @@ async def update_task(
             task.variant = body.variant
             changed = True
 
+    if body.request_budget is not None and body.request_budget != task.request_budget:
+        task.request_budget = body.request_budget
+        changed = True
+
     if body.status == "cancelled":
         if task.status not in ("pending", "running", "waiting"):
             raise HTTPException(
@@ -198,7 +204,7 @@ async def update_task(
         task.status = "pending"
         changed = True
     elif body.status == "waiting" and task.status == "pending":
-        if scheduler.active_task_id == task.id:
+        if task.id in scheduler.active_task_ids:
             raise HTTPException(400, "Cannot demote a task that is running")
         task.status = "waiting"
         changed = True
@@ -211,6 +217,8 @@ async def update_task(
         task.updated_at = datetime.now(timezone.utc)
         await session.commit()
         await event_bus.publish("task_update", task.to_dict())
+        from .artifact_config import sync_task_to_artifact
+        await sync_task_to_artifact(session, task)
 
     return TaskResponse(**task.to_dict())
 
@@ -655,6 +663,7 @@ async def health(session: AsyncSession = Depends(get_session)):
         status="ok",
         scheduler_running=scheduler.running,
         active_task_id=scheduler.active_task_id,
+        active_task_ids=scheduler.active_task_ids,
         auto_wake_enabled=await get_auto_wake_enabled(session),
         use_proxy=await get_use_proxy(session),
         gpu_info=gpu_info,

@@ -89,7 +89,7 @@ export default function App() {
           <AgentMonitorPanel />
         </div>
         <Routes>
-          <Route path="/" element={<TaskList tasks={tasks} activeTaskId={health?.active_task_id ?? null} />} />
+          <Route path="/" element={<TaskList tasks={tasks} activeTaskIds={health?.active_task_ids ?? []} />} />
           <Route path="/tasks/:id" element={<TaskDetail sseEvent={lastEvent} />} />
         </Routes>
       </main>

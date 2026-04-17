@@ -1,6 +1,11 @@
+import uuid
 from datetime import datetime, timezone
 from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String, Text, inspect
 from sqlalchemy.orm import DeclarativeBase, relationship
+
+
+def _gen_uid() -> str:
+    return uuid.uuid4().hex[:12]
 
 
 class Base(DeclarativeBase):
@@ -15,6 +20,7 @@ class Task(Base):
     __tablename__ = "tasks"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
+    task_uid = Column(String(12), nullable=False, unique=True, index=True, default=_gen_uid)
     shape_key = Column(String(128), nullable=False, index=True)
     op_type = Column(String(64), nullable=True, default="gemm_sp")  # operator type
     dtype = Column(String(16), nullable=False)
@@ -50,6 +56,7 @@ class Task(Base):
     def to_dict(self) -> dict:
         return {
             "id": self.id,
+            "task_uid": self.task_uid,
             "shape_key": self.shape_key,
             "op_type": self.op_type,
             "dtype": self.dtype,

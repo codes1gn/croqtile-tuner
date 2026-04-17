@@ -1,15 +1,17 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-17T13:44:25Z",
+  "timestamp": "2026-04-17T15:19:13Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_16384x16384x512",
-  "iter": "iter008_ws1p2c_wn224_s3",
+  "iter": "iter030_persis_tm64_s3",
   "bottleneck": "latency_bound",
-  "idea": "WARP_N=224 (between 192 and 256), 3-stage pipeline for better latency hiding vs 2-stage",
-  "expected_gain": "+10 TFLOPS",
+  "idea": "TILE_M=64 with 3-stage pipeline and WARP_N=256 to trade M-parallelism for better latency hiding",
+  "expected_gain": "+3-5 TFLOPS",
   "levers": [
-    "WARP_N",
+    "TILE_M",
     "STAGES"
   ],
-  "status": "PLANNED"
+  "status": "VERIFIED",
+  "verified_iter": "iter030_persis_tm64_s3",
+  "drift_score": 1
 }

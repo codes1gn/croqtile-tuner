@@ -179,4 +179,20 @@ echo "[store_round] STORE complete for ${ITER} (${DECISION} ${TFLOPS} TFLOPS)"
 echo "[store_round] Written:"
 echo "  ${IDEA_LOG} ($(wc -l < "$IDEA_LOG") lines)"
 echo "  ${TSV}    ($(wc -l < "$TSV") rows)"
-echo "[NEXT] CONTINUE to next round — advance immediately to PROFILE"
+
+# ── reinforcement: count iterations and emit continuation directive ──────────
+TOTAL_ITERS=$(grep -c "^iter[0-9]" "$TSV" 2>/dev/null || echo "0")
+# Exclude baseline (iter000) from count
+DATA_ITERS=$((TOTAL_ITERS > 0 ? TOTAL_ITERS : 0))
+BASELINE_COUNT=$(grep -c "^iter000" "$TSV" 2>/dev/null || echo "0")
+TUNING_ITERS=$((DATA_ITERS - BASELINE_COUNT))
+
+echo ""
+echo "================================================================"
+echo "[MANDATORY NEXT STEP] You MUST now call reinforce.sh:"
+echo ""
+echo "  bash .claude/skills/croq-tune/tools/reinforce.sh \\"
+echo "    --dsl $DSL --shape-key $SHAPE_KEY --model $MODEL"
+echo ""
+echo "DO NOT skip this. DO NOT proceed to PROFILE without calling reinforce.sh first."
+echo "================================================================"

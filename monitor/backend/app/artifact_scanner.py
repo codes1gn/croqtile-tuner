@@ -49,6 +49,38 @@ _SHAPE_KEY_RE = re.compile(
     r"^(.+?)_([A-Za-z0-9]+)_(\d+)x(\d+)x(\d+)$"
 )
 
+_CANONICAL_DTYPE = {
+    "f16": "fp16", "f32": "fp32", "f64": "fp64",
+    "fp16": "fp16", "fp32": "fp32", "fp64": "fp64",
+    "bf16": "bf16",
+    "e4m3": "e4m3", "e5m2": "e5m2",
+    "int8": "int8", "int16": "int16", "int32": "int32", "int64": "int64",
+}
+
+
+def _normalize_dtype(raw: str) -> str:
+    """Normalize a compound dtype to canonical form.
+
+    e.g. 'f16f32' → 'fp16fp32', 'f16fp32' → 'fp16fp32', 'fp16' → 'fp16'
+    """
+    low = raw.lower()
+    tokens = sorted(_CANONICAL_DTYPE.keys(), key=len, reverse=True)
+    result = []
+    pos = 0
+    while pos < len(low):
+        matched = False
+        for tok in tokens:
+            if low[pos:].startswith(tok):
+                result.append(_CANONICAL_DTYPE[tok])
+                pos += len(tok)
+                matched = True
+                break
+        if not matched:
+            result.append(low[pos])
+            pos += 1
+    return "".join(result)
+
+
 _GPU_NAME_RE = re.compile(r"^sm\d+_(.+)$")
 
 
@@ -124,6 +156,18 @@ def discover_shape_keys() -> dict[str, dict]:
                         attempt_log = model_dir / "attempt-log.jsonl"
                         if attempt_log.exists():
                             entry["attempt_log"] = attempt_log
+                        config_file = model_dir / "task_config.json"
+                        if config_file.exists():
+                            try:
+                                cfg = json.loads(config_file.read_text())
+                                if cfg.get("task_uid"):
+                                    entry["task_uid"] = cfg["task_uid"]
+                                if cfg.get("mode"):
+                                    entry["mode"] = cfg["mode"]
+                                if cfg.get("status"):
+                                    entry["status"] = cfg["status"]
+                            except (json.JSONDecodeError, OSError):
+                                pass
 
             cp_dir = dsl_dir / "checkpoints"
             if cp_dir.exists():
@@ -168,11 +212,22 @@ def _parse_shape_key(shape_key: str) -> dict | None:
     op_type, dtype, m_raw, n_raw, k_raw = m.groups()
     return {
         "op_type": op_type,
-        "dtype": dtype,
+        "dtype": _normalize_dtype(dtype),
         "m": int(m_raw),
         "n": int(n_raw),
         "k": int(k_raw),
     }
+
+
+def _parse_shape_identity(shape_key: str) -> tuple[str, str]:
+    """Extract (op_type, 'MxNxK') from a bare shape key for fuzzy matching.
+
+    Returns ("", "") if unparseable.
+    """
+    parsed = _parse_shape_key(shape_key)
+    if not parsed:
+        return ("", "")
+    return (parsed["op_type"], f"{parsed['m']}x{parsed['n']}x{parsed['k']}")
 
 
 def _read_checkpoint_metrics(cp_path: Path) -> dict:
@@ -265,22 +320,31 @@ async def prune_stale_tasks(session: AsyncSession) -> list[int]:
     Called at startup and periodically by the scheduler.
     Only prunes scanner-created tasks (compound keys with '/').
     Never prunes running tasks to avoid race conditions.
+    Respects task_uid: a task whose uid appears in any discovered artifact is kept
+    even if its shape_key has drifted (agent changed path at runtime).
     Returns the list of pruned task IDs.
     """
     discovered = discover_shape_keys()
+    discovered_uids: set[str] = set()
+    for info in discovered.values():
+        uid = info.get("task_uid")
+        if uid:
+            discovered_uids.add(uid)
 
     result = await session.execute(select(Task))
-    existing: dict[str, Task] = {t.shape_key: t for t in result.scalars().all()}
+    all_tasks = list(result.scalars().all())
 
     pruned_ids: list[int] = []
-    for shape_key, task in list(existing.items()):
-        if "/" not in shape_key:
+    for task in all_tasks:
+        if "/" not in task.shape_key:
             continue
-        if shape_key in discovered:
+        if task.shape_key in discovered:
+            continue
+        if task.task_uid and task.task_uid in discovered_uids:
             continue
         if task.status == "running":
             continue
-        logger.info("Pruning stale task %d (%s) — disk artifacts removed", task.id, shape_key)
+        logger.info("Pruning stale task %d (%s) — disk artifacts removed", task.id, task.shape_key)
         pruned_ids.append(task.id)
         await session.delete(task)
 
@@ -307,17 +371,65 @@ async def scan_and_create_tasks(session: AsyncSession) -> int:
     """
     discovered = discover_shape_keys()
 
+    # Deduplicate entries that share the same task_uid — keep the one with
+    # more progress (results_tsv present, higher iteration count).
+    uid_best: dict[str, str] = {}  # task_uid → best compound_key
+    for compound_key, info in discovered.items():
+        uid = info.get("task_uid")
+        if not uid:
+            continue
+        if uid not in uid_best:
+            uid_best[uid] = compound_key
+            continue
+        prev_key = uid_best[uid]
+        prev_info = discovered[prev_key]
+        prev_has_tsv = "results_tsv" in prev_info
+        curr_has_tsv = "results_tsv" in info
+        if curr_has_tsv and not prev_has_tsv:
+            uid_best[uid] = compound_key
+        elif curr_has_tsv and prev_has_tsv:
+            prev_metrics = _collect_metrics(prev_info)
+            curr_metrics = _collect_metrics(info)
+            if (curr_metrics.get("current_iteration", 0) >
+                    prev_metrics.get("current_iteration", 0)):
+                uid_best[uid] = compound_key
+
+    # Remove duplicate entries (same uid, less progress)
+    keys_to_remove: set[str] = set()
+    for compound_key, info in discovered.items():
+        uid = info.get("task_uid")
+        if uid and uid in uid_best and uid_best[uid] != compound_key:
+            keys_to_remove.add(compound_key)
+    for k in keys_to_remove:
+        logger.info("Dedup: dropping %s (same task_uid %s as %s)",
+                     k, discovered[k].get("task_uid"), uid_best[discovered[k]["task_uid"]])
+        del discovered[k]
+
     result = await session.execute(select(Task))
-    existing: dict[str, Task] = {t.shape_key: t for t in result.scalars().all()}
+    all_tasks = list(result.scalars().all())
+    existing_by_key: dict[str, Task] = {t.shape_key: t for t in all_tasks}
+    existing_by_uid: dict[str, Task] = {t.task_uid: t for t in all_tasks if t.task_uid}
+
+    # Build set of discovered task_uids for stale-pruning
+    discovered_uids: set[str] = set()
+    for info in discovered.values():
+        uid = info.get("task_uid")
+        if uid:
+            discovered_uids.add(uid)
 
     created = 0
     changed = False
 
     pruned_in_scan: list[int] = []
-    for shape_key, task in list(existing.items()):
+    for task in list(all_tasks):
+        shape_key = task.shape_key
         if "/" not in shape_key:
             continue
+        # Task is still on disk (by compound key) — keep
         if shape_key in discovered:
+            continue
+        # Task is still on disk (by task_uid, but agent moved artifacts to a new path) — keep
+        if task.task_uid and task.task_uid in discovered_uids:
             continue
         if task.status == "running":
             continue
@@ -331,28 +443,56 @@ async def scan_and_create_tasks(session: AsyncSession) -> int:
             await session.commit()
         return 0
 
-    bare_keys_with_tasks: set[str] = set()
-    for sk in existing:
-        parts = sk.split("/")
-        if len(parts) >= 4:
-            # compound key: gpu/dsl/shape/model — shape is at index 2 (or -2)
-            bare = parts[2]
-        elif len(parts) >= 2:
-            # 3-part or 2-part compound: shape is last
-            bare = parts[-1]
-        else:
-            bare = sk
-        bare_keys_with_tasks.add(bare)
-
     for compound_key, info in discovered.items():
         metrics = _collect_metrics(info)
         bare_shape_key = info.get("shape_key", compound_key.split("/")[-1])
         dsl = info.get("dsl", "unknown")
         device = info.get("device")
         model = info.get("model")
+        disk_uid = info.get("task_uid")
+        disk_mode = info.get("mode")
+        disk_status = info.get("status")
 
-        if compound_key in existing:
-            task = existing[compound_key]
+        # Skip cancelled artifacts — don't create new tasks from dead entries
+        if disk_status == "cancelled":
+            logger.debug("Skipping cancelled artifact: %s", compound_key)
+            continue
+
+        # Match: first by task_uid, then by compound key, then by bare shape+dsl
+        task: Task | None = None
+        if disk_uid and disk_uid in existing_by_uid:
+            task = existing_by_uid[disk_uid]
+            if task.shape_key != compound_key:
+                logger.info(
+                    "Task %d (uid=%s) path changed: %s → %s",
+                    task.id, disk_uid, task.shape_key, compound_key,
+                )
+                task.shape_key = compound_key
+                changed = True
+        elif compound_key in existing_by_key:
+            task = existing_by_key[compound_key]
+        else:
+            # Fall back: match by structural identity (op_type + dsl + dimensions)
+            # Handles shape key variations like f16f32 vs f16fp32
+            disk_op, disk_dims = _parse_shape_identity(bare_shape_key)
+            for t in all_tasks:
+                if t.id in [x.id for x in [task] if task]:
+                    continue
+                if t.dsl != dsl:
+                    continue
+                t_op = t.op_type or ""
+                t_dims = f"{t.m}x{t.n}x{t.k}" if t.m and t.n and t.k else ""
+                if disk_op == t_op and disk_dims == t_dims:
+                    task = t
+                    logger.info(
+                        "Matched task %d (uid=%s, %s) to disk artifact %s by op+dims",
+                        t.id, t.task_uid, t.shape_key, compound_key,
+                    )
+                    task.shape_key = compound_key
+                    changed = True
+                    break
+
+        if task is not None:
             from .artifact_config import sync_artifact_to_task
             if await sync_artifact_to_task(session, task):
                 await session.flush()
@@ -382,7 +522,7 @@ async def scan_and_create_tasks(session: AsyncSession) -> int:
             if metrics.get("best_kernel") and not task.best_kernel:
                 task.best_kernel = metrics["best_kernel"]
                 updated = True
-            if device and not task.device:
+            if device and task.device != device:
                 task.device = device
                 updated = True
             if model and not task.model:
@@ -391,6 +531,17 @@ async def scan_and_create_tasks(session: AsyncSession) -> int:
             if dsl and not task.dsl:
                 task.dsl = dsl
                 updated = True
+            if disk_mode and task.mode != disk_mode:
+                task.mode = disk_mode
+                updated = True
+            # Re-parse shape_key fields if they drifted
+            parsed = _parse_shape_key(bare_shape_key)
+            if parsed:
+                for field in ("op_type", "dtype", "m", "n", "k"):
+                    disk_val = parsed[field]
+                    if getattr(task, field) != disk_val:
+                        setattr(task, field, disk_val)
+                        updated = True
             if "idea_log" in info:
                 await _enrich_from_idea_log(session, task.id, info["idea_log"])
             if "attempt_log" in info:
@@ -402,13 +553,7 @@ async def scan_and_create_tasks(session: AsyncSession) -> int:
                 await sync_task_to_artifact(session, task)
             continue
 
-        if bare_shape_key in bare_keys_with_tasks:
-            logger.debug(
-                "Skipping %s — a task for bare key %s already exists",
-                compound_key, bare_shape_key,
-            )
-            continue
-
+        # New task — parse and create
         parsed = _parse_shape_key(bare_shape_key)
         if parsed is None:
             logger.debug("Skipping unparseable shape key from disk: %s", compound_key)
@@ -416,7 +561,7 @@ async def scan_and_create_tasks(session: AsyncSession) -> int:
 
         initial_status = "pending"
 
-        task = Task(
+        new_task = Task(
             shape_key=compound_key,
             op_type=parsed["op_type"],
             dtype=parsed["dtype"],
@@ -424,7 +569,7 @@ async def scan_and_create_tasks(session: AsyncSession) -> int:
             n=parsed["n"],
             k=parsed["k"],
             dsl=dsl,
-            mode="opencode",
+            mode=disk_mode or "opencode",
             device=device,
             max_iterations=30,
             status=initial_status,
@@ -434,23 +579,26 @@ async def scan_and_create_tasks(session: AsyncSession) -> int:
             best_kernel=metrics.get("best_kernel"),
             model=model,
         )
-        session.add(task)
+        if disk_uid:
+            new_task.task_uid = disk_uid
+        session.add(new_task)
         await session.flush()
         if "results_tsv" in info:
-            await _import_iteration_logs_from_tsv(session, task.id, info["results_tsv"])
+            await _import_iteration_logs_from_tsv(session, new_task.id, info["results_tsv"])
         if "idea_log" in info:
-            await _enrich_from_idea_log(session, task.id, info["idea_log"])
+            await _enrich_from_idea_log(session, new_task.id, info["idea_log"])
         if "attempt_log" in info:
-            await _import_attempt_log(session, task.id, info["attempt_log"])
+            await _import_attempt_log(session, new_task.id, info["attempt_log"])
         from .artifact_config import sync_artifact_to_task, sync_task_to_artifact
-        await sync_artifact_to_task(session, task)
+        await sync_artifact_to_task(session, new_task)
         await session.flush()
-        await sync_task_to_artifact(session, task)
+        await sync_task_to_artifact(session, new_task)
 
         created += 1
         logger.info(
-            "Auto-discovered task: %s [%s/%s/%s] (iter=%d, best=%.3f TFLOPS)",
-            bare_shape_key, device or "?", dsl, model, metrics.get("current_iteration", 0), metrics.get("best_tflops") or 0,
+            "Auto-discovered task: %s (uid=%s) [%s/%s/%s] (iter=%d, best=%.3f TFLOPS)",
+            bare_shape_key, disk_uid or "new", device or "?", dsl, model,
+            metrics.get("current_iteration", 0), metrics.get("best_tflops") or 0,
         )
 
     if created or changed:
@@ -597,7 +745,20 @@ async def _import_iteration_logs_from_tsv(session: AsyncSession, task_id: int, r
                 IterationLog.iteration == iter_num,
             )
         )
-        if existing.scalar_one_or_none() is not None:
+        existing_log = existing.scalar_one_or_none()
+        if existing_log is not None:
+            # TSV is authoritative — overwrite values that may have been
+            # captured incorrectly from agent chat text via regex
+            if tflops is not None and existing_log.tflops != tflops:
+                existing_log.tflops = tflops
+            if decision and existing_log.decision != decision:
+                existing_log.decision = decision
+            if kernel and not existing_log.kernel_path:
+                existing_log.kernel_path = kernel
+            if (bottleneck_raw or None) and not existing_log.bottleneck:
+                existing_log.bottleneck = bottleneck_raw or None
+            if idea and not existing_log.idea_summary:
+                existing_log.idea_summary = idea
             continue
 
         session.add(IterationLog(

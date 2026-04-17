@@ -132,12 +132,20 @@ class TaskUpdate(BaseModel):
     status: str | None = None
     model: str | None = None
     variant: str | None = None
+    request_budget: int | None = None
 
     @field_validator("status")
     @classmethod
     def validate_status(cls, v: str | None) -> str | None:
         if v is not None and v not in ("pending", "cancelled", "waiting"):
             raise ValueError("status must be 'pending', 'cancelled', or 'waiting'")
+        return v
+
+    @field_validator("request_budget")
+    @classmethod
+    def validate_request_budget(cls, v: int | None) -> int | None:
+        if v is not None and v < 0:
+            raise ValueError("request_budget must be >= 0")
         return v
 
     @field_validator("model")
@@ -166,6 +174,7 @@ VALID_TASK_STATUSES = (
 
 class TaskResponse(BaseModel):
     id: int
+    task_uid: str
     shape_key: str
     op_type: str | None
     dtype: str
@@ -249,6 +258,7 @@ class HealthResponse(BaseModel):
     status: str
     scheduler_running: bool
     active_task_id: int | None
+    active_task_ids: list[int] = []
     auto_wake_enabled: bool
     use_proxy: bool
     gpu_info: str | None

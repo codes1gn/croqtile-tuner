@@ -1,10 +1,13 @@
 import asyncio
 import json
+import logging
 import sqlite3
 from pathlib import Path
 from typing import Any
 
 from .config import settings
+
+logger = logging.getLogger("croqtuner.sessions")
 
 
 def _sync_iso_from_ms(epoch_ms: int | float | None) -> str | None:
@@ -137,7 +140,128 @@ def _read_session_history_sync(session_id: str, limit: int, db_path: Path) -> di
     }
 
 
+def _read_cursor_transcript_sync(session_id: str, limit: int) -> dict[str, Any] | None:
+    """Read a cursor-agent transcript from its JSONL file.
+
+    Returns None if the transcript doesn't exist (caller should fall back to opencode DB).
+    """
+    transcripts_dir = settings.cursor_transcripts_dir
+    transcript_path = transcripts_dir / session_id / f"{session_id}.jsonl"
+    if not transcript_path.exists():
+        return None
+
+    entries: list[dict[str, Any]] = []
+    tool_count = 0
+    try:
+        with open(transcript_path, "r", errors="replace") as f:
+            for line_num, raw in enumerate(f):
+                raw = raw.strip()
+                if not raw:
+                    continue
+                try:
+                    obj = json.loads(raw)
+                except json.JSONDecodeError:
+                    continue
+
+                role = obj.get("role", "assistant")
+                msg = obj.get("message", {})
+                content = msg.get("content", [])
+                if isinstance(content, str):
+                    content = [{"type": "text", "text": content}]
+                if not isinstance(content, list):
+                    continue
+
+                for item in content:
+                    if not isinstance(item, dict):
+                        continue
+                    item_type = item.get("type", "")
+                    if item_type == "text":
+                        text = item.get("text", "").strip()
+                        if text:
+                            entries.append({
+                                "id": f"cursor-{session_id[:8]}-{line_num}",
+                                "message_id": f"msg-{line_num}",
+                                "role": role,
+                                "kind": "text",
+                                "text": text[:4000],
+                                "tool": None,
+                                "status": None,
+                                "timestamp": None,
+                            })
+                    elif item_type == "tool_use":
+                        tool_name = item.get("name", "unknown")
+                        tool_input = item.get("input", {})
+                        text_parts: list[str] = []
+
+                        if tool_name == "Shell":
+                            cmd = tool_input.get("command", "")
+                            desc = tool_input.get("description", "")
+                            if desc:
+                                text_parts.append(desc)
+                            if cmd:
+                                text_parts.append(f"$ {str(cmd)[:2000]}")
+                        elif tool_name in ("Read", "Write", "Glob", "Grep"):
+                            path = tool_input.get("path") or tool_input.get("glob_pattern") or tool_input.get("pattern") or ""
+                            if path:
+                                text_parts.append(f"{tool_name} {path}")
+                            if tool_name == "Grep" and tool_input.get("pattern"):
+                                text_parts.append(f"pattern: {tool_input['pattern']}")
+                        elif tool_name == "StrReplace":
+                            path = tool_input.get("path", "")
+                            old = tool_input.get("old_string", "")[:200]
+                            text_parts.append(f"Edit {path}")
+                            if old:
+                                text_parts.append(f"replace: {old}...")
+                        elif tool_name == "TodoWrite":
+                            todos = tool_input.get("todos", [])
+                            for td in todos[:5]:
+                                status = td.get("status", "?")
+                                content = td.get("content", "")[:100]
+                                text_parts.append(f"[{status}] {content}")
+                        else:
+                            desc = tool_input.get("description") or tool_input.get("command") or tool_input.get("path") or ""
+                            if desc:
+                                text_parts.append(str(desc)[:800])
+                            elif tool_input:
+                                text_parts.append(_compact_json(tool_input, limit=800))
+
+                        if not text_parts:
+                            text_parts.append(tool_name)
+
+                        tool_count += 1
+                        entries.append({
+                            "id": f"cursor-{session_id[:8]}-{line_num}-t{tool_count}",
+                            "message_id": f"msg-{line_num}",
+                            "role": role,
+                            "kind": "tool",
+                            "text": "\n".join(text_parts),
+                            "tool": tool_name,
+                            "status": "completed",
+                            "timestamp": None,
+                        })
+    except OSError:
+        return None
+
+    if limit and len(entries) > limit:
+        entries = entries[-limit:]
+
+    return {
+        "session_id": session_id,
+        "session_title": f"Cursor CLI session {session_id[:12]}",
+        "session_directory": str(transcript_path.parent),
+        "entries": entries,
+    }
+
+
 async def read_session_history(session_id: str, limit: int = 200) -> dict[str, Any]:
+    # Try cursor transcript first (JSONL files)
+    cursor_result = await asyncio.to_thread(
+        _read_cursor_transcript_sync, session_id, limit
+    )
+    if cursor_result is not None:
+        return cursor_result
+
+    # Fall back to opencode SQLite DB
     return await asyncio.to_thread(
         _read_session_history_sync,
         session_id,

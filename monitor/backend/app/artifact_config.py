@@ -92,10 +92,17 @@ async def sync_task_to_artifact(session: AsyncSession, task: Task) -> bool:
     db_sessions = result.scalars().all()
 
     config = read_artifact_config(task.shape_key)
+    config["task_uid"] = task.task_uid
     config["model"] = task.model
     config["variant"] = task.variant or ""
     config["agent_type"] = task.agent_type
     config["device"] = task.device
+    config["mode"] = task.mode
+    config["status"] = task.status
+    config["request_budget"] = task.request_budget
+    config["request_number"] = task.request_number
+    config["max_iterations"] = task.max_iterations
+    config["respawn_count"] = task.respawn_count
     config["opencode_session_id"] = task.opencode_session_id
     config["sessions"] = [s.to_dict() for s in db_sessions]
 
@@ -114,7 +121,10 @@ async def sync_artifact_to_task(session: AsyncSession, task: Task) -> bool:
 
     changed = False
 
-    if config.get("model") and not task.model:
+    if config.get("task_uid") and task.task_uid != config["task_uid"]:
+        task.task_uid = config["task_uid"]
+        changed = True
+    if config.get("model") and task.model != config["model"]:
         task.model = config["model"]
         changed = True
     if config.get("variant") and not task.variant:
@@ -125,6 +135,28 @@ async def sync_artifact_to_task(session: AsyncSession, task: Task) -> bool:
         changed = True
     if config.get("device") and not task.device:
         task.device = config["device"]
+        changed = True
+    if config.get("mode") and task.mode != config["mode"]:
+        task.mode = config["mode"]
+        changed = True
+    # Restore status/budget from artifact so tasks survive DB resets.
+    # "running" is NOT restored -- the agent process died with the backend.
+    # It reverts to "pending" so the scheduler can re-dispatch if budget > 0.
+    cfg_status = config.get("status")
+    if cfg_status and task.status == "pending" and cfg_status != "running":
+        task.status = cfg_status
+        changed = True
+    if config.get("request_budget") is not None:
+        task.request_budget = config["request_budget"]
+        changed = True
+    if config.get("request_number") is not None:
+        task.request_number = config["request_number"]
+        changed = True
+    if config.get("max_iterations") is not None:
+        task.max_iterations = config["max_iterations"]
+        changed = True
+    if config.get("respawn_count") is not None:
+        task.respawn_count = config["respawn_count"]
         changed = True
     if config.get("opencode_session_id") and not task.opencode_session_id:
         task.opencode_session_id = config["opencode_session_id"]

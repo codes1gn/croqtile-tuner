@@ -248,9 +248,9 @@ export function TaskDetail({ sseEvent }: Props) {
     return <div className="p-6 text-gray-500">Loading...</div>;
   }
 
-  const pct = task.max_iterations > 0
-    ? Math.round((task.current_iteration / task.max_iterations) * 100)
-    : 0;
+  const perfPct = task.baseline_tflops && task.best_tflops
+    ? Math.round((task.best_tflops / task.baseline_tflops) * 100)
+    : null;
   const elapsed =
     task.started_at
       ? formatDuration(
@@ -404,14 +404,21 @@ export function TaskDetail({ sseEvent }: Props) {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: "Progress", value: `${task.current_iteration} / ${task.max_iterations} (${pct}%)` },
-          { label: "Baseline", value: task.baseline_tflops != null ? `${task.baseline_tflops.toFixed(1)} TFLOPS` : "--" },
+          {
+            label: "vs Baseline",
+            value: perfPct != null ? `${perfPct}%` : "--",
+            sub: task.best_tflops != null && task.baseline_tflops != null
+              ? `${task.best_tflops.toFixed(1)} / ${task.baseline_tflops.toFixed(1)} TFLOPS`
+              : undefined,
+          },
+          { label: "Iteration", value: `${task.current_iteration}` },
           { label: "Best", value: task.best_tflops != null ? `${task.best_tflops.toFixed(1)} TFLOPS` : "--" },
           { label: "Elapsed", value: elapsed },
-        ].map(({ label, value }) => (
+        ].map(({ label, value, sub }) => (
           <div key={label} className="bg-gray-800 rounded-lg p-3 border border-gray-700">
             <div className="text-xs text-gray-500 uppercase tracking-wide">{label}</div>
             <div className="text-lg font-semibold text-gray-200 mt-1">{value}</div>
+            {sub && <div className="text-[10px] text-gray-500 mt-0.5">{sub}</div>}
           </div>
         ))}
       </div>
@@ -535,8 +542,14 @@ export function TaskDetail({ sseEvent }: Props) {
 
       <div className="w-full bg-gray-700 rounded-full h-2">
         <div
-          className="bg-blue-500 h-2 rounded-full transition-all"
-          style={{ width: `${pct}%` }}
+          className={`h-2 rounded-full transition-all ${
+            perfPct == null ? "bg-gray-600"
+            : perfPct >= 90 ? "bg-green-500"
+            : perfPct >= 60 ? "bg-blue-500"
+            : perfPct >= 30 ? "bg-yellow-500"
+            : "bg-red-500"
+          }`}
+          style={{ width: `${Math.min(perfPct ?? 0, 100)}%` }}
         />
       </div>
 
@@ -665,7 +678,13 @@ export function TaskDetail({ sseEvent }: Props) {
         <div className="flex flex-col gap-4">
           <div className="bg-gray-800 rounded-lg p-4 border border-gray-700 flex-1 min-h-0">
             <h3 className="text-sm font-semibold text-gray-400 mb-3">Agent Event Log</h3>
-            <LiveLog logs={agentLogs} />
+            {agentLogs.length === 0 && task.opencode_session_id ? (
+              <div className="text-xs text-gray-500 italic">
+                Agent logs were cleared on backend restart. View the full agent transcript in <strong className="text-gray-400">Agent Session History</strong> above.
+              </div>
+            ) : (
+              <LiveLog logs={agentLogs} />
+            )}
           </div>
 
           <div className="bg-gray-800 rounded-lg p-4 border border-gray-700 flex-shrink-0">
