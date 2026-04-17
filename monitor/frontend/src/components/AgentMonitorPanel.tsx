@@ -48,6 +48,10 @@ export function AgentMonitorPanel() {
     ? Object.values(agents).reduce((sum, arr) => sum + arr.length, 0)
     : 0;
 
+  if (!loading && !error && totalAgents === 0) {
+    return null;
+  }
+
   return (
     <section className="rounded-2xl border border-gray-800 bg-gradient-to-br from-gray-900 via-gray-900 to-slate-950 p-4 shadow-lg">
       <div className="flex items-center justify-between">

@@ -1,1 +1,0 @@
-{"round": 0, "iter": "iter000", "bottleneck": "compute_bound", "idea": "cuBLAS f16 reference (e4m3f32 proxy, SM86 fallback)", "category": "misc", "expected_gain": "baseline", "decision": "KEEP", "tflops": 44.9124, "timestamp": "2026-04-16T20:19:18Z"}

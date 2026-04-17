@@ -98,7 +98,17 @@ export function TaskList({ tasks, activeTaskId }: Props) {
                 className={`border-b border-gray-800 hover:bg-gray-800/50 cursor-pointer transition ${task.id === activeTaskId ? "bg-cyan-950/20" : ""}`}
               >
                 <td className="py-2 px-3">
-                  <StatusBadge status={task.status} />
+                  <div className="flex flex-col gap-1">
+                    <StatusBadge status={task.status} />
+                    {task.error_message && task.status !== "running" && (
+                      <div
+                        className="text-[9px] text-red-400 leading-tight max-w-[90px] truncate cursor-help"
+                        title={task.error_message}
+                      >
+                        ⚠ {task.error_message}
+                      </div>
+                    )}
+                  </div>
                 </td>
                 <td className="py-2 px-3 font-mono text-gray-200 uppercase">{task.op_type ?? "—"}</td>
                 <td className="py-2 px-3 font-mono text-gray-300 text-xs whitespace-nowrap">

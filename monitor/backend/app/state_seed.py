@@ -126,6 +126,14 @@ async def seed_tasks_from_state_if_empty(session: AsyncSession) -> bool:
 
     await session.flush()
     await _import_iteration_logs(session)
+
+    from .artifact_config import sync_artifact_to_task, sync_task_to_artifact
+    result = await session.execute(select(Task))
+    for t in result.scalars().all():
+        if await sync_artifact_to_task(session, t):
+            await session.flush()
+        await sync_task_to_artifact(session, t)
+
     await session.commit()
 
     logger.info(
@@ -236,11 +244,8 @@ async def _import_iteration_logs(session: AsyncSession) -> None:
             bottleneck = parts[decision_idx + 1].strip() if len(parts) > decision_idx + 1 else None
             idea = parts[decision_idx + 2].strip() if len(parts) > decision_idx + 2 else None
 
-            is_baseline = (
-                (bottleneck or "").lower() in ("baseline", "baseline_profile")
-                or "baseline" in (kernel or "").lower()
-                or (kernel or "").lower().startswith("framework/")
-            )
+            from .artifact_scanner import _is_baseline_row
+            is_baseline = _is_baseline_row(kernel, bottleneck)
 
             if is_baseline:
                 iter_num = 0

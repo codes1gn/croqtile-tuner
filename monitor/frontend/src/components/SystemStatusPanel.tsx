@@ -96,13 +96,11 @@ export function SystemStatusPanel({ health, onRefresh }: Props) {
   }
 
   const queueItems = [
-    { label: "Waiting", value: health.task_counts.waiting ?? 0 },
-    { label: "Pending", value: health.task_counts.pending ?? 0 },
-    { label: "Running", value: health.task_counts.running ?? 0 },
-    { label: "Stopped", value: health.task_counts.stopped ?? 0 },
-    { label: "Completed", value: health.task_counts.completed ?? 0 },
-    { label: "Failed", value: health.task_counts.failed ?? 0 },
-    { label: "Cancelled", value: health.task_counts.cancelled ?? 0 },
+    { label: "Waiting", value: health.task_counts.waiting ?? 0, color: "text-slate-300" },
+    { label: "Pending", value: health.task_counts.pending ?? 0, color: "text-gray-100" },
+    { label: "Running", value: health.task_counts.running ?? 0, color: "text-blue-300" },
+    { label: "Completed", value: health.task_counts.completed ?? 0, color: "text-emerald-300" },
+    { label: "Cancelled", value: health.task_counts.cancelled ?? 0, color: "text-yellow-300" },
   ];
 
   return (
@@ -126,22 +124,27 @@ export function SystemStatusPanel({ health, onRefresh }: Props) {
             />
             <span className="text-sm text-gray-400">
               Auto-wake: {health.auto_wake_enabled ? (
-                <span className="text-emerald-400">ON (auto-starts opencode)</span>
+                <span className="text-emerald-400">ON — auto-starts opencode for pending tasks</span>
               ) : (
-                <span className="text-amber-400">OFF (monitor only)</span>
+                <span className="text-amber-400">OFF — monitor only, tasks won't auto-start</span>
               )}
             </span>
           </div>
+          {!health.auto_wake_enabled && (health.task_counts.pending ?? 0) > 0 && (
+            <div className="mt-2 text-xs text-amber-400 bg-amber-950/30 border border-amber-800/50 rounded px-2 py-1 inline-block">
+              {health.task_counts.pending} pending task{(health.task_counts.pending ?? 0) !== 1 ? "s" : ""} waiting — enable Auto-wake to start them
+            </div>
+          )}
           <div className="mt-3 text-sm text-gray-300">
             Model assignment is task-scoped. Pick model + variant when creating or editing a task.
           </div>
         </div>
 
-        <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
+        <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
           {queueItems.map((item) => (
             <div key={item.label} className="rounded-lg border border-gray-800 bg-black/20 px-3 py-2 text-center">
               <div className="text-[10px] uppercase tracking-wider text-gray-500">{item.label}</div>
-              <div className="mt-0.5 text-xl font-semibold text-gray-100">{item.value}</div>
+              <div className={`mt-0.5 text-xl font-semibold ${item.color}`}>{item.value}</div>
             </div>
           ))}
         </div>

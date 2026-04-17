@@ -47,10 +47,14 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "$SCRIPT_DIR/activity_trace.sh"
+
 MODE="${1:-}"
 if [[ -z "$MODE" || ! "$MODE" =~ ^(write|read|verify)$ ]]; then
     echo "[checkpoint_write] ERROR: first arg must be 'write', 'read', or 'verify'" >&2
     echo "Usage: $0 write|read|verify [--dsl DSL] [--shape-key KEY] ..." >&2
+    echo "[SUGGESTION] Use your judgement to decide autonomously. Use 'write' at the end of the IDEA step, 'read' at the start of IMPLEMENT step, and 'verify' after building the kernel." >&2
     exit 1
 fi
 shift
@@ -77,7 +81,7 @@ while [[ $# -gt 0 ]]; do
         --idea)          IDEA="$2";          shift 2 ;;
         --expected-gain) EXPECTED_GAIN="$2"; shift 2 ;;
         --levers)        LEVERS="$2";        shift 2 ;;
-        *) echo "[checkpoint_write] ERROR: unknown arg: $1" >&2; exit 1 ;;
+        *) echo "[checkpoint_write] ERROR: unknown arg: $1" >&2; echo "[SUGGESTION] Use your judgement to decide autonomously. Remove '$1' and retry. Valid args: --gpu --dsl --shape-key --model --iter --bottleneck --idea --expected-gain --levers" >&2; exit 1 ;;
     esac
 done
 
@@ -91,6 +95,7 @@ fi
 # ── validate required args ────────────────────────────────────────────────────
 if [[ -z "$DSL" || -z "$SHAPE_KEY" || -z "$MODEL" ]]; then
     echo "[checkpoint_write] ERROR: --dsl, --shape-key, and --model are required" >&2
+    echo "[SUGGESTION] Use your judgement to decide autonomously. Provide --dsl (cuda/croqtile/triton/etc), --shape-key (e.g. matmul_bf16fp32_512x512x512), and --model (e.g. opus-4). These are the same values used throughout the tuning session." >&2
     exit 1
 fi
 
@@ -99,24 +104,33 @@ CHECKPOINT_DIR="tuning/${GPU}/${DSL}/checkpoints/${SHAPE_KEY}/${MODEL}"
 CHECKPOINT_FILE="$CHECKPOINT_DIR/current_idea.json"
 mkdir -p "$CHECKPOINT_DIR"
 
+trace_init --gpu "$GPU" --dsl "$DSL" --shape-key "$SHAPE_KEY" --model "$MODEL"
+
 # ════════════════════════════════════════════════════════════════════════════════
 # MODE: write
 # ════════════════════════════════════════════════════════════════════════════════
 if [[ "$MODE" == "write" ]]; then
     # Validate required write args
     if [[ -z "$ITER" ]]; then
-        echo "[checkpoint_write] ERROR: write mode requires --iter" >&2; exit 1
+        echo "[checkpoint_write] ERROR: write mode requires --iter" >&2
+        echo "[SUGGESTION] Use your judgement to decide autonomously. Get the iter name from next_iter.sh output (e.g. iter045_swizzle) and pass it with --iter." >&2
+        exit 1
     fi
     if [[ -z "$IDEA" ]]; then
-        echo "[checkpoint_write] ERROR: write mode requires --idea" >&2; exit 1
+        echo "[checkpoint_write] ERROR: write mode requires --idea" >&2
+        echo "[SUGGESTION] Use your judgement to decide autonomously. Provide your optimization idea as a string with --idea. This should describe what change you plan to make and why." >&2
+        exit 1
     fi
     if [[ -z "$BOTTLENECK" ]]; then
-        echo "[checkpoint_write] ERROR: write mode requires --bottleneck" >&2; exit 1
+        echo "[checkpoint_write] ERROR: write mode requires --bottleneck" >&2
+        echo "[SUGGESTION] Use your judgement to decide autonomously. Provide --bottleneck from profile_extract.sh output. Valid values: memory_bound, compute_bound, latency_bound, launch_bound." >&2
+        exit 1
     fi
 
     # Validate iter tag format (3+ digit iter number, descriptive tag up to 30 chars)
     if ! echo "$ITER" | grep -qE '^iter[0-9]+_[a-z][a-z0-9_]{1,30}$'; then
         echo "[checkpoint_write] ERROR: --iter must match iter<N+>_<tag>, got: $ITER" >&2
+        echo "[SUGGESTION] Use your judgement to decide autonomously. Fix --iter format. Must be iter<NNN>_<tag> like iter045_swizzle. Get the correct value from next_iter.sh." >&2
         exit 1
     fi
 
@@ -139,6 +153,7 @@ checkpoint = {
 print(json.dumps(checkpoint, indent=2))
 " > "$CHECKPOINT_FILE"
 
+    trace_event "checkpoint_write" "PLANNED $ITER: $IDEA"
     echo "[checkpoint_write] PLANNED: $ITER"
     echo "[checkpoint_write] Bottleneck: $BOTTLENECK"
     echo "[checkpoint_write] Idea: $IDEA"
@@ -153,9 +168,11 @@ fi
 if [[ "$MODE" == "read" ]]; then
     if [[ ! -f "$CHECKPOINT_FILE" ]]; then
         echo "[checkpoint_write] ERROR: no checkpoint found at $CHECKPOINT_FILE" >&2
-        echo "[checkpoint_write] Run 'write' at end of IDEA step first." >&2
+        echo "[SUGGESTION] Use your judgement to decide autonomously. No checkpoint exists yet. Run checkpoint_write.sh write with --iter, --idea, --bottleneck, --expected-gain, and --levers at the end of your IDEA step first. Then retry read." >&2
         exit 2
     fi
+
+    trace_event "checkpoint_write" "READ checkpoint for IMPLEMENT"
 
     # Print the checkpoint JSON to stdout (agent reads this)
     cat "$CHECKPOINT_FILE"
@@ -177,11 +194,13 @@ fi
 if [[ "$MODE" == "verify" ]]; then
     if [[ ! -f "$CHECKPOINT_FILE" ]]; then
         echo "[checkpoint_write] ERROR: no checkpoint to verify at $CHECKPOINT_FILE" >&2
+        echo "[SUGGESTION] Use your judgement to decide autonomously. No checkpoint found. Skip verify and proceed directly with profiling and benchmarking the built kernel." >&2
         exit 2
     fi
 
     if [[ -z "$ITER" ]]; then
         echo "[checkpoint_write] ERROR: verify mode requires --iter (the actual iter built)" >&2
+        echo "[SUGGESTION] Use your judgement to decide autonomously. Pass --iter with the actual iteration name you built (e.g. iter045_swizzle). This should match the checkpoint plan." >&2
         exit 1
     fi
 
@@ -239,11 +258,15 @@ with open('$CHECKPOINT_FILE', 'w') as f:
     echo ""
 
     if [[ "$DRIFT" -ge 3 ]]; then
+        trace_event "checkpoint_write" "VERIFY DRIFT DETECTED: $ITER (drift=$DRIFT)" "warn"
         echo "[checkpoint_write] RESULT: DRIFT DETECTED — recheck what was built vs. planned"
+        echo "[SUGGESTION] Use your judgement to decide autonomously. Significant drift from plan. Review what you actually built vs. what was planned. If the source file is missing, go back to IMPLEMENT and write it. If the iter name changed, either rebuild with the planned name or accept the drift and continue with profiling." >&2
         exit 3
     elif [[ "$DRIFT" -ge 1 ]]; then
+        trace_event "checkpoint_write" "VERIFY minor drift: $ITER (drift=$DRIFT)"
         echo "[checkpoint_write] RESULT: MINOR DRIFT — acceptable, but note the differences"
     else
+        trace_event "checkpoint_write" "VERIFY CLEAN: $ITER"
         echo "[checkpoint_write] RESULT: CLEAN — implementation matches plan"
     fi
 

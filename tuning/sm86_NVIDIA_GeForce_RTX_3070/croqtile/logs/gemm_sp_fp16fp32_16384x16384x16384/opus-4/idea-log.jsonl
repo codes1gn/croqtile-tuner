@@ -1,2 +1,0 @@
-{"round": 0, "iter": "iter000", "bottleneck": "baseline", "idea": "cuBLAS fp16fp32 baseline reference for hardware ceiling", "category": "misc", "expected_gain": "N/A baseline", "decision": "KEEP", "tflops": 45.0439, "timestamp": "2026-04-17T01:34:32Z"}
-{"round": 1, "iter": "iter001", "bottleneck": "memory_bound", "idea": "Initial SM86 sparse GEMM kernel using mma.sp.sync.aligned m16n8k16, 64x32x64 tiling, synchronous DMA", "category": "misc", "expected_gain": "N/A initial kernel", "decision": "KEEP", "tflops": 0.0952, "timestamp": "2026-04-17T02:21:19Z"}

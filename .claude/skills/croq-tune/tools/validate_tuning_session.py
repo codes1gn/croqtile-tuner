@@ -26,6 +26,19 @@ def repo_root() -> Path:
     return Path(__file__).resolve().parents[4]
 
 
+def _trace_event(gpu: str, dsl: str, shape_key: str, tool: str, msg: str, level: str = "info") -> None:
+    import json as _json
+    from datetime import datetime as _dt, timezone as _tz
+    mem_dir = repo_root() / "tuning" / gpu / dsl / "memory" / shape_key
+    if not mem_dir.exists():
+        return
+    log_path = mem_dir / "activity.jsonl"
+    ts = _dt.now(_tz.utc).strftime("%Y-%m-%dT%H:%M:%S.000Z")
+    entry = {"ts": ts, "tool": tool, "msg": msg, "level": level}
+    with open(log_path, "a") as f:
+        f.write(_json.dumps(entry) + "\n")
+
+
 def resolve_in_repo(root: Path, candidate: str) -> Path:
     path = Path(candidate)
     if not path.is_absolute():
@@ -150,6 +163,12 @@ def main() -> int:
     problems: list[Problem] = []
     for dsl in dsls:
         problems.extend(validate_dsl(root, args.gpu, dsl))
+
+    for dsl in dsls:
+        level = "warn" if problems else "info"
+        count = sum(1 for p in problems if p.dsl == dsl)
+        _trace_event(args.gpu, dsl, "_validation", "validate_tuning_session",
+                     f"Validated {dsl}: {count} problem(s)", level)
 
     if args.json:
         print(json.dumps([asdict(problem) for problem in problems], indent=2, sort_keys=True))

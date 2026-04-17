@@ -25,6 +25,7 @@ const mockTask: TaskData = {
   agent_type: "opencode",
   device: "NVIDIA GeForce RTX 3070",
   opencode_session_id: "ses_abc123",
+  session_ids: ["ses_abc123"],
   error_message: null,
   created_at: "2026-04-03T10:00:00",
   updated_at: "2026-04-03T10:05:00",

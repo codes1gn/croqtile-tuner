@@ -18,6 +18,19 @@ def repo_root() -> Path:
     return Path(__file__).resolve().parents[4]
 
 
+def _trace_event(gpu: str, dsl: str, shape_key: str, tool: str, msg: str, level: str = "info") -> None:
+    import json as _json
+    from datetime import datetime as _dt, timezone as _tz
+    mem_dir = repo_root() / "tuning" / gpu / dsl / "memory" / shape_key
+    if not mem_dir.exists():
+        return
+    log_path = mem_dir / "activity.jsonl"
+    ts = _dt.now(_tz.utc).strftime("%Y-%m-%dT%H:%M:%S.000Z")
+    entry = {"ts": ts, "tool": tool, "msg": msg, "level": level}
+    with open(log_path, "a") as f:
+        f.write(_json.dumps(entry) + "\n")
+
+
 def load_json(path: Path) -> dict | None:
     if not path.exists():
         return None
@@ -173,6 +186,13 @@ def main() -> int:
     if actions:
         for action in actions:
             print(action)
+        for dsl in dsls:
+            tuning_root = root / "tuning" / args.gpu / dsl
+            state = load_json(tuning_root / "state.json")
+            if state:
+                for shape_key in state:
+                    _trace_event(args.gpu, dsl, shape_key, "clean_kernel_work_state",
+                                 f"Cleaned {len(actions)} item(s)", "warn")
     else:
         print("No matching work state needed cleanup.")
     return 0

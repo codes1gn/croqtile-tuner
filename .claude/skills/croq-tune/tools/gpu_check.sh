@@ -19,6 +19,9 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "$SCRIPT_DIR/activity_trace.sh"
+
 UTIL_THRESHOLD=15
 WAIT=false
 TIMEOUT=120
@@ -33,12 +36,13 @@ while [[ $# -gt 0 ]]; do
     --threshold) UTIL_THRESHOLD="$2"; shift 2 ;;
     --kill-others) KILL_OTHERS=true; shift ;;
     --reset) RESET=true; shift ;;
-    *) echo "ERROR: unknown argument: $1" >&2; exit 1 ;;
+    *) echo "ERROR: unknown argument: $1" >&2; echo "[SUGGESTION] Use your judgement to decide autonomously. Remove '$1' and retry. Valid args: --wait --timeout <seconds> --threshold <util%> --kill-others --reset" >&2; exit 1 ;;
   esac
 done
 
 if ! command -v nvidia-smi &>/dev/null; then
   echo '{"idle": false, "error": "nvidia-smi not found"}' 
+  echo "[SUGGESTION] Use your judgement to decide autonomously. nvidia-smi is not installed or not in PATH. Install NVIDIA drivers or add the CUDA bin directory to PATH. Without GPU status checking, proceed with profiling but be aware performance numbers may be unreliable if the GPU is under contention." >&2
   exit 2
 fi
 
@@ -123,6 +127,7 @@ if [[ "$WAIT" == "true" ]]; then
     elapsed=$(( $(date +%s) - start_time ))
     if [[ "$elapsed" -ge "$TIMEOUT" ]]; then
       echo "[gpu_check] Timeout after ${elapsed}s waiting for idle GPU" >&2
+      echo "[SUGGESTION] Use your judgement to decide autonomously. GPU did not become idle within the timeout. Options: (1) retry with --timeout <longer> to wait more, (2) use --kill-others to terminate competing GPU processes (requires sudo), (3) use --reset to reset the GPU (requires sudo, last resort). If none work, proceed but note performance numbers may be unreliable." >&2
       echo "$result" | python3 -c "
 import sys, json
 d = json.load(sys.stdin)

@@ -147,6 +147,17 @@ def _resolve_opencode_bin() -> str:
     return "opencode"
 
 
+def _resolve_cursor_agent_bin() -> str:
+    """Resolve the cursor-agent binary to a full path."""
+    found = shutil.which("cursor-agent")
+    if found:
+        return found
+    local_bin = Path.home() / ".local" / "bin" / "cursor-agent"
+    if local_bin.exists():
+        return str(local_bin)
+    return "cursor-agent"
+
+
 class Settings(BaseSettings):
     # croqtile-tuner paths (one level up from monitor/)
     tuning_dir: Path = _PROJECT_ROOT / "tuning"
@@ -166,6 +177,9 @@ class Settings(BaseSettings):
     opencode_model: str = DEFAULT_OPENCODE_MODEL
     opencode_variant: str = DEFAULT_OPENCODE_VARIANT
     opencode_db_path: Path = Path.home() / ".local" / "share" / "opencode" / "opencode.db"
+
+    # cursor-agent settings
+    cursor_agent_bin: str = _resolve_cursor_agent_bin()
     
     # GPU and execution settings
     cuda_visible_devices: str = "0"

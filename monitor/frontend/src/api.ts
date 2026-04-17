@@ -23,6 +23,7 @@ export interface TaskData {
   agent_type: string | null;
   device: string | null;
   opencode_session_id: string | null;
+  session_ids: string[];
   error_message: string | null;
   created_at: string | null;
   updated_at: string | null;
@@ -67,6 +68,25 @@ export interface SessionHistoryData {
   session_title: string | null;
   session_directory: string | null;
   entries: SessionHistoryEntryData[];
+}
+
+export interface TaskSessionData {
+  id: number;
+  task_id: number;
+  session_id: string;
+  agent_type: string | null;
+  model: string | null;
+  request_number: number | null;
+  started_at: string | null;
+  ended_at: string | null;
+}
+
+export interface ActivityLogEntry {
+  ts: string;
+  tool: string;
+  msg: string;
+  level: string;
+  [key: string]: unknown;
 }
 
 export interface HealthData {
@@ -153,8 +173,16 @@ export const api = {
   getAgentLogs: (id: number, limit = 100) =>
     request<AgentLogData[]>(`/tasks/${id}/agent-logs?limit=${limit}`),
 
-  getSessionHistory: (id: number, limit = 200) =>
-    request<SessionHistoryData>(`/tasks/${id}/session-history?limit=${limit}`),
+  getSessionHistory: (id: number, limit = 200, sessionId?: string) =>
+    request<SessionHistoryData>(
+      `/tasks/${id}/session-history?limit=${limit}${sessionId ? `&session_id=${encodeURIComponent(sessionId)}` : ""}`
+    ),
+
+  getTaskSessions: (id: number) =>
+    request<TaskSessionData[]>(`/tasks/${id}/sessions`),
+
+  getActivityLog: (id: number, limit = 200) =>
+    request<ActivityLogEntry[]>(`/tasks/${id}/activity-log?limit=${limit}`),
 
   getHealth: () => request<HealthData>("/health"),
 

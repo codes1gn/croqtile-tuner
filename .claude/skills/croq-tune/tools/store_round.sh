@@ -41,6 +41,9 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "$SCRIPT_DIR/activity_trace.sh"
+
 # ── argument parsing ───────────────────────────────────────────────────────────
 GPU=""
 DSL=""
@@ -71,7 +74,7 @@ while [[ $# -gt 0 ]]; do
     --round)         ROUND="$2";          shift 2 ;;
     --category)      CATEGORY="$2";       shift 2 ;;
     --expected-gain) EXPECTED_GAIN="$2";  shift 2 ;;
-    *) echo "ERROR: unknown argument $1" >&2; exit 1 ;;
+    *) echo "ERROR: unknown argument $1" >&2; echo "[SUGGESTION] Use your judgement to decide autonomously. Remove the unknown argument and retry. Valid args: --gpu --dsl --shape-key --model --iter --kernel --tflops --decision --bottleneck --idea --round --category --expected-gain" >&2; exit 1 ;;
   esac
 done
 
@@ -97,24 +100,26 @@ MISSING=()
 
 if [ ${#MISSING[@]} -gt 0 ]; then
   echo "ERROR: missing required arguments: ${MISSING[*]}" >&2
+  echo "[SUGGESTION] Use your judgement to decide autonomously. Add the missing arguments and retry. All listed args are mandatory. Use resume_state.sh to get current state if unsure about values." >&2
   exit 1
 fi
 
 # ── validate decision value ────────────────────────────────────────────────────
 case "$DECISION" in
   KEEP|DISCARD|SEGFAULT|HANG|COMPILE_FAIL) ;;
-  *) echo "ERROR: --decision must be one of KEEP|DISCARD|SEGFAULT|HANG|COMPILE_FAIL" >&2; exit 1 ;;
+  *) echo "ERROR: --decision must be one of KEEP|DISCARD|SEGFAULT|HANG|COMPILE_FAIL" >&2; echo "[SUGGESTION] Use your judgement to decide autonomously. Fix the --decision value. Use KEEP if TFLOPS improved, DISCARD if not, COMPILE_FAIL if build failed, SEGFAULT/HANG for runtime errors." >&2; exit 1 ;;
 esac
 
 # ── validate iter tag ──────────────────────────────────────────────────────────
 if [[ ! "$ITER" =~ ^iter[0-9]+$ ]]; then
   echo "ERROR: --iter must match iter<N+> (bare number, no tag), got: $ITER" >&2
+  echo "[SUGGESTION] Use your judgement to decide autonomously. Use the bare iteration number like iter005. Get the correct number from next_iter.sh output." >&2
   exit 1
 fi
 
 if [[ ! "$KERNEL" =~ ^iter[0-9]+_[a-z][a-z0-9_]{1,30}$ ]]; then
   echo "ERROR: --kernel must match iter<N+>_<tag> where tag is 2-31 lowercase chars, got: $KERNEL" >&2
-  echo "       Example: iter045_myidea" >&2
+  echo "[SUGGESTION] Use your judgement to decide autonomously. Fix the --kernel name. Format: iter<NNN>_<descriptive_tag>. Example: iter045_myidea. Tag must be 2-31 lowercase alphanumeric+underscore chars starting with a letter." >&2
   exit 1
 fi
 
@@ -124,6 +129,9 @@ LOG_DIR="${BASE}/logs/${SHAPE_KEY}/${MODEL}"
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
 mkdir -p "$LOG_DIR"
+
+trace_init --gpu "$GPU" --dsl "$DSL" --shape-key "$SHAPE_KEY" --model "$MODEL"
+trace_event "store_round" "Storing $KERNEL ($DECISION $TFLOPS TFLOPS)"
 
 # ── 1. idea-log.jsonl ─────────────────────────────────────────────────────────
 IDEA_LOG="${LOG_DIR}/idea-log.jsonl"
@@ -141,7 +149,7 @@ print(json.dumps({
   'timestamp':     '$TIMESTAMP'
 }))
 ")
-echo "$IDEA_LINE" >> "$IDEA_LOG" || { echo "ERROR: failed to write $IDEA_LOG" >&2; exit 2; }
+echo "$IDEA_LINE" >> "$IDEA_LOG" || { echo "ERROR: failed to write $IDEA_LOG" >&2; echo "[SUGGESTION] Use your judgement to decide autonomously. Check filesystem permissions and disk space. Ensure the parent directory exists. Create it with: mkdir -p $(dirname $IDEA_LOG)" >&2; exit 2; }
 
 # ── 4. results.tsv ────────────────────────────────────────────────────────────
 TSV="${LOG_DIR}/results.tsv"
@@ -150,7 +158,7 @@ if [ ! -f "$TSV" ]; then
 fi
 IDEA_SHORT="${IDEA:0:80}"
 echo -e "${ITER}\t${KERNEL}\t${TFLOPS}\t${DECISION}\t${BOTTLENECK}\t${IDEA_SHORT}" >> "$TSV" \
-  || { echo "ERROR: failed to write $TSV" >&2; exit 2; }
+  || { echo "ERROR: failed to write $TSV" >&2; echo "[SUGGESTION] Use your judgement to decide autonomously. Check filesystem permissions and disk space for $TSV. Create directory with: mkdir -p $(dirname $TSV)" >&2; exit 2; }
 
 # ── post-write verification ────────────────────────────────────────────────────
 FAIL=0
@@ -161,10 +169,12 @@ FAIL=0
 
 if [ $FAIL -ne 0 ]; then
   echo "ERROR: post-write verification failed" >&2
+  echo "[SUGGESTION] Use your judgement to decide autonomously. Files were not written correctly. Retry the store_round.sh command. If it persists, check disk space and file permissions, then continue with the next iteration." >&2
   exit 3
 fi
 
 # ── success ────────────────────────────────────────────────────────────────────
+trace_event "store_round" "Stored $KERNEL: $DECISION $TFLOPS TFLOPS (round $ROUND)"
 echo "[store_round] STORE complete for ${ITER} (${DECISION} ${TFLOPS} TFLOPS)"
 echo "[store_round] Written:"
 echo "  ${IDEA_LOG} ($(wc -l < "$IDEA_LOG") lines)"

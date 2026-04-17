@@ -39,6 +39,9 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "$SCRIPT_DIR/activity_trace.sh"
+
 GPU=""
 DSL=""
 SHAPE_KEY=""
@@ -50,12 +53,13 @@ while [[ $# -gt 0 ]]; do
         --dsl)       DSL="$2";       shift 2 ;;
         --shape-key) SHAPE_KEY="$2"; shift 2 ;;
         --model)     MODEL="$2";     shift 2 ;;
-        *) echo "[resume_state] ERROR: unknown arg: $1" >&2; exit 1 ;;
+        *) echo "[resume_state] ERROR: unknown arg: $1" >&2; echo "[SUGGESTION] Use your judgement to decide autonomously. Remove the unknown argument '$1' and retry. Valid args: --gpu --dsl --shape-key --model" >&2; exit 1 ;;
     esac
 done
 
 if [[ -z "$GPU" || -z "$DSL" || -z "$SHAPE_KEY" || -z "$MODEL" ]]; then
     echo "[resume_state] ERROR: --gpu, --dsl, --shape-key, and --model are required" >&2
+    echo "[SUGGESTION] Use your judgement to decide autonomously. Provide all four required arguments. Use detect_gpu.sh to get --gpu value. --dsl is cuda/croqtile/triton/etc. --shape-key is the full shape key like matmul_bf16fp32_512x512x512. --model is the model name." >&2
     exit 1
 fi
 
@@ -65,9 +69,14 @@ LOG_DIR="tuning/${GPU}/${DSL}/logs/${SHAPE_KEY}/${MODEL}"
 MEM_DIR="tuning/${GPU}/${DSL}/memory/${SHAPE_KEY}/${MODEL}"
 CP_FILE="tuning/${GPU}/${DSL}/checkpoints/${SHAPE_KEY}/${MODEL}/current_idea.json"
 
+trace_init --gpu "$GPU" --dsl "$DSL" --shape-key "$SHAPE_KEY" --model "$MODEL"
+trace_event "resume_state" "Loading tuning state for $DSL/$SHAPE_KEY"
+
 # Validate something exists
 if [[ ! -d "$SRC_DIR" && ! -d "$LOG_DIR" ]]; then
+    trace_event "resume_state" "No tuning artifacts found for $DSL/$SHAPE_KEY" "error"
     echo "[resume_state] ERROR: no tuning artifacts found for $DSL/$SHAPE_KEY" >&2
+    echo "[SUGGESTION] Use your judgement to decide autonomously. This is a fresh tuning session with no prior artifacts. This is expected for new tasks. Proceed with the first iteration: run cublas_baseline.sh to get the baseline TFLOPS, then start your first IDEA step." >&2
     exit 2
 fi
 

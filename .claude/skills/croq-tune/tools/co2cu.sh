@@ -27,6 +27,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 HEADERS_DIR="${SCRIPT_DIR}/choreo_headers"
+source "$SCRIPT_DIR/activity_trace.sh"
 
 # ── argument parsing ──────────────────────────────────────────────────────────
 CO=""
@@ -38,18 +39,27 @@ while [[ $# -gt 0 ]]; do
         --co)    CO="$2";            shift 2 ;;
         --arch)  ARCH="$2";         shift 2 ;;
         --flags) CHOREO_FLAGS="$2"; shift 2 ;;
-        *) echo "[co2cu] ERROR: unknown argument: $1" >&2; exit 1 ;;
+        *) echo "[co2cu] ERROR: unknown argument: $1" >&2; echo "[SUGGESTION] Use your judgement to decide autonomously. Remove '$1' and retry. Valid args: --co <path.co> --arch <sm_XX> --flags <choreo_flags>" >&2; exit 1 ;;
     esac
 done
 
 if [[ -z "$CO" || -z "$ARCH" ]]; then
     echo "[co2cu] ERROR: --co and --arch are required" >&2
     echo "Usage: bash co2cu.sh --co <path.co> --arch <sm_XX>" >&2
+    echo "[SUGGESTION] Use your judgement to decide autonomously. Provide --co with the path to your .co source file and --arch with the SM architecture (e.g. sm_86, sm_90). Get the arch from detect_gpu.sh output (e.g. sm86_... means sm_86)." >&2
     exit 1
+fi
+
+# Normalize arch: choreo requires "sm_XX" with underscore (e.g. sm_86, not sm86).
+# Auto-convert "sm86" -> "sm_86", "sm80" -> "sm_80", etc.
+if [[ "$ARCH" =~ ^sm([0-9]+)$ ]]; then
+    ARCH="sm_${BASH_REMATCH[1]}"
+    echo "[co2cu] INFO: arch normalized to $ARCH (choreo requires sm_XX format)" >&2
 fi
 
 if [[ ! -f "$CO" ]]; then
     echo "[co2cu] ERROR: .co file not found: $CO" >&2
+    echo "[SUGGESTION] Use your judgement to decide autonomously. The .co source file was not found at the given path. Verify the file exists in the srcs directory. If you haven't written it yet, go back to the IMPLEMENT step and create the .co file first." >&2
     exit 1
 fi
 
@@ -75,13 +85,23 @@ if [[ ! -x "$CHOREO_BIN" ]]; then
 fi
 if [[ ! -x "$CHOREO_BIN" ]]; then
     echo "[co2cu] ERROR: choreo compiler not found at ${CHOREO_HOME}/{build/choreo,choreo}" >&2
+    echo "[SUGGESTION] Use your judgement to decide autonomously. The choreo compiler binary was not found. Set CHOREO_HOME to the croqtile repository root where build/choreo or choreo exists. Build choreo from source if needed: cd \$CHOREO_HOME && mkdir -p build && cd build && cmake .. && make -j\$(nproc)" >&2
     exit 2
 fi
 
 if [[ ! -f "${HEADERS_DIR}/choreo.h" ]]; then
     echo "[co2cu] ERROR: choreo.h not found at ${HEADERS_DIR}/choreo.h" >&2
+    echo "[SUGGESTION] Use your judgement to decide autonomously. The choreo runtime headers are expected at ${HEADERS_DIR}/. Ensure the choreo_headers directory exists alongside the tools scripts with choreo.h inside." >&2
     exit 1
 fi
+
+# ── init trace from .co path (tuning/<gpu>/croqtile/srcs/<shape_key>/<model>/...)
+_co_parts=(${CO//\// })
+if [[ ${#_co_parts[@]} -ge 6 && "${_co_parts[0]}" == "tuning" ]]; then
+    trace_init --gpu "${_co_parts[1]}" --dsl "${_co_parts[2]}" \
+               --shape-key "${_co_parts[4]}" --model "${_co_parts[5]}"
+fi
+trace_event "co2cu" "Compiling ${CO_BASE}.co -> .cu (arch=$ARCH)"
 
 # ── Phase 1: choreo -gs → .cute.result ────────────────────────────────────────
 echo "[co2cu] Phase 1: compiling ${CO} -> ${RESULT}" >&2
@@ -93,7 +113,7 @@ mkdir -p "$(dirname "$BUILD_LOG")"
 if ! "$CHOREO_BIN" -gs -t cute -arch="$ARCH" $CHOREO_FLAGS \
         "$CO" -o "$RESULT" 2>&1 | tee "$BUILD_LOG" >&2; then
     echo "[co2cu] ERROR: choreo compilation failed. See ${BUILD_LOG}" >&2
-    # Clean up stray a.out that choreo may leave on failure
+    echo "[SUGGESTION] Use your judgement to decide autonomously. The .co file has syntax or semantic errors. Read the build log at ${BUILD_LOG} to see the error details. Fix the .co source file and retry co2cu.sh. Common issues: missing semicolons, wrong tile dimensions, unsupported DMA/MMA forms for the target arch." >&2
     rm -f a.out
     exit 2
 fi
@@ -103,6 +123,7 @@ rm -f a.out
 
 if [[ ! -f "$RESULT" ]]; then
     echo "[co2cu] ERROR: choreo did not produce ${RESULT}" >&2
+    echo "[SUGGESTION] Use your judgement to decide autonomously. Choreo ran without error but no .cute.result was generated. Check if the --arch matches the .co's target arch. Try adding -v flag for verbose output." >&2
     exit 2
 fi
 
@@ -142,6 +163,7 @@ PYEOF
 EXTRACT_EXIT=$?
 if [[ $EXTRACT_EXIT -ne 0 || ! -f "$CU" ]]; then
     echo "[co2cu] ERROR: .cu extraction failed" >&2
+    echo "[SUGGESTION] Use your judgement to decide autonomously. The .cute.result file exists but the __choreo_cute_*.cu heredoc could not be found inside. The .co file may produce a non-standard output format. Inspect ${RESULT} manually, find the CUDA kernel code, and extract it to a .cu file yourself." >&2
     exit 3
 fi
 
@@ -197,7 +219,11 @@ output = {
 print(json.dumps(output))
 PYEOF
 
+trace_event "co2cu" "Ready: ${CU}"
 echo "" >&2
 echo "[READY] Phase 2: .cu at ${CU}. Edit the kernel section, then build with nvcc." >&2
 echo "[READY] Headers at: ${HEADERS_DIR}" >&2
 echo "[READY] Suggested nvcc flags: ${NVCC_FLAGS}" >&2
+echo "[READY] WMMA note: if nvcc reports 'store_matrix_sync' type mismatch, your .co uses wrong accumulator type." >&2
+echo "[READY]   f16f32/bf16fp32 kernels need 'mma.fill.f32' + 'f32 [M,N] output' in the .co file." >&2
+echo "[READY]   f16-only kernels use 'mma.fill' + 'f16 [M,N] output'. See croq-dsl-croqtile SKILL.md." >&2

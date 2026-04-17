@@ -162,6 +162,20 @@ If an idea involves compiler changes (e.g. new Choreo primitive), implement the 
 | `NUM_SMS` | 114 (H800) | CTA count for persistent |
 | `MATMUL_DEFAULT_M/N/K` | 2048+ | Problem size |
 
+## CRITICAL: Accumulator Type Must Match Output dtype
+
+**ALWAYS match the accumulator fill form to the output dtype. Using the wrong form causes WMMA compile errors.**
+
+| Kernel dtype | Output tensor type | MMA fill form | Example |
+|---|---|---|---|
+| f16→f32 (matmul_f16f32) | `f32 [M,N] output` | `mma.fill.f32 0.0` | `mc = mma.fill.f32 0.0;` |
+| f16→f16 (matmul_f16) | `f16 [M,N] output` | `mma.fill 0.0` | `mc = mma.fill 0.0;` |
+| bf16→f32 (matmul_bf16fp32) | `f32 [M,N] output` | `mma.fill.f32 0.0` | `mc = mma.fill.f32 0.0;` |
+
+**Error signature if wrong:** `no instance of overloaded function "nvcuda::wmma::store_matrix_sync" matches argument list` — this means you used f16 accumulator fill but the output is `float*`. Fix: change `mma.fill 0.0` to `mma.fill.f32 0.0` and change `f16 [M,N] output` to `f32 [M,N] output`.
+
+Reference: `.claude/skills/choreo-kernel-examples/mma-tests/wmma.co` shows both f16→f32 and f16→f16 patterns.
+
 ## Available DSL Primitives
 
 ```
@@ -172,7 +186,9 @@ tma.copy.swiz<N> src => dst;
 tma.copy.async<event>.swiz<N> src => dst;
 
 # Compute
-mma.fill.f16 0.0f;
+mma.fill.f32 0.0;   # float32 accumulator (use for f16f32, bf16fp32 kernels)
+mma.fill.f16 0.0f;  # f16 accumulator (use only for f16->f16 kernels)
+mma.fill 0.0;       # default accumulator type (matches output dtype in simple kernels)
 mma.load.swiz<N> buffer;
 mma.row.row accumulator, a, b;
 mma.row.row.scale accumulator, a, b, scale_a, scale_b;

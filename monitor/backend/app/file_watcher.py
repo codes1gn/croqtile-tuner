@@ -23,6 +23,7 @@ WATCHED_PATTERNS = {
     "current_idea.json",
     "idea-log.jsonl",
     "attempt-log.jsonl",
+    "activity.jsonl",
 }
 WATCHED_SUFFIXES = {".co", ".cu", ".json", ".tsv"}
 
@@ -34,6 +35,7 @@ class _TuningDirHandler(FileSystemEventHandler):
         self._loop = loop
         self._debounce_sec = debounce_sec
         self._timer: threading.Timer | None = None
+        self._activity_timer: threading.Timer | None = None
         self._scan_queued = False
 
     def _is_relevant(self, path: str) -> bool:
@@ -49,7 +51,11 @@ class _TuningDirHandler(FileSystemEventHandler):
         src = getattr(event, "src_path", "")
         if not self._is_relevant(src):
             return
-        self._schedule_scan()
+
+        if Path(src).name == "activity.jsonl":
+            self._schedule_activity_notify(src)
+        else:
+            self._schedule_scan()
 
     def _schedule_scan(self) -> None:
         if self._timer is not None:
@@ -61,6 +67,34 @@ class _TuningDirHandler(FileSystemEventHandler):
     def _fire_scan(self) -> None:
         self._timer = None
         asyncio.run_coroutine_threadsafe(_run_scan(), self._loop)
+
+    def _schedule_activity_notify(self, path: str) -> None:
+        if self._activity_timer is not None:
+            self._activity_timer.cancel()
+        self._activity_timer = threading.Timer(0.5, self._fire_activity_notify, args=[path])
+        self._activity_timer.daemon = True
+        self._activity_timer.start()
+
+    def _fire_activity_notify(self, path: str) -> None:
+        self._activity_timer = None
+        asyncio.run_coroutine_threadsafe(_emit_activity_event(path), self._loop)
+
+
+async def _emit_activity_event(path: str) -> None:
+    """Emit an SSE event when activity.jsonl changes so UI refreshes in real-time."""
+    from .events import event_bus
+
+    try:
+        p = Path(path)
+        # path looks like: tuning/<gpu>/<dsl>/memory/<bare_key>[/<model>]/activity.jsonl
+        parts = p.parts
+        try:
+            mem_idx = parts.index("memory")
+        except ValueError:
+            return
+        await event_bus.publish("activity_log_update", {"path": str(p)})
+    except Exception:
+        logger.exception("Activity log event error")
 
 
 async def _run_scan() -> None:

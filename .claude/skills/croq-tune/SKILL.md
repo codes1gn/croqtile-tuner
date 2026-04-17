@@ -365,7 +365,7 @@ Output is one-line JSON with `bottleneck`, `confidence`, `evidence.key_metrics`,
 
 If the output includes a `hint` field (confidence is medium), consider deeper analysis before forming IDEA:
 - `ncu --import <ncu_rep> --page details` for warp stall breakdown, L1/L2 hit rates
-- `cuobjdump --dump-sass <binary>` for instruction-level hotspots
+- `sass_compare.sh dump-baseline` + `dump-custom` + `compare` for baseline vs custom SASS comparison (see "Reverse Engineering" in IDEA section)
 - Load `perf-nsight-compute-analysis` skill for systematic ncu report analysis
 
 **ncu Failure Handling:**
@@ -379,6 +379,48 @@ If the output includes a `hint` field (confidence is medium), consider deeper an
 - **MANDATORY web search** — always run at least one targeted web search before forming the final idea. Search for the identified bottleneck (e.g. "CUDA shared memory bank conflict matmul bf16"). Collect 1-3 external inspirations. Do NOT skip this.
 - Merge model-proposed idea with web search findings into exactly one testable idea
 - If an idea involves compiler changes (e.g. new Choreo primitive), implement the compiler change first, rebuild, then use it in the kernel. Treat both as ONE atomic change.
+
+#### Reverse Engineering (optional, when stuck)
+
+When standard bottleneck analysis is insufficient — typically after **3+ consecutive DISCARDs**
+on the same active base, when `profile_extract` returns medium confidence, or when the
+optimization problem is clearly hard (e.g. <50% of baseline TFLOPS after 5+ iterations) —
+use SASS-level reverse engineering to understand what the baseline is doing differently:
+
+1. **Extract baseline SASS** (once per shape, result is cached):
+   ```bash
+   bash .claude/skills/croq-tune/tools/sass_compare.sh dump-baseline \
+       --dsl <dsl> --shape-key <key> --model <model> \
+       --dtype <dtype> --m <M> --n <N> --k <K>
+   ```
+   Primary: captures cuBLAS kernel SASS via `ncu --print-source sass`.
+   Fallback: extracts from `libcublas.so` via `cuobjdump --dump-sass`.
+
+2. **Extract custom kernel SASS**:
+   ```bash
+   bash .claude/skills/croq-tune/tools/sass_compare.sh dump-custom \
+       --dsl <dsl> --shape-key <key> --model <model> --iter <current_best_iter>
+   ```
+
+3. **Compare and analyze divergences**:
+   ```bash
+   bash .claude/skills/croq-tune/tools/sass_compare.sh compare \
+       --dsl <dsl> --shape-key <key> --model <model> --iter <current_best_iter>
+   ```
+   Outputs JSON with instruction mix, register usage, tensor core types, memory
+   patterns, and actionable divergences ranked by severity (high/medium/low).
+
+**What to look for in the comparison:**
+- **Tensor core instructions**: HMMA shape/precision mismatches (e.g. baseline uses
+  HMMA.16816.F32 but custom uses HMMA.1688.F16)
+- **Register pressure**: custom using significantly more registers → lower occupancy
+- **Memory access width**: baseline using LDG.128 (coalesced 128B) vs custom LDG.32
+- **Barrier density**: excessive synchronization overhead vs baseline
+- **Instruction count ratio**: custom >1.5x baseline → redundant computation
+
+Form the IDEA targeting the **top 1-2 high-severity divergences** from the comparison.
+This is additive context — the mandatory web search still applies.
+
 - **Last action of IDEA** — write the checkpoint (MANDATORY):
   ```bash
   bash .claude/skills/croq-tune/tools/checkpoint_write.sh write \

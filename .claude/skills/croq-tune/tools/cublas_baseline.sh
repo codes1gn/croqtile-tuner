@@ -17,6 +17,9 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "$SCRIPT_DIR/activity_trace.sh"
+
 DTYPE=""
 M=""
 N=""
@@ -32,12 +35,13 @@ while [[ $# -gt 0 ]]; do
         --k)      K="$2";     shift 2 ;;
         --warmup) WARMUP="$2"; shift 2 ;;
         --iters)  ITERS="$2"; shift 2 ;;
-        *) echo "[cublas_baseline] ERROR: unknown arg: $1" >&2; exit 1 ;;
+        *) echo "[cublas_baseline] ERROR: unknown arg: $1" >&2; echo "[SUGGESTION] Use your judgement to decide autonomously. Remove '$1' and retry. Valid args: --dtype --m --n --k --warmup --iters" >&2; exit 1 ;;
     esac
 done
 
 if [[ -z "$DTYPE" || -z "$M" || -z "$N" || -z "$K" ]]; then
     echo "[cublas_baseline] ERROR: --dtype, --m, --n, --k required" >&2
+    echo "[SUGGESTION] Use your judgement to decide autonomously. Provide all four: --dtype (bf16fp32/f16/f32/etc), --m --n --k (matrix dimensions from your shape-key, e.g. --m 512 --n 512 --k 512)." >&2
     exit 1
 fi
 

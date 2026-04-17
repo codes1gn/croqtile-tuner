@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String, Text
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String, Text, inspect
 from sqlalchemy.orm import DeclarativeBase, relationship
 
 
@@ -45,6 +45,7 @@ class Task(Base):
 
     iteration_logs = relationship("IterationLog", back_populates="task", cascade="all, delete-orphan")
     agent_logs = relationship("AgentLog", back_populates="task", cascade="all, delete-orphan")
+    sessions = relationship("TaskSession", back_populates="task", cascade="all, delete-orphan", order_by="TaskSession.started_at", lazy="selectin")
 
     def to_dict(self) -> dict:
         return {
@@ -70,6 +71,7 @@ class Task(Base):
             "agent_type": self.agent_type,
             "device": self.device,
             "opencode_session_id": self.opencode_session_id,
+            "session_ids": [s.session_id for s in self.sessions] if "sessions" not in inspect(self).unloaded else [],
             "error_message": self.error_message,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
@@ -127,6 +129,33 @@ class AgentLog(Base):
             "level": self.level,
             "message": self.message,
             "timestamp": self.timestamp.isoformat() if self.timestamp else None,
+        }
+
+
+class TaskSession(Base):
+    __tablename__ = "task_sessions"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    task_id = Column(Integer, ForeignKey("tasks.id", ondelete="CASCADE"), nullable=False, index=True)
+    session_id = Column(String(128), nullable=False)
+    agent_type = Column(String(32), nullable=True)
+    model = Column(String(128), nullable=True)
+    request_number = Column(Integer, nullable=True)
+    started_at = Column(DateTime, nullable=False, default=_utcnow)
+    ended_at = Column(DateTime, nullable=True)
+
+    task = relationship("Task", back_populates="sessions")
+
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "task_id": self.task_id,
+            "session_id": self.session_id,
+            "agent_type": self.agent_type,
+            "model": self.model,
+            "request_number": self.request_number,
+            "started_at": self.started_at.isoformat() if self.started_at else None,
+            "ended_at": self.ended_at.isoformat() if self.ended_at else None,
         }
 
 

@@ -24,6 +24,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
+source "$SCRIPT_DIR/activity_trace.sh"
 
 DSL=""
 OPERATOR=""
@@ -36,12 +37,12 @@ while [[ $# -gt 0 ]]; do
     --operator) OPERATOR="$2"; shift 2 ;;
     --dtype)    DTYPE="$2";    shift 2 ;;
     --gpu)      GPU="$2";      shift 2 ;;
-    *) echo "[discover_baseline] ERROR: unknown arg: $1" >&2; exit 1 ;;
+    *) echo "[discover_baseline] ERROR: unknown arg: $1" >&2; echo "[SUGGESTION] Use your judgement to decide autonomously. Remove '$1' and retry. Valid args: --dsl --operator --dtype --gpu" >&2; exit 1 ;;
   esac
 done
 
-[[ -z "$DSL" ]]      && { echo "[discover_baseline] ERROR: --dsl required" >&2; exit 1; }
-[[ -z "$OPERATOR" ]] && { echo "[discover_baseline] ERROR: --operator required" >&2; exit 1; }
+[[ -z "$DSL" ]]      && { echo "[discover_baseline] ERROR: --dsl required" >&2; echo "[SUGGESTION] Use your judgement to decide autonomously. Provide --dsl (cuda/croqtile/triton/cute/cutile/helion/tilelang)." >&2; exit 1; }
+[[ -z "$OPERATOR" ]] && { echo "[discover_baseline] ERROR: --operator required" >&2; echo "[SUGGESTION] Use your judgement to decide autonomously. Provide --operator with the operation type (matmul/gemm/spmm/conv/attention)." >&2; exit 1; }
 
 # Detect GPU if not provided
 if [[ -z "$GPU" && -f "$SCRIPT_DIR/detect_gpu.sh" ]]; then
@@ -66,6 +67,11 @@ case "$op_lower" in
   attn*|flash*)         REF_PATTERNS=("attention" "flash") ;;
   *)                    REF_PATTERNS=("$op_lower") ;;
 esac
+
+if [[ -n "$GPU" ]]; then
+    trace_init --gpu "$GPU" --dsl "$DSL" --shape-key "$OPERATOR"
+fi
+trace_event "discover_baseline" "Scanning for $OPERATOR ($DSL) candidates"
 
 CANDIDATES=()
 SOURCES=()
@@ -189,6 +195,7 @@ echo "[discover_baseline] Tier 2 (tuning/): $TIER2_COUNT candidates" >&2
 TOTAL=$((TIER1_COUNT + TIER2_COUNT))
 
 if [[ $TOTAL -eq 0 ]]; then
+  trace_event "discover_baseline" "No candidates found — recommend from scratch"
   echo "[discover_baseline] No candidates found — recommend implement_from_scratch" >&2
   cat <<EOF
 {"tier":"scratch","candidates":[],"recommendation":"implement_from_scratch","scratch_guidance":"Use web search to research ${op_lower} GPU kernel implementation patterns. Implement a version that uses MMA/tensor core instructions (not scalar loops). Target: correct + faster than naive scalar baseline."}

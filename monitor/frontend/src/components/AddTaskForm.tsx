@@ -287,9 +287,14 @@ export function AddTaskForm({ availableModels, availableVariants, defaultModel, 
                 onChange={(e) => setPlatform(e.target.value)}
                 className="w-full bg-gray-700 rounded px-3 py-2 text-gray-100 border border-gray-600 focus:border-blue-500 focus:outline-none"
               >
-                <option value="opencode">OpenCode</option>
-                <option value="cursor_cli">Cursor CLI</option>
+                <option value="opencode">OpenCode (auto-dispatched via opencode CLI)</option>
+                <option value="cursor_cli">Cursor CLI (auto-dispatched via cursor-agent CLI)</option>
               </select>
+              {platform === "cursor_cli" && (
+                <p className="mt-1 text-[10px] text-cyan-400">
+                  Uses <code>cursor-agent --print</code> with a Cursor account model. Requires <code>cursor-agent</code> to be installed and authenticated.
+                </p>
+              )}
             </div>
           </div>
 

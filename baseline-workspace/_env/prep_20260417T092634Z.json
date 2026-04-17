@@ -30,7 +30,7 @@
     "nvidia_smi": true
   },
   "install_attempted": false,
-  "kernel": "matmul_f16_256x256x256",
+  "kernel": "matmul_f16f32_256x256x256",
   "missing_libs": [],
   "operator": "matmul",
   "schema": "baseline-env-prepare-v1",
@@ -38,6 +38,6 @@
     "cublas",
     "torch-cuda"
   ],
-  "shape_key": "matmul_f16_256x256x256",
-  "timestamp": "2026-04-17T11:58:29.788357+00:00"
+  "shape_key": "matmul_f16f32_256x256x256",
+  "timestamp": "2026-04-17T09:26:34.593019+00:00"
 }

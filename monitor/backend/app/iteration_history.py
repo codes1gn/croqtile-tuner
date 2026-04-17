@@ -102,11 +102,8 @@ def read_iteration_history(shape_key: str, task_id: int) -> list[dict]:
         bottleneck = parts[4] if len(parts) > 4 and parts[4] else None
         idea_summary = parts[5] if len(parts) > 5 and parts[5] else None
 
-        is_baseline = (
-            (bottleneck or "").lower() in ("baseline", "baseline_profile")
-            or "baseline" in (kernel_path or "").lower()
-            or (kernel_path or "").lower().startswith("framework/")
-        )
+        from .artifact_scanner import _is_baseline_row
+        is_baseline = _is_baseline_row(kernel_path, bottleneck)
         if is_baseline:
             decision = "BASELINE"
 

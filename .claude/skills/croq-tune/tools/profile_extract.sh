@@ -33,6 +33,9 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "$SCRIPT_DIR/activity_trace.sh"
+
 # ── argument parsing ──────────────────────────────────────────────────────────
 CSV=""
 ITER=""
@@ -41,27 +44,38 @@ while [[ $# -gt 0 ]]; do
     case "$1" in
         --csv)   CSV="$2";  shift 2 ;;
         --iter)  ITER="$2"; shift 2 ;;
-        *) echo "[profile_extract] ERROR: unknown argument: $1" >&2; exit 1 ;;
+        *) echo "[profile_extract] ERROR: unknown argument: $1" >&2; echo "[SUGGESTION] Use your judgement to decide autonomously. Remove '$1' and retry. Valid args: --csv <path_to_ncu_csv> --iter <iter_tag>" >&2; exit 1 ;;
     esac
 done
 
 if [[ -z "$CSV" || -z "$ITER" ]]; then
     echo "[profile_extract] ERROR: --csv and --iter are required" >&2
     echo "Usage: bash profile_extract.sh --csv <path.csv> --iter <iter_tag>" >&2
+    echo "[SUGGESTION] Use your judgement to decide autonomously. Provide --csv pointing to the ncu CSV output file, and --iter with the iteration tag (e.g. iter045_swizzle). The CSV is produced by ncu_profile.sh." >&2
     exit 1
 fi
 
 # ── validate iter tag ─────────────────────────────────────────────────────────
 if ! echo "$ITER" | grep -qE '^iter[0-9]+_[a-z][a-z0-9_]{1,30}$'; then
     echo "[profile_extract] ERROR: ITER must match iter<N+>_<tag>, got: $ITER" >&2
+    echo "[SUGGESTION] Use your judgement to decide autonomously. Fix --iter format. Must be iter<NNN>_<tag> like iter045_swizzle. This should match the kernel you profiled." >&2
     exit 1
 fi
 
 # ── validate CSV exists ───────────────────────────────────────────────────────
 if [[ ! -f "$CSV" ]]; then
     echo "[profile_extract] ERROR: CSV not found: $CSV" >&2
+    echo "[SUGGESTION] Use your judgement to decide autonomously. The CSV file does not exist at the given path. Run ncu_profile.sh first to produce the CSV, then retry profile_extract.sh with the correct path." >&2
     exit 2
 fi
+
+# ── init trace from CSV path (tuning/<gpu>/<dsl>/perf/<shape_key>/<model>/...)
+_csv_parts=(${CSV//\// })
+if [[ ${#_csv_parts[@]} -ge 6 && "${_csv_parts[0]}" == "tuning" ]]; then
+    trace_init --gpu "${_csv_parts[1]}" --dsl "${_csv_parts[2]}" \
+               --shape-key "${_csv_parts[4]}" --model "${_csv_parts[5]}"
+fi
+trace_event "profile_extract" "Analyzing $ITER from $CSV"
 
 # ── parse all key metrics in one Python pass ──────────────────────────────────
 # Single Python script reads the CSV once, auto-detects format, returns JSON.
@@ -138,10 +152,14 @@ is_tall = (len(header) > 14 and header[11] == "Section Name"
                               and header[12] == "Metric Name"
                               and header[14] == "Metric Value")
 
+# COMPACT-TALL: "Metric Name","Metric Unit","Maximum","Minimum","Average" (5 cols)
+is_compact_tall = (not is_tall and len(header) >= 5
+                   and header[0] == "Metric Name")
+
 metrics = {}  # internal_id -> float value
+all_ids = set(DRAM_IDS + COMPUTE_IDS + OCCUPANCY_IDS + STALL_IDS + BW_IDS)
 
 if is_tall:
-    all_ids = set(DRAM_IDS + COMPUTE_IDS + OCCUPANCY_IDS + STALL_IDS + BW_IDS)
     for row in rows[1:]:
         if len(row) <= 14:
             continue
@@ -149,17 +167,32 @@ if is_tall:
         val  = parse_float(row[14])
         if val is None:
             continue
-        # Direct match
         if name in all_ids and name not in metrics:
             metrics[name] = val
             continue
-        # Human-readable match → map to internal id
+        internal = HUMAN_MAP.get(name)
+        if internal and internal not in metrics:
+            metrics[internal] = val
+elif is_compact_tall:
+    # Each row: metric_name, unit, max, min, avg — use avg (col 4) or max (col 2)
+    avg_idx = next((i for i, h in enumerate(header) if h.lower() == "average"), -1)
+    max_idx = next((i for i, h in enumerate(header) if h.lower() == "maximum"), -1)
+    val_idx = avg_idx if avg_idx >= 0 else max_idx
+    for row in rows[1:]:
+        if len(row) <= val_idx or val_idx < 0:
+            continue
+        name = row[0].strip().strip('"')
+        val = parse_float(row[val_idx])
+        if val is None:
+            continue
+        if name in all_ids and name not in metrics:
+            metrics[name] = val
+            continue
         internal = HUMAN_MAP.get(name)
         if internal and internal not in metrics:
             metrics[internal] = val
 else:
     # WIDE format: row[0] = headers, row[1] = units, row[2+] = data per launch
-    # Take the FIRST data row (row index 2, i.e. rows[2])
     if len(rows) < 3:
         print(json.dumps({"error": "wide CSV has fewer than 3 rows"}))
         sys.exit(0)
@@ -206,6 +239,7 @@ PARSE_ERROR=$(echo "$METRICS_JSON" | python3 -c "import sys,json; d=json.load(sy
 if [[ -n "$PARSE_ERROR" ]]; then
     echo "[profile_extract] ERROR: metric extraction failed: $PARSE_ERROR" >&2
     echo "[profile_extract] Raw parse output: $METRICS_JSON" >&2
+    echo "[SUGGESTION] Use your judgement to decide autonomously. The CSV does not contain required metrics (DRAM throughput %, SM compute throughput %). This may mean the ncu profiling used insufficient metric sets. Re-run ncu_profile.sh with --set full and try again. If this persists, classify bottleneck manually based on available ncu output and skip profile_extract." >&2
     exit 3
 fi
 
@@ -291,7 +325,8 @@ if confidence == "medium":
     result["hint"] = (
         "Confidence is medium. For a better IDEA, consider: "
         "(1) ncu --import <ncu_rep> --page details for warp stall breakdown, L1/L2 hit rates; "
-        "(2) cuobjdump --dump-sass <binary> for instruction-level analysis; "
+        "(2) bash .claude/skills/croq-tune/tools/sass_compare.sh dump-baseline + dump-custom + compare "
+        "for baseline vs custom SASS comparison (instruction mix, register pressure, tensor core types); "
         "(3) load perf-nsight-compute-analysis skill for systematic analysis."
     )
 

@@ -26,7 +26,24 @@ from .config import settings
 from .events import event_bus
 from .models import IterationLog, Task
 
+try:
+    from .agent import _detect_session_from_db
+except ImportError:
+    _detect_session_from_db = None
+
 logger = logging.getLogger("croqtuner.artifact_scanner")
+
+
+def _is_baseline_row(kernel: str | None, bottleneck: str | None) -> bool:
+    """Detect whether a results.tsv row is the external baseline (cuBLAS/torch)."""
+    bn = (bottleneck or "").lower()
+    k = (kernel or "").lower()
+    return (
+        bn in ("baseline", "baseline_profile")
+        or "baseline" in k
+        or k.startswith("framework/")
+    )
+
 
 _SHAPE_KEY_RE = re.compile(
     r"^(.+?)_([A-Za-z0-9]+)_(\d+)x(\d+)x(\d+)$"
@@ -223,11 +240,8 @@ def _parse_results_tsv(results_path: Path) -> dict:
         decision = parts[decision_idx].strip().upper() if len(parts) > decision_idx else ""
         bottleneck = parts[decision_idx + 1].strip().lower() if len(parts) > decision_idx + 1 else ""
 
-        # Only treat as cuBLAS/external baseline if the kernel name contains "baseline"
-        # or the bottleneck is literally "baseline". The BASELINE decision in Croqtile
-        # format means "initial draft" — it's NOT an external reference benchmark.
         kernel_col = parts[tflops_idx - 1].strip() if tflops_idx > 0 else ""
-        is_baseline = bottleneck == "baseline" or "baseline" in kernel_col.lower()
+        is_baseline = _is_baseline_row(kernel_col, bottleneck)
 
         if is_baseline:
             if tflops > 0:
@@ -319,7 +333,15 @@ async def scan_and_create_tasks(session: AsyncSession) -> int:
 
     bare_keys_with_tasks: set[str] = set()
     for sk in existing:
-        bare = sk.split("/")[-1] if "/" in sk else sk
+        parts = sk.split("/")
+        if len(parts) >= 4:
+            # compound key: gpu/dsl/shape/model — shape is at index 2 (or -2)
+            bare = parts[2]
+        elif len(parts) >= 2:
+            # 3-part or 2-part compound: shape is last
+            bare = parts[-1]
+        else:
+            bare = sk
         bare_keys_with_tasks.add(bare)
 
     for compound_key, info in discovered.items():
@@ -331,6 +353,9 @@ async def scan_and_create_tasks(session: AsyncSession) -> int:
 
         if compound_key in existing:
             task = existing[compound_key]
+            from .artifact_config import sync_artifact_to_task
+            if await sync_artifact_to_task(session, task):
+                await session.flush()
             updated = False
             new_iter = metrics.get("current_iteration", 0)
             old_iter = task.current_iteration or 0
@@ -360,7 +385,7 @@ async def scan_and_create_tasks(session: AsyncSession) -> int:
             if device and not task.device:
                 task.device = device
                 updated = True
-            if model and task.model != model:
+            if model and not task.model:
                 task.model = model
                 updated = True
             if dsl and not task.dsl:
@@ -373,6 +398,8 @@ async def scan_and_create_tasks(session: AsyncSession) -> int:
             if updated:
                 task.updated_at = datetime.now(timezone.utc)
                 changed = True
+                from .artifact_config import sync_task_to_artifact
+                await sync_task_to_artifact(session, task)
             continue
 
         if bare_shape_key in bare_keys_with_tasks:
@@ -415,6 +442,11 @@ async def scan_and_create_tasks(session: AsyncSession) -> int:
             await _enrich_from_idea_log(session, task.id, info["idea_log"])
         if "attempt_log" in info:
             await _import_attempt_log(session, task.id, info["attempt_log"])
+        from .artifact_config import sync_artifact_to_task, sync_task_to_artifact
+        await sync_artifact_to_task(session, task)
+        await session.flush()
+        await sync_task_to_artifact(session, task)
+
         created += 1
         logger.info(
             "Auto-discovered task: %s [%s/%s/%s] (iter=%d, best=%.3f TFLOPS)",
@@ -471,6 +503,13 @@ async def _sync_agent_status(session: AsyncSession) -> None:
             logger.info("Agent model update: %s model %s → %s", task.shape_key, task.model, agent.model_id)
             task.model = agent.model_id
             updated = True
+        session_id = agent.session_id
+        if not session_id and agent.agent_type == "opencode" and _detect_session_from_db:
+            session_id = _detect_session_from_db(0)
+        if session_id and session_id != task.opencode_session_id:
+            logger.info("Session link: %s → %s", task.shape_key, session_id)
+            task.opencode_session_id = session_id
+            updated = True
         if agent.agent_type and agent.agent_type != task.agent_type:
             task.agent_type = agent.agent_type
             updated = True
@@ -479,8 +518,6 @@ async def _sync_agent_status(session: AsyncSession) -> None:
             task.mode = mode
             updated = True
 
-        # If a live agent is detected for this task, it is running — regardless of
-        # request_budget (which is a scheduler dispatch counter, not a liveness flag).
         if task.status in ("pending", "cancelled", "completed"):
             task.status = "running"
             task.started_at = task.started_at or datetime.now(timezone.utc)
@@ -511,7 +548,6 @@ async def _import_iteration_logs_from_tsv(session: AsyncSession, task_id: int, r
         return
 
     tuning_iter = 0
-    data_row_count = 0
     for line in lines:
         stripped = line.strip()
         if not stripped or stripped.startswith("#"):
@@ -544,22 +580,16 @@ async def _import_iteration_logs_from_tsv(session: AsyncSession, task_id: int, r
         kernel = parts[kernel_idx].strip() if len(parts) > kernel_idx else None
         idea = parts[decision_idx + 2].strip() if len(parts) > decision_idx + 2 else None
 
-        is_baseline = (
-            bottleneck_raw.lower() in ("baseline", "baseline_profile")
-            or "baseline" in (kernel or "").lower()
-            or (kernel or "").lower().startswith("framework/")
-        )
-
-        data_row_count += 1
-        if data_row_count <= start_after:
-            continue
+        is_baseline = _is_baseline_row(kernel, bottleneck_raw)
 
         if is_baseline:
             iter_num = 0
             decision = "BASELINE"
         else:
             tuning_iter += 1
-            iter_num = start_after + tuning_iter
+            if tuning_iter <= start_after:
+                continue
+            iter_num = tuning_iter
 
         existing = await session.execute(
             select(IterationLog).where(

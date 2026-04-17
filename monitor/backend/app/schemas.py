@@ -1,4 +1,4 @@
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, field_validator, model_validator
 
 from .config import is_valid_variant
 
@@ -109,6 +109,24 @@ class TaskCreate(BaseModel):
             raise ValueError("request_budget must be >= 1")
         return v
 
+    @model_validator(mode="after")
+    def validate_platform_model_compatibility(self) -> "TaskCreate":
+        mode = self.mode
+        model = self.model
+        if mode == "opencode" and model and model.startswith("cursor/"):
+            raise ValueError(
+                f"Model '{model}' is a Cursor IDE model and cannot be used with the opencode platform. "
+                "Use an opencode/ or github-copilot/ model instead."
+            )
+        if mode == "cursor_cli" and model and (
+            model.startswith("opencode/") or model.startswith("github-copilot/")
+        ):
+            raise ValueError(
+                f"Model '{model}' is an OpenCode/GitHub-Copilot model and cannot be used with the cursor_cli platform. "
+                "Use a cursor/ model instead."
+            )
+        return self
+
 
 class TaskUpdate(BaseModel):
     status: str | None = None
@@ -169,11 +187,23 @@ class TaskResponse(BaseModel):
     agent_type: str | None
     device: str | None
     opencode_session_id: str | None
+    session_ids: list[str] = []
     error_message: str | None
     created_at: str | None
     updated_at: str | None
     started_at: str | None
     completed_at: str | None
+
+
+class TaskSessionResponse(BaseModel):
+    id: int
+    task_id: int
+    session_id: str
+    agent_type: str | None
+    model: str | None
+    request_number: int | None
+    started_at: str | None
+    ended_at: str | None
 
 
 class IterationLogResponse(BaseModel):

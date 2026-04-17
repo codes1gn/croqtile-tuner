@@ -18,7 +18,7 @@ from .agent_detector import detect_running_agents, get_all_agent_sessions
 from .database import async_session, get_session, init_db
 from .events import event_bus
 from .iteration_history import read_iteration_history
-from .models import AgentLog, IterationLog, Task
+from .models import AgentLog, IterationLog, Task, TaskSession
 from .opencode_sessions import read_session_history
 from .runtime_settings import (
     available_models,
@@ -42,6 +42,7 @@ from .schemas import (
     SessionHistoryResponse,
     TaskCreate,
     TaskResponse,
+    TaskSessionResponse,
     TaskUpdate,
 )
 from .artifact_scanner import prune_stale_tasks, scan_and_create_tasks
@@ -211,38 +212,71 @@ async def update_task(
 
 
 def _delete_task_artifacts(shape_key: str) -> None:
-    """Delete disk artifacts for a scanner-created task.
+    """Delete disk artifacts for a task, supporting both compound and bare shape keys.
 
-    Compound shape_key format: "{gpu}/{dsl}/{bare_shape_key}/{model}"
-    Maps to subdirectories under tuning/{gpu}/{dsl}/{subdir}/{bare_shape_key}/{model}
-    for subdirs: logs, srcs, checkpoints, cmd, perf, bin, memory.
+    Compound key format: "{gpu}/{dsl}/{bare_shape_key}/{model}"  (scanner-created tasks)
+    Bare key format:     "{bare_shape_key}"                       (UI-created tasks)
+
+    For bare keys, searches all gpu/dsl subdirectory combinations on disk for matching
+    bare_shape_key directories and removes them, preventing the scanner from re-discovering
+    deleted tasks.
     """
     from .config import settings
 
-    parts = shape_key.split("/")
-    if len(parts) < 3:
-        return
-
-    gpu, dsl = parts[0], parts[1]
-    bare_key = parts[2]
-    model = parts[3] if len(parts) >= 4 else None
-
-    dsl_root = settings.tuning_dir / gpu / dsl
-    if not dsl_root.exists():
-        return
-
+    tuning_dir = settings.tuning_dir.resolve()
     subdirs = ["logs", "srcs", "checkpoints", "cmd", "perf", "bin", "memory"]
-    for subdir in subdirs:
-        if model:
-            target = dsl_root / subdir / bare_key / model
-        else:
-            target = dsl_root / subdir / bare_key
-        if target.exists():
-            shutil.rmtree(target, ignore_errors=True)
-            logger.info("Deleted artifacts: %s", target)
-            parent = target.parent
-            if parent.exists() and not any(parent.iterdir()):
-                parent.rmdir()
+
+    parts = shape_key.split("/")
+
+    if len(parts) >= 3:
+        # Compound key: delete the specific model-scoped directory
+        gpu, dsl = parts[0], parts[1]
+        bare_key = parts[2]
+        model = parts[3] if len(parts) >= 4 else None
+        dsl_root = tuning_dir / gpu / dsl
+        if not dsl_root.exists():
+            return
+        for subdir in subdirs:
+            target = dsl_root / subdir / bare_key / model if model else dsl_root / subdir / bare_key
+            if target.exists():
+                shutil.rmtree(target, ignore_errors=True)
+                logger.info("Deleted artifacts: %s", target)
+                parent = target.parent
+                if parent.exists() and not any(parent.iterdir()):
+                    try:
+                        parent.rmdir()
+                    except OSError:
+                        pass
+        # Also remove task_config.json if present
+        config_path = dsl_root / "task_config" / bare_key / "task_config.json"
+        if config_path.exists():
+            config_path.unlink(missing_ok=True)
+    else:
+        # Bare key: search all gpu/dsl combos on disk for matching bare_shape_key dirs
+        bare_key = parts[0]
+        if not tuning_dir.exists():
+            return
+        for gpu_dir in tuning_dir.iterdir():
+            if not gpu_dir.is_dir():
+                continue
+            for dsl_dir in gpu_dir.iterdir():
+                if not dsl_dir.is_dir():
+                    continue
+                found_any = False
+                for subdir in subdirs:
+                    target = dsl_dir / subdir / bare_key
+                    if target.exists():
+                        shutil.rmtree(target, ignore_errors=True)
+                        logger.info("Deleted bare-key artifacts: %s", target)
+                        found_any = True
+                        parent = target.parent
+                        if parent.exists() and not any(parent.iterdir()):
+                            try:
+                                parent.rmdir()
+                            except OSError:
+                                pass
+                if found_any:
+                    logger.info("Cleaned up artifacts for bare key '%s' under %s", bare_key, dsl_dir)
 
 
 @app.delete("/api/tasks/{task_id}", status_code=204)
@@ -254,10 +288,12 @@ async def delete_task(
     task = await session.get(Task, task_id)
     if not task:
         raise HTTPException(404, "Task not found")
-    if task.status == "running":
-        raise HTTPException(400, "Cannot delete a running task; cancel it first")
 
-    if clean_artifacts and "/" in task.shape_key:
+    # Cancel the scheduler worker if this task is currently running there —
+    # this prevents a stale worker from blocking the dispatch of future tasks.
+    await scheduler.cancel_active_task(task_id)
+
+    if clean_artifacts:
         _delete_task_artifacts(task.shape_key)
 
     await session.delete(task)
@@ -277,6 +313,7 @@ async def retry_task(task_id: int, session: AsyncSession = Depends(get_session))
 
     retry = Task(
         shape_key=task.shape_key,
+        op_type=task.op_type,
         dtype=task.dtype,
         m=task.m,
         n=task.n,
@@ -285,6 +322,9 @@ async def retry_task(task_id: int, session: AsyncSession = Depends(get_session))
         mode=task.mode,
         model=task.model,
         variant=task.variant,
+        agent_type=task.agent_type,
+        device=task.device,
+        request_budget=max(task.request_budget or 1, 1),
         max_iterations=task.max_iterations,
         status="pending",
         current_iteration=0,
@@ -315,6 +355,7 @@ async def resume_task(
 
     resumed = Task(
         shape_key=task.shape_key,
+        op_type=task.op_type,
         dtype=task.dtype,
         m=task.m,
         n=task.n,
@@ -323,6 +364,9 @@ async def resume_task(
         mode=task.mode,
         model=task.model,
         variant=task.variant,
+        agent_type=task.agent_type,
+        device=task.device,
+        request_budget=max(task.request_budget or 1, 1),
         max_iterations=task.max_iterations,
         status="pending",
         current_iteration=from_iter,
@@ -383,20 +427,103 @@ async def get_agent_logs(
 async def get_session_history(
     task_id: int,
     limit: int = Query(200, ge=1, le=1000),
+    sid: str | None = Query(None, alias="session_id"),
     session: AsyncSession = Depends(get_session),
 ):
     task = await session.get(Task, task_id)
     if not task:
         raise HTTPException(404, "Task not found")
-    if not task.opencode_session_id:
+    target_sid = sid or task.opencode_session_id
+    if not target_sid:
         return SessionHistoryResponse(
             session_id=None,
             session_title=None,
             session_directory=None,
             entries=[],
         )
-    history = await read_session_history(task.opencode_session_id, limit=limit)
+    history = await read_session_history(target_sid, limit=limit)
     return SessionHistoryResponse(**history)
+
+
+@app.get("/api/tasks/{task_id}/sessions", response_model=list[TaskSessionResponse])
+async def get_task_sessions(
+    task_id: int,
+    session: AsyncSession = Depends(get_session),
+):
+    task = await session.get(Task, task_id)
+    if not task:
+        raise HTTPException(404, "Task not found")
+    result = await session.execute(
+        select(TaskSession).where(TaskSession.task_id == task_id).order_by(TaskSession.started_at)
+    )
+    return [
+        TaskSessionResponse(**ts.to_dict())
+        for ts in result.scalars().all()
+    ]
+
+
+@app.get("/api/tasks/{task_id}/session-history/{session_id}", response_model=SessionHistoryResponse)
+async def get_session_history_by_id(
+    task_id: int,
+    session_id: str,
+    limit: int = Query(200, ge=1, le=1000),
+    session: AsyncSession = Depends(get_session),
+):
+    task = await session.get(Task, task_id)
+    if not task:
+        raise HTTPException(404, "Task not found")
+    history = await read_session_history(session_id, limit=limit)
+    return SessionHistoryResponse(**history)
+
+
+@app.get("/api/tasks/{task_id}/activity-log")
+async def get_activity_log(
+    task_id: int,
+    limit: int = Query(200, ge=1, le=2000),
+    session: AsyncSession = Depends(get_session),
+):
+    """Serve the harness activity log (activity.jsonl) from disk for a task."""
+    task = await session.get(Task, task_id)
+    if not task:
+        raise HTTPException(404, "Task not found")
+
+    entries = _read_activity_log(task.shape_key, limit)
+    return entries
+
+
+def _read_activity_log(shape_key: str, limit: int = 200) -> list[dict]:
+    """Read activity.jsonl from the task's memory/ directory."""
+    import json as _json
+
+    parts = shape_key.split("/")
+    if len(parts) < 3:
+        return []
+
+    gpu, dsl, bare_key = parts[0], parts[1], parts[2]
+    model = parts[3] if len(parts) >= 4 else None
+
+    if model:
+        log_path = settings.tuning_dir / gpu / dsl / "memory" / bare_key / model / "activity.jsonl"
+    else:
+        log_path = settings.tuning_dir / gpu / dsl / "memory" / bare_key / "activity.jsonl"
+
+    if not log_path.exists():
+        return []
+
+    entries: list[dict] = []
+    try:
+        for line in log_path.read_text(errors="replace").splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                entries.append(_json.loads(line))
+            except _json.JSONDecodeError:
+                continue
+    except OSError:
+        return []
+
+    return entries[-limit:]
 
 
 @app.get("/api/settings/model", response_model=ModelSettingsResponse)

@@ -18,6 +18,7 @@ git init -q
 ORIG_REPO="/home/albert/workspace/croqtile-tuner"
 mkdir -p .claude/skills/croq-tune/tools
 cp "$ORIG_REPO/.claude/skills/croq-tune/tools/resume_state.sh" .claude/skills/croq-tune/tools/
+cp "$ORIG_REPO/.claude/skills/croq-tune/tools/activity_trace.sh" .claude/skills/croq-tune/tools/
 
 DSL="cuda"
 GPU="sm90_testgpu"

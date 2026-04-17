@@ -49,6 +49,29 @@ async def init_db():
             ")"
         )
 
+        tables = {
+            row[0]
+            for row in (await conn.exec_driver_sql(
+                "SELECT name FROM sqlite_master WHERE type='table'"
+            )).fetchall()
+        }
+        if "task_sessions" not in tables:
+            await conn.exec_driver_sql("""
+                CREATE TABLE task_sessions (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    task_id INTEGER NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+                    session_id VARCHAR(128) NOT NULL,
+                    agent_type VARCHAR(32),
+                    model VARCHAR(128),
+                    request_number INTEGER,
+                    started_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    ended_at DATETIME
+                )
+            """)
+            await conn.exec_driver_sql(
+                "CREATE INDEX IF NOT EXISTS ix_task_sessions_task_id ON task_sessions(task_id)"
+            )
+
 
 async def get_session():
     async with async_session() as session:

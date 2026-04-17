@@ -14,6 +14,19 @@ def repo_root() -> Path:
     return Path(__file__).resolve().parents[4]
 
 
+def _trace_event(gpu: str, dsl: str, shape_key: str, tool: str, msg: str, level: str = "info") -> None:
+    """Append a JSONL activity trace entry matching activity_trace.sh format."""
+    import json as _json
+    from datetime import datetime as _dt, timezone as _tz
+    mem_dir = repo_root() / "tuning" / gpu / dsl / "memory" / shape_key
+    mem_dir.mkdir(parents=True, exist_ok=True)
+    log_path = mem_dir / "activity.jsonl"
+    ts = _dt.now(_tz.utc).strftime("%Y-%m-%dT%H:%M:%S.000Z")
+    entry = {"ts": ts, "tool": tool, "msg": msg, "level": level}
+    with open(log_path, "a") as f:
+        f.write(_json.dumps(entry) + "\n")
+
+
 def parse_shape(shape: str) -> tuple[int, int, int]:
     parts = shape.lower().split("x")
     if len(parts) != 3:
@@ -109,6 +122,8 @@ def main() -> int:
     for directory in [log_dir, perf_dir, mem_dir, ckpt_dir]:
         directory.mkdir(parents=True, exist_ok=True)
 
+    _trace_event(args.gpu, args.dsl, key, "bootstrap_tuning_round", f"Bootstrapping {key} ({args.dtype} {args.shape})")
+
     bench = bench_torch_mm(m, n, k, args.dtype, args.warmup, args.iters, args.samples)
 
     results_path = log_dir / "results.tsv"
@@ -172,6 +187,8 @@ def main() -> int:
         "last_attempt": "attempt0001",
     }
     (ckpt_dir / f"{key}.json").write_text(json.dumps(checkpoint, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+    _trace_event(args.gpu, args.dsl, key, "bootstrap_tuning_round", f"Baseline {bench['median_tflops']:.2f} TFLOPS, artifacts created")
 
     print(f"[bootstrap-round] created bootstrap artifacts for {key}")
     print(f"[bootstrap-round] baseline_tflops={bench['median_tflops']:.2f}")

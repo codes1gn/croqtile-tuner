@@ -26,12 +26,16 @@ ITER_PATTERN = re.compile(
 TFLOPS_PATTERN = re.compile(r"(\d+(?:\.\d+)?)\s*TFLOPS", re.IGNORECASE)
 BASELINE_PATTERN = re.compile(r"[Bb]aseline.*?(\d+(?:\.\d+)?)\s*TFLOPS")
 SESSION_ID_PATTERNS = (
-    re.compile(r"sessionID=([A-Za-z0-9_]+)"),
-    re.compile(r'"sessionID"\s*:\s*"([A-Za-z0-9_]+)"'),
-    re.compile(r'"session_id"\s*:\s*"([A-Za-z0-9_]+)"'),
-    re.compile(r"/session/([A-Za-z0-9_]+)/message"),
-    re.compile(r"service=session\s+id=(ses_[A-Za-z0-9_]+)"),
-    re.compile(r"session=(ses_[A-Za-z0-9_]+)"),
+    # opencode-style short IDs and Cursor UUID-style (with hyphens)
+    re.compile(r"sessionID=([A-Za-z0-9_-]+)"),
+    re.compile(r'"sessionID"\s*:\s*"([A-Za-z0-9_-]+)"'),
+    re.compile(r'"session_id"\s*:\s*"([A-Za-z0-9_-]+)"'),
+    re.compile(r"/session/([A-Za-z0-9_-]+)/message"),
+    re.compile(r"service=session\s+id=(ses_[A-Za-z0-9_-]+)"),
+    re.compile(r"session=(ses_[A-Za-z0-9_-]+)"),
+    # cursor-agent stream-json: {"session_id":"<uuid>"}
+    re.compile(r'"chat_id"\s*:\s*"([A-Za-z0-9_-]+)"'),
+    re.compile(r'"conversation_id"\s*:\s*"([A-Za-z0-9_-]+)"'),
 )
 FATAL_ERROR_PATTERN = re.compile(
     r"(ProviderModelNotFoundError|Model not found:|EACCES:|FreeUsageLimitError|Rate limit exceeded|(?:^|\s)fatal error:)",
@@ -89,9 +93,36 @@ def build_prompt(task: Task) -> str:
 def build_command(task: Task) -> list[str]:
     prompt = build_prompt(task)
     project_dir = str(settings.project_dir.resolve())
-    command = [settings.opencode_bin, "run", "--print-logs", "--format", "json"]
     model = task.model or settings.opencode_model
+
+    if task.mode == "cursor_cli" or (model and model.startswith("cursor/")):
+        # Dispatch via cursor-agent for Cursor IDE models
+        if model and model.startswith("cursor/"):
+            # Strip provider prefix: "cursor/claude-4.6-opus-max" → "claude-4.6-opus-max"
+            bare_model = model[len("cursor/"):]
+        else:
+            bare_model = model or ""
+        command = [
+            settings.cursor_agent_bin, "--print",
+            "--output-format", "stream-json",
+        ]
+        if bare_model:
+            command.extend(["--model", bare_model])
+        command.extend([prompt, project_dir])
+        return command
+
+    # Default: dispatch via opencode
+    command = [settings.opencode_bin, "run", "--print-logs", "--format", "json"]
     if model:
+        # cursor/ models cannot be used with opencode — substitute with default
+        if model.startswith("cursor/"):
+            fallback = settings.opencode_model or "opencode/big-pickle"
+            logger.warning(
+                "Task %d uses cursor/ model '%s' which opencode cannot run. "
+                "Substituting with '%s'. Update the task model to an opencode/ or github-copilot/ model.",
+                task.id, model, fallback,
+            )
+            model = fallback
         command.extend(["--model", model])
     variant = getattr(task, "variant", None) or ""
     if variant:
@@ -106,6 +137,64 @@ def is_fatal_agent_error(line: str) -> bool:
     if _STREAM_ERROR_PATTERN.search(line) and not _TITLE_AGENT_PATTERN.search(line):
         return True
     return False
+
+
+def _human_readable_error(raw_line: str) -> str:
+    """Convert a raw agent log line (possibly JSON) into a short human-readable error message."""
+    raw = raw_line.strip()
+
+    # Try to parse as JSON and extract the most meaningful field
+    try:
+        obj = json.loads(raw)
+        if isinstance(obj, dict):
+            # opencode structured log: prefer 'message', 'error', 'msg', 'text'
+            for key in ("message", "error", "msg", "text", "reason", "detail"):
+                val = obj.get(key)
+                if val and isinstance(val, str) and val.strip():
+                    raw = val.strip()
+                    break
+            else:
+                # Fall back to the whole JSON but pretty-print key fields
+                parts = []
+                for key in ("type", "level", "code", "message", "error"):
+                    if key in obj:
+                        parts.append(f"{key}={obj[key]!r}")
+                if parts:
+                    raw = "  ".join(parts)
+    except (json.JSONDecodeError, ValueError):
+        pass
+
+    # Classify into a short category prefix
+    low = raw.lower()
+    if "providermodelnotfound" in low or "model not found" in low:
+        prefix = "Model not found"
+        # extract model ID (e.g. "modelID": "github-copilot/gpt-5-mini" or after a colon/space)
+        m = re.search(r'modelID[=:"\s]+([A-Za-z0-9_/.-]+)', raw_line, re.IGNORECASE)
+        if not m:
+            m = re.search(r'(?:model)[^a-z]+([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)', raw_line, re.IGNORECASE)
+        model_id = m.group(1) if m else None
+        suffix = f" '{model_id}'" if model_id else ""
+        hint = ""
+        if model_id and model_id.startswith("cursor/"):
+            hint = " — cursor/ models require the cursor_cli platform (dispatched via cursor-agent); use an opencode/ or github-copilot/ model for opencode mode"
+        return f"{prefix}{suffix}{hint}"
+    if "freeusagelimit" in low or "free usage limit" in low:
+        return "Free usage limit reached — switch to a paid model or wait for quota reset"
+    if "rate limit" in low:
+        return "Rate limit exceeded — agent will retry automatically"
+    if "eacces" in low or "permission denied" in low:
+        return "Permission denied — check file/directory permissions"
+    if "stream error" in low:
+        return "Stream error from model provider — transient; agent will retry"
+    if "fatal error" in low:
+        # Extract what follows "fatal error:"
+        m = re.search(r"fatal error[:\s]+(.+)", raw, re.IGNORECASE)
+        return f"Fatal error: {m.group(1).strip()}" if m else "Fatal error (see agent log for details)"
+
+    # Truncate long lines
+    if len(raw) > 200:
+        raw = raw[:197] + "…"
+    return raw
 
 
 def extract_session_id(line: str) -> str | None:
@@ -227,18 +316,24 @@ async def poll_artifacts(task: Task, session_factory) -> None:
 
     if results_path is not None and results_path.exists():
         try:
+            from .artifact_scanner import _is_baseline_row
             lines = results_path.read_text().strip().split("\n")
             data_lines = [l for l in lines if l and not l.startswith("#") and not l.startswith("iter\t")]
-            if data_lines:
-                last = data_lines[-1].split("\t")
-                if len(last) >= 3:
-                    try:
-                        iter_num = int(last[0])
-                        if iter_num > update.get("current_iteration", 0):
-                            update["current_iteration"] = iter_num
-                    except ValueError:
-                        pass
-        except OSError:
+            tuning_count = 0
+            for dl in data_lines:
+                cols = dl.split("\t")
+                try:
+                    int(cols[0])
+                    k_idx, bn_idx = 2, 5
+                except ValueError:
+                    k_idx, bn_idx = 1, 4
+                k = cols[k_idx].strip() if len(cols) > k_idx else ""
+                bn = cols[bn_idx].strip() if len(cols) > bn_idx else ""
+                if not _is_baseline_row(k, bn):
+                    tuning_count += 1
+            if tuning_count > update.get("current_iteration", 0):
+                update["current_iteration"] = tuning_count
+        except (OSError, ImportError):
             pass
 
     if update:
@@ -325,10 +420,18 @@ async def _process_line(
         session_id = extract_session_id(line)
         if session_id:
             task = await session.get(Task, task_id)
-            if task and task.opencode_session_id != session_id:
-                task.opencode_session_id = session_id
-                task.updated_at = datetime.now(timezone.utc)
-                task_updated = True
+            if task:
+                from .artifact_config import register_session
+                ts = await register_session(
+                    session, task, session_id,
+                    agent_type=task.agent_type,
+                    model=task.model,
+                    request_number=task.request_number,
+                )
+                if ts or task.opencode_session_id != session_id:
+                    task.opencode_session_id = session_id
+                    task.updated_at = datetime.now(timezone.utc)
+                    task_updated = True
 
         m = ITER_PATTERN.search(line)
         rn = None
@@ -471,14 +574,36 @@ async def run_task(task: Task, session_factory) -> int:
             pass
 
     await poll_artifacts(task, session_factory)
-    if run_state.fatal_error_message:
+
+    # Build a human-readable exit reason to store on the task
+    if run_state.fatal_error_message or (exit_code is not None and exit_code != 0):
         async with session_factory() as session:
             db_task = await session.get(Task, task.id)
             if db_task:
-                db_task.error_message = run_state.fatal_error_message
+                if run_state.fatal_error_message:
+                    readable = _human_readable_error(run_state.fatal_error_message)
+                    if exit_code is not None and exit_code not in (0, 1):
+                        readable = f"{readable}  [exit {exit_code}]"
+                elif exit_code == -2:
+                    readable = "Agent terminated: fatal error detected in output"
+                elif exit_code is not None and exit_code < 0:
+                    import signal as _signal
+                    sig_num = -exit_code
+                    try:
+                        sig_name = _signal.Signals(sig_num).name
+                    except ValueError:
+                        sig_name = f"signal {sig_num}"
+                    readable = f"Agent process killed by {sig_name}"
+                elif exit_code is not None:
+                    readable = f"Agent exited with code {exit_code} (non-zero)"
+                else:
+                    readable = "Agent exited unexpectedly"
+                db_task.error_message = readable
                 db_task.updated_at = datetime.now(timezone.utc)
                 await session.commit()
                 await event_bus.publish("task_update", db_task.to_dict())
+
+    if run_state.fatal_error_message:
         return exit_code if exit_code != 0 else 1
     return exit_code
 
@@ -506,6 +631,13 @@ async def _poll_loop(
                     if sid:
                         db_task.opencode_session_id = sid
                         db_task.updated_at = datetime.now(timezone.utc)
+                        from .artifact_config import register_session
+                        await register_session(
+                            session, db_task, sid,
+                            agent_type=db_task.agent_type,
+                            model=db_task.model,
+                            request_number=db_task.request_number,
+                        )
                         await session.commit()
                         await event_bus.publish("task_update", db_task.to_dict())
                         session_linked = True
@@ -541,35 +673,37 @@ async def _terminate_process(proc: asyncio.subprocess.Process) -> None:
 
 
 def terminate_stray_opencode_processes() -> list[int]:
-    try:
-        result = subprocess.run(
-            ["pgrep", "-af", "opencode run --print-logs"],
-            capture_output=True,
-            text=True,
-            timeout=5,
-            check=False,
-        )
-    except (FileNotFoundError, subprocess.TimeoutExpired):
-        return []
-
-    terminated: list[int] = []
+    """Terminate stale opencode and cursor-agent processes belonging to this project."""
     project_root = str(settings.project_dir.resolve())
-    for line in result.stdout.splitlines():
-        line = line.strip()
-        if not line or project_root not in line:
-            continue
-        pid_text, _, cmdline = line.partition(" ")
-        if not pid_text.isdigit():
-            continue
-        pid = int(pid_text)
-        if "opencode run --print-logs" not in cmdline:
-            continue
+    terminated: list[int] = []
+
+    def _pgrep_and_terminate(pgrep_pattern: str, cmdline_must_contain: str) -> None:
         try:
-            pgid = os.getpgid(pid)
-            os.killpg(pgid, signal.SIGTERM)
-            terminated.append(pid)
-        except ProcessLookupError:
-            continue
+            result = subprocess.run(
+                ["pgrep", "-af", pgrep_pattern],
+                capture_output=True, text=True, timeout=5, check=False,
+            )
+        except (FileNotFoundError, subprocess.TimeoutExpired):
+            return
+        for line in result.stdout.splitlines():
+            line = line.strip()
+            if not line or project_root not in line:
+                continue
+            pid_text, _, cmdline = line.partition(" ")
+            if not pid_text.isdigit():
+                continue
+            pid = int(pid_text)
+            if cmdline_must_contain not in cmdline:
+                continue
+            try:
+                pgid = os.getpgid(pid)
+                os.killpg(pgid, signal.SIGTERM)
+                terminated.append(pid)
+            except ProcessLookupError:
+                continue
+
+    _pgrep_and_terminate("opencode run --print-logs", "opencode run --print-logs")
+    _pgrep_and_terminate("cursor-agent --print", "cursor-agent")
 
     deadline = time.time() + 10
     alive = set(terminated)

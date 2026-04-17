@@ -12,15 +12,18 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "$SCRIPT_DIR/activity_trace.sh"
+
 DSL=""
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --dsl) DSL="$2"; shift 2 ;;
-    *) echo "Unknown arg: $1" >&2; exit 1 ;;
+    *) echo "[validate_env] ERROR: unknown arg: $1" >&2; echo "[SUGGESTION] Use your judgement to decide autonomously. Remove '$1' and retry. Only valid arg: --dsl <dsl_name> (cuda/croqtile/triton/cute/cutile/helion/tilelang)." >&2; exit 1 ;;
   esac
 done
 
-[[ -z "$DSL" ]] && { echo "[validate_env] ERROR: --dsl required" >&2; exit 1; }
+[[ -z "$DSL" ]] && { echo "[validate_env] ERROR: --dsl required" >&2; echo "[SUGGESTION] Use your judgement to decide autonomously. Provide --dsl with the DSL name: cuda, croqtile, triton, cute, cutile, helion, or tilelang." >&2; exit 1; }
 
 ERRORS=()
 WARNINGS=()
@@ -56,7 +59,21 @@ check_env_var() {
 # --- Standard checks (all DSLs) ---
 
 check_cmd "nvidia-smi" "nvidia-smi"
-check_cmd "nvcc" "nvcc"
+
+# nvcc may not be in PATH but present under /usr/local/cuda*/bin/
+if command -v nvcc &>/dev/null; then
+  NVCC_VER=$(nvcc --version 2>/dev/null | grep release | head -1 || echo "unknown")
+  echo "[validate_env] OK: nvcc found ($NVCC_VER)" >&2
+else
+  NVCC_PATH=$(ls /usr/local/cuda*/bin/nvcc 2>/dev/null | head -1 || echo "")
+  if [[ -n "$NVCC_PATH" ]]; then
+    echo "[validate_env] OK: nvcc at $NVCC_PATH (not in PATH)" >&2
+    WARNINGS+=("nvcc not in PATH but found at $NVCC_PATH; add $(dirname "$NVCC_PATH") to PATH")
+  else
+    ERRORS+=("nvcc: nvcc not found")
+    echo "[validate_env] FAIL: nvcc not found" >&2
+  fi
+fi
 
 if command -v nvidia-smi &>/dev/null; then
   GPU_NAME=$(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null | head -1 || echo "unknown")
@@ -90,6 +107,12 @@ fi
 
 case "$DSL" in
   croqtile)
+    # Auto-set known defaults before checking, so the agent doesn't fail on env vars
+    # that have well-known locations on this machine.
+    [[ -z "${CHOREO_HOME:-}" && -d /home/albert/workspace/croqtile ]] && export CHOREO_HOME=/home/albert/workspace/croqtile
+    [[ -z "${CUTE_HOME:-}" && -n "${CHOREO_HOME:-}" && -d "${CHOREO_HOME}/extern/cutlass" ]] && export CUTE_HOME="${CHOREO_HOME}/extern/cutlass"
+    [[ -z "${CUDA_HOME:-}" ]] && { for _cd in /usr/local/cuda /usr/local/cuda-12 /usr/local/cuda-11; do [[ -x "${_cd}/bin/nvcc" ]] && { export CUDA_HOME="${_cd}"; break; }; done; }
+    echo "[validate_env] INFO: CHOREO_HOME=${CHOREO_HOME:-unset} CUTE_HOME=${CUTE_HOME:-unset} CUDA_HOME=${CUDA_HOME:-unset}" >&2
     check_env_var "CHOREO_HOME" "test -x \${CHOREO_HOME}/build/choreo || test -x \${CHOREO_HOME}/choreo"
     check_env_var "CUTE_HOME" "test -d \${CUTE_HOME}/include"
     check_env_var "CUDA_HOME" "test -x \${CUDA_HOME}/bin/nvcc"
@@ -175,4 +198,9 @@ cat <<EOF
 {"dsl":"$DSL","pass":$([ $ERROR_COUNT -eq 0 ] && echo true || echo false),"errors":$ERRORS_JSON,"warnings":$WARNINGS_JSON}
 EOF
 
-[[ $ERROR_COUNT -eq 0 ]] && exit 0 || exit 1
+trace_event "validate_env" "DSL=$DSL pass=$([ $ERROR_COUNT -eq 0 ] && echo true || echo false) errors=$ERROR_COUNT warnings=$WARN_COUNT"
+if [[ $ERROR_COUNT -gt 0 ]]; then
+  echo "[SUGGESTION] Use your judgement to decide autonomously. Environment validation failed with $ERROR_COUNT error(s). Fix the reported issues: install missing tools (nvidia-smi, nvcc, ncu), set required environment variables (CHOREO_HOME, CUTE_HOME, CUDA_HOME), or install missing Python packages (triton, cutlass, helion, tilelang). Retry validate_env.sh after fixing." >&2
+  exit 1
+fi
+exit 0

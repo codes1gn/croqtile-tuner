@@ -31,6 +31,9 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "$SCRIPT_DIR/activity_trace.sh"
+
 # ── argument parsing ───────────────────────────────────────────────────────────
 GPU=""
 DSL=""
@@ -47,7 +50,7 @@ while [[ $# -gt 0 ]]; do
     --model)     MODEL="$2";     shift 2 ;;
     --tag)       TAG="$2";       shift 2 ;;
     --attempt)   ATTEMPT_MODE=true; shift ;;
-    *) echo "ERROR: unknown argument $1" >&2; exit 1 ;;
+    *) echo "ERROR: unknown argument $1" >&2; echo "[SUGGESTION] Use your judgement to decide autonomously. Remove the unknown argument '$1' and retry. Valid args: --gpu --dsl --shape-key --model --tag --attempt" >&2; exit 1 ;;
   esac
 done
 
@@ -67,6 +70,7 @@ MISSING=()
 
 if [ ${#MISSING[@]} -gt 0 ]; then
   echo "ERROR: missing required arguments: ${MISSING[*]}" >&2
+  echo "[SUGGESTION] Use your judgement to decide autonomously. Provide all missing arguments and retry. --dsl is the DSL name (cuda/croqtile/triton/etc), --shape-key is the full shape key, --model is the model name, --tag is a short lowercase descriptor for your optimization idea." >&2
   exit 1
 fi
 
@@ -74,11 +78,13 @@ fi
 if [[ ! "$TAG" =~ ^[a-z][a-z0-9_]{1,30}$ ]]; then
   echo "ERROR: --tag must be 2-31 chars, start with a letter, lowercase alphanumeric+underscore only." >&2
   echo "       Got: $TAG" >&2
+  echo "[SUGGESTION] Use your judgement to decide autonomously. Fix the --tag value. Use a short lowercase descriptor like 'swizzle', 'tilek32', 'doublebuf'. Must start with a letter, only a-z 0-9 and underscore, 2-31 chars total." >&2
   exit 2
 fi
 
 # ── paths ──────────────────────────────────────────────────────────────────────
 SRC_DIR="tuning/${GPU}/${DSL}/srcs/${SHAPE_KEY}/${MODEL}"
+trace_init --gpu "$GPU" --dsl "$DSL" --shape-key "$SHAPE_KEY" --model "$MODEL"
 
 # ── find highest existing sequence number ──────────────────────────────────────
 if $ATTEMPT_MODE; then
@@ -93,6 +99,7 @@ if $ATTEMPT_MODE; then
     done < <({ ls "$SRC_DIR" 2>/dev/null | grep -P '^attempt[0-9]{4}'; } 2>/dev/null || true)
   fi
   NEXT=$((HIGHEST + 1))
+  trace_event "next_iter" "Resolved attempt$(printf '%04d' "$NEXT")_$TAG"
   printf "attempt%04d_%s\n" "$NEXT" "$TAG"
 else
   # Look for iter<NNN>* files (3-digit)
@@ -142,5 +149,6 @@ except Exception:
   fi
 
   NEXT=$((HIGHEST + 1))
+  trace_event "next_iter" "Resolved iter$(printf '%03d' "$NEXT")_$TAG"
   printf "iter%03d_%s\n" "$NEXT" "$TAG"
 fi

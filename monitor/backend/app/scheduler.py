@@ -52,6 +52,27 @@ class Scheduler:
                 pass
         logger.info("Scheduler stopped")
 
+    async def cancel_active_task(self, task_id: int) -> bool:
+        """Cancel the running worker for task_id if it is the currently active task.
+
+        Returns True if a worker was cancelled, False otherwise.
+        This is called by the delete endpoint so that a deleted task's worker is
+        immediately stopped rather than blocking dispatch of subsequent tasks.
+        """
+        if self.active_task_id != task_id:
+            return False
+        if self._worker and not self._worker.done():
+            logger.info("Cancelling worker for deleted task %d", task_id)
+            self._worker.cancel()
+            try:
+                await asyncio.wait_for(self._worker, timeout=5)
+            except (asyncio.CancelledError, asyncio.TimeoutError):
+                pass
+            self._worker = None
+            self.active_task_id = None
+            return True
+        return False
+
     async def _recover_stale_tasks(self) -> None:
         from .agent_detector import detect_running_agents
 
@@ -153,15 +174,28 @@ class Scheduler:
                 return
 
             task = None
+            exhausted: list[Task] = []
             for candidate in candidates:
                 budget = candidate.request_budget if candidate.request_budget is not None else 1
                 if budget > 0:
                     task = candidate
                     break
-                logger.debug(
-                    "Task %d (%s) has no budget remaining, skipping",
-                    candidate.id, candidate.shape_key,
+                exhausted.append(candidate)
+
+            # Move budget-exhausted tasks to "waiting" so they don't clog the pending queue
+            for ex in exhausted:
+                ex.status = "waiting"
+                ex.error_message = (
+                    "Request budget exhausted — use Resume or increase budget to continue"
                 )
+                ex.updated_at = datetime.now(timezone.utc)
+                logger.info(
+                    "Task %d (%s) has no budget remaining → waiting",
+                    ex.id, ex.shape_key,
+                )
+                await event_bus.publish("task_update", ex.to_dict())
+            if exhausted:
+                await session.commit()
 
             if task is None:
                 return
@@ -250,7 +284,11 @@ class Scheduler:
             elapsed_s=elapsed, iter_before=iter_before,
         )
 
-    _FAST_EXIT_THRESHOLD_S = 90
+    # How many seconds a run must last before it's NOT considered a "fast exit".
+    # Models with slow cold starts (tool resolution, workspace indexing) can take
+    # 60-120s before emitting any output, so 90s is too aggressive; use 180s.
+    # Override with env: FAST_EXIT_THRESHOLD_S=<int>
+    _FAST_EXIT_THRESHOLD_S: int = int(__import__("os").environ.get("FAST_EXIT_THRESHOLD_S", "180"))
     _FAST_EXIT_MAX_CONSECUTIVE = 3
 
     async def _finalize_task(
@@ -298,8 +336,17 @@ class Scheduler:
                     and iter_before is not None
                     and db_task.current_iteration == iter_before
                 )
-                count = (db_task.respawn_count or 0) + 1
-                db_task.respawn_count = count
+                made_progress = (
+                    iter_before is not None
+                    and db_task.current_iteration > iter_before
+                )
+                if made_progress:
+                    # Reset consecutive fast-exit counter when real progress was made
+                    db_task.respawn_count = 0
+                    count = 0
+                else:
+                    count = (db_task.respawn_count or 0) + 1
+                    db_task.respawn_count = count
 
                 if is_fast_exit and count >= self._FAST_EXIT_MAX_CONSECUTIVE:
                     db_task.status = "waiting"
@@ -315,7 +362,15 @@ class Scheduler:
                 else:
                     db_task.status = "pending"
                     reason = f"exit={exit_code}" if exit_code else "normally"
-                    extra = f" (fast exit {elapsed_s:.0f}s)" if is_fast_exit else ""
+                    extra = ""
+                    if is_fast_exit:
+                        quality_hint = (
+                            " — model may have produced unusable output; "
+                            "check LiveLog or try a higher-capability model"
+                            if not exit_code  # exit=0 with no progress usually means garbled/wrong output
+                            else ""
+                        )
+                        extra = f" (fast exit {elapsed_s:.0f}s{quality_hint})"
                     db_task.error_message = (
                         f"Agent ended ({reason}) at iter {db_task.current_iteration}"
                         f"/{db_task.max_iterations}{extra} [{source}]"
@@ -403,36 +458,42 @@ def _snapshot(task: Task) -> Task:
 
 
 def _find_live_opencode_pids() -> list[int]:
+    """Return PIDs of live opencode and cursor-agent dispatched processes."""
     import os
     import subprocess
 
     from .config import settings
 
-    try:
-        result = subprocess.run(
-            ["pgrep", "-af", "opencode run --print-logs"],
-            capture_output=True, text=True, timeout=5, check=False,
-        )
-    except (FileNotFoundError, subprocess.TimeoutExpired):
-        return []
-
-    pids: list[int] = []
     project_root = str(settings.project_dir.resolve())
-    for line in result.stdout.splitlines():
-        line = line.strip()
-        if not line or project_root not in line:
-            continue
-        pid_text, _, cmdline = line.partition(" ")
-        if not pid_text.isdigit():
-            continue
-        pid = int(pid_text)
-        if "opencode run --print-logs" not in cmdline:
-            continue
+    pids: list[int] = []
+
+    def _pgrep_collect(pattern: str, cmdline_must_contain: str) -> None:
         try:
-            os.kill(pid, 0)
-            pids.append(pid)
-        except ProcessLookupError:
-            continue
+            result = subprocess.run(
+                ["pgrep", "-af", pattern],
+                capture_output=True, text=True, timeout=5, check=False,
+            )
+        except (FileNotFoundError, subprocess.TimeoutExpired):
+            return
+        for line in result.stdout.splitlines():
+            line = line.strip()
+            if not line or project_root not in line:
+                continue
+            pid_text, _, cmdline = line.partition(" ")
+            if not pid_text.isdigit():
+                continue
+            pid = int(pid_text)
+            if cmdline_must_contain not in cmdline:
+                continue
+            try:
+                os.kill(pid, 0)
+                if pid not in pids:
+                    pids.append(pid)
+            except ProcessLookupError:
+                continue
+
+    _pgrep_collect("opencode run --print-logs", "opencode run --print-logs")
+    _pgrep_collect("cursor-agent --print", "cursor-agent")
     return pids
 
 
