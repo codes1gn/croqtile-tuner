@@ -2,13 +2,15 @@
 
 import asyncio
 import json
+import logging
 import os
 import re
 import signal
+import sqlite3
 import subprocess
 import tempfile
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -26,8 +28,10 @@ BASELINE_PATTERN = re.compile(r"[Bb]aseline.*?(\d+(?:\.\d+)?)\s*TFLOPS")
 SESSION_ID_PATTERNS = (
     re.compile(r"sessionID=([A-Za-z0-9_]+)"),
     re.compile(r'"sessionID"\s*:\s*"([A-Za-z0-9_]+)"'),
+    re.compile(r'"session_id"\s*:\s*"([A-Za-z0-9_]+)"'),
     re.compile(r"/session/([A-Za-z0-9_]+)/message"),
     re.compile(r"service=session\s+id=(ses_[A-Za-z0-9_]+)"),
+    re.compile(r"session=(ses_[A-Za-z0-9_]+)"),
 )
 FATAL_ERROR_PATTERN = re.compile(
     r"(ProviderModelNotFoundError|Model not found:|EACCES:|FreeUsageLimitError|Rate limit exceeded|(?:^|\s)fatal error:)",
@@ -39,9 +43,13 @@ _STREAM_ERROR_PATTERN = re.compile(r"stream error", re.IGNORECASE)
 _TITLE_AGENT_PATTERN = re.compile(r"agent=title|small=true|modelID=gpt-5-mini")
 
 
+logger = logging.getLogger("croqtuner.agent")
+
+
 @dataclass
 class RunState:
     fatal_error_message: str | None = None
+    launch_epoch_ms: int = 0
 
 
 def _build_env() -> dict[str, str]:
@@ -107,6 +115,33 @@ def extract_session_id(line: str) -> str | None:
             return match.group(1)
     return None
 
+
+
+def _detect_session_from_db(after_epoch_ms: int) -> str | None:
+    """Query opencode's SQLite DB for the newest session created after `after_epoch_ms`.
+
+    This is the reliable fallback when the session ID doesn't appear in stdout/stderr.
+    """
+    db_path = settings.opencode_db_path
+    if not db_path.exists():
+        return None
+    project_dir = str(settings.project_dir.resolve())
+    try:
+        conn = sqlite3.connect(str(db_path), timeout=2)
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT id FROM session "
+            "WHERE directory = ? AND time_created > ? "
+            "ORDER BY time_created DESC LIMIT 1",
+            (project_dir, after_epoch_ms),
+        )
+        row = cur.fetchone()
+        conn.close()
+        if row:
+            return row[0]
+    except (sqlite3.Error, OSError):
+        pass
+    return None
 
 
 def _find_artifacts(key: str) -> tuple[Path | None, Path | None]:
@@ -358,7 +393,7 @@ async def run_task(task: Task, session_factory) -> int:
     Uses file-based I/O instead of pipes because opencode's default
     formatter hangs when stdout is connected to a pipe.
     """
-    run_state = RunState()
+    run_state = RunState(launch_epoch_ms=int(time.time() * 1000))
     if settings.mock_mode:
         cmd = ["python3", str(Path(__file__).parent.parent.parent / "scripts" / "mock_opencode.py"),
                task.shape_key, str(task.max_iterations)]
@@ -395,7 +430,7 @@ async def run_task(task: Task, session_factory) -> int:
         stderr_task = asyncio.create_task(
             _tail_file(stderr_path, task.id, "error", session_factory, run_state, stop_event)
         )
-        poll_task = asyncio.create_task(_poll_loop(task, session_factory, proc))
+        poll_task = asyncio.create_task(_poll_loop(task, session_factory, proc, run_state))
 
         try:
             while True:
@@ -448,8 +483,14 @@ async def run_task(task: Task, session_factory) -> int:
     return exit_code
 
 
-async def _poll_loop(task: Task, session_factory, proc: asyncio.subprocess.Process) -> None:
-    """Periodically poll filesystem artifacts while process is alive."""
+async def _poll_loop(
+    task: Task,
+    session_factory,
+    proc: asyncio.subprocess.Process,
+    run_state: RunState | None = None,
+) -> None:
+    """Periodically poll filesystem artifacts and detect session ID while process is alive."""
+    session_linked = False
     try:
         while proc.returncode is None:
             await asyncio.sleep(settings.heartbeat_sec)
@@ -458,6 +499,20 @@ async def _poll_loop(task: Task, session_factory, proc: asyncio.subprocess.Proce
                 if db_task and db_task.status == "cancelled":
                     await _terminate_process(proc)
                     return
+
+                if not session_linked and db_task and not db_task.opencode_session_id:
+                    epoch_ms = run_state.launch_epoch_ms if run_state else 0
+                    sid = _detect_session_from_db(epoch_ms)
+                    if sid:
+                        db_task.opencode_session_id = sid
+                        db_task.updated_at = datetime.now(timezone.utc)
+                        await session.commit()
+                        await event_bus.publish("task_update", db_task.to_dict())
+                        session_linked = True
+                        logger.info("Linked session %s to task %d via DB", sid, task.id)
+                elif db_task and db_task.opencode_session_id:
+                    session_linked = True
+
             await poll_artifacts(task, session_factory)
     except asyncio.CancelledError:
         return

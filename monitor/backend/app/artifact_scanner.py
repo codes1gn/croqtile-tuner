@@ -18,7 +18,7 @@ import re
 from datetime import datetime, timezone
 from pathlib import Path
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .agent_detector import DetectedAgent, detect_running_agents
@@ -334,7 +334,16 @@ async def scan_and_create_tasks(session: AsyncSession) -> int:
             updated = False
             new_iter = metrics.get("current_iteration", 0)
             old_iter = task.current_iteration or 0
-            if new_iter != old_iter:
+
+            log_count_result = await session.execute(
+                select(func.count()).where(IterationLog.task_id == task.id)
+            )
+            log_count = log_count_result.scalar() or 0
+
+            if log_count == 0 and "results_tsv" in info:
+                await _import_iteration_logs_from_tsv(session, task.id, info["results_tsv"])
+                updated = True
+            elif new_iter != old_iter:
                 task.current_iteration = new_iter
                 updated = True
                 if "results_tsv" in info and new_iter > old_iter:
@@ -551,6 +560,15 @@ async def _import_iteration_logs_from_tsv(session: AsyncSession, task_id: int, r
         else:
             tuning_iter += 1
             iter_num = start_after + tuning_iter
+
+        existing = await session.execute(
+            select(IterationLog).where(
+                IterationLog.task_id == task_id,
+                IterationLog.iteration == iter_num,
+            )
+        )
+        if existing.scalar_one_or_none() is not None:
+            continue
 
         session.add(IterationLog(
             task_id=task_id,

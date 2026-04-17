@@ -16,7 +16,7 @@ describe("SessionHistory", () => {
       />,
     );
 
-    expect(screen.getByText(/OpenCode session has not been captured/)).toBeInTheDocument();
+    expect(screen.getByText(/session has not been captured/)).toBeInTheDocument();
   });
 
   it("renders stored session entries", () => {

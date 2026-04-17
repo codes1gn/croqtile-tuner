@@ -4,6 +4,8 @@ import { api } from "../api";
 interface Props {
   availableModels: string[];
   availableVariants: string[];
+  defaultModel: string;
+  defaultVariant: string;
   onCreated: () => void;
   onCancel: () => void;
   onRefreshModels?: () => Promise<string[]>;
@@ -53,7 +55,7 @@ const OUTPUT_DTYPES = [
   { value: "bf16", label: "BF16" },
 ];
 
-export function AddTaskForm({ availableModels, availableVariants, onCreated, onCancel, onRefreshModels }: Props) {
+export function AddTaskForm({ availableModels, availableVariants, defaultModel, defaultVariant, onCreated, onCancel, onRefreshModels }: Props) {
   const [opType, setOpType] = useState("gemm_sp");
   const [customOp, setCustomOp] = useState("");
   const [inputDtype, setInputDtype] = useState("e4m3");
@@ -64,9 +66,9 @@ export function AddTaskForm({ availableModels, availableVariants, onCreated, onC
   const [dsl, setDsl] = useState("croqtile");
   const [platform, setPlatform] = useState("opencode");
   const [model, setModel] = useState(
-    availableModels.find((m) => m === "github-copilot/gpt-5-mini") ?? availableModels[0] ?? ""
+    defaultModel && availableModels.includes(defaultModel) ? defaultModel : availableModels[0] ?? ""
   );
-  const [variant, setVariant] = useState(availableVariants[0] ?? "");
+  const [variant, setVariant] = useState(defaultVariant || (availableVariants[0] ?? ""));
   const [requestBudget, setRequestBudget] = useState("1");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);

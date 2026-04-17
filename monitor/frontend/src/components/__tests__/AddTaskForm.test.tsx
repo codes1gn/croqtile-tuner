@@ -5,6 +5,8 @@ import { AddTaskForm } from "../AddTaskForm";
 const defaultProps = {
   availableModels: ["opencode/qwen3.6-plus-free", "opencode/minimax-m2.5-free"],
   availableVariants: ["", "minimal", "low", "medium", "high", "xhigh", "max"],
+  defaultModel: "opencode/qwen3.6-plus-free",
+  defaultVariant: "",
   onCreated: vi.fn(),
   onCancel: vi.fn(),
 };
@@ -19,7 +21,7 @@ describe("AddTaskForm", () => {
     expect(screen.getByText("Agent Platform")).toBeInTheDocument();
     expect(screen.getByText("Model")).toBeInTheDocument();
     const spinbuttons = screen.getAllByRole("spinbutton");
-    expect(spinbuttons).toHaveLength(3);
+    expect(spinbuttons).toHaveLength(4);
   });
 
   it("shows cancel and submit buttons", () => {

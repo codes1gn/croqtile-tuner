@@ -206,7 +206,7 @@ async def _import_iteration_logs(session: AsyncSession) -> None:
             logger.warning("Failed to read results file during seed: %s", results_path)
             continue
 
-        iteration = 0
+        tuning_iter = 0
         for line in lines:
             stripped = line.strip()
             if not stripped or stripped.startswith("#"):
@@ -220,9 +220,6 @@ async def _import_iteration_logs(session: AsyncSession) -> None:
             if first in ("iter", "round"):
                 continue
 
-            # Detect format like artifact_scanner does:
-            # croqtile: round(int), iter, kernel, tflops, decision, ...
-            # cuda:     iter(str),  kernel, tflops, decision, bottleneck, ...
             try:
                 int(parts[0])
                 tflops_idx, decision_idx, kernel_idx = 3, 4, 2
@@ -232,21 +229,39 @@ async def _import_iteration_logs(session: AsyncSession) -> None:
             if len(parts) <= tflops_idx:
                 continue
 
-            iteration += 1
-
             tflops_raw = parts[tflops_idx].strip() if len(parts) > tflops_idx else ""
             tflops = _to_float_or_none(tflops_raw)
             decision = parts[decision_idx].strip() if len(parts) > decision_idx else None
-            if decision == "BASELINE":
-                decision = None
             kernel = parts[kernel_idx].strip() if len(parts) > kernel_idx else None
             bottleneck = parts[decision_idx + 1].strip() if len(parts) > decision_idx + 1 else None
             idea = parts[decision_idx + 2].strip() if len(parts) > decision_idx + 2 else None
 
+            is_baseline = (
+                (bottleneck or "").lower() in ("baseline", "baseline_profile")
+                or "baseline" in (kernel or "").lower()
+                or (kernel or "").lower().startswith("framework/")
+            )
+
+            if is_baseline:
+                iter_num = 0
+                decision = "BASELINE"
+            else:
+                tuning_iter += 1
+                iter_num = tuning_iter
+
+            existing = await session.execute(
+                select(IterationLog).where(
+                    IterationLog.task_id == task_id,
+                    IterationLog.iteration == iter_num,
+                )
+            )
+            if existing.scalar_one_or_none() is not None:
+                continue
+
             session.add(
                 IterationLog(
                     task_id=task_id,
-                    iteration=iteration,
+                    iteration=iter_num,
                     kernel_path=kernel or None,
                     tflops=tflops,
                     decision=decision or None,

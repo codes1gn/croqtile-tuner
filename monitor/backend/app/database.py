@@ -43,6 +43,12 @@ async def init_db():
         if "request_number" not in iter_columns:
             await conn.exec_driver_sql("ALTER TABLE iteration_logs ADD COLUMN request_number INTEGER")
 
+        await conn.exec_driver_sql(
+            "DELETE FROM iteration_logs WHERE id NOT IN ("
+            "  SELECT MIN(id) FROM iteration_logs GROUP BY task_id, iteration"
+            ")"
+        )
+
 
 async def get_session():
     async with async_session() as session:

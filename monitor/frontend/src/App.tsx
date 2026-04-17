@@ -98,6 +98,8 @@ export default function App() {
         <AddTaskForm
           availableModels={health?.available_models ?? []}
           availableVariants={health?.available_variants ?? [""]}
+          defaultModel={health?.default_model ?? ""}
+          defaultVariant={health?.default_variant ?? ""}
           onCreated={() => {
             setShowAdd(false);
             loadTasks();

@@ -98,10 +98,17 @@ def read_iteration_history(shape_key: str, task_id: int) -> list[dict]:
         except (ValueError, IndexError):
             tflops = None
 
-        # Parse decision, bottleneck, idea
         decision = parts[3] if len(parts) > 3 and parts[3] else None
         bottleneck = parts[4] if len(parts) > 4 and parts[4] else None
         idea_summary = parts[5] if len(parts) > 5 and parts[5] else None
+
+        is_baseline = (
+            (bottleneck or "").lower() in ("baseline", "baseline_profile")
+            or "baseline" in (kernel_path or "").lower()
+            or (kernel_path or "").lower().startswith("framework/")
+        )
+        if is_baseline:
+            decision = "BASELINE"
 
         entries.append(
             {
