@@ -30,6 +30,8 @@ const mockTask: TaskData = {
   updated_at: "2026-04-03T10:05:00",
   started_at: "2026-04-03T10:00:00",
   completed_at: null,
+  request_budget: 0,
+  request_number: 0,
 };
 
 describe("TaskList", () => {

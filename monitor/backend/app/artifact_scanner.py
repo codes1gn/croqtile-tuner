@@ -21,7 +21,7 @@ from pathlib import Path
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from .agent_detector import detect_running_agents
+from .agent_detector import DetectedAgent, detect_running_agents
 from .config import settings
 from .events import event_bus
 from .models import IterationLog, Task
@@ -29,7 +29,7 @@ from .models import IterationLog, Task
 logger = logging.getLogger("croqtuner.artifact_scanner")
 
 _SHAPE_KEY_RE = re.compile(
-    r"^(?:matmul_)?([A-Za-z0-9_]+?)_(\d+)x(\d+)x(\d+)$"
+    r"^(.+?)_([A-Za-z0-9]+)_(\d+)x(\d+)x(\d+)$"
 )
 
 _GPU_NAME_RE = re.compile(r"^sm\d+_(.+)$")
@@ -138,14 +138,19 @@ def discover_shape_keys() -> dict[str, dict]:
 
 
 def _parse_shape_key(shape_key: str) -> dict | None:
-    """Parse just the bare shape key (without gpu/dsl prefix)."""
+    """Parse just the bare shape key (without gpu/dsl prefix).
+
+    Handles formats like:
+      gemm_sp_fp16fp32_16384x16384x16384  → op_type=gemm_sp, dtype=fp16fp32
+      matmul_fp16_4096x4096x4096          → op_type=matmul,  dtype=fp16
+      gemm_e4m3f32_8192x8192x8192         → op_type=gemm,    dtype=e4m3f32
+    """
     m = _SHAPE_KEY_RE.match(shape_key)
     if not m:
         return None
-    dtype, m_raw, n_raw, k_raw = m.groups()
-    op_type_part = shape_key.split(f"_{dtype}_")[0] if f"_{dtype}_" in shape_key else "matmul"
+    op_type, dtype, m_raw, n_raw, k_raw = m.groups()
     return {
-        "op_type": op_type_part,
+        "op_type": op_type,
         "dtype": dtype,
         "m": int(m_raw),
         "n": int(n_raw),
@@ -224,11 +229,11 @@ def _parse_results_tsv(results_path: Path) -> dict:
         kernel_col = parts[tflops_idx - 1].strip() if tflops_idx > 0 else ""
         is_baseline = bottleneck == "baseline" or "baseline" in kernel_col.lower()
 
-        iter_count += 1
         if is_baseline:
             if tflops > 0:
                 baseline_tflops = tflops
         else:
+            iter_count += 1
             if tflops > 0 and (best_tflops is None or tflops > best_tflops):
                 best_tflops = tflops
 
@@ -267,6 +272,8 @@ async def prune_stale_tasks(session: AsyncSession) -> list[int]:
 
     if pruned_ids:
         await session.commit()
+        for tid in pruned_ids:
+            await event_bus.publish("task_deleted", {"id": tid})
         logger.info("Pruned %d stale task(s) from DB", len(pruned_ids))
 
     return pruned_ids
@@ -292,6 +299,7 @@ async def scan_and_create_tasks(session: AsyncSession) -> int:
     created = 0
     changed = False
 
+    pruned_in_scan: list[int] = []
     for shape_key, task in list(existing.items()):
         if "/" not in shape_key:
             continue
@@ -300,6 +308,7 @@ async def scan_and_create_tasks(session: AsyncSession) -> int:
         if task.status == "running":
             continue
         logger.info("Pruning stale task %d (%s) — disk artifacts removed", task.id, shape_key)
+        pruned_in_scan.append(task.id)
         await session.delete(task)
         changed = True
 
@@ -405,6 +414,8 @@ async def scan_and_create_tasks(session: AsyncSession) -> int:
 
     if created or changed:
         await session.commit()
+        for tid in pruned_in_scan:
+            await event_bus.publish("task_deleted", {"id": tid})
 
     # Detect running agents and mark their tasks as "running"
     await _sync_agent_status(session)
@@ -413,35 +424,62 @@ async def scan_and_create_tasks(session: AsyncSession) -> int:
 
 
 async def _sync_agent_status(session: AsyncSession) -> None:
-    """Match detected agents to tasks and update status/agent_type."""
+    """Match detected agents to tasks and update status/agent_type/model."""
     try:
         agents = detect_running_agents()
     except Exception:
         return
 
-    active_kernels: dict[str, str] = {}
+    if not agents:
+        return
+
+    active_agents: dict[str, "DetectedAgent"] = {}
     for agent in agents:
         if agent.kernel_path:
-            active_kernels[agent.kernel_path] = agent.agent_type
+            active_agents[agent.kernel_path] = agent
 
-    if not active_kernels:
+    if not active_agents:
         return
 
     result = await session.execute(select(Task))
     tasks = result.scalars().all()
 
     for task in tasks:
-        bare_key = task.shape_key.split("/")[-1] if "/" in task.shape_key else task.shape_key
-        agent_type = active_kernels.get(bare_key) or active_kernels.get(task.shape_key)
-        if not agent_type:
+        # Compound key format: "{gpu}/{dsl}/{shape_key}/{model}" — the kernel shape is at index [-2]
+        parts = task.shape_key.split("/")
+        bare_key = parts[-2] if len(parts) >= 2 else task.shape_key
+        agent = active_agents.get(bare_key) or active_agents.get(task.shape_key)
+        if not agent:
+            for kp, ag in active_agents.items():
+                if kp in task.shape_key:
+                    agent = ag
+                    break
+        if not agent:
             continue
-        budget = task.request_budget if task.request_budget is not None else 1
-        if task.status == "pending" and budget > 0:
+
+        updated = False
+        if agent.model_id and agent.model_id != task.model:
+            logger.info("Agent model update: %s model %s → %s", task.shape_key, task.model, agent.model_id)
+            task.model = agent.model_id
+            updated = True
+        if agent.agent_type and agent.agent_type != task.agent_type:
+            task.agent_type = agent.agent_type
+            updated = True
+        mode = agent.agent_type if agent.agent_type != "unknown" else None
+        if mode and mode != task.mode:
+            task.mode = mode
+            updated = True
+
+        # If a live agent is detected for this task, it is running — regardless of
+        # request_budget (which is a scheduler dispatch counter, not a liveness flag).
+        if task.status in ("pending", "cancelled", "completed"):
             task.status = "running"
-            task.agent_type = agent_type
             task.started_at = task.started_at or datetime.now(timezone.utc)
+            updated = True
+            logger.info("Agent sync: %s → running (agent=%s, model=%s)", task.shape_key, agent.agent_type, agent.model_id)
+
+        if updated:
             task.updated_at = datetime.now(timezone.utc)
-            logger.info("Agent sync: %s → running (agent=%s)", task.shape_key, agent_type)
             await event_bus.publish("task_update", task.to_dict())
 
     await session.commit()

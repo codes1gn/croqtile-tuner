@@ -16,33 +16,42 @@ interface Props {
   baseline: number | null;
 }
 
+export function isBaselineEntry(l: IterationLogData): boolean {
+  const d = (l.decision ?? "").toUpperCase();
+  if (d === "BASELINE") return true;
+  const k = (l.kernel_path ?? "").toLowerCase();
+  if (k.includes("baseline") || k.startsWith("framework/")) return true;
+  const b = (l.bottleneck ?? "").toLowerCase();
+  if (b === "baseline" || b === "baseline_profile") return true;
+  return false;
+}
+
 export function TflopsChart({ logs, baseline }: Props) {
-  // Exclude BASELINE-decision rows (they are the cuBLAS reference, shown only as rooftop)
-  const iters = [...logs]
-    .filter((l) => l.decision?.toUpperCase() !== "BASELINE")
+  const tuningIters = [...logs]
+    .filter((l) => !isBaselineEntry(l))
+    .filter((l) => (l.tflops ?? 0) > 0)
     .sort((a, b) => a.iteration - b.iteration);
 
-  // Build two datasets:
-  // 1. stepData: running-best ascending staircase — only advances when a new best is reached
-  // 2. discardMarkers: all DISCARD/failed iterations as scatter markers (not on the line)
   let runningBest = 0;
-  const stepData: { iteration: number; best: number }[] = [];
-  const discardMarkers: { iteration: number; tflops: number }[] = [];
+  const keepPoints: { iteration: number; tflops: number; best: number; kernel: string | null }[] = [];
+  const discardPoints: { iteration: number; tflops: number; kernel: string | null }[] = [];
 
-  for (const l of iters) {
+  for (const l of tuningIters) {
     const tf = l.tflops ?? 0;
-    if (tf > 0 && tf > runningBest) {
+    const dec = (l.decision ?? "").toUpperCase();
+    if (dec === "KEEP" && tf > runningBest) {
       runningBest = tf;
-      stepData.push({ iteration: l.iteration, best: runningBest });
-    } else if (tf > 0) {
-      discardMarkers.push({ iteration: l.iteration, tflops: tf });
+      keepPoints.push({ iteration: l.iteration, tflops: tf, best: runningBest, kernel: l.kernel_path });
+    } else {
+      discardPoints.push({ iteration: l.iteration, tflops: tf, kernel: l.kernel_path });
     }
-    // zero/null (compile errors) are silently ignored
   }
+
+  const bestStaircase = keepPoints.map((p) => ({ iteration: p.iteration, best: p.best }));
 
   const rooftop = baseline ?? null;
 
-  if (stepData.length === 0 && discardMarkers.length === 0) {
+  if (keepPoints.length === 0 && discardPoints.length === 0) {
     return (
       <div className="h-48 flex items-center justify-center text-gray-600 text-sm">
         No iteration data yet.
@@ -50,31 +59,33 @@ export function TflopsChart({ logs, baseline }: Props) {
     );
   }
 
-  const maxTflops = Math.max(
-    ...stepData.map((d) => d.best),
-    ...discardMarkers.map((d) => d.tflops),
+  const allTflops = [
+    ...keepPoints.map((d) => d.tflops),
+    ...discardPoints.map((d) => d.tflops),
     rooftop ?? 0,
-  );
+  ];
+  const maxTflops = Math.max(...allTflops);
   const yMax = Math.ceil(maxTflops * 1.15) || 1;
 
-  const allXValues = [
-    ...stepData.map((d) => d.iteration),
-    ...discardMarkers.map((d) => d.iteration),
+  const allIters = [
+    ...keepPoints.map((d) => d.iteration),
+    ...discardPoints.map((d) => d.iteration),
   ];
-  const xMin = allXValues.length ? Math.min(...allXValues) : 1;
-  const xMax = allXValues.length ? Math.max(...allXValues) : 1;
+  const xMin = allIters.length ? Math.min(...allIters) : 1;
+  const xMax = allIters.length ? Math.max(...allIters) : 1;
 
   return (
     <ResponsiveContainer width="100%" height={280}>
-      <ComposedChart margin={{ top: 10, right: 120, bottom: 5, left: 10 }}>
+      <ComposedChart margin={{ top: 10, right: 130, bottom: 5, left: 10 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
         <XAxis
           type="number"
           dataKey="iteration"
-          domain={[xMin, xMax]}
+          domain={[Math.max(1, xMin), xMax]}
           stroke="#6b7280"
           tick={{ fill: "#9ca3af", fontSize: 11 }}
           label={{ value: "Iteration", position: "insideBottom", offset: -2, fill: "#6b7280", fontSize: 11 }}
+          allowDecimals={false}
           allowDataOverflow
         />
         <YAxis
@@ -86,12 +97,14 @@ export function TflopsChart({ logs, baseline }: Props) {
         <Tooltip
           contentStyle={{ backgroundColor: "#1f2937", border: "1px solid #374151", borderRadius: 8, fontSize: 12 }}
           labelStyle={{ color: "#9ca3af" }}
+          labelFormatter={(label) => `Iteration ${label}`}
           formatter={(value: number, name: string) => {
             if (name === "best") return [`${value.toFixed(3)} TFLOPS`, "Best so far"];
-            if (name === "tflops") return [`${value.toFixed(3)} TFLOPS`, "Trial (discarded)"];
+            if (name === "tflops") return [`${value.toFixed(3)} TFLOPS`, "Measured"];
             return [value, name];
           }}
         />
+
         {rooftop != null && (
           <ReferenceLine
             y={rooftop}
@@ -99,7 +112,7 @@ export function TflopsChart({ logs, baseline }: Props) {
             strokeDasharray="8 4"
             strokeWidth={2}
             label={{
-              value: `Baseline ${rooftop.toFixed(1)} TFLOPS`,
+              value: `cuBLAS baseline ${rooftop.toFixed(1)}`,
               fill: "#f59e0b",
               fontSize: 11,
               position: "right",
@@ -107,30 +120,40 @@ export function TflopsChart({ logs, baseline }: Props) {
           />
         )}
 
-        {/* Ascending staircase: only steps up when a new best is achieved */}
-        <Line
-          data={stepData}
-          type="stepAfter"
-          dataKey="best"
-          stroke="#3b82f6"
-          strokeWidth={2}
-          dot={({ cx, cy }: { cx: number; cy: number }) => (
-            <circle key={`keep-${cx}-${cy}`} cx={cx} cy={cy} r={5} fill="#34d399" stroke="#1f2937" strokeWidth={1.5} />
-          )}
-          activeDot={{ r: 7, fill: "#34d399" }}
+        {bestStaircase.length > 0 && (
+          <Line
+            data={bestStaircase}
+            type="stepAfter"
+            dataKey="best"
+            stroke="#3b82f6"
+            strokeWidth={2}
+            dot={false}
+            activeDot={false}
+            isAnimationActive={false}
+          />
+        )}
+
+        {/* KEEP iterations: green circles */}
+        <Scatter
+          data={keepPoints}
+          dataKey="tflops"
+          name="tflops"
+          shape={((props: unknown) => {
+            const { cx, cy } = props as { cx: number; cy: number };
+            return <circle cx={cx} cy={cy} r={5} fill="#34d399" stroke="#1f2937" strokeWidth={1.5} />;
+          }) as (props: unknown) => React.JSX.Element}
           isAnimationActive={false}
         />
 
-        {/* Discard markers: shown as red crosses at their actual TFLOPS, not on the line */}
+        {/* DISCARD / other iterations: red circles */}
         <Scatter
-          data={discardMarkers}
+          data={discardPoints}
           dataKey="tflops"
-          shape={({ cx, cy }: { cx: number; cy: number }) => (
-            <g key={`discard-${cx}-${cy}`}>
-              <line x1={cx - 4} y1={cy - 4} x2={cx + 4} y2={cy + 4} stroke="#f87171" strokeWidth={1.5} />
-              <line x1={cx + 4} y1={cy - 4} x2={cx - 4} y2={cy + 4} stroke="#f87171" strokeWidth={1.5} />
-            </g>
-          )}
+          name="tflops"
+          shape={((props: unknown) => {
+            const { cx, cy } = props as { cx: number; cy: number };
+            return <circle cx={cx} cy={cy} r={4} fill="#f87171" stroke="#1f2937" strokeWidth={1.5} />;
+          }) as (props: unknown) => React.JSX.Element}
           isAnimationActive={false}
         />
       </ComposedChart>

@@ -53,7 +53,12 @@ class Scheduler:
         logger.info("Scheduler stopped")
 
     async def _recover_stale_tasks(self) -> None:
+        from .agent_detector import detect_running_agents
+
         live_pids = _find_live_opencode_pids()
+        # Also check for cursor-agent or other agent types actively targeting any task
+        live_agents = detect_running_agents()
+        live_agent_kernel_paths = {ag.kernel_path for ag in live_agents if ag.kernel_path}
 
         async with async_session() as session:
             result = await session.execute(
@@ -63,11 +68,19 @@ class Scheduler:
 
             adopted_task: Task | None = None
             for task in running_tasks:
-                if live_pids and adopted_task is None:
+                # Check if any live agent (opencode or cursor-agent) is targeting this task
+                parts = task.shape_key.split("/")
+                task_kernel = parts[-2] if len(parts) >= 2 else task.shape_key
+                agent_is_live = (
+                    any(kp in task.shape_key for kp in live_agent_kernel_paths)
+                    or task_kernel in live_agent_kernel_paths
+                )
+
+                if (live_pids or agent_is_live) and adopted_task is None:
                     adopted_task = task
                     logger.info(
-                        "Adopting live task %d (%s) — opencode still running (PIDs %s)",
-                        task.id, task.shape_key, live_pids,
+                        "Adopting live task %d (%s) — agent still running (opencode PIDs=%s, agent_kernel_paths=%s)",
+                        task.id, task.shape_key, live_pids, live_agent_kernel_paths,
                     )
                 else:
                     task.status = "pending"
@@ -321,11 +334,15 @@ class Scheduler:
         logger.info("Task %d finished [%s] exit_code=%s", task_id, source, exit_code)
 
     async def _adopt_worker(self, task: Task) -> None:
-        """Poll artifacts for a task whose opencode subprocess is still running
+        """Poll artifacts for a task whose agent subprocess is still running
         from before the backend restarted."""
+        from .agent_detector import detect_running_agents
         from .config import settings
 
         logger.info("Adopt-worker: polling artifacts for task %d (%s)", task.id, task.shape_key)
+        parts = task.shape_key.split("/")
+        task_kernel = parts[-2] if len(parts) >= 2 else task.shape_key
+
         try:
             while True:
                 await asyncio.sleep(settings.heartbeat_sec)
@@ -340,9 +357,18 @@ class Scheduler:
 
                 await poll_artifacts(task, async_session)
 
-                live = _find_live_opencode_pids()
-                if not live:
-                    logger.info("Adopt-worker: opencode exited for task %d", task.id)
+                # Liveness: check opencode AND cursor-agent
+                live_opencode = _find_live_opencode_pids()
+                if live_opencode:
+                    continue
+
+                live_agents = detect_running_agents()
+                agent_live = any(
+                    ag.kernel_path and (ag.kernel_path == task_kernel or ag.kernel_path in task.shape_key)
+                    for ag in live_agents
+                )
+                if not agent_live:
+                    logger.info("Adopt-worker: agent exited for task %d", task.id)
                     break
         except asyncio.CancelledError:
             logger.info("Adopt-worker for task %d cancelled", task.id)

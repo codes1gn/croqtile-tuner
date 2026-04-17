@@ -7,8 +7,9 @@ import {
   type AgentLogData,
   type SessionHistoryData,
 } from "../api";
+import { parseDtype, dtypeLabel } from "../dtype";
 import { StatusBadge } from "./StatusBadge";
-import { TflopsChart } from "./TflopsChart";
+import { TflopsChart, isBaselineEntry } from "./TflopsChart";
 import { LiveLog } from "./LiveLog";
 import { SessionHistory } from "./SessionHistory";
 import type { SSEEvent } from "../hooks/useSSE";
@@ -154,13 +155,14 @@ export function TaskDetail({ sseEvent }: Props) {
     }
   };
 
-  const handleRetry = async () => {
+  const handleDelete = async () => {
     if (!task) return;
+    if (!window.confirm(`Delete task "${task.shape_key}"? This cannot be undone.`)) return;
     try {
-      const retried = await api.retryTask(task.id);
-      navigate(`/tasks/${retried.id}`);
+      await api.deleteTask(task.id);
+      navigate("/");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to retry");
+      setError(err instanceof Error ? err.message : "Failed to delete task");
     }
   };
 
@@ -216,11 +218,24 @@ export function TaskDetail({ sseEvent }: Props) {
       : "--";
 
   const variantSuffix = task.variant ? ` (${task.variant})` : "";
+  const platformLabel = task.mode === "cursor_cli" ? "Cursor CLI" : task.mode === "opencode" ? "OpenCode" : task.mode;
   const taskModelLabel = task.model ? modelLabel(task.model) + variantSuffix : "system default";
+  const modelHasBuiltinVariant = editModel.startsWith("cursor/");
+  const effectiveVariants = modelHasBuiltinVariant ? [""] : availableVariants;
   const modelEditable = task.status !== "running" && task.status !== "completed";
   const modelChanged = editModel !== (task.model ?? "") || editVariant !== (task.variant ?? "");
-  const groups = providerGroup(availableModels);
-  const providerOrder = ["github-copilot", "opencode", "nvidia"];
+  const platformModels = availableModels.filter((m) => {
+    if (task.mode === "cursor_cli") return m.startsWith("cursor/");
+    if (task.mode === "opencode") return m.startsWith("opencode/") || m.startsWith("github-copilot/");
+    return true;
+  });
+  const effectiveModels = task.model && !platformModels.includes(task.model)
+    ? [task.model, ...platformModels]
+    : platformModels;
+  const groups = providerGroup(effectiveModels);
+  const providerOrder = task.mode === "cursor_cli"
+    ? ["cursor", "other"]
+    : ["github-copilot", "opencode", "nvidia"];
   const sortedProviders = [
     ...providerOrder.filter((p) => groups[p]),
     ...Object.keys(groups).filter((p) => !providerOrder.includes(p)),
@@ -235,7 +250,28 @@ export function TaskDetail({ sseEvent }: Props) {
         >
           &larr; Back
         </button>
-        <h2 className="text-xl font-bold font-mono text-gray-100">{task.shape_key}</h2>
+        <div>
+          <h2 className="text-xl font-bold font-mono text-gray-100">{task.shape_key}</h2>
+          {task.dtype && (() => {
+            const p = parseDtype(task.dtype);
+            return (
+              <div className="flex items-center gap-1.5 mt-0.5 font-mono text-xs">
+                <span className="text-gray-500">dtype:</span>
+                {p.symmetric ? (
+                  <span className="text-gray-300">{dtypeLabel(p.in)}</span>
+                ) : (
+                  <>
+                    <span className="text-cyan-400">{dtypeLabel(p.in)}</span>
+                    <span className="text-gray-600">→</span>
+                    <span className="text-amber-400">{dtypeLabel(p.out)}</span>
+                  </>
+                )}
+                <span className="text-gray-600">·</span>
+                <span className="text-gray-400">{task.m}×{task.n}×{task.k}</span>
+              </div>
+            );
+          })()}
+        </div>
         <StatusBadge status={task.status} />
         <span className="text-sm text-gray-500">
           {({ croqtile: "Croqtile", cuda: "CUDA", triton: "Triton", cute: "CuTe", cutile: "CuTile", helion: "Helion", tilelang: "TileLang" } as Record<string, string>)[task.dsl ?? ""] ?? task.dsl ?? task.mode}
@@ -250,31 +286,31 @@ export function TaskDetail({ sseEvent }: Props) {
               Promote to queue
             </button>
           )}
-          {(task.status === "pending" || task.status === "completed" || task.status === "cancelled") && (
-            <>
-              <button
-                type="button"
-                onClick={handleRetry}
-                className="px-3 py-1 text-xs rounded bg-cyan-900/50 hover:bg-cyan-800 text-cyan-200 border border-cyan-700 transition"
-              >
-                Retry (fresh)
-              </button>
-              <button
-                type="button"
-                onClick={() => { setShowResume(!showResume); setResumeIter(String(task.current_iteration)); }}
-                className="px-3 py-1 text-xs rounded bg-amber-900/50 hover:bg-amber-800 text-amber-200 border border-amber-700 transition"
-              >
-                Resume from iter
-              </button>
-            </>
+          {(task.status === "pending" || task.status === "completed" || task.status === "cancelled" || task.status === "waiting") && (
+            <button
+              type="button"
+              onClick={() => { setShowResume(!showResume); setResumeIter(String(task.current_iteration)); }}
+              className="px-3 py-1 text-xs rounded bg-amber-900/50 hover:bg-amber-800 text-amber-200 border border-amber-700 transition"
+            >
+              Resume
+            </button>
           )}
           {(task.status === "running" || task.status === "pending" || task.status === "waiting") && (
             <button
               type="button"
               onClick={handleCancel}
+              className="px-3 py-1 text-xs rounded bg-orange-900/50 hover:bg-orange-800 text-orange-300 border border-orange-800 transition"
+            >
+              Pause
+            </button>
+          )}
+          {(task.status === "cancelled" || task.status === "completed" || task.status === "pending" || task.status === "waiting") && (
+            <button
+              type="button"
+              onClick={handleDelete}
               className="px-3 py-1 text-xs rounded bg-red-900/50 hover:bg-red-800 text-red-300 border border-red-800 transition"
             >
-              Cancel
+              Delete
             </button>
           )}
         </div>
@@ -335,8 +371,13 @@ export function TaskDetail({ sseEvent }: Props) {
         <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
           <h3 className="text-sm font-semibold text-gray-400 mb-2">Model</h3>
           <div className="text-base font-semibold text-gray-100">{taskModelLabel}</div>
-          <div className="mt-1 font-mono text-xs text-gray-500">
-            {task.model ?? "inherited at dispatch"}{task.variant ? ` --variant ${task.variant}` : ""}
+          <div className="mt-1 flex items-center gap-2">
+            <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${task.mode === "cursor_cli" ? "bg-violet-500/20 text-violet-300" : "bg-cyan-500/20 text-cyan-300"}`}>
+              {platformLabel}
+            </span>
+            <span className="font-mono text-xs text-gray-500">
+              {task.model ?? "inherited at dispatch"}{task.variant ? ` --variant ${task.variant}` : ""}
+            </span>
           </div>
           <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_auto]">
             <div className="grid gap-3 sm:grid-cols-2">
@@ -363,10 +404,10 @@ export function TaskDetail({ sseEvent }: Props) {
                 <select
                   value={editVariant}
                   onChange={(e) => setEditVariant(e.target.value)}
-                  disabled={!modelEditable || savingModel}
+                  disabled={!modelEditable || savingModel || modelHasBuiltinVariant}
                   className="w-full rounded bg-gray-900 border border-gray-600 px-2 py-1.5 text-sm text-gray-100 disabled:opacity-60"
                 >
-                  {availableVariants.map((v) => (
+                  {effectiveVariants.map((v) => (
                     <option key={v} value={v}>{v || "(none)"}</option>
                   ))}
                 </select>
@@ -457,22 +498,22 @@ export function TaskDetail({ sseEvent }: Props) {
             </thead>
             <tbody>
               {[...iterLogs].sort((a, b) => b.iteration - a.iteration).map((log) => {
-                const isBaseline = log.iteration === 0;
+                const isBL = isBaselineEntry(log);
                 return (
-                <tr key={log.id} className={`border-b border-gray-700/50 ${isBaseline ? "bg-amber-950/20" : ""}`}>
+                <tr key={log.id} className={`border-b border-gray-700/50 ${isBL ? "bg-amber-950/20" : ""}`}>
                   <td className="py-1.5 px-3 text-gray-400">
-                    {isBaseline ? <span className="text-amber-400 font-semibold">base</span> : log.iteration}
+                    {isBL ? <span className="text-amber-400 font-semibold">base</span> : log.iteration}
                   </td>
                   <td className="py-1.5 px-3 text-gray-500 font-mono">
                     {log.request_number ? `#${log.request_number}` : "--"}
                   </td>
-                  <td className={`py-1.5 px-3 font-mono ${isBaseline ? "text-amber-300" : "text-gray-200"}`}>
+                  <td className={`py-1.5 px-3 font-mono ${isBL ? "text-amber-300" : "text-gray-200"}`}>
                     {log.tflops?.toFixed(1) ?? "--"}
-                    {isBaseline && " ★"}
+                    {isBL && " ★"}
                   </td>
                   <td className="py-1.5 px-3">
-                    {isBaseline ? (
-                      <span className="text-amber-400 text-[10px] uppercase tracking-wider">rooftop</span>
+                    {isBL ? (
+                      <span className="text-amber-400 text-[10px] uppercase tracking-wider">cuBLAS rooftop</span>
                     ) : (
                       <span className={log.decision === "KEEP" ? "text-emerald-400" : "text-red-400"}>
                         {log.decision ?? "--"}

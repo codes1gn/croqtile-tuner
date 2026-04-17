@@ -28,6 +28,25 @@ function AutoWakeToggle({ enabled, onToggle, disabled }: { enabled: boolean; onT
   );
 }
 
+function GpuInfoDisplay({ raw }: { raw: string }) {
+  const parts = raw.split(",").map((s) => s.trim());
+  if (parts.length < 4) {
+    return <pre className="mt-2 whitespace-pre-wrap font-mono text-xs text-gray-300">{raw}</pre>;
+  }
+  const [, name, util, memUsed, memTotal, temp] = parts;
+  const memPct = memTotal ? Math.round((parseFloat(memUsed) / parseFloat(memTotal)) * 100) : null;
+  return (
+    <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+      <div className="col-span-2 text-sm font-semibold text-gray-100 mb-1">{name}</div>
+      <div className="text-gray-500">Utilization</div>
+      <div className="text-gray-200 font-mono">{util}</div>
+      <div className="text-gray-500">Memory</div>
+      <div className="text-gray-200 font-mono">{memUsed} / {memTotal}{memPct != null ? ` (${memPct}%)` : ""}</div>
+      {temp && <><div className="text-gray-500">Temperature</div><div className="text-gray-200 font-mono">{temp} C</div></>}
+    </div>
+  );
+}
+
 export function SystemStatusPanel({ health, onRefresh }: Props) {
   const [error, setError] = useState("");
   const [togglingAutoWake, setTogglingAutoWake] = useState(false);
@@ -80,7 +99,10 @@ export function SystemStatusPanel({ health, onRefresh }: Props) {
     { label: "Waiting", value: health.task_counts.waiting ?? 0 },
     { label: "Pending", value: health.task_counts.pending ?? 0 },
     { label: "Running", value: health.task_counts.running ?? 0 },
+    { label: "Stopped", value: health.task_counts.stopped ?? 0 },
     { label: "Completed", value: health.task_counts.completed ?? 0 },
+    { label: "Failed", value: health.task_counts.failed ?? 0 },
+    { label: "Cancelled", value: health.task_counts.cancelled ?? 0 },
   ];
 
   return (
@@ -115,11 +137,11 @@ export function SystemStatusPanel({ health, onRefresh }: Props) {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+        <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
           {queueItems.map((item) => (
-            <div key={item.label} className="rounded-xl border border-gray-800 bg-black/20 px-4 py-3">
-              <div className="text-[11px] uppercase tracking-[0.25em] text-gray-500">{item.label}</div>
-              <div className="mt-1 text-2xl font-semibold text-gray-100">{item.value}</div>
+            <div key={item.label} className="rounded-lg border border-gray-800 bg-black/20 px-3 py-2 text-center">
+              <div className="text-[10px] uppercase tracking-wider text-gray-500">{item.label}</div>
+              <div className="mt-0.5 text-xl font-semibold text-gray-100">{item.value}</div>
             </div>
           ))}
         </div>
@@ -128,19 +150,23 @@ export function SystemStatusPanel({ health, onRefresh }: Props) {
       <div className="mt-4 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
         <div className="rounded-xl border border-gray-800 bg-black/20 px-4 py-3 text-sm text-gray-300 lg:flex-1">
           <div className="text-[11px] uppercase tracking-[0.25em] text-gray-500">GPU</div>
-          <pre className="mt-2 whitespace-pre-wrap font-mono text-xs text-gray-300">{health.gpu_info ?? "Unavailable"}</pre>
+          {health.gpu_info && health.gpu_info !== "nvidia-smi not available" ? (
+            <GpuInfoDisplay raw={health.gpu_info} />
+          ) : (
+            <p className="mt-2 text-xs text-gray-500">Unavailable</p>
+          )}
         </div>
 
         <div className="lg:w-[32rem]">
           <div className="rounded-xl border border-cyan-800/60 bg-cyan-950/20 px-4 py-3">
-            <div className="text-[11px] uppercase tracking-[0.25em] text-cyan-400">Default Model for AutoTune</div>
+            <div className="text-[11px] uppercase tracking-[0.25em] text-cyan-400">Default Model for AutoTune <span className="text-gray-500 normal-case tracking-normal">(OpenCode)</span></div>
             <div className="mt-2 flex items-center gap-2">
               <select
                 value={selectedModel}
                 onChange={(e) => setSelectedModel(e.target.value)}
                 className="flex-1 bg-gray-800 rounded px-2 py-1.5 text-sm text-gray-100 border border-gray-700 focus:border-cyan-500 focus:outline-none"
               >
-                {(health?.available_models ?? []).map((m) => (
+                {(health?.available_models ?? []).filter((m) => m.startsWith("opencode/") || m.startsWith("github-copilot/")).map((m) => (
                   <option key={m} value={m}>{m}</option>
                 ))}
               </select>

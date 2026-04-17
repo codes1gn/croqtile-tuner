@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import type { TaskData } from "../api";
+import { parseDtype, dtypeLabel } from "../dtype";
 import { StatusBadge } from "./StatusBadge";
 
 interface Props {
@@ -7,11 +8,10 @@ interface Props {
   activeTaskId: number | null;
 }
 
-const MODEL_LABELS: Record<string, string> = {
-  "opencode/qwen3.6-plus-free": "Qwen3.6 Plus Free",
-  "opencode/minimax-m2.5-free": "Minimax M2.5 Free",
-  "opencode/big-pickle": "Big Pickle Free",
-};
+function modelShortLabel(model: string): string {
+  const slash = model.indexOf("/");
+  return slash > 0 ? model.slice(slash + 1) : model;
+}
 
 const DSL_LABELS: Record<string, string> = {
   croqtile: "Croqtile",
@@ -27,6 +27,20 @@ const PLATFORM_LABELS: Record<string, string> = {
   opencode: "OpenCode",
   cursor_cli: "Cursor CLI",
 };
+
+function DtypeTag({ dtype }: { dtype: string }) {
+  const p = parseDtype(dtype);
+  if (p.symmetric) {
+    return <div className="text-gray-500 text-[10px] mt-0.5">{dtypeLabel(p.in)}</div>;
+  }
+  return (
+    <div className="flex items-center gap-0.5 mt-0.5">
+      <span className="text-[9px] text-cyan-400 font-semibold">{dtypeLabel(p.in)}</span>
+      <span className="text-[8px] text-gray-600">→</span>
+      <span className="text-[9px] text-amber-400 font-semibold">{dtypeLabel(p.out)}</span>
+    </div>
+  );
+}
 
 export function TaskList({ tasks, activeTaskId }: Props) {
   const navigate = useNavigate();
@@ -51,20 +65,20 @@ export function TaskList({ tasks, activeTaskId }: Props) {
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
+    <div className="overflow-x-auto rounded-xl border border-gray-800 bg-gray-900/50">
+      <table className="w-full text-sm table-fixed">
         <thead>
-          <tr className="text-left text-gray-400 border-b border-gray-700">
-            <th className="py-2 px-3">Status</th>
-            <th className="py-2 px-3">Op</th>
-            <th className="py-2 px-3">Shape</th>
-            <th className="py-2 px-3">Model</th>
-            <th className="py-2 px-3">DSL</th>
-            <th className="py-2 px-3">Device</th>
-            <th className="py-2 px-3">Iter</th>
-            <th className="py-2 px-3">Progress vs Baseline</th>
-            <th className="py-2 px-3">Best TFLOPS</th>
-            <th className="py-2 px-3">Created</th>
+          <tr className="text-left text-gray-400 border-b border-gray-700 text-xs uppercase tracking-wider">
+            <th className="py-2.5 px-3 w-24">Status</th>
+            <th className="py-2.5 px-3 w-24">Op</th>
+            <th className="py-2.5 px-3 w-36">Shape</th>
+            <th className="py-2.5 px-3 w-36">Model</th>
+            <th className="py-2.5 px-3 w-20">DSL</th>
+            <th className="py-2.5 px-3 w-28">Device</th>
+            <th className="py-2.5 px-3 w-14">Iter</th>
+            <th className="py-2.5 px-3 w-40">vs Baseline</th>
+            <th className="py-2.5 px-3 w-24">Best</th>
+            <th className="py-2.5 px-3 w-36">Created</th>
           </tr>
         </thead>
         <tbody>
@@ -89,13 +103,17 @@ export function TaskList({ tasks, activeTaskId }: Props) {
                 <td className="py-2 px-3 font-mono text-gray-200 uppercase">{task.op_type ?? "—"}</td>
                 <td className="py-2 px-3 font-mono text-gray-300 text-xs whitespace-nowrap">
                   {task.m}×{task.n}×{task.k}
-                  <div className="text-gray-600 text-[10px] uppercase">{task.dtype}</div>
+                  <DtypeTag dtype={task.dtype} />
                 </td>
                 <td className="py-2 px-3 text-gray-300">
                   {task.model ? (
                     <>
-                      <div>{MODEL_LABELS[task.model] ?? task.model}</div>
-                      <div className="font-mono text-[11px] text-gray-500">{task.model}</div>
+                      <div className="truncate max-w-[10rem]" title={task.model}>{modelShortLabel(task.model)}</div>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <span className={`inline-flex items-center rounded-full px-1.5 py-0 text-[9px] font-semibold uppercase tracking-wider ${task.mode === "cursor_cli" ? "bg-violet-500/20 text-violet-300" : "bg-cyan-500/20 text-cyan-300"}`}>
+                          {PLATFORM_LABELS[task.mode] ?? task.mode}
+                        </span>
+                      </div>
                     </>
                   ) : (
                     <div className="text-gray-600">N/A</div>

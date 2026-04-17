@@ -498,6 +498,8 @@ async def list_running_agents():
             "working_dir": a.working_dir,
             "kernel": a.kernel_path,
             "command": a.command[:300],
+            "model_id": a.model_id,
+            "model_display": a.model_display,
         }
         for a in agents
     ]
