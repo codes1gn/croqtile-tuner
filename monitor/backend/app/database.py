@@ -15,62 +15,15 @@ async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit
 
 
 async def init_db():
+    """Drop all tables and recreate from models on every startup.
+
+    Disk artifacts (tuning/) are the source of truth.  The DB is a transient
+    index rebuilt via scan_and_create_tasks / state_seed at startup.
+    """
     from .models import Base
     async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
-        columns = {
-            row[1]
-            for row in (await conn.exec_driver_sql("PRAGMA table_info(tasks)")).fetchall()
-        }
-        if "model" not in columns:
-            await conn.exec_driver_sql("ALTER TABLE tasks ADD COLUMN model VARCHAR(128)")
-        if "opencode_session_id" not in columns:
-            await conn.exec_driver_sql("ALTER TABLE tasks ADD COLUMN opencode_session_id VARCHAR(128)")
-        if "variant" not in columns:
-            await conn.exec_driver_sql("ALTER TABLE tasks ADD COLUMN variant VARCHAR(32) DEFAULT ''")
-        if "dsl" not in columns:
-            await conn.exec_driver_sql("ALTER TABLE tasks ADD COLUMN dsl VARCHAR(32)")
-        if "respawn_count" not in columns:
-            await conn.exec_driver_sql("ALTER TABLE tasks ADD COLUMN respawn_count INTEGER DEFAULT 0 NOT NULL")
-        if "request_budget" not in columns:
-            await conn.exec_driver_sql("ALTER TABLE tasks ADD COLUMN request_budget INTEGER DEFAULT 1 NOT NULL")
-        if "request_number" not in columns:
-            await conn.exec_driver_sql("ALTER TABLE tasks ADD COLUMN request_number INTEGER DEFAULT 0 NOT NULL")
-        iter_columns = {
-            row[1]
-            for row in (await conn.exec_driver_sql("PRAGMA table_info(iteration_logs)")).fetchall()
-        }
-        if "request_number" not in iter_columns:
-            await conn.exec_driver_sql("ALTER TABLE iteration_logs ADD COLUMN request_number INTEGER")
-
-        await conn.exec_driver_sql(
-            "DELETE FROM iteration_logs WHERE id NOT IN ("
-            "  SELECT MIN(id) FROM iteration_logs GROUP BY task_id, iteration"
-            ")"
-        )
-
-        tables = {
-            row[0]
-            for row in (await conn.exec_driver_sql(
-                "SELECT name FROM sqlite_master WHERE type='table'"
-            )).fetchall()
-        }
-        if "task_sessions" not in tables:
-            await conn.exec_driver_sql("""
-                CREATE TABLE task_sessions (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    task_id INTEGER NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
-                    session_id VARCHAR(128) NOT NULL,
-                    agent_type VARCHAR(32),
-                    model VARCHAR(128),
-                    request_number INTEGER,
-                    started_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                    ended_at DATETIME
-                )
-            """)
-            await conn.exec_driver_sql(
-                "CREATE INDEX IF NOT EXISTS ix_task_sessions_task_id ON task_sessions(task_id)"
-            )
 
 
 async def get_session():

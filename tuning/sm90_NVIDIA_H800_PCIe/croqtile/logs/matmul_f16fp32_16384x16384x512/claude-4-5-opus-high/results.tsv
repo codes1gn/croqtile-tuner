@@ -1,0 +1,10 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter001	iter001_warpspec_1p2c	184.615	KEEP	unknown	Initial warpspec 1p2c kernel with f32 accumulator
+iter000	iter000_cublas	400.1061	KEEP	baseline	cuBLAS reference baseline
+iter002	iter002_stmatrix_wn192	0	COMPILE_FAIL	memory_bound	stmatrix requires f16 accumulator, incompatible with f32 output
+iter003	iter003_ws1p1c_wn192	171.405	DISCARD	memory_bound	1p1c warpspec + WARP_N=192 + TILE_M=64 - regression vs iter001
+iter004	iter004_ws1p2c_wn192	195.152	KEEP	memory_bound	1p2c warpspec + WARP_N=192 - improves N-dim coverage, +5.7% over iter001
+iter005	iter005_ws1p3c_s4	190.936	DISCARD	memory_bound	1p2c + 4-stage + 128x128 tiles - smaller tiles hurt, 4-stage did not compensate
+iter006	iter006_ws1p2c_wn256	199.811	KEEP	memory_bound	WARP_N=256 + 2-stage pipeline, larger N-tile compensates for fewer stages
+iter007	iter007_nonws_wn256	0	SEGFAULT	latency_bound	Non-warpspec design failed verification - produces incorrect results
+iter008	iter008_ws1p2c_wn224_s3	0	COMPILE_FAIL	latency_bound	WARP_N=224 + 3-stage exceeds shared memory limit (249KB > 233KB)

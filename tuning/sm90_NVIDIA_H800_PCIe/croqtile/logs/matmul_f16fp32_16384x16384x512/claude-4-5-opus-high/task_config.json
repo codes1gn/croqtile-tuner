@@ -1,0 +1,8 @@
+{
+  "model": "cursor/claude-4.5-opus-high",
+  "variant": "",
+  "agent_type": "cursor_cli",
+  "device": "NVIDIA H800 PCIe",
+  "opencode_session_id": null,
+  "sessions": []
+}

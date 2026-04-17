@@ -1,0 +1,15 @@
+{
+  "schema": "croq-checkpoint-v1",
+  "timestamp": "2026-04-17T13:44:25Z",
+  "dsl": "croqtile",
+  "shape_key": "matmul_f16fp32_16384x16384x512",
+  "iter": "iter008_ws1p2c_wn224_s3",
+  "bottleneck": "latency_bound",
+  "idea": "WARP_N=224 (between 192 and 256), 3-stage pipeline for better latency hiding vs 2-stage",
+  "expected_gain": "+10 TFLOPS",
+  "levers": [
+    "WARP_N",
+    "STAGES"
+  ],
+  "status": "PLANNED"
+}

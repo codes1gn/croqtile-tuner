@@ -6,9 +6,11 @@ interface Props {
   availableVariants: string[];
   defaultModel: string;
   defaultVariant: string;
+  useProxy: boolean;
   onCreated: () => void;
   onCancel: () => void;
   onRefreshModels?: () => Promise<string[]>;
+  onToggleProxy?: (enabled: boolean) => Promise<void>;
 }
 
 function providerGroup(models: string[]): Record<string, string[]> {
@@ -55,7 +57,7 @@ const OUTPUT_DTYPES = [
   { value: "bf16", label: "BF16" },
 ];
 
-export function AddTaskForm({ availableModels, availableVariants, defaultModel, defaultVariant, onCreated, onCancel, onRefreshModels }: Props) {
+export function AddTaskForm({ availableModels, availableVariants, defaultModel, defaultVariant, useProxy, onCreated, onCancel, onRefreshModels, onToggleProxy }: Props) {
   const [opType, setOpType] = useState("gemm_sp");
   const [customOp, setCustomOp] = useState("");
   const [inputDtype, setInputDtype] = useState("e4m3");
@@ -361,6 +363,30 @@ export function AddTaskForm({ availableModels, availableVariants, defaultModel, 
             />
           </div>
           
+          {/* Use Proxy */}
+          <div className="flex items-center justify-between">
+            <label className="text-sm text-gray-400">
+              Use Proxy
+              <span className="text-gray-500 ml-1">(proxychains4 before agent CLI)</span>
+            </label>
+            <button
+              type="button"
+              onClick={() => onToggleProxy?.(!useProxy)}
+              className={`
+                relative inline-flex h-6 w-11 items-center rounded-full transition-colors
+                ${useProxy ? "bg-emerald-600" : "bg-gray-700"}
+                cursor-pointer hover:opacity-90
+              `}
+            >
+              <span
+                className={`
+                  inline-block h-4 w-4 transform rounded-full bg-white transition-transform
+                  ${useProxy ? "translate-x-6" : "translate-x-1"}
+                `}
+              />
+            </button>
+          </div>
+
           {/* Shape Key Preview */}
           <div className="mt-2 p-2 rounded bg-gray-900 border border-gray-700">
             <span className="text-xs text-gray-500">Shape Key: </span>

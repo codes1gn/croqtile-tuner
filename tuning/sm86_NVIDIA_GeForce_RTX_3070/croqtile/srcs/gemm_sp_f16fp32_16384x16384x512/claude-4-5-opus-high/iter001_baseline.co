@@ -1,0 +1,124 @@
+// FALLBACK: e4m3 sparse GEMM not supported on SM86, using f16 sparse GEMM
+// Original request: gemm_sp_e4m3f16_16384x16384x512
+// SM86 uses mma.sp.sync.aligned (WARP_M=16, WARP_N=8, WARP_K=16)
+// RUN: choreo -gs -t cute -arch=sm_86 %s -o %s.cute.result
+
+#define M 16384
+#define N 16384
+#define K 512
+#define META_K 16
+
+#define TILE_M 64
+#define TILE_N 64
+#define TILE_K 64
+#define WARP_M 16
+#define WARP_N 8
+#define WARP_K 16
+
+__co__ auto gemm_sp_f16(f16 [M, K/2] lhs_packed, u32 [M, K / META_K] lhs_meta, f16 [N, K] rhs) {
+  f32 [M, N] output{0.0f};
+  parallel {block_m, block_n} by [cdiv(M, TILE_M), cdiv(N, TILE_N)] : block {
+    parallel {iv_warp_m, iv_warp_n} by [cdiv(TILE_M, WARP_M), cdiv(TILE_N, WARP_N)] : group {
+      mc = mma.fill.f32 0.0f;
+      foreach {iv_k} in [cdiv(K, TILE_K)] {
+        lhs_load_s = dma.copy lhs_packed.chunkat(block_m, iv_k) => shared;
+        rhs_load_s = dma.copy rhs.chunkat(block_n, iv_k) => shared;
+        lhs_load_s_mdata = dma.copy lhs_meta.chunkat(block_m, iv_k) => local;
+        foreach iv_warp_k in [cdiv(TILE_K, WARP_K)] {
+          ma = mma.load lhs_load_s.chunkat(iv_warp_m, iv_warp_k);
+          mb = mma.load rhs_load_s.chunkat(iv_warp_n, iv_warp_k);
+          me = mma.load lhs_load_s_mdata.chunkat(iv_warp_m, iv_warp_k);
+          mma.row.row.sp mc, ma, mb, me;
+        }
+      }
+      mma.store mc, output.chunkat(block_m#iv_warp_m, block_n#iv_warp_n);
+    }
+  }
+  return output;
+}
+
+template <typename T>
+using SparsePolicy = choreo::utils::SparsePolicy<T>;
+
+int main(int argc, char** argv) {
+  bool enable_timing = true;
+  bool skip_verify = false;
+  double user_flops = -1.0;
+  
+  for (int i = 1; i < argc; ++i) {
+    if (std::strcmp(argv[i], "--disable-timing") == 0) {
+      enable_timing = false;
+    } else if (std::strcmp(argv[i], "--skip-verify") == 0) {
+      skip_verify = true;
+    } else if (std::strncmp(argv[i], "--flops=", 8) == 0) {
+      user_flops = std::atof(argv[i] + 8);
+    }
+  }
+
+  const char* timing_env = std::getenv("CHOREO_DISABLE_TIMING");
+  if (timing_env && timing_env[0] == '1') enable_timing = false;
+  
+  const char* skip_verify_env = std::getenv("CHOREO_SKIP_VERIFY");
+  if (skip_verify_env && skip_verify_env[0] == '1') skip_verify = true;
+
+  std::mt19937 gen(42);
+  auto lhs_dense = choreo::make_spandata<choreo::f16>(M, K);
+  auto rhs = choreo::make_spandata<choreo::f16>(N, K);
+  SparsePolicy<choreo::f16>::init_structured_sparse_A(lhs_dense, gen);
+  rhs.fill_random(-1.0f, 1.0f);
+
+  auto lhs_packed = choreo::make_spandata<choreo::f16>(M, K / 2);
+  auto lhs_meta = choreo::make_spandata<choreo::u32>(M, K / META_K);
+  SparsePolicy<choreo::f16>::encode(lhs_dense, lhs_packed, lhs_meta);
+
+  if (enable_timing) {
+    int warmup = 10;
+    int repeat = 50;
+    const char* warmup_env = std::getenv("CHOREO_TIMING_WARMUP");
+    const char* repeat_env = std::getenv("CHOREO_TIMING_REPEAT");
+    if (warmup_env) warmup = std::max(0, std::atoi(warmup_env));
+    if (repeat_env) repeat = std::max(1, std::atoi(repeat_env));
+    
+    choreo::TimerOption topt;
+    topt.warmup = warmup;
+    topt.repeat = repeat;
+    
+    auto avg_ms = choreo::timing([&]() {
+      auto res = gemm_sp_f16(lhs_packed.view(), lhs_meta.view(), rhs.view());
+      cudaDeviceSynchronize();
+    }, topt);
+    
+    std::cout << "Timing avg ms: " << avg_ms << "\n";
+    double flops = (user_flops > 0.0) ? user_flops : (2.0 * double(M) * double(N) * double(K));
+    double tflops = (flops / (avg_ms / 1000.0)) / 1e12;
+    std::cout << "TFLOPS: " << tflops << "\n";
+    std::cout << "HW efficiency: " << (tflops / 142.0) * 100.0 << "%\n";
+  }
+
+  auto res = gemm_sp_f16(lhs_packed.view(), lhs_meta.view(), rhs.view());
+
+  if (skip_verify) {
+    std::cout << "Test Passed (verify skipped)\n";
+    return 0;
+  }
+
+  float tolerance = 0.5f;
+  int errors = 0;
+  int check_samples = std::min(128, (int)M);
+  for (int i = 0; i < check_samples; ++i) {
+    for (int j = 0; j < check_samples; ++j) {
+      float ref = 0.0f;
+      for (size_t k = 0; k < K; ++k)
+        ref += choreo::to_f32(lhs_dense[i][k]) * choreo::to_f32(rhs[j][k]);
+      float got = res[i][j];
+      if (std::abs(got - ref) >= tolerance) errors++;
+    }
+  }
+
+  if (errors > 0) {
+    std::cout << "FAILED: " << errors << " errors\n";
+    return 1;
+  }
+  std::cout << "Test Passed\n";
+  return 0;
+}

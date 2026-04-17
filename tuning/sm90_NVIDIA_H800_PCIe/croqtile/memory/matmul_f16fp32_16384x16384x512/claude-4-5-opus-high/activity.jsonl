@@ -1,0 +1,62 @@
+{"ts":"2026-04-17T13:31:06.403Z","tool":"co2cu","msg":"Compiling iter001_warpspec_1p2c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T13:31:06.523Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter001_warpspec_1p2c.cu","level":"info"}
+{"ts":"2026-04-17T13:31:46.167Z","tool":"store_round","msg":"Storing iter001_warpspec_1p2c (KEEP 184.615 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T13:31:46.187Z","tool":"store_round","msg":"Stored iter001_warpspec_1p2c: KEEP 184.615 TFLOPS (round 1)","level":"info"}
+{"ts":"2026-04-17T13:31:49.756Z","tool":"store_round","msg":"Storing iter000_cublas (KEEP 400.1061 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T13:31:49.776Z","tool":"store_round","msg":"Stored iter000_cublas: KEEP 400.1061 TFLOPS (round 0)","level":"info"}
+{"ts":"2026-04-17T13:31:58.282Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter001_warpspec_1p2c --skip-verify","level":"info"}
+{"ts":"2026-04-17T13:32:03.230Z","tool":"ncu_profile","msg":"Capturing profile: /home/albert/workspace/croqtile-tuner/tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter001_warpspec_1p2c --args --skip-verify","level":"info"}
+{"ts":"2026-04-17T13:32:10.852Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/ncu_iter001_warpspec_1p2c_round1.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/ncu_iter001_warpspec_1p2c_round1.csv","level":"info"}
+{"ts":"2026-04-17T13:32:18.745Z","tool":"profile_extract","msg":"Analyzing iter001_warpspec_1p2c from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/ncu_iter001_warpspec_1p2c_round1.csv","level":"info"}
+{"ts":"2026-04-17T13:32:54.827Z","tool":"next_iter","msg":"Resolved iter002_stmatrix_wn192","level":"info"}
+{"ts":"2026-04-17T13:32:58.556Z","tool":"checkpoint_write","msg":"PLANNED iter002_stmatrix_wn192: Fix 8-way shared memory bank conflicts in output store by using stmatrix instead of direct store, increase WARP_N from 128 to 192","level":"info"}
+{"ts":"2026-04-17T13:33:07.530Z","tool":"checkpoint_write","msg":"READ checkpoint for IMPLEMENT","level":"info"}
+{"ts":"2026-04-17T13:34:03.585Z","tool":"co2cu","msg":"Compiling iter002_stmatrix_wn192.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T13:34:03.699Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter002_stmatrix_wn192.cu","level":"info"}
+{"ts":"2026-04-17T13:34:57.519Z","tool":"next_iter","msg":"Resolved iter003_ws1p1c_wn192","level":"info"}
+{"ts":"2026-04-17T13:35:03.710Z","tool":"store_round","msg":"Storing iter002_stmatrix_wn192 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T13:35:03.730Z","tool":"store_round","msg":"Stored iter002_stmatrix_wn192: COMPILE_FAIL 0 TFLOPS (round 2)","level":"info"}
+{"ts":"2026-04-17T13:35:10.888Z","tool":"checkpoint_write","msg":"PLANNED iter003_ws1p1c_wn192: Switch to 1p1c warpspec (fewer consumers), increase WARP_N to 192, reduce TILE_M to 64 for better occupancy","level":"info"}
+{"ts":"2026-04-17T13:35:18.287Z","tool":"co2cu","msg":"Compiling iter003_ws1p1c_wn192.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T13:35:18.400Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter003_ws1p1c_wn192.cu","level":"info"}
+{"ts":"2026-04-17T13:36:09.155Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter003_ws1p1c_wn192 (drift=1)","level":"info"}
+{"ts":"2026-04-17T13:36:14.365Z","tool":"store_round","msg":"Storing iter003_ws1p1c_wn192 (DISCARD 171.405 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T13:36:14.385Z","tool":"store_round","msg":"Stored iter003_ws1p1c_wn192: DISCARD 171.405 TFLOPS (round 3)","level":"info"}
+{"ts":"2026-04-17T13:36:19.706Z","tool":"next_iter","msg":"Resolved iter004_ws1p2c_wn192","level":"info"}
+{"ts":"2026-04-17T13:36:24.217Z","tool":"checkpoint_write","msg":"PLANNED iter004_ws1p2c_wn192: Keep 1p2c warpspec (which was better than 1p1c), increase WARP_N from 128 to 192 to improve N-dim coverage","level":"info"}
+{"ts":"2026-04-17T13:37:14.695Z","tool":"co2cu","msg":"Compiling iter004_ws1p2c_wn192.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T13:37:14.810Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter004_ws1p2c_wn192.cu","level":"info"}
+{"ts":"2026-04-17T13:38:07.313Z","tool":"store_round","msg":"Storing iter004_ws1p2c_wn192 (KEEP 195.152 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T13:38:07.333Z","tool":"store_round","msg":"Stored iter004_ws1p2c_wn192: KEEP 195.152 TFLOPS (round 4)","level":"info"}
+{"ts":"2026-04-17T13:38:13.485Z","tool":"ncu_profile","msg":"Capturing profile: /home/albert/workspace/croqtile-tuner/tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter004_ws1p2c_wn192 --args --skip-verify","level":"info"}
+{"ts":"2026-04-17T13:38:21.575Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/ncu_iter004_ws1p2c_wn192_round4.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/ncu_iter004_ws1p2c_wn192_round4.csv","level":"info"}
+{"ts":"2026-04-17T13:38:25.955Z","tool":"profile_extract","msg":"Analyzing iter004_ws1p2c_wn192 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/ncu_iter004_ws1p2c_wn192_round4.csv","level":"info"}
+{"ts":"2026-04-17T13:38:39.438Z","tool":"next_iter","msg":"Resolved iter005_ws1p3c_s4","level":"info"}
+{"ts":"2026-04-17T13:38:45.271Z","tool":"checkpoint_write","msg":"PLANNED iter005_ws1p3c_s4: Structural change: 1p3c warpspec (3 consumers for M=192 coverage) + 4-stage pipeline for better latency hiding","level":"info"}
+{"ts":"2026-04-17T13:39:37.887Z","tool":"co2cu","msg":"Compiling iter005_ws1p3c_s4.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T13:39:53.247Z","tool":"co2cu","msg":"Compiling iter005_ws1p3c_s4.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T13:40:18.919Z","tool":"co2cu","msg":"Compiling iter005_ws1p3c_s4.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T13:40:19.035Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter005_ws1p3c_s4.cu","level":"info"}
+{"ts":"2026-04-17T13:40:59.105Z","tool":"store_round","msg":"Storing iter005_ws1p3c_s4 (DISCARD 190.936 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T13:40:59.125Z","tool":"store_round","msg":"Stored iter005_ws1p3c_s4: DISCARD 190.936 TFLOPS (round 5)","level":"info"}
+{"ts":"2026-04-17T13:41:04.371Z","tool":"next_iter","msg":"Resolved iter006_ws1p2c_wn256","level":"info"}
+{"ts":"2026-04-17T13:41:09.253Z","tool":"checkpoint_write","msg":"PLANNED iter006_ws1p2c_wn256: Push WARP_N to max 256 (from 192), keep 1p2c+3-stage which was best config so far","level":"info"}
+{"ts":"2026-04-17T13:41:19.773Z","tool":"co2cu","msg":"Compiling iter006_ws1p2c_wn256.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T13:41:30.371Z","tool":"co2cu","msg":"Compiling iter006_ws1p2c_wn256.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T13:41:30.490Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter006_ws1p2c_wn256.cu","level":"info"}
+{"ts":"2026-04-17T13:42:09.309Z","tool":"store_round","msg":"Storing iter006_ws1p2c_wn256 (KEEP 199.811 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T13:42:09.329Z","tool":"store_round","msg":"Stored iter006_ws1p2c_wn256: KEEP 199.811 TFLOPS (round 6)","level":"info"}
+{"ts":"2026-04-17T13:42:16.314Z","tool":"ncu_profile","msg":"Capturing profile: /home/albert/workspace/croqtile-tuner/tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter006_ws1p2c_wn256 --args --skip-verify","level":"info"}
+{"ts":"2026-04-17T13:42:24.023Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/ncu_iter006_ws1p2c_wn256_round6.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/ncu_iter006_ws1p2c_wn256_round6.csv","level":"info"}
+{"ts":"2026-04-17T13:42:28.838Z","tool":"profile_extract","msg":"Analyzing iter006_ws1p2c_wn256 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/ncu_iter006_ws1p2c_wn256_round6.csv","level":"info"}
+{"ts":"2026-04-17T13:42:43.509Z","tool":"next_iter","msg":"Resolved iter007_nonws_wn256","level":"info"}
+{"ts":"2026-04-17T13:42:49.429Z","tool":"checkpoint_write","msg":"PLANNED iter007_nonws_wn256: Structural change: non-warpspec design to reduce barrier stalls, keep WARP_N=256 for good N-coverage","level":"info"}
+{"ts":"2026-04-17T13:43:34.920Z","tool":"co2cu","msg":"Compiling iter007_nonws_wn256.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T13:43:35.012Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter007_nonws_wn256.cu","level":"info"}
+{"ts":"2026-04-17T13:44:13.562Z","tool":"store_round","msg":"Storing iter007_nonws_wn256 (SEGFAULT 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T13:44:13.583Z","tool":"store_round","msg":"Stored iter007_nonws_wn256: SEGFAULT 0 TFLOPS (round 7)","level":"info"}
+{"ts":"2026-04-17T13:44:20.039Z","tool":"next_iter","msg":"Resolved iter008_ws1p2c_wn224_s3","level":"info"}
+{"ts":"2026-04-17T13:44:25.249Z","tool":"checkpoint_write","msg":"PLANNED iter008_ws1p2c_wn224_s3: WARP_N=224 (between 192 and 256), 3-stage pipeline for better latency hiding vs 2-stage","level":"info"}
+{"ts":"2026-04-17T13:44:48.033Z","tool":"co2cu","msg":"Compiling iter008_ws1p2c_wn224_s3.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T13:44:58.243Z","tool":"store_round","msg":"Storing iter008_ws1p2c_wn224_s3 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T13:44:58.264Z","tool":"store_round","msg":"Stored iter008_ws1p2c_wn224_s3: COMPILE_FAIL 0 TFLOPS (round 8)","level":"info"}

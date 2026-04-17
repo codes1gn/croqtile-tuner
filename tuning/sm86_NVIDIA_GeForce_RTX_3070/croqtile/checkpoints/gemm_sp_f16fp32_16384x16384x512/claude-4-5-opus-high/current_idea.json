@@ -1,0 +1,13 @@
+{
+  "dsl": "croqtile",
+  "shape_key": "gemm_sp_f16fp32_16384x16384x512",
+  "model": "claude-4-5-opus-high",
+  "planned_iter": "iter001",
+  "bottleneck": "initial_baseline",
+  "idea": "Baseline SM86 sparse GEMM using mma.sp.sync.aligned (WARP_M=16, WARP_N=8, WARP_K=16). Fallback from e4m3 to f16 due to SM86 FP8 sparse MMA limitation.",
+  "expected_gain": "Establish baseline TFLOPS for SM86 sparse tensor core performance",
+  "levers": "TILE_M, TILE_N, TILE_K, WARP_K (16 or 32)",
+  "status": "implement",
+  "timestamp": "2026-04-17T00:00:00Z",
+  "notes": "FP8 e4m3 sparse GEMM requires SM90+. SM86 only supports f16/bf16 sparse MMA via mma.sp.sync.aligned instruction."
+}

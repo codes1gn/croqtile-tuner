@@ -1,0 +1,1 @@
+{"round": 0, "iter": "iter000", "kernel": "cublas_baseline", "idea_summary": "cuBLAS/cuSPARSELt baseline measurement for reference", "tflops": 0.0, "decision": "BASELINE", "bottleneck": "n/a", "category": "baseline", "expected_gain": "n/a", "timestamp": "2026-04-17T00:00:00Z", "notes": "Placeholder - awaiting actual baseline measurement"}

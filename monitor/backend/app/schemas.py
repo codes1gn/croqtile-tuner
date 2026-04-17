@@ -250,6 +250,7 @@ class HealthResponse(BaseModel):
     scheduler_running: bool
     active_task_id: int | None
     auto_wake_enabled: bool
+    use_proxy: bool
     gpu_info: str | None
     default_model: str
     default_variant: str
@@ -294,3 +295,11 @@ class AutoWakeSettingsResponse(BaseModel):
 
 class AutoWakeSettingsUpdate(BaseModel):
     auto_wake_enabled: bool
+
+
+class ProxySettingsResponse(BaseModel):
+    use_proxy: bool
+
+
+class ProxySettingsUpdate(BaseModel):
+    use_proxy: bool

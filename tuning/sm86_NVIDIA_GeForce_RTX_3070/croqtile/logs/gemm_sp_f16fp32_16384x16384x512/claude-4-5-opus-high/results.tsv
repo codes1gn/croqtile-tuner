@@ -1,0 +1,2 @@
+round	iter	kernel	tflops	decision	bottleneck	category	timestamp
+0	iter000	cublas_baseline	0.0	BASELINE	n/a	baseline	2026-04-17T00:00:00Z

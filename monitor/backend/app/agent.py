@@ -96,15 +96,14 @@ def build_command(task: Task) -> list[str]:
     model = task.model or settings.opencode_model
 
     if task.mode == "cursor_cli" or (model and model.startswith("cursor/")):
-        # Dispatch via cursor-agent for Cursor IDE models
         if model and model.startswith("cursor/"):
-            # Strip provider prefix: "cursor/claude-4.6-opus-max" → "claude-4.6-opus-max"
             bare_model = model[len("cursor/"):]
         else:
             bare_model = model or ""
         command = [
             settings.cursor_agent_bin, "--print",
             "--output-format", "stream-json",
+            "--yolo",
         ]
         if bare_model:
             command.extend(["--model", bare_model])
@@ -502,6 +501,13 @@ async def run_task(task: Task, session_factory) -> int:
                task.shape_key, str(task.max_iterations)]
     else:
         cmd = build_command(task)
+
+    # Prepend proxychains4 if use_proxy is enabled
+    from .runtime_settings import get_use_proxy
+    async with session_factory() as session:
+        if await get_use_proxy(session):
+            cmd = ["proxychains4", "-q"] + cmd
+            logger.info("Proxy enabled: prepending proxychains4 to command")
 
     stdout_fd, stdout_name = tempfile.mkstemp(
         prefix=f"croqtune_stdout_{task.id}_", suffix=".log"

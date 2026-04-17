@@ -100,6 +100,7 @@ export default function App() {
           availableVariants={health?.available_variants ?? [""]}
           defaultModel={health?.default_model ?? ""}
           defaultVariant={health?.default_variant ?? ""}
+          useProxy={health?.use_proxy ?? false}
           onCreated={() => {
             setShowAdd(false);
             loadTasks();
@@ -110,6 +111,10 @@ export default function App() {
             const res = await api.refreshModels();
             setHealth((h) => h ? { ...h, available_models: res.available_models } : h);
             return res.available_models;
+          }}
+          onToggleProxy={async (enabled) => {
+            await api.setUseProxy(enabled);
+            setHealth((h) => h ? { ...h, use_proxy: enabled } : h);
           }}
         />
       )}

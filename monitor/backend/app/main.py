@@ -28,6 +28,8 @@ from .runtime_settings import (
     set_default_model,
     get_auto_wake_enabled,
     set_auto_wake_enabled,
+    get_use_proxy,
+    set_use_proxy,
 )
 from .scheduler import scheduler
 from .schemas import (
@@ -38,6 +40,8 @@ from .schemas import (
     IterationLogResponse,
     ModelSettingsResponse,
     ModelSettingsUpdate,
+    ProxySettingsResponse,
+    ProxySettingsUpdate,
     ResumeRequest,
     SessionHistoryResponse,
     TaskCreate,
@@ -594,6 +598,22 @@ async def update_auto_wake_settings(
     return AutoWakeSettingsResponse(auto_wake_enabled=enabled)
 
 
+@app.get("/api/settings/proxy", response_model=ProxySettingsResponse)
+async def get_proxy_settings(session: AsyncSession = Depends(get_session)):
+    return ProxySettingsResponse(use_proxy=await get_use_proxy(session))
+
+
+@app.patch("/api/settings/proxy", response_model=ProxySettingsResponse)
+async def update_proxy_settings(
+    body: ProxySettingsUpdate,
+    session: AsyncSession = Depends(get_session),
+):
+    enabled = await set_use_proxy(session, body.use_proxy)
+    await session.commit()
+    logger.info("Proxy setting changed to: %s", enabled)
+    return ProxySettingsResponse(use_proxy=enabled)
+
+
 @app.get("/api/events")
 async def sse_events():
     return EventSourceResponse(event_bus.subscribe(), ping=15)
@@ -636,6 +656,7 @@ async def health(session: AsyncSession = Depends(get_session)):
         scheduler_running=scheduler.running,
         active_task_id=scheduler.active_task_id,
         auto_wake_enabled=await get_auto_wake_enabled(session),
+        use_proxy=await get_use_proxy(session),
         gpu_info=gpu_info,
         default_model=await get_default_model(session),
         default_variant=await get_default_variant(session),

@@ -8,6 +8,7 @@ from .models import SystemSetting
 DEFAULT_MODEL_KEY = "default_model"
 DEFAULT_VARIANT_KEY = "default_variant"
 AUTO_WAKE_KEY = "auto_wake_enabled"
+USE_PROXY_KEY = "use_proxy"
 
 
 def available_models() -> list[str]:
@@ -76,6 +77,31 @@ async def set_auto_wake_enabled(session: AsyncSession, enabled: bool) -> bool:
     value = "true" if enabled else "false"
     if row is None:
         row = SystemSetting(key=AUTO_WAKE_KEY, value=value, updated_at=now)
+        session.add(row)
+    else:
+        row.value = value
+        row.updated_at = now
+    await session.flush()
+    return enabled
+
+
+async def get_use_proxy(session: AsyncSession) -> bool:
+    """Get the proxy toggle state. Default is False."""
+    row = await session.get(SystemSetting, USE_PROXY_KEY)
+    if row is None:
+        row = SystemSetting(key=USE_PROXY_KEY, value="false")
+        session.add(row)
+        await session.flush()
+    return row.value.lower() == "true"
+
+
+async def set_use_proxy(session: AsyncSession, enabled: bool) -> bool:
+    """Set the proxy toggle state."""
+    now = datetime.now(timezone.utc)
+    row = await session.get(SystemSetting, USE_PROXY_KEY)
+    value = "true" if enabled else "false"
+    if row is None:
+        row = SystemSetting(key=USE_PROXY_KEY, value=value, updated_at=now)
         session.add(row)
     else:
         row.value = value

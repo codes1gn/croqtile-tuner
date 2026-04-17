@@ -94,6 +94,7 @@ export interface HealthData {
   scheduler_running: boolean;
   active_task_id: number | null;
   auto_wake_enabled: boolean;
+  use_proxy: boolean;
   gpu_info: string | null;
   default_model: string;
   default_variant: string;
@@ -104,6 +105,10 @@ export interface HealthData {
 
 export interface AutoWakeSettingsData {
   auto_wake_enabled: boolean;
+}
+
+export interface ProxySettingsData {
+  use_proxy: boolean;
 }
 
 export interface ModelSettingsData {
@@ -203,5 +208,13 @@ export const api = {
     request<AutoWakeSettingsData>("/settings/auto-wake", {
       method: "PATCH",
       body: JSON.stringify({ auto_wake_enabled }),
+    }),
+
+  getProxySettings: () => request<ProxySettingsData>("/settings/proxy"),
+
+  setUseProxy: (use_proxy: boolean) =>
+    request<ProxySettingsData>("/settings/proxy", {
+      method: "PATCH",
+      body: JSON.stringify({ use_proxy }),
     }),
 };
