@@ -1,0 +1,2 @@
+{"round": 0, "iter": "iter000", "bottleneck": "baseline", "idea": "cuBLAS reference baseline", "category": "baseline", "expected_gain": "baseline reference", "decision": "KEEP", "tflops": 141.6295, "timestamp": "2026-04-17T18:07:44Z"}
+{"round": 1, "iter": "iter001", "bottleneck": "compute_bound", "idea": "Initial baseline: reference blockscale_gemm kernel with WARP_M=64 WARP_N=128 TILE_K=128 WARP_K=32 swizzle128, f32 accumulator", "category": "misc", "expected_gain": "baseline", "decision": "KEEP", "tflops": 139.659, "timestamp": "2026-04-17T18:10:29Z"}

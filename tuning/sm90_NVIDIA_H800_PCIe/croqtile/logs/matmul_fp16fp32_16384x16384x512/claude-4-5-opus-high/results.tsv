@@ -1,0 +1,12 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_cublas	269.0652	KEEP	baseline	cuBLAS reference baseline
+iter001	iter001_persis_tm256_wn200	352.704	KEEP	latency_bound	Starting kernel from prior session (TM256 WN200 1p2c persistent)
+iter002	iter002_tm128_wn128_s3	178.124	DISCARD	latency_bound	TM128 WN128 STAGES=3 - smaller tiles for higher occupancy but lost compute throu
+iter003	iter003_tm256_wn200_reg170	183.766	DISCARD	latency_bound	TM256 WN200 with maxrregcount=170 - register cap caused spilling
+iter004	iter004_tm192_wn200_1p3c	0	SEGFAULT	latency_bound	STRUCTURAL: 1p3c topology TM192 WN128 - verification failed, likely output addre
+iter005	iter005_tm256_wn200_tk32_s4	80.225	DISCARD	latency_bound	TILE_K=32 STAGES=4 - too small K-tile killed WGMMA efficiency
+iter006	iter006_tm256_wn200_nonpersis	65.538	DISCARD	latency_bound	STRUCTURAL: Non-persistent launch - massive scheduling overhead killed perf
+iter007	iter007_tm256_wn200_launchbounds	45.197	DISCARD	latency_bound	Phase 2: __launch_bounds__(384,1) + fast_math killed performance
+iter008	iter008_persis_tm256_wn200_from_prior	355.695	DISCARD	latency_bound	Prior session .cu - equivalent to iter001, no improvement
+iter009	iter009_tm256_wn216_s2	0	SEGFAULT	latency_bound	TM256 WN216 - verification failed, N not cleanly divisible
+iter010	iter010_tm256_wn192_s2	328.816	DISCARD	latency_bound	TM256 WN192 - narrower N-tile reduces compute density vs WN200

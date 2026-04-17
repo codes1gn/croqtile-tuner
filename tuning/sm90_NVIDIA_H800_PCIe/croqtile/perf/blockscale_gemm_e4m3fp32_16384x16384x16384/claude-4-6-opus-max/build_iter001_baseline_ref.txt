@@ -1,0 +1,6 @@
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/blockscale_gemm_e4m3fp32_16384x16384x16384/claude-4-6-opus-max/iter001_baseline_ref.co:54.9: warning: Dimensions could be inconsistent between DMA 'from[0]((::blockscale_gemm::N / ((::blockscale_gemm::N + 127) / 128)))' v.s. 'to[0](128) 'from[1]((::blockscale_gemm::K / ((::blockscale_gemm::K + 127) / 128)))' v.s. 'to[1](128)).
+          tma.copy.swiz<MATMUL_SWIZ> rhs.chunkat(block_n, iv_k) => rhs_load_s;
+          ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/blockscale_gemm_e4m3fp32_16384x16384x16384/claude-4-6-opus-max/iter001_baseline_ref.co:51.26: warning: The implicit type conversion may lose precision: 'f64' to 'f32'
+        mc = mma.fill.f32 0.0;
+                           ^

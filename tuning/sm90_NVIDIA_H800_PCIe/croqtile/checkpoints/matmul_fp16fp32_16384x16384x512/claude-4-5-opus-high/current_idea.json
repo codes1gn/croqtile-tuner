@@ -1,0 +1,14 @@
+{
+  "schema": "croq-checkpoint-v1",
+  "timestamp": "2026-04-17T18:12:13Z",
+  "dsl": "croqtile",
+  "shape_key": "matmul_fp16fp32_16384x16384x512",
+  "iter": "iter010_tm256_wn192_s2",
+  "bottleneck": "latency_bound",
+  "idea": "TM256 WN192 - N=16384 is divisible by 192 (85.33 tiles), less SMEM per output buffer",
+  "expected_gain": "+3-10 TFLOPS from cleaner tiling",
+  "levers": [
+    "WARP_N"
+  ],
+  "status": "PLANNED"
+}

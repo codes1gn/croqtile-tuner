@@ -1,0 +1,15 @@
+{
+  "tflops": 141.6295,
+  "dtype": "e4m3fp32",
+  "m": 16384,
+  "n": 16384,
+  "k": 16384,
+  "warmup": 10,
+  "iters": 50,
+  "avg_ms": 62.1064,
+  "status": "ok",
+  "gpu": "sm90_NVIDIA_H800_PCIe",
+  "dsl": "croqtile",
+  "shape_key": "blockscale_gemm_e4m3fp32_16384x16384x16384",
+  "model": "claude-4-6-opus-max"
+}

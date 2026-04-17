@@ -1,0 +1,16 @@
+{
+  "schema": "croq-checkpoint-v1",
+  "timestamp": "2026-04-17T18:12:27Z",
+  "dsl": "croqtile",
+  "shape_key": "blockscale_gemm_e4m3fp32_16384x16384x16384",
+  "iter": "iter002_warpspec_1p1c_2stage",
+  "bottleneck": "launch_bound",
+  "idea": "Warp specialization 1p1c with 2-stage pipeline to reduce register pressure and improve occupancy from 12.5%",
+  "expected_gain": "+10-20 TFLOPS from better occupancy and compute-memory overlap",
+  "levers": [
+    "warp_specialization",
+    "pipeline_stages",
+    "producer_consumer_overlap"
+  ],
+  "status": "PLANNED"
+}

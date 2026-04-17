@@ -1,0 +1,28 @@
+{
+  "task_uid": "490975c95f92",
+  "dsl": "croqtile",
+  "model": "claude-4-6-opus-max",
+  "device": "NVIDIA H800 PCIe",
+  "status": "running",
+  "task_id": 5,
+  "variant": "",
+  "agent_type": "cursor_cli",
+  "mode": "cursor_cli",
+  "request_budget": 4,
+  "request_number": 1,
+  "max_iterations": 30,
+  "respawn_count": 0,
+  "opencode_session_id": "59fe0370-378a-42e1-a4e8-32c45bda79b8",
+  "sessions": [
+    {
+      "id": 33,
+      "task_id": 5,
+      "session_id": "59fe0370-378a-42e1-a4e8-32c45bda79b8",
+      "agent_type": "cursor_cli",
+      "model": "cursor/claude-4.6-opus-max",
+      "request_number": 1,
+      "started_at": "2026-04-17T18:06:57.541469",
+      "ended_at": null
+    }
+  ]
+}

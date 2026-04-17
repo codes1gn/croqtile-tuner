@@ -1,0 +1,15 @@
+{
+  "schema": "croq-checkpoint-v1",
+  "timestamp": "2026-04-17T18:13:30Z",
+  "dsl": "croqtile",
+  "shape_key": "matmul_fp16fp32_512x16384x16384",
+  "iter": "iter008_persis_nmajor",
+  "bottleneck": "compute_bound",
+  "idea": "Persistent kernel with N-major tile iteration for better RHS cache reuse",
+  "expected_gain": "+30 TFLOPS",
+  "levers": [
+    "tile_order",
+    "persistent"
+  ],
+  "status": "PLANNED"
+}

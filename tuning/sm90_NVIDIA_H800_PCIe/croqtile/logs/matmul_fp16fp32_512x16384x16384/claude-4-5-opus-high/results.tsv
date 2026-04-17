@@ -1,0 +1,9 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_cublas	422.7534	KEEP	baseline	cuBLAS reference baseline
+iter001	iter001_baseline_1p1c	111.96	KEEP	compute_bound	Initial 1p1c kernel with WARP_M=64, WARP_N=128, 4 pipeline stages
+iter002	iter002_wn256	121.91	KEEP	memory_bound	Increased WARP_N from 128 to 256 to double compute per warpgroup
+iter003	iter003_ws_1p3c	0	DISCARD	memory_bound	1p3c and 1p4c warp-spec kernels fail verification - incorrect output indexing fo
+iter004	iter004_nonpersist	260.12	KEEP	memory_bound	Non-persistent CTA launch with 512 blocks vs 114 persistent SMs
+iter005	iter005_s2_wn128	226.24	DISCARD	compute_bound	Reduced stages 4->2 and WARP_N 256->128 hurt performance
+iter006	iter006_tk128	0	COMPILE_FAIL	compute_bound	SWIZ=64 caused CUDA invalid argument error
+iter007	iter007_wn128_step	194.31	DISCARD	compute_bound	WARP_N=128 with step TMA worse than WARP_N=256
