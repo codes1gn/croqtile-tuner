@@ -22,7 +22,7 @@ argument-hint: <dsl: croqtile|cuda|cute|triton|tilelang|helion|cutile> <dtype: f
 
 1. Keep exactly one continuation node in progress: `continue-croq-tune`
 2. Trigger proactive compaction at `>= 80%` context, but only after continuation node is present
-3. Compile-fail debug/fix retries bounded to 4-7 (default: 6); then discard attempt and return to IDEA
+3. Compile-fail retries: code bugs ≤ 5 fix attempts, DSL limitations ≤ 5 workaround attempts; then COMPILE_FAIL → STORE → IDEA
 4. Exactly one new idea per round
 5. STORE executes on both KEEP and DISCARD
 6. **NO LIBRARY CALLS IN TUNING ITERATIONS** — see "Pure Implementation Rule"
@@ -70,10 +70,19 @@ See the loaded `croq-dsl-<dsl>` file for DSL-specific structural changes.
 Before every iteration, check `idea-log.jsonl`. If the exact combination (base kernel
 x parameter set x structural change) was tried before, choose a different idea.
 
-### Rule 5: ABANDON stuck ideas after 3 attempts
+### Rule 5: ABANDON stuck ideas after 5 attempts
 
-If an optimization idea fails to compile or pass verification after 3 distinct fix
+If an optimization idea fails to compile or pass verification after 5 distinct fix
 attempts, ABANDON it. Revert to the active base's best and propose a completely different idea.
+
+**Code bugs vs DSL/compiler limitations** (different retry budgets):
+- **Code bug** (your kernel has a typo, wrong index, missing sync): fix and retry,
+  up to 5 attempts total. These are normal.
+- **DSL/compiler limitation** (unsupported instruction for this arch, codegen bug on valid
+  input): do NOT blindly retry the same approach. Work around it — use a different
+  instruction, tiling, or code pattern. Up to 5 workaround attempts, each trying a
+  genuinely different approach. Only fall back to a different variant/DSL after all 5 fail.
+  See the `croq-dsl-<dsl>` skill for arch-specific workaround patterns.
 
 ### Rule 6: UNDERSTAND the kernel before mutating it
 
@@ -219,6 +228,23 @@ When no existing kernel is usable:
 3. Implement a kernel that uses MMA/tensor-core instructions (NOT scalar loops, NOT naive per-thread accumulation)
 4. Minimum bar: must use at least `mma` instructions (or DSL equivalent: `tl.dot` for Triton, `mma.op` for Choreo, etc.)
 5. Must be correct (pass verification) and faster than a trivial scalar baseline
+
+**Tier C — DSL/compiler limitation workaround:**
+If the chosen DSL hits a limitation for the target operator+dtype+arch (e.g. compiler
+codegen bug, unsupported instruction for the GPU arch), do NOT stop or ask the user.
+Treat it as a **debug problem** and work around it:
+1. Identify the specific unsupported feature (e.g. WGMMA on SM86, sparse codegen bug)
+2. Find an alternative that IS supported (e.g. use MMA instead of WGMMA, use different
+   tiling to avoid the codegen bug, use a supported dtype proxy)
+3. You have up to **5 workaround attempts** to get a compiling+correct kernel
+4. Each attempt should try a genuinely different approach, not just retry the same thing
+5. If after 5 attempts no workaround works, THEN STORE as `COMPILE_FAIL` with
+   `"reason": "dsl_limitation"` and fall back to the closest feasible variant:
+   - If sparse is unsupported: fall back to dense GEMM of the same shape+dtype
+   - If the dtype is unsupported: fall back to the closest supported dtype (e.g. e4m3→f16)
+   - If the DSL itself cannot target this arch: switch to raw CUDA as DSL
+6. Log the workaround decision in `idea-log.jsonl`
+7. Continue the tuning loop — NEVER stop and wait for user input
 
 **After discovery, create the iter001 artifacts:**
 1. Source: `tuning/<gpu>/<dsl>/srcs/<shape_key>/<model>/iter001_draft.<cu|co|py>`
@@ -383,8 +409,24 @@ If the output includes a `hint` field (confidence is medium), consider deeper an
 - Apply only the current round's single idea
 - If editing `.co`, load `choreo-syntax` before changing code
 - Compile and run using the BUILD/RUN templates from `croq-dsl-<dsl>`
-- If compile fails, debug/fix with bounded retry budget (target: 6, range: 4-7)
-- If retries exhausted, mark as failed attempt and return to IDEA
+- If retries exhausted, mark as failed attempt (`COMPILE_FAIL`), STORE, and return to IDEA
+
+#### Compile-fail debug: ANALYZE first, then classify
+
+Every compile failure requires a structured debug cycle. Do NOT blindly retry:
+
+1. **ANALYZE** — Gather evidence before classifying. Read the full compiler error output.
+   Check web search and DSL docs/examples. Read generated intermediate files (`.cu`,
+   `.cute.result`) if the error is unclear. The loaded `croq-dsl-<dsl>` skill has
+   DSL-specific debug procedures and arch-specific workaround patterns.
+2. **CLASSIFY** — Based on the evidence: code bug (your fault) or DSL/compiler limitation
+   (the tool's fault). Do NOT classify without evidence from step 1.
+3. **FIX** — Apply a targeted fix. For DSL limitations, find a supported alternative
+   (e.g. different instruction for the target arch, `.cu` bypass). Each fix attempt must
+   try a genuinely different approach.
+
+**Retry budget: 5 attempts** for both code bugs and DSL limitations. After 5 failed
+attempts: COMPILE_FAIL → STORE → return to IDEA.
 
 ### 4) VERIFY
 

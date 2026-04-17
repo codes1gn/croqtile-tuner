@@ -6,6 +6,7 @@ interface Props {
   availableVariants: string[];
   onCreated: () => void;
   onCancel: () => void;
+  onRefreshModels?: () => Promise<string[]>;
 }
 
 function providerGroup(models: string[]): Record<string, string[]> {
@@ -52,23 +53,27 @@ const OUTPUT_DTYPES = [
   { value: "bf16", label: "BF16" },
 ];
 
-export function AddTaskForm({ availableModels, availableVariants, onCreated, onCancel }: Props) {
+export function AddTaskForm({ availableModels, availableVariants, onCreated, onCancel, onRefreshModels }: Props) {
   const [opType, setOpType] = useState("gemm_sp");
   const [customOp, setCustomOp] = useState("");
-  const [inputDtype, setInputDtype] = useState("f16");
+  const [inputDtype, setInputDtype] = useState("e4m3");
   const [outputDtype, setOutputDtype] = useState("f16");
-  const [m, setM] = useState("4096");
-  const [n, setN] = useState("4096");
-  const [k, setK] = useState("4096");
+  const [m, setM] = useState("16384");
+  const [n, setN] = useState("16384");
+  const [k, setK] = useState("16384");
   const [dsl, setDsl] = useState("croqtile");
   const [platform, setPlatform] = useState("opencode");
-  const [model, setModel] = useState(availableModels[0] ?? "");
+  const [model, setModel] = useState(
+    availableModels.find((m) => m === "github-copilot/gpt-5-mini") ?? availableModels[0] ?? ""
+  );
   const [variant, setVariant] = useState(availableVariants[0] ?? "");
   const [requestBudget, setRequestBudget] = useState("1");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [models, setModels] = useState(availableModels);
 
-  const platformModels = availableModels.filter((m) => {
+  const platformModels = models.filter((m) => {
     if (platform === "opencode") {
       return m.startsWith("opencode/") || m.startsWith("github-copilot/");
     }
@@ -77,6 +82,19 @@ export function AddTaskForm({ availableModels, availableVariants, onCreated, onC
     }
     return true;
   });
+
+  const handleRefreshModels = async () => {
+    if (!onRefreshModels) return;
+    setRefreshing(true);
+    try {
+      const fresh = await onRefreshModels();
+      setModels(fresh);
+    } catch {
+      setError("Failed to refresh models");
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const platformGroups = providerGroup(platformModels);
   const providerOrder = ["github-copilot", "opencode", "cursor"];
@@ -90,6 +108,10 @@ export function AddTaskForm({ availableModels, availableVariants, onCreated, onC
       setModel(platformModels[0]);
     }
   }, [platform, platformModels, model]);
+
+  useEffect(() => {
+    setModels(availableModels);
+  }, [availableModels]);
 
   const modelHasBuiltinVariant = model.startsWith("cursor/");
   const effectiveVariants = modelHasBuiltinVariant ? [""] : availableVariants;
@@ -271,7 +293,20 @@ export function AddTaskForm({ availableModels, availableVariants, onCreated, onC
 
           <div className="grid grid-cols-3 gap-3">
             <div className="col-span-2">
-              <label className="block text-sm text-gray-400 mb-1">Model</label>
+              <label className="flex items-center text-sm text-gray-400 mb-1">
+                Model
+                {onRefreshModels && (
+                  <button
+                    type="button"
+                    onClick={handleRefreshModels}
+                    disabled={refreshing}
+                    className="ml-2 text-xs text-blue-400 hover:text-blue-300 disabled:opacity-50"
+                    title="Refresh model list from CLI"
+                  >
+                    {refreshing ? "refreshing..." : "refresh"}
+                  </button>
+                )}
+              </label>
               <select
                 value={model}
                 onChange={(e) => setModel(e.target.value)}

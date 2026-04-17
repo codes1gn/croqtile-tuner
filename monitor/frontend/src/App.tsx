@@ -104,6 +104,11 @@ export default function App() {
             loadHealth();
           }}
           onCancel={() => setShowAdd(false)}
+          onRefreshModels={async () => {
+            const res = await api.refreshModels();
+            setHealth((h) => h ? { ...h, available_models: res.available_models } : h);
+            return res.available_models;
+          }}
         />
       )}
     </div>

@@ -166,6 +166,9 @@ export const api = {
       body: JSON.stringify({ default_model, default_variant }),
     }),
 
+  refreshModels: () =>
+    request<ModelSettingsData>("/settings/model/refresh", { method: "POST" }),
+
   getAutoWakeSettings: () => request<AutoWakeSettingsData>("/settings/auto-wake"),
 
   setAutoWakeEnabled: (auto_wake_enabled: boolean) =>

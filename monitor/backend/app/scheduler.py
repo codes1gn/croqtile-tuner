@@ -218,6 +218,10 @@ class Scheduler:
                 )
                 task.request_number = db_task.request_number
 
+        import time as _time
+        t0 = _time.monotonic()
+        iter_before = task.current_iteration
+
         try:
             exit_code = await run_task(task, async_session)
         except asyncio.CancelledError:
@@ -227,14 +231,29 @@ class Scheduler:
             logger.exception("Worker for task %d crashed", task.id)
             exit_code = -1
 
-        await self._finalize_task(task.id, exit_code, source="run_worker")
+        elapsed = _time.monotonic() - t0
+        await self._finalize_task(
+            task.id, exit_code, source="run_worker",
+            elapsed_s=elapsed, iter_before=iter_before,
+        )
 
-    async def _finalize_task(self, task_id: int, exit_code: int | None, source: str = "") -> None:
+    _FAST_EXIT_THRESHOLD_S = 90
+    _FAST_EXIT_MAX_CONSECUTIVE = 3
+
+    async def _finalize_task(
+        self,
+        task_id: int,
+        exit_code: int | None,
+        source: str = "",
+        elapsed_s: float | None = None,
+        iter_before: int | None = None,
+    ) -> None:
         """Common finalization for both _run_worker and _adopt_worker.
 
         Status transitions:
           - max iterations reached → completed
           - cancelled by user → stays cancelled
+          - fast-exit with no progress (3 consecutive) → waiting
           - otherwise → pending (ready for re-dispatch if budget allows)
         """
         async with async_session() as session:
@@ -249,19 +268,50 @@ class Scheduler:
                 db_task.status = "completed"
                 db_task.completed_at = datetime.now(timezone.utc)
                 logger.info("Task %d completed (%d/%d)", task_id, db_task.current_iteration, db_task.max_iterations)
-            else:
-                db_task.status = "pending"
-                reason = f"exit={exit_code}" if exit_code else "normally"
+            elif exit_code == -2:
+                db_task.status = "waiting"
                 db_task.error_message = (
-                    f"Agent ended ({reason}) at iter {db_task.current_iteration}"
+                    f"Rate limited / fatal error at iter {db_task.current_iteration}"
                     f"/{db_task.max_iterations} [{source}]"
+                )
+                logger.warning(
+                    "Task %d → waiting (rate limited) at iter %d/%d",
+                    task_id, db_task.current_iteration, db_task.max_iterations,
+                )
+            else:
+                is_fast_exit = (
+                    elapsed_s is not None
+                    and elapsed_s < self._FAST_EXIT_THRESHOLD_S
+                    and iter_before is not None
+                    and db_task.current_iteration == iter_before
                 )
                 count = (db_task.respawn_count or 0) + 1
                 db_task.respawn_count = count
-                logger.info(
-                    "Task %d → pending at iter %d/%d (respawn #%d)",
-                    task_id, db_task.current_iteration, db_task.max_iterations, count,
-                )
+
+                if is_fast_exit and count >= self._FAST_EXIT_MAX_CONSECUTIVE:
+                    db_task.status = "waiting"
+                    db_task.error_message = (
+                        f"Agent failed to start tuning ({count} consecutive fast exits "
+                        f"in <{self._FAST_EXIT_THRESHOLD_S}s with no iteration progress). "
+                        f"Model may not support skill triggers. [{source}]"
+                    )
+                    logger.warning(
+                        "Task %d → waiting (fast-exit loop detected, %d consecutive in <%.0fs)",
+                        task_id, count, self._FAST_EXIT_THRESHOLD_S,
+                    )
+                else:
+                    db_task.status = "pending"
+                    reason = f"exit={exit_code}" if exit_code else "normally"
+                    extra = f" (fast exit {elapsed_s:.0f}s)" if is_fast_exit else ""
+                    db_task.error_message = (
+                        f"Agent ended ({reason}) at iter {db_task.current_iteration}"
+                        f"/{db_task.max_iterations}{extra} [{source}]"
+                    )
+                    logger.info(
+                        "Task %d → pending at iter %d/%d (respawn #%d%s)",
+                        task_id, db_task.current_iteration, db_task.max_iterations,
+                        count, extra,
+                    )
 
             db_task.updated_at = datetime.now(timezone.utc)
             await session.commit()

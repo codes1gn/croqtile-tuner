@@ -1,0 +1,1 @@
+{"tflops": 20.7538, "dtype": "f16", "m": 16384, "n": 16384, "k": 16384, "warmup": 1, "iters": 1, "avg_ms": 423.8305, "status": "ok"}

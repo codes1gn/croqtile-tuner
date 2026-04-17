@@ -30,9 +30,13 @@ SESSION_ID_PATTERNS = (
     re.compile(r"service=session\s+id=(ses_[A-Za-z0-9_]+)"),
 )
 FATAL_ERROR_PATTERN = re.compile(
-    r"(ProviderModelNotFoundError|Model not found:|EACCES:|stream error|(?:^|\s)fatal error:)",
+    r"(ProviderModelNotFoundError|Model not found:|EACCES:|FreeUsageLimitError|Rate limit exceeded|(?:^|\s)fatal error:)",
     re.IGNORECASE,
 )
+# "stream error" matches too aggressively (hits benign title-agent failures),
+# so only flag it when it appears outside of a title/small-model error context.
+_STREAM_ERROR_PATTERN = re.compile(r"stream error", re.IGNORECASE)
+_TITLE_AGENT_PATTERN = re.compile(r"agent=title|small=true|modelID=gpt-5-mini")
 
 
 @dataclass
@@ -40,18 +44,37 @@ class RunState:
     fatal_error_message: str | None = None
 
 
+def _build_env() -> dict[str, str]:
+    """Build subprocess environment with CUDA on PATH."""
+    env = {**os.environ, "CUDA_VISIBLE_DEVICES": settings.cuda_visible_devices}
+    cuda_home = env.get("CUDA_HOME", "/usr/local/cuda")
+    cuda_bin = f"{cuda_home}/bin"
+    path = env.get("PATH", "")
+    if cuda_bin not in path:
+        env["PATH"] = f"{cuda_bin}:{path}"
+    if "CUDA_HOME" not in env:
+        env["CUDA_HOME"] = cuda_home
+    return env
+
+
 def _bare_shape_key(compound_key: str) -> str:
     """Extract bare shape key from compound key: 'sm86_.../croqtile/matmul_...' → 'matmul_...'."""
     return compound_key.split("/")[-1] if "/" in compound_key else compound_key
 
 
+def _sanitize_model_id(model: str) -> str:
+    """Convert provider/model format to path-safe ID: 'github-copilot/gpt-5-mini' -> 'gpt-5-mini'."""
+    return model.rsplit("/", 1)[-1] if "/" in model else model
+
+
 def build_prompt(task: Task) -> str:
     dsl = task.dsl or "cuda"
     shape_key = _bare_shape_key(task.shape_key)
-    model = task.model or "default"
+    model = _sanitize_model_id(task.model or "default")
     return (
-        f"/croq-tune {dsl} {task.dtype} {shape_key} "
-        f"--model {model}"
+        f"read .claude/skills/croq-tune/SKILL.md then kick off the tuning experiment, "
+        f"tune {dsl} {task.dtype} {shape_key} --model {model}. "
+        f"IMPORTANT: do NOT ask the user any questions — make all decisions autonomously."
     )
 
 
@@ -70,7 +93,11 @@ def build_command(task: Task) -> list[str]:
 
 
 def is_fatal_agent_error(line: str) -> bool:
-    return FATAL_ERROR_PATTERN.search(line) is not None
+    if FATAL_ERROR_PATTERN.search(line) is not None:
+        return True
+    if _STREAM_ERROR_PATTERN.search(line) and not _TITLE_AGENT_PATTERN.search(line):
+        return True
+    return False
 
 
 def extract_session_id(line: str) -> str | None:
@@ -352,7 +379,7 @@ async def run_task(task: Task, session_factory) -> int:
             *cmd,
             cwd=str(settings.project_dir.resolve()),
             start_new_session=True,
-            env={**os.environ, "CUDA_VISIBLE_DEVICES": settings.cuda_visible_devices},
+            env=_build_env(),
             stdin=asyncio.subprocess.DEVNULL,
             stdout=stdout_fd,
             stderr=stderr_fd,
@@ -371,7 +398,19 @@ async def run_task(task: Task, session_factory) -> int:
         poll_task = asyncio.create_task(_poll_loop(task, session_factory, proc))
 
         try:
-            exit_code = await proc.wait()
+            while True:
+                try:
+                    exit_code = await asyncio.wait_for(proc.wait(), timeout=10)
+                    break
+                except asyncio.TimeoutError:
+                    if run_state.fatal_error_message:
+                        logger.warning(
+                            "Fatal error detected for task %d, terminating: %s",
+                            task.id, run_state.fatal_error_message[:120],
+                        )
+                        await _terminate_process(proc)
+                        exit_code = -2
+                        break
             stop_event.set()
             await asyncio.gather(stdout_task, stderr_task)
         except asyncio.CancelledError:

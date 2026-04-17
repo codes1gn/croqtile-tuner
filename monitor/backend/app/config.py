@@ -2,6 +2,7 @@ import logging
 import re
 import shutil
 import subprocess
+import time
 from pathlib import Path
 
 from pydantic_settings import BaseSettings
@@ -10,11 +11,15 @@ logger = logging.getLogger("croqtuner.config")
 
 AVAILABLE_VARIANTS = ("", "minimal", "low", "medium", "high", "xhigh")
 
-DEFAULT_OPENCODE_MODEL = "opencode/big-pickle"
+DEFAULT_OPENCODE_MODEL = "github-copilot/gpt-5-mini"
 DEFAULT_OPENCODE_VARIANT = "high"  # max is 3x cost — not worth it
 
+_MODEL_CACHE_TTL = 300  # 5 minutes
+
 _cached_opencode_models: list[str] | None = None
+_cached_opencode_ts: float = 0.0
 _cached_cursor_models: list[str] | None = None
+_cached_cursor_ts: float = 0.0
 
 
 OPENCODE_FREE_MODELS = {
@@ -25,13 +30,19 @@ OPENCODE_FREE_MODELS = {
 
 
 def fetch_opencode_models() -> list[str]:
-    """Fetch opencode models, keeping only free opencode/zen + all github-copilot models."""
-    global _cached_opencode_models
-    if _cached_opencode_models is not None:
+    """Fetch opencode models, keeping only free opencode/zen + all github-copilot models.
+
+    Results are cached for _MODEL_CACHE_TTL seconds. A failed fetch that only
+    produces the fallback default is cached for just 30 seconds so a retry
+    happens quickly once opencode becomes available.
+    """
+    global _cached_opencode_models, _cached_opencode_ts
+    if _cached_opencode_models is not None and (time.monotonic() - _cached_opencode_ts) < _MODEL_CACHE_TTL:
         return _cached_opencode_models
+    opencode_bin = _resolve_opencode_bin()
     try:
         result = subprocess.run(
-            ["opencode", "models"],
+            [opencode_bin, "models"],
             capture_output=True, text=True, timeout=15, check=False,
         )
         if result.returncode == 0:
@@ -42,10 +53,12 @@ def fetch_opencode_models() -> list[str]:
             ]
             if filtered:
                 _cached_opencode_models = filtered
+                _cached_opencode_ts = time.monotonic()
                 return filtered
     except (FileNotFoundError, subprocess.TimeoutExpired):
         pass
     _cached_opencode_models = [DEFAULT_OPENCODE_MODEL]
+    _cached_opencode_ts = time.monotonic() - _MODEL_CACHE_TTL + 30  # retry after 30s
     return _cached_opencode_models
 
 
@@ -63,8 +76,8 @@ def fetch_cursor_cli_models() -> list[str]:
 
     No thinking models. No max-mode variants.
     """
-    global _cached_cursor_models
-    if _cached_cursor_models is not None:
+    global _cached_cursor_models, _cached_cursor_ts
+    if _cached_cursor_models is not None and (time.monotonic() - _cached_cursor_ts) < _MODEL_CACHE_TTL:
         return _cached_cursor_models
 
     all_models: list[str] = []
@@ -90,6 +103,7 @@ def fetch_cursor_cli_models() -> list[str]:
         all_models = [m for m in CURSOR_ALLOWED_MODELS]
         all_models.sort()
     _cached_cursor_models = all_models
+    _cached_cursor_ts = time.monotonic()
     return _cached_cursor_models
 
 
@@ -102,9 +116,11 @@ def fetch_all_models() -> list[str]:
 
 
 def invalidate_model_cache() -> None:
-    global _cached_opencode_models, _cached_cursor_models
+    global _cached_opencode_models, _cached_opencode_ts, _cached_cursor_models, _cached_cursor_ts
     _cached_opencode_models = None
+    _cached_opencode_ts = 0.0
     _cached_cursor_models = None
+    _cached_cursor_ts = 0.0
 
 
 def is_supported_opencode_model(model: str) -> bool:

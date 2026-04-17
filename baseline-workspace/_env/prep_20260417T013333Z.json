@@ -30,7 +30,7 @@
     "nvidia_smi": true
   },
   "install_attempted": false,
-  "kernel": "gemm_sp_f16_16384x16384x16384",
+  "kernel": "gemm_sp",
   "missing_libs": [],
   "operator": "gemm_sp",
   "schema": "baseline-env-prepare-v1",
@@ -38,6 +38,6 @@
     "cublas",
     "torch-cuda"
   ],
-  "shape_key": "gemm_sp_f16_16384x16384x16384",
-  "timestamp": "2026-04-17T01:57:55.344180+00:00"
+  "shape_key": "gemm_sp_fp16fp32_16384x16384x16384",
+  "timestamp": "2026-04-17T01:33:33.383029+00:00"
 }

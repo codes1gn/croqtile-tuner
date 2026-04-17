@@ -1,0 +1,2 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_cublas_f16_proxy	44.9124	KEEP	compute_bound	cuBLAS f16 reference (e4m3f32 proxy, SM86 fallback)

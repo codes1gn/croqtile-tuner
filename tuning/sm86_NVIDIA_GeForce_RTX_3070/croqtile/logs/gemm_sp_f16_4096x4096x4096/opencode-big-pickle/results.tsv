@@ -1,4 +1,0 @@
-{"dsl":"croqtile","shape_key":"gemm_sp_f16_4096x4096x4096","model":"opencode-big-pickle","iter":"iter000","kernel":"cublas_reference","tflops":40.79,"timing_ms":3.37,"decision":"KEEP","bottleneck":"N/A","idea":"cuBLAS reference baseline","category":"reference","expected_gain":"N/A","gpu":"sm86_NVIDIA_GeForce_RTX_3070","round":0,"timestamp":"2026-04-17T00:00:00Z"}
-iter000	iter000_cublas_ref	39.8757	KEEP	baseline	cuBLAS reference baseline
-iter001	iter001_baseline	0.0967	KEEP	memory_bound	Ampere sparse MMA baseline - naive tiling, low occupancy
-iter002	iter002_larger_tile_k	0.0955	DISCARD	memory_bound	Increase TILE_K from 64 to 128 - increased shared memory pressure, slightly wors

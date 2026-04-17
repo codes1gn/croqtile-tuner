@@ -136,11 +136,15 @@ If an idea involves compiler changes (e.g. new Choreo primitive), implement the 
 - Sparse GEMM (gemm_sp): `--use-warpspec --use-prepack`
 - Dense GEMM: `--use-warpspec` (optional)
 
-**gemm_sp Constraints (do not change):**
+**gemm_sp Constraints (SM90A/WGMMA only — NOT for SM80/SM86):**
 - `SPMM_WARP_M` MUST be 64 (WGMMA constraint)
 - `SPMM_WARP_K` MUST be 32 for f16
 - `SPMM_TILE_K` MUST equal `2 * SPMM_PACKED_TILE_K`
 - `SPMM_META_TILE_COLS` MUST equal `SPMM_TILE_K / 32`
+
+**gemm_sp on SM80/SM86 (Ampere MMA):** These WGMMA constraints do NOT apply. Use
+`mma.sp.sync.aligned` with WARP_M=16, WARP_N=8, WARP_K=16 (f16)(not only this MMA shape, look at choreo.h for references). See
+`choreo-kernel-examples/gemm-sp-tests/gemm_sp_sm80.co` for the correct pattern.
 
 **Forbidden in `.co` and `.cu`:** cuBLAS calls, `cutlass::gemm::device::Gemm`, PyTorch ops.
 
@@ -225,6 +229,62 @@ MMA form, pipeline stages, warp specialization (1p1c/1p2c/1p3c), swizzle layout,
 regctrl, compiler flags, output epilogue.
 
 Consult `choreo-syntax` and study `choreo-kernel-examples/` before editing `.co`.
+
+## Compile-Fail Debug Procedure
+
+**Choreo error messages are designed for AI consumption — read them carefully.**
+They contain structured hints: the failing construct, expected vs actual types,
+supported arch features, and suggested alternatives. Never ignore them.
+
+When a compile fails, follow this ordered procedure:
+
+### Step 1: ANALYZE — gather evidence first
+
+Before classifying the failure, gather evidence from multiple sources:
+- **Read the compiler error** thoroughly — choreo errors often say what went wrong and
+  suggest what to use instead (e.g. "WGMMA requires SM90A, use mma.op for SM86")
+- **Web search** for the specific error (e.g. "SM86 sparse MMA instructions",
+  "mma.sp.sync.aligned Ampere", "CUDA SM86 tensor core capabilities")
+- **Read compiler/DSL docs** — load `choreo-syntax` and `choreo-kernel-examples` to find
+  supported patterns for the target arch
+- If the error is unclear, **read the generated `.cu` or `.cute.result`** file to
+  understand what the compiler actually produced
+
+### Step 2: CLASSIFY — based on the evidence
+
+With evidence in hand, classify the failure:
+- **Code bug**: typo, wrong index, missing sync, shape mismatch in your `.co` code
+- **DSL/compiler limitation**: unsupported instruction for this arch (e.g. WGMMA on
+  SM86), missing primitive, codegen bug on valid input
+
+### Step 3: FIX based on the analysis
+
+- For **code bugs**: fix the `.co` and retry (within the 5-attempt budget)
+- For **DSL limitations**: find an alternative that IS supported on the target arch:
+  - WGMMA unsupported on SM86 → use `mma.op` or `mma.sp.sync.aligned` (Ampere MMA)
+  - Sparse codegen bug on specific tile size → try different tile dimensions
+  - TMA unsupported → use `dma.copy.async` instead
+  - Instruction not available → use the closest supported equivalent
+- For **persistent `.co` → `.cu` failures** (choreo keeps producing broken `.cu` output
+  despite valid `.co` input), you may **bypass Phase 1**:
+  1. Read the generated `.cu` or `.cute.result` file directly
+  2. Hack/fix the `.cu` code by hand to repair the broken codegen output
+  3. Compile the fixed `.cu` directly with nvcc, skipping the `.co` → `.cu` step
+  4. Log this as `"co_bypassed": true` in the idea-log entry
+  5. Still keep the `.co` file for reference (do NOT delete it)
+
+### Arch-Specific Notes
+
+| GPU Arch | Supported MMA | Sparse MMA | TMA | WGMMA |
+|----------|---------------|------------|-----|-------|
+| SM80 (A100) | `mma.sync.aligned` | `mma.sp.sync.aligned` | No | No |
+| SM86 (RTX 3070) | `mma.sync.aligned` | `mma.sp.sync.aligned` | No | No |
+| SM89 (RTX 4090) | `mma.sync.aligned` | `mma.sp.sync.aligned` | Yes | No |
+| SM90a (H100) | `mma.sync.aligned` + WGMMA | `mma.sp.sync.aligned` + WGMMA | Yes | Yes |
+
+When targeting SM80/SM86, the reference kernels in `choreo-kernel-examples/gemm-sp-tests/`
+that require WGMMA or TMA are NOT usable. Look for `_sm80` suffix kernels or implement
+from scratch using `mma.op` / `mma.sp.sync.aligned` forms.
 
 ## VERIFY / MEASURE
 

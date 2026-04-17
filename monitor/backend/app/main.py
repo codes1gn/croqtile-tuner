@@ -43,6 +43,7 @@ from .schemas import (
     TaskUpdate,
 )
 from .artifact_scanner import prune_stale_tasks, scan_and_create_tasks
+from .config import invalidate_model_cache
 from .state_seed import seed_tasks_from_state_if_empty
 from .task_runtime import apply_live_runtime
 
@@ -371,6 +372,18 @@ async def update_model_settings(
     return ModelSettingsResponse(
         default_model=model,
         default_variant=variant,
+        available_models=available_models(),
+        available_variants=available_variants(),
+    )
+
+
+@app.post("/api/settings/model/refresh", response_model=ModelSettingsResponse)
+async def refresh_models(session: AsyncSession = Depends(get_session)):
+    """Force-refresh the cached model list from opencode and cursor-agent CLIs."""
+    invalidate_model_cache()
+    return ModelSettingsResponse(
+        default_model=await get_default_model(session),
+        default_variant=await get_default_variant(session),
         available_models=available_models(),
         available_variants=available_variants(),
     )

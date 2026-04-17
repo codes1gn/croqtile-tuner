@@ -433,7 +433,10 @@ async def _sync_agent_status(session: AsyncSession) -> None:
     for task in tasks:
         bare_key = task.shape_key.split("/")[-1] if "/" in task.shape_key else task.shape_key
         agent_type = active_kernels.get(bare_key) or active_kernels.get(task.shape_key)
-        if agent_type and task.status == "pending":
+        if not agent_type:
+            continue
+        budget = task.request_budget if task.request_budget is not None else 1
+        if task.status == "pending" and budget > 0:
             task.status = "running"
             task.agent_type = agent_type
             task.started_at = task.started_at or datetime.now(timezone.utc)
