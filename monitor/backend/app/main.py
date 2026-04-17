@@ -224,24 +224,35 @@ async def update_task(
 
 
 def _delete_task_artifacts(shape_key: str) -> None:
-    """Delete disk artifacts for a task, supporting both compound and bare shape keys.
+    """Delete ALL disk artifacts for a task so the scanner never re-discovers it.
 
-    Compound key format: "{gpu}/{dsl}/{bare_shape_key}/{model}"  (scanner-created tasks)
+    Artifacts are the single source of truth.  The scanner creates DB records
+    from artifacts; it deletes DB records when artifacts disappear.  Therefore:
+    - Deleting a task means deleting its artifacts — the DB entry then vanishes
+      automatically on the next prune_stale_tasks() pass.
+    - We must delete EVERY directory that discover_shape_keys() inspects so that
+      no leftover file can trigger task re-creation.
+
+    Compound key format: "{gpu}/{dsl}/{bare_shape_key}/{model}"  (scanner-created)
     Bare key format:     "{bare_shape_key}"                       (UI-created tasks)
-
-    For bare keys, searches all gpu/dsl subdirectory combinations on disk for matching
-    bare_shape_key directories and removes them, preventing the scanner from re-discovering
-    deleted tasks.
     """
     from .config import settings
 
     tuning_dir = settings.tuning_dir.resolve()
-    subdirs = ["logs", "srcs", "checkpoints", "cmd", "perf", "bin", "memory"]
+    # ALL subdirs that discover_shape_keys() inspects — must stay in sync with that function.
+    subdirs = ["logs", "srcs", "checkpoints", "cmd", "perf", "bin", "memory", "baseline"]
 
     parts = shape_key.split("/")
 
+    def _rmdir_if_empty(d: Path) -> None:
+        try:
+            if d.exists() and not any(d.iterdir()):
+                d.rmdir()
+        except OSError:
+            pass
+
     if len(parts) >= 3:
-        # Compound key: delete the specific model-scoped directory
+        # Compound key: delete the specific model-scoped leaf directory
         gpu, dsl = parts[0], parts[1]
         bare_key = parts[2]
         model = parts[3] if len(parts) >= 4 else None
@@ -249,20 +260,11 @@ def _delete_task_artifacts(shape_key: str) -> None:
         if not dsl_root.exists():
             return
         for subdir in subdirs:
-            target = dsl_root / subdir / bare_key / model if model else dsl_root / subdir / bare_key
+            target = (dsl_root / subdir / bare_key / model) if model else (dsl_root / subdir / bare_key)
             if target.exists():
                 shutil.rmtree(target, ignore_errors=True)
                 logger.info("Deleted artifacts: %s", target)
-                parent = target.parent
-                if parent.exists() and not any(parent.iterdir()):
-                    try:
-                        parent.rmdir()
-                    except OSError:
-                        pass
-        # Also remove task_config.json if present
-        config_path = dsl_root / "task_config" / bare_key / "task_config.json"
-        if config_path.exists():
-            config_path.unlink(missing_ok=True)
+                _rmdir_if_empty(target.parent)
     else:
         # Bare key: search all gpu/dsl combos on disk for matching bare_shape_key dirs
         bare_key = parts[0]
@@ -274,21 +276,12 @@ def _delete_task_artifacts(shape_key: str) -> None:
             for dsl_dir in gpu_dir.iterdir():
                 if not dsl_dir.is_dir():
                     continue
-                found_any = False
                 for subdir in subdirs:
                     target = dsl_dir / subdir / bare_key
                     if target.exists():
                         shutil.rmtree(target, ignore_errors=True)
                         logger.info("Deleted bare-key artifacts: %s", target)
-                        found_any = True
-                        parent = target.parent
-                        if parent.exists() and not any(parent.iterdir()):
-                            try:
-                                parent.rmdir()
-                            except OSError:
-                                pass
-                if found_any:
-                    logger.info("Cleaned up artifacts for bare key '%s' under %s", bare_key, dsl_dir)
+                        _rmdir_if_empty(target.parent)
 
 
 @app.delete("/api/tasks/{task_id}", status_code=204)
@@ -297,17 +290,37 @@ async def delete_task(
     clean_artifacts: bool = Query(True),
     session: AsyncSession = Depends(get_session),
 ):
+    """Delete a task.
+
+    Design: artifacts are the single source of truth.
+
+    With clean_artifacts=True (default):
+      1. Stop any running agent worker for this task.
+      2. Delete all artifacts from disk — every directory that the scanner inspects.
+      3. Immediately delete the DB record and emit task_deleted so the UI updates
+         without waiting for the 2-second file-watcher debounce.
+      4. The file watcher will fire a prune scan, but prune_stale_tasks will find
+         nothing to do (record already gone from DB, artifacts already gone from disk).
+
+    With clean_artifacts=False:
+      Artifacts remain on disk.  The next file-watcher scan will re-create the DB
+      record from the surviving artifacts.  Use this only if you want to preserve
+      the tuning history while temporarily removing the UI entry.
+    """
     task = await session.get(Task, task_id)
     if not task:
         raise HTTPException(404, "Task not found")
 
-    # Cancel the scheduler worker if this task is currently running there —
-    # this prevents a stale worker from blocking the dispatch of future tasks.
+    # Stop any active scheduler worker first so it doesn't restart the process.
     await scheduler.cancel_active_task(task_id)
 
     if clean_artifacts:
         _delete_task_artifacts(task.shape_key)
 
+    # Remove the DB record immediately so the UI doesn't see a zombie task.
+    # If clean_artifacts=True, the file watcher's subsequent prune scan will find
+    # the record already gone and do nothing. If clean_artifacts=False, the scanner
+    # will re-create the record from the surviving artifacts — which is intentional.
     await session.delete(task)
     await session.commit()
     await event_bus.publish("task_deleted", {"id": task_id})
