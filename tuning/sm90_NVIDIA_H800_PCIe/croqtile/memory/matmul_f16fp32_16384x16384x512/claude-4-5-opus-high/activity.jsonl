@@ -245,3 +245,201 @@
 {"ts":"2026-04-17T15:25:53.901Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter028_persis_regctrl","level":"info"}
 {"ts":"2026-04-17T15:26:01.735Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/ncu_iter028_round33.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/ncu_iter028_round33.csv","level":"info"}
 {"ts":"2026-04-17T15:26:09.050Z","tool":"profile_extract","msg":"Analyzing iter028_persis_regctrl from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/ncu_iter028_round33.csv","level":"info"}
+{"ts":"2026-04-17T15:26:46.377Z","tool":"next_iter","msg":"Resolved iter031_kloop_unroll2","level":"info"}
+{"ts":"2026-04-17T15:26:50.076Z","tool":"checkpoint_write","msg":"PLANNED iter031_kloop_unroll2: Aggressive K-loop unrolling with double buffered MMA loads - unroll inner WARP_K loop 2x and overlap mma.load with previous mma.row.row","level":"info"}
+{"ts":"2026-04-17T15:26:53.832Z","tool":"checkpoint_write","msg":"READ checkpoint for IMPLEMENT","level":"info"}
+{"ts":"2026-04-17T15:27:52.317Z","tool":"co2cu","msg":"Compiling iter031_kloop_unroll2.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T15:28:22.109Z","tool":"store_round","msg":"Storing iter031_kloop_unroll2 (COMPILE_FAIL 0.0 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T15:28:22.129Z","tool":"store_round","msg":"Stored iter031_kloop_unroll2: COMPILE_FAIL 0.0 TFLOPS (round 33)","level":"info"}
+{"ts":"2026-04-17T15:28:32.774Z","tool":"next_iter","msg":"Resolved iter032_persis_wn192_s3","level":"info"}
+{"ts":"2026-04-17T15:28:38.282Z","tool":"checkpoint_write","msg":"PLANNED iter032_persis_wn192_s3: Persistent kernel with WARP_N=192 and 3 pipeline stages - more stages to hide WGMMA latency, smaller N reduces SMEM pressure","level":"info"}
+{"ts":"2026-04-17T15:29:30.166Z","tool":"co2cu","msg":"Compiling iter032_persis_wn192_s3.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T15:29:30.351Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter032_persis_wn192_s3.cu","level":"info"}
+{"ts":"2026-04-17T15:30:13.703Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter032_persis_wn192_s3 (drift=1)","level":"info"}
+{"ts":"2026-04-17T15:30:29.065Z","tool":"store_round","msg":"Storing iter032_persis_wn192_s3 (DISCARD 198.324 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T15:30:29.085Z","tool":"store_round","msg":"Stored iter032_persis_wn192_s3: DISCARD 198.324 TFLOPS (round 34)","level":"info"}
+{"ts":"2026-04-17T15:30:44.265Z","tool":"next_iter","msg":"Resolved iter033_persis_1p1c_wn256","level":"info"}
+{"ts":"2026-04-17T15:30:50.292Z","tool":"checkpoint_write","msg":"PLANNED iter033_persis_1p1c_wn256: Persistent 1p1c warpspec with WARP_N=256 TILE_M=64 - reduce threads/CTA to 256 (vs 384) for higher occupancy while keeping large N-tile","level":"info"}
+{"ts":"2026-04-17T15:31:42.906Z","tool":"co2cu","msg":"Compiling iter033_persis_1p1c_wn256.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T15:31:43.067Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter033_persis_1p1c_wn256.cu","level":"info"}
+{"ts":"2026-04-17T15:32:18.148Z","tool":"store_round","msg":"Storing iter033_persis_1p1c_wn256 (DISCARD 156.898 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T15:32:18.169Z","tool":"store_round","msg":"Stored iter033_persis_1p1c_wn256: DISCARD 156.898 TFLOPS (round 35)","level":"info"}
+{"ts":"2026-04-17T15:32:30.908Z","tool":"next_iter","msg":"Resolved iter034_persis_tk128","level":"info"}
+{"ts":"2026-04-17T15:32:36.492Z","tool":"checkpoint_write","msg":"PLANNED iter034_persis_tk128: Persistent 1p2c with TILE_K=128 - larger K-tile reduces loop iterations from 8 to 4, reducing loop overhead for small K=512","level":"info"}
+{"ts":"2026-04-17T15:33:28.094Z","tool":"co2cu","msg":"Compiling iter034_persis_tk128.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T15:33:38.578Z","tool":"co2cu","msg":"Compiling iter034_persis_tk128.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T15:33:38.762Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter034_persis_tk128.cu","level":"info"}
+{"ts":"2026-04-17T15:34:14.142Z","tool":"store_round","msg":"Storing iter034_persis_tk128 (SEGFAULT 0.0 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T15:34:14.163Z","tool":"store_round","msg":"Stored iter034_persis_tk128: SEGFAULT 0.0 TFLOPS (round 36)","level":"info"}
+{"ts":"2026-04-17T15:34:24.278Z","tool":"next_iter","msg":"Resolved iter035_persis_reg140","level":"info"}
+{"ts":"2026-04-17T15:34:29.530Z","tool":"checkpoint_write","msg":"PLANNED iter035_persis_reg140: Reduce maxrregcount from 160 to 140 - lower register pressure may allow higher occupancy on H800","level":"info"}
+{"ts":"2026-04-17T15:34:38.293Z","tool":"co2cu","msg":"Compiling iter035_persis_reg140.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T15:34:38.479Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter035_persis_reg140.cu","level":"info"}
+{"ts":"2026-04-17T15:35:29.672Z","tool":"store_round","msg":"Storing iter035_persis_reg140 (DISCARD 198.52 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T15:35:29.693Z","tool":"store_round","msg":"Stored iter035_persis_reg140: DISCARD 198.52 TFLOPS (round 37)","level":"info"}
+{"ts":"2026-04-17T15:35:49.164Z","tool":"next_iter","msg":"Resolved iter036_persis_wn128_s3_colmaj","level":"info"}
+{"ts":"2026-04-17T15:35:55.312Z","tool":"checkpoint_write","msg":"PLANNED iter036_persis_wn128_s3_colmaj: Persistent 1p2c with WARP_N=128, 3 stages, column-major traversal - more stages for latency hiding, smaller N fits SMEM, column-major for L2 locality","level":"info"}
+{"ts":"2026-04-17T15:36:48.584Z","tool":"co2cu","msg":"Compiling iter036_persis_wn128_s3_colmaj.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T15:36:48.768Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter036_persis_wn128_s3_colmaj.cu","level":"info"}
+{"ts":"2026-04-17T15:37:25.283Z","tool":"store_round","msg":"Storing iter036_persis_wn128_s3_colmaj (DISCARD 178.721 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T15:37:25.303Z","tool":"store_round","msg":"Stored iter036_persis_wn128_s3_colmaj: DISCARD 178.721 TFLOPS (round 38)","level":"info"}
+{"ts":"2026-04-17T15:37:36.818Z","tool":"next_iter","msg":"Resolved iter037_persis_fastmath","level":"info"}
+{"ts":"2026-04-17T15:37:42.256Z","tool":"checkpoint_write","msg":"PLANNED iter037_persis_fastmath: Add --use_fast_math to nvcc flags - enables faster math operations that may reduce instruction latency","level":"info"}
+{"ts":"2026-04-17T15:37:50.901Z","tool":"co2cu","msg":"Compiling iter037_persis_fastmath.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T15:37:51.088Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter037_persis_fastmath.cu","level":"info"}
+{"ts":"2026-04-17T15:38:28.816Z","tool":"store_round","msg":"Storing iter037_persis_fastmath (DISCARD 197.154 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T15:38:28.837Z","tool":"store_round","msg":"Stored iter037_persis_fastmath: DISCARD 197.154 TFLOPS (round 39)","level":"info"}
+{"ts":"2026-04-17T15:38:35.457Z","tool":"next_iter","msg":"Resolved iter038_persis_swiz64","level":"info"}
+{"ts":"2026-04-17T15:38:41.167Z","tool":"checkpoint_write","msg":"PLANNED iter038_persis_swiz64: Change swizzle from 128 to 64 with TILE_K=32 - different memory access pattern may help L2 cache behavior","level":"info"}
+{"ts":"2026-04-17T15:38:54.698Z","tool":"store_round","msg":"Storing iter038_persis_swiz64 (COMPILE_FAIL 0.0 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T15:38:54.718Z","tool":"store_round","msg":"Stored iter038_persis_swiz64: COMPILE_FAIL 0.0 TFLOPS (round 40)","level":"info"}
+{"ts":"2026-04-17T15:39:01.471Z","tool":"next_iter","msg":"Resolved iter039_persis_132sms","level":"info"}
+{"ts":"2026-04-17T15:39:06.921Z","tool":"checkpoint_write","msg":"PLANNED iter039_persis_132sms: Increase NUM_SMS from 114 to 132 (full H100) - more CTAs may help load balance and reduce tail effects","level":"info"}
+{"ts":"2026-04-17T15:39:20.194Z","tool":"co2cu","msg":"Compiling iter039_persis_132sms.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T15:39:20.378Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter039_persis_132sms.cu","level":"info"}
+{"ts":"2026-04-17T15:39:54.936Z","tool":"store_round","msg":"Storing iter039_persis_132sms (DISCARD 126.015 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T15:39:54.957Z","tool":"store_round","msg":"Stored iter039_persis_132sms: DISCARD 126.015 TFLOPS (round 41)","level":"info"}
+{"ts":"2026-04-17T15:40:02.503Z","tool":"next_iter","msg":"Resolved iter040_persis_rowmaj_opt","level":"info"}
+{"ts":"2026-04-17T15:40:08.534Z","tool":"checkpoint_write","msg":"PLANNED iter040_persis_rowmaj_opt: Try row-major tile traversal (block_m varies faster) - may benefit from different L2 cache reuse pattern for this tall-K shape","level":"info"}
+{"ts":"2026-04-17T15:40:24.151Z","tool":"co2cu","msg":"Compiling iter040_persis_rowmaj_opt.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T15:40:24.338Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter040_persis_rowmaj_opt.cu","level":"info"}
+{"ts":"2026-04-17T15:40:58.470Z","tool":"store_round","msg":"Storing iter040_persis_rowmaj_opt (DISCARD 191.802 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T15:40:58.491Z","tool":"store_round","msg":"Stored iter040_persis_rowmaj_opt: DISCARD 191.802 TFLOPS (round 42)","level":"info"}
+{"ts":"2026-04-17T15:41:05.898Z","tool":"next_iter","msg":"Resolved iter041_persis_tm192_wn192","level":"info"}
+{"ts":"2026-04-17T15:41:12.071Z","tool":"checkpoint_write","msg":"PLANNED iter041_persis_tm192_wn192: TILE_M=192 WARP_N=192 with 1p3c - larger M-tile uses 3 consumer warpgroups, balanced M/N tiles","level":"info"}
+{"ts":"2026-04-17T15:42:07.510Z","tool":"co2cu","msg":"Compiling iter041_persis_tm192_wn192.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T15:42:16.897Z","tool":"store_round","msg":"Storing iter041_persis_tm192_wn192 (COMPILE_FAIL 0.0 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T15:42:16.917Z","tool":"store_round","msg":"Stored iter041_persis_tm192_wn192: COMPILE_FAIL 0.0 TFLOPS (round 43)","level":"info"}
+{"ts":"2026-04-17T15:42:24.557Z","tool":"next_iter","msg":"Resolved iter042_persis_dlcmca","level":"info"}
+{"ts":"2026-04-17T15:42:30.352Z","tool":"checkpoint_write","msg":"PLANNED iter042_persis_dlcmca: Add -Xptxas -dlcm=ca to force cache all loads - may improve memory latency hiding","level":"info"}
+{"ts":"2026-04-17T15:42:36.371Z","tool":"co2cu","msg":"Compiling iter042_persis_dlcmca.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T15:42:36.556Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter042_persis_dlcmca.cu","level":"info"}
+{"ts":"2026-04-17T15:43:11.390Z","tool":"store_round","msg":"Storing iter042_persis_dlcmca (DISCARD 106.004 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T15:43:11.410Z","tool":"store_round","msg":"Stored iter042_persis_dlcmca: DISCARD 106.004 TFLOPS (round 44)","level":"info"}
+{"ts":"2026-04-17T15:43:23.902Z","tool":"next_iter","msg":"Resolved iter043_persis_mmaop","level":"info"}
+{"ts":"2026-04-17T15:43:29.773Z","tool":"checkpoint_write","msg":"PLANNED iter043_persis_mmaop: Use mma.op form instead of mma.row.row - may produce different optimized WGMMA instruction sequence","level":"info"}
+{"ts":"2026-04-17T15:43:44.428Z","tool":"co2cu","msg":"Compiling iter043_persis_mmaop.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T15:43:52.562Z","tool":"store_round","msg":"Storing iter043_persis_mmaop (COMPILE_FAIL 0.0 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T15:43:52.583Z","tool":"store_round","msg":"Stored iter043_persis_mmaop: COMPILE_FAIL 0.0 TFLOPS (round 45)","level":"info"}
+{"ts":"2026-04-17T15:44:00.585Z","tool":"next_iter","msg":"Resolved iter044_persis_wn240","level":"info"}
+{"ts":"2026-04-17T15:44:06.286Z","tool":"checkpoint_write","msg":"PLANNED iter044_persis_wn240: WARP_N=240 - between 256 and 224, may hit a sweet spot for this shape","level":"info"}
+{"ts":"2026-04-17T15:44:26.788Z","tool":"co2cu","msg":"Compiling iter044_persis_wn240.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T15:44:26.974Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter044_persis_wn240.cu","level":"info"}
+{"ts":"2026-04-17T15:45:16.740Z","tool":"store_round","msg":"Storing iter044_persis_wn240 (DISCARD 201.495 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T15:45:16.761Z","tool":"store_round","msg":"Stored iter044_persis_wn240: DISCARD 201.495 TFLOPS (round 46)","level":"info"}
+{"ts":"2026-04-17T15:45:30.057Z","tool":"next_iter","msg":"Resolved iter045_persis_tm256_wn256","level":"info"}
+{"ts":"2026-04-17T15:45:36.069Z","tool":"checkpoint_write","msg":"PLANNED iter045_persis_tm256_wn256: TILE_M=256 WARP_N=256 with 1p4c - maximum tile size with 4 consumer warpgroups","level":"info"}
+{"ts":"2026-04-17T15:46:32.856Z","tool":"co2cu","msg":"Compiling iter045_persis_tm256_wn256.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T15:46:42.728Z","tool":"store_round","msg":"Storing iter045_persis_tm256_wn256 (COMPILE_FAIL 0.0 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T15:46:42.748Z","tool":"store_round","msg":"Stored iter045_persis_tm256_wn256: COMPILE_FAIL 0.0 TFLOPS (round 47)","level":"info"}
+{"ts":"2026-04-17T15:46:57.747Z","tool":"next_iter","msg":"Resolved iter046_persis_wn248","level":"info"}
+{"ts":"2026-04-17T15:47:03.430Z","tool":"checkpoint_write","msg":"PLANNED iter046_persis_wn248: WARP_N=248 - fine-tuning between 240 and 256 for potential sweet spot","level":"info"}
+{"ts":"2026-04-17T15:47:25.542Z","tool":"co2cu","msg":"Compiling iter046_persis_wn248.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T15:47:25.725Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter046_persis_wn248.cu","level":"info"}
+{"ts":"2026-04-17T15:48:13.785Z","tool":"store_round","msg":"Storing iter046_persis_wn248 (DISCARD 202.536 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T15:48:13.805Z","tool":"store_round","msg":"Stored iter046_persis_wn248: DISCARD 202.536 TFLOPS (round 47)","level":"info"}
+{"ts":"2026-04-17T15:48:22.902Z","tool":"next_iter","msg":"Resolved iter047_persis_tm192_wn192_s2","level":"info"}
+{"ts":"2026-04-17T15:48:27.613Z","tool":"checkpoint_write","msg":"PLANNED iter047_persis_tm192_wn192_s2: TILE_M=192 with WARP_N=192 and STAGES=2 - try balanced larger tiles with reduced SMEM","level":"info"}
+{"ts":"2026-04-17T15:48:39.401Z","tool":"co2cu","msg":"Compiling iter047_persis_tm192_wn192_s2.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T15:48:39.583Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter047_persis_tm192_wn192_s2.cu","level":"info"}
+{"ts":"2026-04-17T15:49:23.250Z","tool":"store_round","msg":"Storing iter047_persis_tm192_wn192_s2 (KEEP 267.019 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T15:49:23.271Z","tool":"store_round","msg":"Stored iter047_persis_tm192_wn192_s2: KEEP 267.019 TFLOPS (round 48)","level":"info"}
+{"ts":"2026-04-17T15:49:31.906Z","tool":"next_iter","msg":"Resolved iter048_persis_tm192_wn256_s2","level":"info"}
+{"ts":"2026-04-17T15:49:36.892Z","tool":"checkpoint_write","msg":"PLANNED iter048_persis_tm192_wn256_s2: TILE_M=192 with WARP_N=256 and STAGES=2 - keep larger TILE_M, try wider N-tile","level":"info"}
+{"ts":"2026-04-17T15:49:47.958Z","tool":"co2cu","msg":"Compiling iter048_persis_tm192_wn256_s2.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T15:49:55.826Z","tool":"store_round","msg":"Storing iter048_persis_tm192_wn256_s2 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T15:49:55.847Z","tool":"store_round","msg":"Stored iter048_persis_tm192_wn256_s2: COMPILE_FAIL 0 TFLOPS (round 49)","level":"info"}
+{"ts":"2026-04-17T15:50:05.352Z","tool":"next_iter","msg":"Resolved iter049_persis_tm192_wn224_s2","level":"info"}
+{"ts":"2026-04-17T15:50:09.779Z","tool":"checkpoint_write","msg":"PLANNED iter049_persis_tm192_wn224_s2: TILE_M=192 with WARP_N=224 and STAGES=2 - intermediate N between 192 and 256","level":"info"}
+{"ts":"2026-04-17T15:50:28.801Z","tool":"co2cu","msg":"Compiling iter049_persis_tm192_wn224_s2.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T15:50:28.987Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter049_persis_tm192_wn224_s2.cu","level":"info"}
+{"ts":"2026-04-17T15:51:05.326Z","tool":"store_round","msg":"Storing iter049_persis_tm192_wn224_s2 (DISCARD 263.272 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T15:51:05.347Z","tool":"store_round","msg":"Stored iter049_persis_tm192_wn224_s2: DISCARD 263.272 TFLOPS (round 50)","level":"info"}
+{"ts":"2026-04-17T15:51:14.416Z","tool":"next_iter","msg":"Resolved iter050_persis_tm192_wn192_s3","level":"info"}
+{"ts":"2026-04-17T15:51:19.016Z","tool":"checkpoint_write","msg":"PLANNED iter050_persis_tm192_wn192_s3: TILE_M=192 with WARP_N=192 and STAGES=3 - increase pipeline depth with smaller tiles","level":"info"}
+{"ts":"2026-04-17T15:51:29.072Z","tool":"co2cu","msg":"Compiling iter050_persis_tm192_wn192_s3.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T15:51:36.367Z","tool":"store_round","msg":"Storing iter050_persis_tm192_wn192_s3 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T15:51:36.388Z","tool":"store_round","msg":"Stored iter050_persis_tm192_wn192_s3: COMPILE_FAIL 0 TFLOPS (round 51)","level":"info"}
+{"ts":"2026-04-17T15:51:45.117Z","tool":"next_iter","msg":"Resolved iter051_persis_tm192_wn160_s3","level":"info"}
+{"ts":"2026-04-17T15:51:50.048Z","tool":"checkpoint_write","msg":"PLANNED iter051_persis_tm192_wn160_s3: TILE_M=192 with WARP_N=160 and STAGES=3 - smaller N-tile enables 3 stages","level":"info"}
+{"ts":"2026-04-17T15:52:11.959Z","tool":"co2cu","msg":"Compiling iter051_persis_tm192_wn160_s3.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T15:52:12.146Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter051_persis_tm192_wn160_s3.cu","level":"info"}
+{"ts":"2026-04-17T15:52:59.597Z","tool":"store_round","msg":"Storing iter051_persis_tm192_wn160_s3 (DISCARD 250.299 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T15:52:59.617Z","tool":"store_round","msg":"Stored iter051_persis_tm192_wn160_s3: DISCARD 250.299 TFLOPS (round 52)","level":"info"}
+{"ts":"2026-04-17T15:53:06.447Z","tool":"next_iter","msg":"Resolved iter052_persis_tm192_wn128_1p3c","level":"info"}
+{"ts":"2026-04-17T15:53:11.677Z","tool":"checkpoint_write","msg":"PLANNED iter052_persis_tm192_wn128_1p3c: TILE_M=192 with WARP_N=128 and 1p3c - more consumers, smaller N-tile, STAGES=2","level":"info"}
+{"ts":"2026-04-17T15:53:48.397Z","tool":"co2cu","msg":"Compiling iter052_persis_tm192_wn128_1p3c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T15:53:48.600Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter052_persis_tm192_wn128_1p3c.cu","level":"info"}
+{"ts":"2026-04-17T15:54:34.242Z","tool":"store_round","msg":"Storing iter052_persis_tm192_wn128_1p3c (SEGFAULT 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T15:54:34.263Z","tool":"store_round","msg":"Stored iter052_persis_tm192_wn128_1p3c: SEGFAULT 0 TFLOPS (round 53)","level":"info"}
+{"ts":"2026-04-17T15:54:40.618Z","tool":"next_iter","msg":"Resolved iter053_persis_tm256_wn192","level":"info"}
+{"ts":"2026-04-17T15:54:45.617Z","tool":"checkpoint_write","msg":"PLANNED iter053_persis_tm256_wn192: TILE_M=256 with WARP_N=192 and STAGES=2 - even larger M-tile","level":"info"}
+{"ts":"2026-04-17T15:55:04.425Z","tool":"co2cu","msg":"Compiling iter053_persis_tm256_wn192.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T15:55:04.610Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter053_persis_tm256_wn192.cu","level":"info"}
+{"ts":"2026-04-17T15:55:41.770Z","tool":"store_round","msg":"Storing iter053_persis_tm256_wn192 (KEEP 330.275 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T15:55:41.790Z","tool":"store_round","msg":"Stored iter053_persis_tm256_wn192: KEEP 330.275 TFLOPS (round 54)","level":"info"}
+{"ts":"2026-04-17T15:55:48.449Z","tool":"next_iter","msg":"Resolved iter054_persis_tm256_wn256","level":"info"}
+{"ts":"2026-04-17T15:55:53.522Z","tool":"checkpoint_write","msg":"PLANNED iter054_persis_tm256_wn256: TILE_M=256 with WARP_N=256 and STAGES=2 - try maximal tile sizes","level":"info"}
+{"ts":"2026-04-17T15:56:04.491Z","tool":"co2cu","msg":"Compiling iter054_persis_tm256_wn256.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T15:56:12.361Z","tool":"store_round","msg":"Storing iter054_persis_tm256_wn256 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T15:56:12.382Z","tool":"store_round","msg":"Stored iter054_persis_tm256_wn256: COMPILE_FAIL 0 TFLOPS (round 55)","level":"info"}
+{"ts":"2026-04-17T15:56:18.883Z","tool":"next_iter","msg":"Resolved iter055_persis_tm256_wn224","level":"info"}
+{"ts":"2026-04-17T15:56:23.615Z","tool":"checkpoint_write","msg":"PLANNED iter055_persis_tm256_wn224: TILE_M=256 with WARP_N=224 and STAGES=2 - larger N but within SMEM","level":"info"}
+{"ts":"2026-04-17T15:56:31.452Z","tool":"co2cu","msg":"Compiling iter055_persis_tm256_wn224.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T15:56:39.247Z","tool":"store_round","msg":"Storing iter055_persis_tm256_wn224 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T15:56:39.268Z","tool":"store_round","msg":"Stored iter055_persis_tm256_wn224: COMPILE_FAIL 0 TFLOPS (round 56)","level":"info"}
+{"ts":"2026-04-17T15:56:47.173Z","tool":"next_iter","msg":"Resolved iter056_persis_tm256_wn200","level":"info"}
+{"ts":"2026-04-17T15:56:47.257Z","tool":"checkpoint_write","msg":"PLANNED iter056_persis_tm256_wn200: TILE_M=256 with WARP_N=200 and STAGES=2 - finding max N within SMEM limit","level":"info"}
+{"ts":"2026-04-17T15:56:55.149Z","tool":"co2cu","msg":"Compiling iter056_persis_tm256_wn200.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T15:56:55.334Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter056_persis_tm256_wn200.cu","level":"info"}
+{"ts":"2026-04-17T15:57:38.743Z","tool":"store_round","msg":"Storing iter056_persis_tm256_wn200 (KEEP 357.755 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T15:57:38.765Z","tool":"store_round","msg":"Stored iter056_persis_tm256_wn200: KEEP 357.755 TFLOPS (round 57)","level":"info"}
+{"ts":"2026-04-17T15:57:47.778Z","tool":"next_iter","msg":"Resolved iter057_persis_tm256_wn208","level":"info"}
+{"ts":"2026-04-17T15:57:47.845Z","tool":"checkpoint_write","msg":"PLANNED iter057_persis_tm256_wn208: TILE_M=256 with WARP_N=208 and STAGES=2 - slightly larger N within SMEM","level":"info"}
+{"ts":"2026-04-17T15:57:55.672Z","tool":"co2cu","msg":"Compiling iter057_persis_tm256_wn208.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T15:57:55.852Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter057_persis_tm256_wn208.cu","level":"info"}
+{"ts":"2026-04-17T15:58:40.352Z","tool":"store_round","msg":"Storing iter057_persis_tm256_wn208 (DISCARD 353.228 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T15:58:40.372Z","tool":"store_round","msg":"Stored iter057_persis_tm256_wn208: DISCARD 353.228 TFLOPS (round 58)","level":"info"}
+{"ts":"2026-04-17T15:58:49.621Z","tool":"next_iter","msg":"Resolved iter058_persis_tm256_wn200_tk32","level":"info"}
+{"ts":"2026-04-17T15:58:49.694Z","tool":"checkpoint_write","msg":"PLANNED iter058_persis_tm256_wn200_tk32: TILE_M=256 with WARP_N=200, TILE_K=32 and STAGES=3 - smaller K for more stages","level":"info"}
+{"ts":"2026-04-17T15:59:02.550Z","tool":"co2cu","msg":"Compiling iter058_persis_tm256_wn200_tk32.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T15:59:02.733Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter058_persis_tm256_wn200_tk32.cu","level":"info"}
+{"ts":"2026-04-17T15:59:47.684Z","tool":"store_round","msg":"Storing iter058_persis_tm256_wn200_tk32 (DISCARD 309.132 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T15:59:47.704Z","tool":"store_round","msg":"Stored iter058_persis_tm256_wn200_tk32: DISCARD 309.132 TFLOPS (round 59)","level":"info"}
+{"ts":"2026-04-17T15:59:56.625Z","tool":"next_iter","msg":"Resolved iter059_persis_tm256_wn200_reg128","level":"info"}
+{"ts":"2026-04-17T15:59:56.703Z","tool":"checkpoint_write","msg":"PLANNED iter059_persis_tm256_wn200_reg128: TILE_M=256 WARP_N=200 with maxrregcount=128 - try higher occupancy","level":"info"}
+{"ts":"2026-04-17T16:00:47.647Z","tool":"store_round","msg":"Storing iter059_persis_tm256_wn200_reg128 (DISCARD 349.902 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T16:00:47.667Z","tool":"store_round","msg":"Stored iter059_persis_tm256_wn200_reg128: DISCARD 349.902 TFLOPS (round 60)","level":"info"}
+{"ts":"2026-04-17T16:00:59.244Z","tool":"next_iter","msg":"Resolved iter060_persis_tm256_wn200_reg180","level":"info"}
+{"ts":"2026-04-17T16:00:59.311Z","tool":"checkpoint_write","msg":"PLANNED iter060_persis_tm256_wn200_reg180: TILE_M=256 WARP_N=200 with maxrregcount=180 - more registers","level":"info"}
+{"ts":"2026-04-17T16:01:45.792Z","tool":"store_round","msg":"Storing iter060_persis_tm256_wn200_reg180 (SEGFAULT 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T16:01:45.812Z","tool":"store_round","msg":"Stored iter060_persis_tm256_wn200_reg180: SEGFAULT 0 TFLOPS (round 61)","level":"info"}
+{"ts":"2026-04-17T16:01:55.045Z","tool":"next_iter","msg":"Resolved iter061_persis_tm320_wn160","level":"info"}
+{"ts":"2026-04-17T16:01:55.106Z","tool":"checkpoint_write","msg":"PLANNED iter061_persis_tm320_wn160: TILE_M=320 with WARP_N=160 - try even larger M tile","level":"info"}
+{"ts":"2026-04-17T16:02:08.944Z","tool":"co2cu","msg":"Compiling iter061_persis_tm320_wn160.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T16:02:09.128Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter061_persis_tm320_wn160.cu","level":"info"}
+{"ts":"2026-04-17T16:02:54.842Z","tool":"store_round","msg":"Storing iter061_persis_tm320_wn160 (SEGFAULT 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T16:02:54.863Z","tool":"store_round","msg":"Stored iter061_persis_tm320_wn160: SEGFAULT 0 TFLOPS (round 62)","level":"info"}
+{"ts":"2026-04-17T16:03:11.700Z","tool":"next_iter","msg":"Resolved iter062_persis_tm256_wn200_1p1c","level":"info"}
+{"ts":"2026-04-17T16:03:11.767Z","tool":"checkpoint_write","msg":"PLANNED iter062_persis_tm256_wn200_1p1c: TILE_M=256 WARP_N=200 with 1p1c topology - fewer threads per CTA","level":"info"}
+{"ts":"2026-04-17T16:03:27.565Z","tool":"co2cu","msg":"Compiling iter062_persis_tm256_wn200_1p1c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T16:03:27.734Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu","level":"info"}
+{"ts":"2026-04-17T16:03:55.094Z","tool":"store_round","msg":"Storing iter062_persis_tm256_wn200_1p1c (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T16:03:55.114Z","tool":"store_round","msg":"Stored iter062_persis_tm256_wn200_1p1c: COMPILE_FAIL 0 TFLOPS (round 63)","level":"info"}
+{"ts":"2026-04-17T16:04:04.963Z","tool":"next_iter","msg":"Resolved iter063_persis_tm256_wn200_reg170","level":"info"}
+{"ts":"2026-04-17T16:04:05.044Z","tool":"checkpoint_write","msg":"PLANNED iter063_persis_tm256_wn200_reg170: TILE_M=256 WARP_N=200 with maxrregcount=170","level":"info"}
+{"ts":"2026-04-17T16:04:56.411Z","tool":"store_round","msg":"Storing iter063_persis_tm256_wn200_reg170 (KEEP 359.749 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T16:04:56.431Z","tool":"store_round","msg":"Stored iter063_persis_tm256_wn200_reg170: KEEP 359.749 TFLOPS (round 64)","level":"info"}
+{"ts":"2026-04-17T16:05:06.087Z","tool":"next_iter","msg":"Resolved iter064_persis_tm256_wn200_reg165","level":"info"}
+{"ts":"2026-04-17T16:05:06.155Z","tool":"checkpoint_write","msg":"PLANNED iter064_persis_tm256_wn200_reg165: TILE_M=256 WARP_N=200 with maxrregcount=165 - between 160 and 170","level":"info"}
+{"ts":"2026-04-17T16:06:28.647Z","tool":"store_round","msg":"Storing iter064_persis_tm256_wn200_reg165 (DISCARD 358.825 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T16:06:28.667Z","tool":"store_round","msg":"Stored iter064_persis_tm256_wn200_reg165: DISCARD 358.825 TFLOPS (round 65)","level":"info"}
+{"ts":"2026-04-17T16:06:44.853Z","tool":"next_iter","msg":"Resolved iter065_persis_tm256_wn200_reg175","level":"info"}
+{"ts":"2026-04-17T16:06:44.925Z","tool":"checkpoint_write","msg":"PLANNED iter065_persis_tm256_wn200_reg175: TILE_M=256 WARP_N=200 with maxrregcount=175 - above optimal 170","level":"info"}
+{"ts":"2026-04-17T16:07:31.608Z","tool":"store_round","msg":"Storing iter065_persis_tm256_wn200_reg175 (SEGFAULT 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T16:07:31.628Z","tool":"store_round","msg":"Stored iter065_persis_tm256_wn200_reg175: SEGFAULT 0 TFLOPS (round 66)","level":"info"}
+{"ts":"2026-04-17T17:10:35.795Z","tool":"store_baseline","msg":"Measuring cuBLAS baseline for f16fp32 16384x16384x512","level":"info"}
+{"ts":"2026-04-17T17:10:37.746Z","tool":"store_baseline","msg":"cuBLAS baseline: 346.0215 TFLOPS (saved to tuning/sm90_NVIDIA_H800_PCIe/croqtile/baseline/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/cublas_result.json)","level":"info"}
+{"ts":"2026-04-17T17:10:37.758Z","tool":"store_round","msg":"Storing iter000_cublas (KEEP 346.0215 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T17:10:37.778Z","tool":"store_round","msg":"Stored iter000_cublas: KEEP 346.0215 TFLOPS (round 0)","level":"info"}
+{"ts":"2026-04-17T17:10:37.790Z","tool":"store_baseline","msg":"Stored iter000_cublas: 346.0215 TFLOPS (baseline)","level":"info"}

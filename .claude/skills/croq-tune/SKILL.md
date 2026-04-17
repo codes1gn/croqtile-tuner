@@ -10,11 +10,20 @@ argument-hint: <dsl: croqtile|cuda|cute|triton|tilelang|helion|cutile> <dtype: f
 
 ## Main Loop
 
-1. Parse `dsl`, `dtype`, optional `shape_key`
+1. Parse `dsl`, `dtype`, optional `shape_key`, `--model`, `--task-uid`
 2. Startup/resume decision (see "Resume Contract" below)
 3. Load `croq-dsl-<dsl>` for DSL-specific commands (BUILD, RUN, PROFILE, IDEA menu)
 4. Run `PREPARATION_ONCE` for this `(dsl, operator, dtype, shape_key)`
 5. Repeat round loop until a valid stop condition is met
+
+**CRITICAL: Use the `shape_key` EXACTLY as given in the prompt.**
+If the prompt says `tune cuda f16fp32 matmul_fp16fp32_16384x16384x512`, the shape_key is
+`matmul_fp16fp32_16384x16384x512` — do NOT re-derive or rename it. This string is used
+as-is for all folder paths and harness script `--shape-key` arguments.
+
+**CRITICAL: Extract `--task-uid` from the prompt and pass it to `store_baseline.sh`.**
+The task-uid is the unique identifier that connects this tuning session to the monitor
+database. Without it, the monitor may create phantom duplicate tasks.
 
 ---
 
@@ -174,30 +183,40 @@ python3 .claude/skills/croq-tune/tools/prepare_baseline_env.py \
   --dsl <dsl> --operator <op> --kernel <kernel> --shape-key <shape_key> --libs auto
 ```
 
-**Step 2b — Measure cuBLAS reference TFLOPS (MANDATORY, BLOCKING):**
+**Step 2b — Measure + store cuBLAS reference (MANDATORY, BLOCKING):**
 
 Before any tuning starts, you MUST measure a cuBLAS/torch.mm baseline to know
-the hardware ceiling. This number is recorded as `baseline_tflops` and used for
-all KEEP/DISCARD context. Without it, you have no reference for quality of results.
+the hardware ceiling. Use `store_baseline.sh` which atomically measures, saves
+artifacts, and records `iter000_cublas` in `results.tsv` — making it impossible
+to accidentally skip the baseline.
 
 ```bash
 GPU_STATE=$(bash .claude/skills/croq-tune/tools/gpu_check.sh)
 # Wait for idle GPU before baseline measurement
 
-BASELINE=$(bash .claude/skills/croq-tune/tools/cublas_baseline.sh \
-    --dtype <dtype> --m <M> --n <N> --k <K>)
-echo "$BASELINE"
+bash .claude/skills/croq-tune/tools/store_baseline.sh \
+    --dsl <dsl> --shape-key <shape_key> --model <model> \
+    --dtype <dtype> --m <M> --n <N> --k <K> \
+    --task-uid <task_uid>
 ```
 
-The output is JSON with `tflops`, `status`, and timing data. Record the `tflops`
-value as `baseline_tflops` for this shape. If the script fails (exit != 0),
-check `torch` / CUDA availability and retry.
+**`--task-uid` is MANDATORY.** Extract `<task_uid>` from the `--task-uid` argument in the
+original prompt (e.g., `tune cuda f16fp32 matmul_... --task-uid abc123def456`).
+The script writes `task_config.json` with this uid as the first disk artifact, preventing
+phantom task creation by the monitor.
+
+The script:
+1. Writes `task_config.json` with `task_uid` (earliest possible disk anchor)
+2. Runs `cublas_baseline.sh` to measure TFLOPS
+3. Saves a JSON artifact to `tuning/<gpu>/<dsl>/baseline/<shape_key>/<model>/cublas_result.json`
+4. Stores `iter000_cublas` in `results.tsv` and `idea-log.jsonl` via `store_round.sh`
+5. Is idempotent — re-running skips if baseline already exists
+
+The baseline number is used for all KEEP/DISCARD context.
 
 **NEVER skip this step.** Even for small shapes, the cuBLAS baseline gives context:
 - If cuBLAS gets 0.5 TFLOPS and your kernel gets 0.4, that's 80% — good
 - Without the baseline, 0.4 TFLOPS is meaningless
-
-Persist the baseline in the checkpoint and `results.tsv` as `iter000` (round 0).
 
 ### 3. Starting Kernel Discovery (MANDATORY)
 
@@ -615,7 +634,8 @@ Tag: 2-31 chars, lowercase alphanumeric + underscores, descriptive of the idea.
 | `ncu_profile.sh` | PROFILE step | `--out --cmd` |
 | `profile_extract.sh` | After ncu CSV | `--csv --iter` |
 | `gpu_check.sh` | Before PROFILE and MEASURE | (none), or `--wait`, `--kill-others`, `--reset` |
-| `cublas_baseline.sh` | PREPARATION_ONCE step 2b | `--dtype --m --n --k [--warmup --iters]` |
+| `store_baseline.sh` | PREPARATION_ONCE step 2b | `--dsl --shape-key --model --dtype --m --n --k --task-uid [--warmup --iters]` |
+| `cublas_baseline.sh` | Called by store_baseline.sh | `--dtype --m --n --k [--warmup --iters]` |
 | `prepare_baseline_env.py` | PREPARATION_ONCE step 2a | `--dsl --operator --kernel --shape-key --libs` |
 
 All scripts under `.claude/skills/croq-tune/tools/`. `--gpu` is optional for store/checkpoint/next_iter (auto-detected); **required** for `resume_state.sh`.

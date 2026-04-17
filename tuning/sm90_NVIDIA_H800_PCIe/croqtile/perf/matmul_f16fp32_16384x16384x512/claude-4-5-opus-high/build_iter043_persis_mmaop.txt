@@ -1,0 +1,4 @@
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter043_persis_mmaop.co:90.20: error: syntax error, unexpected .
+                  mma.op wgmma_f16f32 mc, ma, mb;
+                     ^
+Parsing failed due to syntax errors.

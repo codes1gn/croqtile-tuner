@@ -162,6 +162,8 @@ def discover_shape_keys() -> dict[str, dict]:
                                 cfg = json.loads(config_file.read_text())
                                 if cfg.get("task_uid"):
                                     entry["task_uid"] = cfg["task_uid"]
+                                if cfg.get("task_id"):
+                                    entry["task_id"] = cfg["task_id"]
                                 if cfg.get("mode"):
                                     entry["mode"] = cfg["mode"]
                                 if cfg.get("status"):
@@ -194,6 +196,21 @@ def discover_shape_keys() -> dict[str, dict]:
                             compound = _compound_key(gpu_dir.name, dsl, key_dir.name, model)
                             entry = found.setdefault(compound, {"dsl": dsl, "device": device, "shape_key": key_dir.name, "model": model})
                             entry["has_srcs"] = True
+
+            baseline_dir = dsl_dir / "baseline"
+            if baseline_dir.exists():
+                for key_dir in baseline_dir.iterdir():
+                    if not key_dir.is_dir():
+                        continue
+                    for model_dir in key_dir.iterdir():
+                        if not model_dir.is_dir():
+                            continue
+                        bl_file = model_dir / "cublas_result.json"
+                        if bl_file.exists():
+                            model = _normalize_model(model_dir.name)
+                            compound = _compound_key(gpu_dir.name, dsl, key_dir.name, model)
+                            entry = found.setdefault(compound, {"dsl": dsl, "device": device, "shape_key": key_dir.name, "model": model})
+                            entry["baseline_artifact"] = bl_file
 
     return found
 
@@ -409,6 +426,7 @@ async def scan_and_create_tasks(session: AsyncSession) -> int:
     all_tasks = list(result.scalars().all())
     existing_by_key: dict[str, Task] = {t.shape_key: t for t in all_tasks}
     existing_by_uid: dict[str, Task] = {t.task_uid: t for t in all_tasks if t.task_uid}
+    existing_by_id: dict[int, Task] = {t.id: t for t in all_tasks}
 
     # Build set of discovered task_uids for stale-pruning
     discovered_uids: set[str] = set()
@@ -458,9 +476,19 @@ async def scan_and_create_tasks(session: AsyncSession) -> int:
             logger.debug("Skipping cancelled artifact: %s", compound_key)
             continue
 
-        # Match: first by task_uid, then by compound key, then by bare shape+dsl
+        # Match: first by task_id, then by task_uid, then by compound key, then by bare shape+dsl
         task: Task | None = None
-        if disk_uid and disk_uid in existing_by_uid:
+        disk_task_id = info.get("task_id")
+        if disk_task_id and disk_task_id in existing_by_id:
+            task = existing_by_id[disk_task_id]
+            if task.shape_key != compound_key:
+                logger.info(
+                    "Task %d (id from config) path changed: %s → %s",
+                    task.id, task.shape_key, compound_key,
+                )
+                task.shape_key = compound_key
+                changed = True
+        elif disk_uid and disk_uid in existing_by_uid:
             task = existing_by_uid[disk_uid]
             if task.shape_key != compound_key:
                 logger.info(
@@ -609,17 +637,23 @@ async def scan_and_create_tasks(session: AsyncSession) -> int:
     # Detect running agents and mark their tasks as "running"
     await _sync_agent_status(session)
 
+    # Discover cursor-agent sessions from transcripts and link to tasks
+    await _discover_cursor_sessions(session)
+
     return created
 
 
 async def _sync_agent_status(session: AsyncSession) -> None:
-    """Match detected agents to tasks and update status/agent_type/model."""
+    """Match detected agents to tasks and update status/agent_type/model.
+
+    Also detects tasks stuck in 'running' when no agent is alive for them,
+    transitioning them to 'completed' or 'pending' as appropriate.
+    """
+    from .scheduler import scheduler
+
     try:
         agents = detect_running_agents()
     except Exception:
-        return
-
-    if not agents:
         return
 
     active_agents: dict[str, "DetectedAgent"] = {}
@@ -627,14 +661,12 @@ async def _sync_agent_status(session: AsyncSession) -> None:
         if agent.kernel_path:
             active_agents[agent.kernel_path] = agent
 
-    if not active_agents:
-        return
-
     result = await session.execute(select(Task))
     tasks = result.scalars().all()
 
+    matched_task_ids: set[int] = set()
+
     for task in tasks:
-        # Compound key format: "{gpu}/{dsl}/{shape_key}/{model}" — the kernel shape is at index [-2]
         parts = task.shape_key.split("/")
         bare_key = parts[-2] if len(parts) >= 2 else task.shape_key
         agent = active_agents.get(bare_key) or active_agents.get(task.shape_key)
@@ -646,9 +678,11 @@ async def _sync_agent_status(session: AsyncSession) -> None:
         if not agent:
             continue
 
+        matched_task_ids.add(task.id)
+
         updated = False
-        if agent.model_id and agent.model_id != task.model:
-            logger.info("Agent model update: %s model %s → %s", task.shape_key, task.model, agent.model_id)
+        if agent.model_id and not task.model:
+            logger.info("Agent model set: %s model → %s", task.shape_key, agent.model_id)
             task.model = agent.model_id
             updated = True
         session_id = agent.session_id
@@ -675,6 +709,33 @@ async def _sync_agent_status(session: AsyncSession) -> None:
         if updated:
             task.updated_at = datetime.now(timezone.utc)
             await event_bus.publish("task_update", task.to_dict())
+
+    # Transition tasks stuck in "running" when no agent is alive for them
+    # and the scheduler doesn't have an active worker for them.
+    for task in tasks:
+        if task.status != "running":
+            continue
+        if task.id in matched_task_ids:
+            continue
+        if task.id in scheduler.active_task_ids:
+            continue
+
+        old_status = task.status
+        if task.current_iteration >= task.max_iterations:
+            task.status = "completed"
+            task.completed_at = task.completed_at or datetime.now(timezone.utc)
+        else:
+            task.status = "completed"
+            task.completed_at = task.completed_at or datetime.now(timezone.utc)
+
+        task.updated_at = datetime.now(timezone.utc)
+        logger.info(
+            "Agent sync: %s %s → %s (no agent detected, not in scheduler)",
+            task.shape_key, old_status, task.status,
+        )
+        await event_bus.publish("task_update", task.to_dict())
+        from .artifact_config import sync_task_to_artifact
+        await sync_task_to_artifact(session, task)
 
     await session.commit()
 
@@ -859,20 +920,214 @@ async def _import_attempt_log(session: AsyncSession, task_id: int, attempt_log_p
         ))
 
 
+async def _discover_cursor_sessions(session: AsyncSession) -> None:
+    """Scan cursor-agent transcript directory and link sessions to tasks.
+
+    cursor-agent doesn't include session IDs in its command line, so
+    _sync_agent_status can't detect them via regex. Instead, we scan the
+    transcripts directory and read the first line of each JSONL to extract
+    the DSL and shape_key from the user query, then match to existing tasks.
+    """
+    transcripts_dir = settings.cursor_transcripts_dir
+    if not transcripts_dir.exists():
+        return
+
+    result = await session.execute(select(Task))
+    tasks = list(result.scalars().all())
+    if not tasks:
+        return
+
+    from sqlalchemy import select as sa_select
+    from .models import TaskSession
+
+    existing_result = await session.execute(sa_select(TaskSession.session_id))
+    known_session_ids: set[str] = {r[0] for r in existing_result.all()}
+
+    changed = False
+
+    try:
+        session_dirs = sorted(transcripts_dir.iterdir(), key=lambda p: p.stat().st_mtime, reverse=True)
+    except OSError:
+        return
+
+    for session_dir in session_dirs:
+        if not session_dir.is_dir():
+            continue
+        sid = session_dir.name
+        if sid in known_session_ids:
+            continue
+
+        jsonl_path = session_dir / f"{sid}.jsonl"
+        if not jsonl_path.exists():
+            continue
+
+        dsl, shape_key, task_uid = _extract_task_identity_from_transcript(jsonl_path)
+        if not dsl and not shape_key and not task_uid:
+            continue
+
+        matched_task = _match_transcript_to_task(tasks, dsl, shape_key, task_uid)
+        if not matched_task:
+            continue
+
+        ts = TaskSession(
+            task_id=matched_task.id,
+            session_id=sid,
+            agent_type="cursor_cli",
+            model=matched_task.model,
+            request_number=matched_task.request_number,
+        )
+        session.add(ts)
+        known_session_ids.add(sid)
+        changed = True
+
+        if not matched_task.opencode_session_id:
+            matched_task.opencode_session_id = sid
+            matched_task.updated_at = datetime.now(timezone.utc)
+
+        logger.info("Session discovery: linked %s → task %d (%s)", sid[:12], matched_task.id, matched_task.shape_key)
+
+    if changed:
+        await session.commit()
+        for task in tasks:
+            from .artifact_config import sync_task_to_artifact
+            await sync_task_to_artifact(session, task)
+
+
+def _extract_task_identity_from_transcript(jsonl_path: Path) -> tuple[str | None, str | None, str | None]:
+    """Read the first few lines of a cursor transcript to extract DSL, shape_key, and task_uid.
+
+    Returns (dsl, shape_key, task_uid) — any may be None.
+    """
+    dsl: str | None = None
+    shape_key: str | None = None
+    task_uid: str | None = None
+
+    try:
+        with open(jsonl_path, "r", errors="replace") as f:
+            for i, raw in enumerate(f):
+                if i > 5:
+                    break
+                raw = raw.strip()
+                if not raw:
+                    continue
+                try:
+                    obj = json.loads(raw)
+                except json.JSONDecodeError:
+                    continue
+
+                role = obj.get("role", "")
+                if role != "user":
+                    continue
+
+                msg = obj.get("message", {})
+                content = msg.get("content", [])
+                text = ""
+                if isinstance(content, str):
+                    text = content
+                elif isinstance(content, list):
+                    for item in content:
+                        if isinstance(item, dict) and item.get("type") == "text":
+                            text += item.get("text", "")
+
+                if not text:
+                    continue
+
+                text_lower = text.lower()
+
+                for d in ("cuda", "croqtile", "triton", "cute", "tilelang", "helion", "cutile"):
+                    if d in text_lower:
+                        dsl = d
+                        break
+
+                shape_match = re.search(
+                    r"((?:matmul|gemm|gemm_sp|conv2d|fmha)_[A-Za-z0-9]+_\d+x\d+x\d+)",
+                    text,
+                )
+                if shape_match:
+                    shape_key = shape_match.group(1)
+
+                uid_match = re.search(r"--task-uid\s+([a-f0-9]+)\b", text)
+                if uid_match:
+                    task_uid = uid_match.group(1)
+
+                if dsl or shape_key or task_uid:
+                    break
+    except OSError:
+        pass
+
+    return dsl, shape_key, task_uid
+
+
+def _match_transcript_to_task(
+    tasks: list[Task],
+    dsl: str | None,
+    shape_key: str | None,
+    task_uid: str | None,
+) -> Task | None:
+    """Find the best matching task for a transcript's extracted identity.
+
+    Handles dtype normalization (f16fp32 vs fp16fp32) and fuzzy matching
+    by operator + dimensions when exact shape_key substring match fails.
+    """
+    if task_uid:
+        for t in tasks:
+            if t.task_uid == task_uid:
+                return t
+
+    if shape_key:
+        normalized = _normalize_dtype(shape_key.split("_")[1]) if "_" in shape_key else ""
+        parsed = _parse_shape_key(shape_key)
+
+        if dsl:
+            for t in tasks:
+                if t.dsl != dsl:
+                    continue
+                if shape_key in t.shape_key:
+                    return t
+                # Fuzzy: same operator + same dimensions
+                if parsed and t.op_type == parsed["op_type"]:
+                    if t.m == parsed["m"] and t.n == parsed["n"] and t.k == parsed["k"]:
+                        return t
+
+        for t in tasks:
+            if shape_key in t.shape_key:
+                return t
+            if parsed and t.op_type == parsed["op_type"]:
+                if t.m == parsed["m"] and t.n == parsed["n"] and t.k == parsed["k"]:
+                    if dsl is None or t.dsl == dsl:
+                        return t
+
+    if dsl:
+        matches = [t for t in tasks if t.dsl == dsl]
+        if len(matches) == 1:
+            return matches[0]
+
+    return None
+
+
 def _collect_metrics(info: dict) -> dict:
-    """Extract metrics from checkpoint and results.tsv.
+    """Extract metrics from checkpoint, results.tsv, and baseline artifacts.
 
     results.tsv is the authoritative source for iteration count, best_tflops (excl. baseline),
     and baseline_tflops.  checkpoint files supplement with the current best kernel name.
+    Baseline artifacts (cublas_result.json) provide a fallback when results.tsv lacks iter000.
     """
     metrics: dict = {}
 
     if "checkpoint" in info:
         metrics.update(_read_checkpoint_metrics(info["checkpoint"]))
 
+    if "baseline_artifact" in info and "baseline_tflops" not in metrics:
+        try:
+            bl = json.loads(info["baseline_artifact"].read_text())
+            bl_tflops = bl.get("tflops")
+            if bl_tflops is not None and float(bl_tflops) > 0:
+                metrics["baseline_tflops"] = float(bl_tflops)
+        except (json.JSONDecodeError, OSError, ValueError):
+            pass
+
     if "results_tsv" in info:
         tsv_metrics = _parse_results_tsv(info["results_tsv"])
-        # results.tsv wins for iteration count, baseline, and best_tflops
         metrics.update(tsv_metrics)
 
     return metrics

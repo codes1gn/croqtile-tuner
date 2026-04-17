@@ -131,6 +131,10 @@ def build_command(task: Task) -> list[str]:
         ]
         if bare_model:
             command.extend(["--model", bare_model])
+        # Resume the original session so the agent keeps full context/memory
+        session_id = getattr(task, "opencode_session_id", None)
+        if session_id:
+            command.extend(["--resume", session_id])
         command.extend([prompt, project_dir])
         return command
 

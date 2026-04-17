@@ -92,6 +92,7 @@ async def sync_task_to_artifact(session: AsyncSession, task: Task) -> bool:
     db_sessions = result.scalars().all()
 
     config = read_artifact_config(task.shape_key)
+    config["task_id"] = task.id
     config["task_uid"] = task.task_uid
     config["model"] = task.model
     config["variant"] = task.variant or ""

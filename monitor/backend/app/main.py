@@ -385,6 +385,8 @@ async def resume_task(
         best_tflops=task.best_tflops,
         baseline_tflops=task.baseline_tflops,
         best_kernel=task.best_kernel,
+        # Carry over session so cursor-agent can --resume the original session
+        opencode_session_id=task.opencode_session_id,
     )
     session.add(resumed)
     await session.commit()

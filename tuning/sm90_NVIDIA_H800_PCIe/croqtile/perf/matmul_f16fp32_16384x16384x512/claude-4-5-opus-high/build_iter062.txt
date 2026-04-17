@@ -1,0 +1,177 @@
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(385): error: expected a declaration
+  }
+  ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(417): warning #12-D: parsing restarts here after previous syntax error
+    const char* timing_env = std::getenv("CHOREO_DISABLE_TIMING");
+                                                                 ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(418): error: expected a declaration
+    if (timing_env && timing_env[0] == '1' && timing_env[1] == '\0') {
+    ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(422): warning #12-D: parsing restarts here after previous syntax error
+    const char* skip_verify_env = std::getenv("CHOREO_SKIP_VERIFY");
+                                                                   ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(423): error: expected a declaration
+    if (skip_verify_env && skip_verify_env[0] == '1' && skip_verify_env[1] == '\0') {
+    ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(427): warning #12-D: parsing restarts here after previous syntax error
+    size_t M = 16384;
+                    ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(431): error: identifier "M" is undefined
+    auto lhs_h = choreo::make_spandata<choreo::f16>(M, K);
+                                                    ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(431): error: no instance of overloaded function "choreo::make_spandata" matches the argument list
+            argument types are: (<error-type>, size_t)
+    auto lhs_h = choreo::make_spandata<choreo::f16>(M, K);
+                 ^
+/home/albert/workspace/croqtile-tuner/.claude/skills/croq-tune/tools/choreo_headers/choreo.h(1620): note #3327-D: candidate function template "choreo::make_spandata<T,Dims...,<unnamed>>(Dims...)" failed deduction
+  __attribute__((host)) auto make_spandata(Dims... dims) {
+                             ^
+/home/albert/workspace/croqtile-tuner/.claude/skills/croq-tune/tools/choreo_headers/choreo.h(1594): note #3322-D: number of parameters of function template "choreo::make_spandata<T,Rank>(std::initializer_list<std::size_t>)" does not match the call
+  make_spandata(std::initializer_list<size_t> init) {
+  ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(433): error: no instance of overloaded function "choreo::make_spandata" matches the argument list
+            argument types are: (<error-type>, size_t)
+    auto res_h = choreo::make_spandata<choreo::f32>(M, N);
+                 ^
+/home/albert/workspace/croqtile-tuner/.claude/skills/croq-tune/tools/choreo_headers/choreo.h(1620): note #3327-D: candidate function template "choreo::make_spandata<T,Dims...,<unnamed>>(Dims...)" failed deduction
+  __attribute__((host)) auto make_spandata(Dims... dims) {
+                             ^
+/home/albert/workspace/croqtile-tuner/.claude/skills/croq-tune/tools/choreo_headers/choreo.h(1594): note #3322-D: number of parameters of function template "choreo::make_spandata<T,Rank>(std::initializer_list<std::size_t>)" does not match the call
+  make_spandata(std::initializer_list<size_t> init) {
+  ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(434): error: this declaration has no storage class or type specifier
+    lhs_h.fill_random(0, 2);
+    ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(434): error: variable "lhs_h" has already been defined (previous definition at line 431)
+    lhs_h.fill_random(0, 2);
+    ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(434): error: expected a ";"
+    lhs_h.fill_random(0, 2);
+         ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(435): error: this declaration has no storage class or type specifier
+    rhs_h.fill_random(0, 2);
+    ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(435): error: variable "rhs_h" has already been defined (previous definition at line 432)
+    rhs_h.fill_random(0, 2);
+    ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(435): error: expected a ";"
+    rhs_h.fill_random(0, 2);
+         ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(436): error: this declaration has no storage class or type specifier
+    res_h.fill(0.0f);
+    ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(436): error: variable "res_h" has already been defined (previous definition at line 433)
+    res_h.fill(0.0f);
+    ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(436): error: expected a ";"
+    res_h.fill(0.0f);
+         ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(440): error: overloaded function "cudaMalloc" is not a type name
+    choreo::abend_true(cudaMalloc(&a_d, M * K * sizeof(half)));
+                       ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(440): error: expected a ")"
+    choreo::abend_true(cudaMalloc(&a_d, M * K * sizeof(half)));
+                                      ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(440): error: "M" is not a type name
+    choreo::abend_true(cudaMalloc(&a_d, M * K * sizeof(half)));
+                                        ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(440): error: expected a ")"
+    choreo::abend_true(cudaMalloc(&a_d, M * K * sizeof(half)));
+                                              ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(440): error: explicit type is missing ("int" assumed)
+    choreo::abend_true(cudaMalloc(&a_d, M * K * sizeof(half)));
+    ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(440): error: expected a "{"
+    choreo::abend_true(cudaMalloc(&a_d, M * K * sizeof(half)));
+                                                             ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(452): warning #12-D: parsing restarts here after previous syntax error
+    if (enable_timing) {
+                       ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(468): error: identifier "lhs_d" is undefined
+      auto avg_ms = choreo::timing([&]() { matmul(lhs_d, rhs_d, res_d); cudaDeviceSynchronize(); }, topt);
+                                                  ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(468): error: identifier "rhs_d" is undefined
+      auto avg_ms = choreo::timing([&]() { matmul(lhs_d, rhs_d, res_d); cudaDeviceSynchronize(); }, topt);
+                                                         ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(468): error: identifier "res_d" is undefined
+      auto avg_ms = choreo::timing([&]() { matmul(lhs_d, rhs_d, res_d); cudaDeviceSynchronize(); }, topt);
+                                                                ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(471): error: identifier "user_flops" is undefined
+      double flops = (user_flops > 0.0) ? user_flops : (2.0 * double(M) * double(N) * double(K));
+                      ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(471): error: invalid type conversion
+      double flops = (user_flops > 0.0) ? user_flops : (2.0 * double(M) * double(N) * double(K));
+                                                                                      ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(477): warning #940-D: missing return statement at end of non-void function "choreo::abend_true(<error-type> &, <error-type> *)"
+    } else {
+    ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(477): error: expected a declaration
+    } else {
+      ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(481): warning #12-D: parsing restarts here after previous syntax error
+    choreo::abend_true(cudaMemcpy(res_h.data(), c_d, M * N * sizeof(float), cudaMemcpyDeviceToHost));
+                                                                                                    ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(482): error: function "cudaDeviceSynchronize" is not a type name
+    choreo::abend_true(cudaDeviceSynchronize());
+                       ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(482): error: explicit type is missing ("int" assumed)
+    choreo::abend_true(cudaDeviceSynchronize());
+    ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(484): error: expected a declaration
+    if (skip_verify) {
+    ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(489): warning #12-D: parsing restarts here after previous syntax error
+    auto lhs_view = lhs_h.view();
+                                ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(499): error: expected a declaration
+    for (size_t i = 0; i < 128; ++i) {
+    ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(513): warning #12-D: parsing restarts here after previous syntax error
+    std::cout << "Test Passed\n" << std::endl;
+                                             ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu(514): error: expected a declaration
+  }
+  ^
+
+32 errors detected in the compilation of "tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter062_persis_tm256_wn200_1p1c.cu".

@@ -1,0 +1,85 @@
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter055_persis_tm256_wn224.co:66.13: error: shared memory OUT OF BOUND!
+	In the scope ::matmul::paraby_0::within_0::foreach_0::cond_if_0::paraby_1::paraby_2::paraby_3::inthreads_0::within_1::foreach_1::, compile-time shared memory:
+	Used: 237568 bytes, Limit: 233472 bytes. With variables:
+		::matmul::paraby_0::anon_3
+              foreach {iv_k} in [cdiv(K, MATMUL_TILE_K)] {
+              ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter055_persis_tm256_wn224.co:66.13: error: shared memory OUT OF BOUND!
+	In the scope ::matmul::paraby_0::within_0::foreach_0::cond_if_0::paraby_1::paraby_2::paraby_3::inthreads_0::within_1::, compile-time shared memory:
+	Used: 237568 bytes, Limit: 233472 bytes. With variables:
+		::matmul::paraby_0::anon_3
+              foreach {iv_k} in [cdiv(K, MATMUL_TILE_K)] {
+              ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter055_persis_tm256_wn224.co:80.15: error: shared memory OUT OF BOUND!
+	In the scope ::matmul::paraby_0::within_0::foreach_0::cond_if_0::paraby_1::paraby_2::paraby_3::inthreads_1::cond_if_1::within_2::foreach_2::, compile-time shared memory:
+	Used: 237568 bytes, Limit: 233472 bytes. With variables:
+		::matmul::paraby_0::anon_3
+                foreach {s} in [MATMUL_STAGES] {
+                ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter055_persis_tm256_wn224.co:80.15: error: shared memory OUT OF BOUND!
+	In the scope ::matmul::paraby_0::within_0::foreach_0::cond_if_0::paraby_1::paraby_2::paraby_3::inthreads_1::cond_if_1::within_2::, compile-time shared memory:
+	Used: 237568 bytes, Limit: 233472 bytes. With variables:
+		::matmul::paraby_0::anon_3
+                foreach {s} in [MATMUL_STAGES] {
+                ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter055_persis_tm256_wn224.co:87.15: error: shared memory OUT OF BOUND!
+	In the scope ::matmul::paraby_0::within_0::foreach_0::cond_if_0::paraby_1::paraby_2::paraby_3::inthreads_1::within_3::foreach_3::within_4::foreach_4::, compile-time shared memory:
+	Used: 237568 bytes, Limit: 233472 bytes. With variables:
+		::matmul::paraby_0::anon_3
+                foreach {iv_warp} in [cdiv(MATMUL_TILE_K, MATMUL_WARP_K)] {
+                ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter055_persis_tm256_wn224.co:87.15: error: shared memory OUT OF BOUND!
+	In the scope ::matmul::paraby_0::within_0::foreach_0::cond_if_0::paraby_1::paraby_2::paraby_3::inthreads_1::within_3::foreach_3::within_4::, compile-time shared memory:
+	Used: 237568 bytes, Limit: 233472 bytes. With variables:
+		::matmul::paraby_0::anon_3
+                foreach {iv_warp} in [cdiv(MATMUL_TILE_K, MATMUL_WARP_K)] {
+                ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter055_persis_tm256_wn224.co:84.13: error: shared memory OUT OF BOUND!
+	In the scope ::matmul::paraby_0::within_0::foreach_0::cond_if_0::paraby_1::paraby_2::paraby_3::inthreads_1::within_3::foreach_3::, compile-time shared memory:
+	Used: 237568 bytes, Limit: 233472 bytes. With variables:
+		::matmul::paraby_0::anon_3
+              foreach {iv_k} in [cdiv(K, MATMUL_TILE_K)] {
+              ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter055_persis_tm256_wn224.co:84.13: error: shared memory OUT OF BOUND!
+	In the scope ::matmul::paraby_0::within_0::foreach_0::cond_if_0::paraby_1::paraby_2::paraby_3::inthreads_1::within_3::, compile-time shared memory:
+	Used: 237568 bytes, Limit: 233472 bytes. With variables:
+		::matmul::paraby_0::anon_3
+              foreach {iv_k} in [cdiv(K, MATMUL_TILE_K)] {
+              ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter055_persis_tm256_wn224.co:63.37: error: shared memory OUT OF BOUND!
+	In the scope ::matmul::paraby_0::within_0::foreach_0::cond_if_0::paraby_1::paraby_2::paraby_3::, compile-time shared memory:
+	Used: 237568 bytes, Limit: 233472 bytes. With variables:
+		::matmul::paraby_0::anon_3
+          parallel p1 by 3 : group-4, t by 128 : thread {
+                                      ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter055_persis_tm256_wn224.co:63.37: error: shared memory OUT OF BOUND!
+	In the scope ::matmul::paraby_0::within_0::foreach_0::cond_if_0::paraby_1::paraby_2::, compile-time shared memory:
+	Used: 237568 bytes, Limit: 233472 bytes. With variables:
+		::matmul::paraby_0::anon_3
+          parallel p1 by 3 : group-4, t by 128 : thread {
+                                      ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter055_persis_tm256_wn224.co:63.18: error: shared memory OUT OF BOUND!
+	In the scope ::matmul::paraby_0::within_0::foreach_0::cond_if_0::paraby_1::, compile-time shared memory:
+	Used: 237568 bytes, Limit: 233472 bytes. With variables:
+		::matmul::paraby_0::anon_3
+          parallel p1 by 3 : group-4, t by 128 : thread {
+                   ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter055_persis_tm256_wn224.co:57.5: error: shared memory OUT OF BOUND!
+	In the scope ::matmul::paraby_0::within_0::foreach_0::, compile-time shared memory:
+	Used: 237568 bytes, Limit: 233472 bytes. With variables:
+		::matmul::paraby_0::anon_3
+      foreach {tile_iter} in [cdiv(total_tiles, NUM_SMS)] {
+      ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter055_persis_tm256_wn224.co:57.5: error: shared memory OUT OF BOUND!
+	In the scope ::matmul::paraby_0::within_0::, compile-time shared memory:
+	Used: 237568 bytes, Limit: 233472 bytes. With variables:
+		::matmul::paraby_0::anon_3
+      foreach {tile_iter} in [cdiv(total_tiles, NUM_SMS)] {
+      ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x16384x512/claude-4-5-opus-high/iter055_persis_tm256_wn224.co:50.12: error: shared memory OUT OF BOUND!
+	In the scope ::matmul::paraby_0::, compile-time shared memory:
+	Used: 237568 bytes, Limit: 233472 bytes. With variables:
+		::matmul::paraby_0::anon_3
+    parallel block_id by NUM_SMS : block {
+             ^
+Totally 14 errors have been detected.
