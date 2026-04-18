@@ -25,3 +25,4 @@ iter021	iter021_split_epilogue	265.073	KEEP	compute_bound	Keeping the iter020 wa
 iter022	iter022_dual_tma_epilogue	264.012	DISCARD	compute_bound	Keeping iter021 wait1+ptxbar intact but replacing the shared 64x128 output tile 
 iter023	iter023_wait2	265.218	KEEP	compute_bound	Keeping iter021 split-epilogue best path intact but deepening the main-loop over
 iter024	iter024_prearrive_wait2	262.508	DISCARD	compute_bound	Keeping iter023 wait2 split-epilogue best path intact but pre-arriving the next 
+iter025	iter025_kunroll32_wait2	262.06	DISCARD	compute_bound	Keeping iter023 wait2 split-epilogue best path intact but explicitly unrolling t
