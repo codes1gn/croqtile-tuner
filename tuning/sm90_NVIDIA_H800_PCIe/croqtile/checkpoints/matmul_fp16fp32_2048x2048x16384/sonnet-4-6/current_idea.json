@@ -1,0 +1,12 @@
+{
+  "schema": "croq-checkpoint-v1",
+  "timestamp": "2026-04-18T13:33:12Z",
+  "dsl": "croqtile",
+  "shape_key": "matmul_fp16fp32_2048x2048x16384",
+  "iter": "iter004_persis_1p1c_wn96_s3",
+  "bottleneck": "compute_bound",
+  "idea": "Persistent WARP_N=96 STAGES=3: SMEM drops to 84KB enabling 2 CTAs/SM (vs 1 in iter003). 228 active CTAs across 114 SMs eliminate wave quantization. WARP_N=96 matches cuBLAS ref geometry for H800.",
+  "expected_gain": "+80 TFLOPS over iter002 (target 310T)",
+  "levers": [],
+  "status": "PLANNED"
+}

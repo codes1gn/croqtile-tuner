@@ -1,0 +1,6 @@
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_512x16384x16384/claude-4-5-opus-high/iter133_wn128_s3_reg96.co:52.11: warning: Dimensions could be inconsistent between DMA 'from[0]((::matmul::N / ((::matmul::N + 63) / 64)))' v.s. 'to[0](64) 'from[1]((::matmul::K / ((::matmul::K + 63) / 64)))' v.s. 'to[1](64)).
+            tma.copy.async<full[stage]>.swiz<MATMUL_SWIZ> rhs.chunkat(block_n, iv_k) => rhs_load_s.subspan(MATMUL_WARP_N, MATMUL_TILE_K).at(stage, 0);
+            ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_512x16384x16384/claude-4-5-opus-high/iter133_wn128_s3_reg96.co:40.12: info: In the current kernel `__choreo_device_matmul`, cudaFuncAttributeMaxDynamicSharedMemorySize is set to `81920` bytes, cause shared memory usage has exceeded the default limit 48KB.
+    parallel {block_m, block_n} by [cdiv(M, MATMUL_WARP_M), cdiv(N, MATMUL_WARP_N)] : block {
+             ^

@@ -11,5 +11,6 @@
   "max_iterations": 30,
   "respawn_count": 0,
   "opencode_session_id": null,
-  "sessions": []
+  "sessions": [],
+  "task_id": 1
 }

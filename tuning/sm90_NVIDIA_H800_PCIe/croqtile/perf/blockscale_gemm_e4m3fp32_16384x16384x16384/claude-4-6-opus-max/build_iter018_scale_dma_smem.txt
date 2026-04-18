@@ -1,0 +1,27 @@
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/blockscale_gemm_e4m3fp32_16384x16384x16384/claude-4-6-opus-max/iter018_scale_dma_smem.co:70.11: warning: Dimensions could be inconsistent between DMA 'from[0]((::blockscale_gemm::N / ((::blockscale_gemm::N + 127) / 128)))' v.s. 'to[0](128) 'from[1]((::blockscale_gemm::K / ((::blockscale_gemm::K + 127) / 128)))' v.s. 'to[1](128)).
+            tma.copy.async<full[stage]>.swiz<MATMUL_SWIZ> rhs.chunkat(block_n, iv_k) => rhs_load_s.subspan(MATMUL_WARP_N, MATMUL_TILE_K).at(stage, 0);
+            ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/blockscale_gemm_e4m3fp32_16384x16384x16384/claude-4-6-opus-max/iter018_scale_dma_smem.co:71.25: warning: DMA inside inthreads has 1 active threads in a unit, but tiled copy assumes 128 threads; data layout may be incorrect.
+            lhs_scale_f = dma.copy.async scale_lhs.subspan(MATMUL_WARP_M, 1).step(MATMUL_WARP_M, 1).at(block_m, iv_k) => lhs_scale_s.subspan(MATMUL_WARP_M, 1).at(stage, 0);
+                          ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/blockscale_gemm_e4m3fp32_16384x16384x16384/claude-4-6-opus-max/iter018_scale_dma_smem.co:72.25: warning: DMA inside inthreads has 1 active threads in a unit, but tiled copy assumes 128 threads; data layout may be incorrect.
+            rhs_scale_f = dma.copy.async scale_rhs.subspan(1, 1).step(1, 1).at(block_n, iv_k) => rhs_scale_s.subspan(1, 1).at(stage, 0);
+                          ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/blockscale_gemm_e4m3fp32_16384x16384x16384/claude-4-6-opus-max/iter018_scale_dma_smem.co:57.12: info: In the current kernel `__choreo_device_blockscale_gemm`, cudaFuncAttributeMaxDynamicSharedMemorySize is set to `82576` bytes, cause shared memory usage has exceeded the default limit 48KB.
+    parallel {block_m, block_n} by [cdiv(M, MATMUL_WARP_M), cdiv(N, MATMUL_WARP_N)] : block {
+             ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/blockscale_gemm_e4m3fp32_16384x16384x16384/claude-4-6-opus-max/iter018_scale_dma_smem.co:71.40: info: alignment is not satisfied, unable to utilize vectorized load inst. Fallback to UniversalCopy.
+            lhs_scale_f = dma.copy.async scale_lhs.subspan(MATMUL_WARP_M, 1).step(MATMUL_WARP_M, 1).at(block_m, iv_k) => lhs_scale_s.subspan(MATMUL_WARP_M, 1).at(stage, 0);
+                                         ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/blockscale_gemm_e4m3fp32_16384x16384x16384/claude-4-6-opus-max/iter018_scale_dma_smem.co:71.40: info: #col of tile is not divisible by 32, unable to do warp-per-row make_tiled_copy. Fallback to normal copy.
+            lhs_scale_f = dma.copy.async scale_lhs.subspan(MATMUL_WARP_M, 1).step(MATMUL_WARP_M, 1).at(block_m, iv_k) => lhs_scale_s.subspan(MATMUL_WARP_M, 1).at(stage, 0);
+                                         ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/blockscale_gemm_e4m3fp32_16384x16384x16384/claude-4-6-opus-max/iter018_scale_dma_smem.co:72.40: info: alignment is not satisfied, unable to utilize vectorized load inst. Fallback to UniversalCopy.
+            rhs_scale_f = dma.copy.async scale_rhs.subspan(1, 1).step(1, 1).at(block_n, iv_k) => rhs_scale_s.subspan(1, 1).at(stage, 0);
+                                         ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/blockscale_gemm_e4m3fp32_16384x16384x16384/claude-4-6-opus-max/iter018_scale_dma_smem.co:72.40: info: #col of tile is not divisible by 32, unable to do warp-per-row make_tiled_copy. Fallback to normal copy.
+            rhs_scale_f = dma.copy.async scale_rhs.subspan(1, 1).step(1, 1).at(block_n, iv_k) => rhs_scale_s.subspan(1, 1).at(stage, 0);
+                                         ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/blockscale_gemm_e4m3fp32_16384x16384x16384/claude-4-6-opus-max/iter018_scale_dma_smem.co:79.28: warning: The implicit type conversion may lose precision: 'f64' to 'f32'
+          mc = mma.fill.f32 0.0;
+                             ^

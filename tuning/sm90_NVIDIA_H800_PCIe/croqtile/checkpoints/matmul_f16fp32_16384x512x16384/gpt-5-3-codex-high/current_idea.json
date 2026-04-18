@@ -1,0 +1,16 @@
+{
+  "schema": "croq-checkpoint-v1",
+  "timestamp": "2026-04-18T12:32:10Z",
+  "dsl": "croqtile",
+  "shape_key": "matmul_f16fp32_16384x512x16384",
+  "iter": "iter052_split_arrive_wait",
+  "bottleneck": "barrier stall 24.33%: consumer waits for TMA completion via full[stage].wait(full[stage].arrive()). The arrive+wait combined loses the opportunity to do useful work (like signaling empty[prev_stage]) while waiting.",
+  "idea": "Split full[stage].arrive() from full[stage].wait(token) to allow useful work between them: arrive first, then signal empty[prev_stage].arrive() to unblock producer, then wait for full. This overlaps producer unblocking with TMA wait, potentially reducing pipeline stall cycles.",
+  "expected_gain": "Reduce pipeline stall by overlapping empty.arrive with full.wait, potentially 1-5 TFLOPS",
+  "levers": [
+    "arrive_wait_split",
+    "pipeline_overlap",
+    "producer_unblock_earlier"
+  ],
+  "status": "PLANNED"
+}

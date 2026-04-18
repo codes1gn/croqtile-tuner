@@ -1,0 +1,26 @@
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_1024x1024x1024/opus-4/iter072_split_epilogue.cu(247): warning #177-D: variable "anon_1" was declared but never referenced
+              auto anon_1 = __choreo_vg4id_x - 1;
+                   ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_1024x1024x1024/opus-4/iter072_split_epilogue.cu(148): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) cuda::barrier<cuda::thread_scope_block> choreo_copy_atom_t_0_barrier;
+                                                                    ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_1024x1024x1024/opus-4/iter072_split_epilogue.cu(156): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) cuda::barrier<cuda::thread_scope_block> choreo_copy_atom_t_1_barrier;
+                                                                    ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_1024x1024x1024/opus-4/iter072_split_epilogue.cu(164): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) cuda::barrier<cuda::thread_scope_block> choreo_copy_atom_t_2_barrier;
+                                                                    ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_1024x1024x1024/opus-4/iter072_split_epilogue.cu(173): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) cuda::barrier<cuda::thread_scope_block> full[4];
+                                                                    ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_1024x1024x1024/opus-4/iter072_split_epilogue.cu(183): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) cuda::barrier<cuda::thread_scope_block> empty[4];
+                                                                    ^
+

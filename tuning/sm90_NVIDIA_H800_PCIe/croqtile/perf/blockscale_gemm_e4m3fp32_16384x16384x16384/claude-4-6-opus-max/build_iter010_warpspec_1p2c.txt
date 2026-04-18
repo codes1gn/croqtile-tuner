@@ -1,0 +1,9 @@
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/blockscale_gemm_e4m3fp32_16384x16384x16384/claude-4-6-opus-max/iter010_warpspec_1p2c.co:57.11: warning: Dimensions could be inconsistent between DMA 'from[0]((::blockscale_gemm::N / ((::blockscale_gemm::N + 127) / 128)))' v.s. 'to[0](128) 'from[1]((::blockscale_gemm::K / ((::blockscale_gemm::K + 127) / 128)))' v.s. 'to[1](128)).
+            tma.copy.async<full[stage]>.swiz<MATMUL_SWIZ> rhs.chunkat(block_n, iv_k) => rhs_load_s.subspan(MATMUL_WARP_N, MATMUL_TILE_K).at(stage, 0);
+            ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/blockscale_gemm_e4m3fp32_16384x16384x16384/claude-4-6-opus-max/iter010_warpspec_1p2c.co:45.12: info: In the current kernel `__choreo_device_blockscale_gemm`, cudaFuncAttributeMaxDynamicSharedMemorySize is set to `131072` bytes, cause shared memory usage has exceeded the default limit 48KB.
+    parallel {block_m, block_n} by [cdiv(M, MATMUL_TILE_M), cdiv(N, MATMUL_WARP_N)] : block {
+             ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/blockscale_gemm_e4m3fp32_16384x16384x16384/claude-4-6-opus-max/iter010_warpspec_1p2c.co:63.28: warning: The implicit type conversion may lose precision: 'f64' to 'f32'
+          mc = mma.fill.f32 0.0;
+                             ^

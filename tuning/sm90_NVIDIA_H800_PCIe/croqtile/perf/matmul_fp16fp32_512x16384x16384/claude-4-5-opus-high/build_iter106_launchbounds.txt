@@ -1,0 +1,34 @@
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_512x16384x16384/claude-4-5-opus-high/iter106_launchbounds.cu(318): warning #2361-D: invalid narrowing conversion from "unsigned long" to "unsigned int"
+    uint32_t __choreo_tma_1_box_shape[] = {(K / ((K + 63) / 64)), (N / ((N + 255) / 256))};
+                                           ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_512x16384x16384/claude-4-5-opus-high/iter106_launchbounds.cu(318): warning #2361-D: invalid narrowing conversion from "unsigned long" to "unsigned int"
+    uint32_t __choreo_tma_1_box_shape[] = {(K / ((K + 63) / 64)), (N / ((N + 255) / 256))};
+                                                                  ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_512x16384x16384/claude-4-5-opus-high/iter106_launchbounds.cu(166): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) cuda::barrier<cuda::thread_scope_block> choreo_copy_atom_t_0_barrier;
+                                                                    ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_512x16384x16384/claude-4-5-opus-high/iter106_launchbounds.cu(175): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) cuda::barrier<cuda::thread_scope_block> full[4];
+                                                                    ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_512x16384x16384/claude-4-5-opus-high/iter106_launchbounds.cu(185): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) cuda::barrier<cuda::thread_scope_block> empty[4];
+                                                                    ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_512x16384x16384/claude-4-5-opus-high/iter106_launchbounds.cu(318): warning #2361-D: invalid narrowing conversion from "unsigned long" to "unsigned int"
+    uint32_t __choreo_tma_1_box_shape[] = {(K / ((K + 63) / 64)), (N / ((N + 255) / 256))};
+                                           ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_512x16384x16384/claude-4-5-opus-high/iter106_launchbounds.cu(318): warning #2361-D: invalid narrowing conversion from "unsigned long" to "unsigned int"
+    uint32_t __choreo_tma_1_box_shape[] = {(K / ((K + 63) / 64)), (N / ((N + 255) / 256))};
+                                                                  ^
+
+ptxas fatal   : (C7602) Insufficient registers (128) to compile instruction at line 533 in function _Z22__choreo_device_matmulP6__halfS0_Pfjjj14CUtensorMap_stS2_S2_. Try to compile with register target of 154 or higher.
+ptxas fatal   : Ptx assembly aborted due to errors

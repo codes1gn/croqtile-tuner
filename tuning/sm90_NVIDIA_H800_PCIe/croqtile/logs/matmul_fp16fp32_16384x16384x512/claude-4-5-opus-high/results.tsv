@@ -1,5 +1,5 @@
 iter	kernel	tflops	decision	bottleneck	idea_summary
-iter000	iter000_cublas	269.0652	KEEP	baseline	cuBLAS reference baseline
+iter000	iter000_cublas	346.46	KEEP	baseline	cuBLAS reference baseline
 iter001	iter001_persis_tm256_wn200	352.704	KEEP	latency_bound	Starting kernel from prior session (TM256 WN200 1p2c persistent)
 iter002	iter002_tm128_wn128_s3	178.124	DISCARD	latency_bound	TM128 WN128 STAGES=3 - smaller tiles for higher occupancy but lost compute throu
 iter003	iter003_tm256_wn200_reg170	183.766	DISCARD	latency_bound	TM256 WN200 with maxrregcount=170 - register cap caused spilling
@@ -10,3 +10,17 @@ iter007	iter007_tm256_wn200_launchbounds	45.197	DISCARD	latency_bound	Phase 2: _
 iter008	iter008_persis_tm256_wn200_from_prior	355.695	DISCARD	latency_bound	Prior session .cu - equivalent to iter001, no improvement
 iter009	iter009_tm256_wn216_s2	0	SEGFAULT	latency_bound	TM256 WN216 - verification failed, N not cleanly divisible
 iter010	iter010_tm256_wn192_s2	328.816	DISCARD	latency_bound	TM256 WN192 - narrower N-tile reduces compute density vs WN200
+iter011	iter011_tm256_wn200_unroll	360.12	KEEP	latency_bound	Phase 2: pragma unroll on warp-loop in consumer path
+iter012	iter012_tm256_wn200_fastmath	360.20	DISCARD	latency_bound	Phase 2: use_fast_math on unrolled kernel
+iter014	iter014_tm256_wn256_s2	0	COMPILE_FAIL	latency_bound	Phase 1: WARP_N=256 for perfect power-of-2 tiling - SMEM overflow 262KB > 233KB
+iter015	iter015_tm128_wn200_s2	65.54	DISCARD	latency_bound	Phase 1: TM=128 WN=200 for lower SMEM - too many tiles, poor persistent efficien
+iter016	iter016_tm256_wn200_rowmajor	37.45	DISCARD	latency_bound	Phase 2: Row-major tile ordering - terrible L2 locality for A matrix
+iter017	iter017_tm256_wn200_lb384	37.45	DISCARD	latency_bound	Phase 2: launch_bounds(384,1) - caused heavy register spilling
+iter018	iter018_tm256_wn200_reg160	29.13	DISCARD	latency_bound	Phase 2: maxrregcount=160 + unroll - massive spilling from unrolled loop
+iter019	iter019_tm256_wn200_132sms	230.06	DISCARD	latency_bound	Phase 1: NUM_SMS=132 - worse tile distribution and tail waste
+iter020	iter020_tm256_wn200_128sms	217.81	DISCARD	latency_bound	Phase 1: NUM_SMS=128 - unstable perf, no improvement over 114
+iter021	iter021_tm128_wn200_unroll	192.00	KEEP	latency_bound	Phase 1+2: TILE_M=128 (correct coverage) + pragma unroll - first correct kernel
+iter022	iter022_tm256_wn128_1p4c	0	SEGFAULT	latency_bound	Phase 1: TM=256 WN=128 1P4C - verification failed, wrong output
+iter023	iter023_tm128_wn248_s2	199.00	KEEP	latency_bound	Phase 1: TM=128 WN=248 correct kernel with larger WGMMA output
+iter024	iter024_tm128_wn200_s3	201.50	KEEP	latency_bound	Phase 1: TM=128 WN=200 S3 correct kernel - 3 stages better pipeline overlap
+iter025	iter025_tm128_wn160_s4	0	SEGFAULT	latency_bound	Phase 1: TM=128 WN=160 S4 - verification failed, likely N boundary issue

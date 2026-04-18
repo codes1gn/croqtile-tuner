@@ -1,5 +1,5 @@
 iter	kernel	tflops	decision	bottleneck	idea_summary
-iter000	iter000_cublas	422.7534	KEEP	baseline	cuBLAS reference baseline
+iter000	iter000_cublas	423.0366	KEEP	baseline	cuBLAS reference baseline
 iter001	iter001_baseline_1p1c	111.96	KEEP	compute_bound	Initial 1p1c kernel with WARP_M=64, WARP_N=128, 4 pipeline stages
 iter002	iter002_wn256	121.91	KEEP	memory_bound	Increased WARP_N from 128 to 256 to double compute per warpgroup
 iter003	iter003_ws_1p3c	0	DISCARD	memory_bound	1p3c and 1p4c warp-spec kernels fail verification - incorrect output indexing fo
@@ -7,3 +7,122 @@ iter004	iter004_nonpersist	260.12	KEEP	memory_bound	Non-persistent CTA launch wi
 iter005	iter005_s2_wn128	226.24	DISCARD	compute_bound	Reduced stages 4->2 and WARP_N 256->128 hurt performance
 iter006	iter006_tk128	0	COMPILE_FAIL	compute_bound	SWIZ=64 caused CUDA invalid argument error
 iter007	iter007_wn128_step	194.31	DISCARD	compute_bound	WARP_N=128 with step TMA worse than WARP_N=256
+iter008	iter008_persis_nmajor	121.52	DISCARD	compute_bound	Persistent N-major iteration for better RHS cache reuse
+iter009	iter009_tk128_wn128	0	DISCARD	unknown	Reduce WARP_N to 128 to lower shared memory usage and improve occupancy
+iter010	iter010_hoist	37.45	DISCARD	unknown	Add --hoist-offset and --hoist-scale compiler flags
+iter011	iter011_stmatrix	0	DISCARD	unknown	Use --stmatrix compiler flag (incompatible with f32 accumulators)
+iter012	iter012_ptxbar	37.45	DISCARD	unknown	Use --ptx-barrier flag for PTX mbarrier synchronization
+iter013	iter013_stages3	37.42	DISCARD	unknown	Reduce pipeline stages from 4 to 3
+iter014	iter014_tk32	84.60	DISCARD	unknown	Reduce TILE_K from 64 to 32
+iter015	iter015_wn128s6	259.83	DISCARD	compute_bound	WARP_N=128 with 6 stages
+iter016	iter016_ws1p2c	0	DISCARD	unknown	1p2c warp specialization (failed verification)
+iter017	iter017_regcap96	349.73	KEEP	compute_bound	Same kernel with --single-thread-producer flag (no significant change)
+iter018	iter018_warpspec	312.07	DISCARD	compute_bound	--use-warpspec + --single-thread-producer flags
+iter019	iter019_tma_cluster	263.43	DISCARD	compute_bound	--tma-cluster-aware flag (263 vs 351 TFLOPS)
+iter020	iter020_swiz64	261.43	DISCARD	compute_bound	SWIZ=64 with TILE_K=32
+iter021	iter021_s5wn256	347.451	DISCARD	compute_bound	native-f16 flag
+iter022	iter022_wn128s8	262.732	DISCARD	compute_bound	WARP_N=128 with 8 stages
+iter023	iter023_s2	79.863	DISCARD	latency_bound	2 stages for better occupancy
+iter024	iter024_persis3s	175.744	DISCARD	latency_bound	Persistent 3-stage kernel
+iter025	iter025_wn64	235.476	DISCARD	compute_bound	WARP_N=64 for more blocks
+iter026	iter026_prepack	326.333	DISCARD	memory_bound	prepack-v2 for coalesced loads
+iter027	iter027_tk16	147.886	DISCARD	latency_bound	TILE_K=16 SWIZ=32
+iter028	iter028_wn128s6deep	80.990	DISCARD	latency_bound	WARP_N=128 8 stages
+iter029	iter029_combo	340.266	DISCARD	compute_bound	prepack-v2 + single-thread-producer
+iter030	iter030_combo2	341.692	DISCARD	compute_bound	native-f16 + single-thread-producer
+iter031	iter031_tm128_s4	0	HANG	compute_bound	TILE_M=128 (2x warpgroup rows) - kernel hung
+iter034	iter034_wn128_s3	251.8	DISCARD	memory_bound	WARP_N=128 with 3 stages (106KB SMEM)
+iter035	iter035_wn192_s5	0	COMPILE_FAIL	memory_bound	WARP_N=192 with 5 stages - nvcc error
+iter036	iter036_tk32_s6	184.53	DISCARD	memory_bound	TILE_K=32 with 6 stages (188KB SMEM) - worse than TILE_K=64
+iter037	iter037_wn256_s2	209.5	DISCARD	memory_bound	WARP_N=256 with 2 stages (147KB SMEM)
+iter038	iter038_wn256_s3	253.67	DISCARD	memory_bound	WARP_N=256 with 3 stages (188KB SMEM)
+iter039	iter039_wn256_s5	0	COMPILE_FAIL	memory_bound	5 stages exceeded SMEM limit
+iter040	iter040_hoist	262.21	DISCARD	memory_bound	4 stages with --hoist-offset --hoist-scale flags
+iter041	iter041_ptxbar	262.05	DISCARD	memory_bound	--ptx-barrier flag
+iter042	iter042_tmacluster	264.94	DISCARD	memory_bound	--tma-cluster-aware flag
+iter043	iter043_nmajor	0	HANG	memory_bound	N-major iteration - kernel hung
+iter044	iter044_prepack	263.82	DISCARD	memory_bound	prepack-v2 without native-f16
+iter045	iter045_wn160	0	HANG	memory_bound	WARP_N=160 - kernel hung or very slow
+iter046	iter046_wn64_s4	179.66	DISCARD	memory_bound	WARP_N=64 with 4 stages (81KB SMEM) - too little compute per CTA
+iter047	iter047_wn224	0	HANG	memory_bound	WARP_N=224 - kernel hung (N=16384 not evenly divisible)
+iter048	iter048_wn128_s5	184.46	DISCARD	memory_bound	WARP_N=128 with 5 stages (155KB SMEM)
+iter049	iter049_wn256_s6	0	COMPILE_FAIL	memory_bound	6 stages with WARP_N=256 exceeds SMEM
+iter050	iter050_tk32_s8	193.39	DISCARD	memory_bound	TILE_K=32 SWIZ=64 with 8 stages (229KB SMEM)
+iter051	iter051_warpspec	262.16	DISCARD	memory_bound	--use-warpspec flag
+iter052	iter052_combo3	262.16	DISCARD	memory_bound	single-thread-producer + tma-cluster-aware + hoist flags
+iter053	iter053_wn128_s4	191.93	DISCARD	memory_bound	WARP_N=128 with 4 stages (131KB SMEM)
+iter054	iter054_allflags	262.58	DISCARD	memory_bound	all optimization flags combined
+iter055	iter055_swiz64	0	SEGFAULT	memory_bound	SWIZ=64 with TILE_K=64 - CUDA invalid argument
+iter056	iter056_tk128	0	COMPILE_FAIL	memory_bound	TILE_K=128 needs SWIZ=256 which is unsupported
+iter057	iter057_wn32	103.35	DISCARD	latency_bound	WARP_N=32 with 8 stages - too little compute per CTA
+iter058	iter058_tk32_wn256	193.07	DISCARD	memory_bound	TILE_K=32 with WARP_N=256 (147KB SMEM)
+iter059	iter059_s3_hoist	254.25	DISCARD	memory_bound	3 stages with hoist-offset and hoist-scale flags (188KB SMEM)
+iter060	iter060_wk8	0	COMPILE_FAIL	compute_bound	WARP_K=8 - preprocessor error when removing constraint
+iter061	iter061_warpspec_only	261.22	DISCARD	memory_bound	--use-warpspec without --single-thread-producer
+iter062	iter062_s2_wn256	211.36	DISCARD	memory_bound	STAGES=2 with WARP_N=256
+iter063	iter063_tk32_s7	185.37	DISCARD	memory_bound	TILE_K=32 STAGES=7
+iter064	iter064_wn128_s4	193.80	DISCARD	memory_bound	WARP_N=128 STAGES=4
+iter065	iter065_prepack_stp	262.19	DISCARD	memory_bound	--single-thread-producer + --use-prepack-v2
+iter066	iter066_opt3	262.72	DISCARD	memory_bound	Full optimization flags combo
+iter067	iter067_s3_opt	253.60	DISCARD	memory_bound	STAGES=3 with full opt flags
+iter068	iter068_wn128_s5_opt	186.74	DISCARD	memory_bound	WARP_N=128 STAGES=5 with full opt
+iter069	iter069_tk32_s8	191.85	DISCARD	memory_bound	TILE_K=32 STAGES=8 for deeper pipeline
+iter070	iter070_wn64_s4	179.80	DISCARD	memory_bound	WARP_N=64 for more blocks
+iter071	iter071_nvcc_opt	262.13	DISCARD	memory_bound	Same config with single-thread-producer + native-f16
+iter072	iter072_wn192	0	HANG	unknown	WARP_N=192 does not divide 16384 evenly
+iter073	iter073_nativef16_only	262.19	DISCARD	memory_bound	native-f16 only without single-thread-producer
+iter074	iter074_tk16	113.11	DISCARD	latency_bound	TILE_K=16 STAGES=12 - too small tiles
+iter075	iter075_ptxbar_only	262.10	DISCARD	memory_bound	ptx-barrier flag only
+iter076	iter076_splitk	262.13	DISCARD	memory_bound	Baseline config without compiler flags
+iter078	iter078_noprepack	262.84	DISCARD	memory_bound	stp + native-f16 + hoist-offset/scale + ptx-barrier
+iter079	iter079_cluster	262.13	DISCARD	memory_bound	all flags + tma-cluster-aware
+iter080	iter080_warpspec_full	264.41	DISCARD	memory_bound	stp + native-f16 + hoist flags + ptx-barrier + use-warpspec
+iter081	iter081_prepack_full	262.13	DISCARD	memory_bound	all flags + use-prepack-v2
+iter082	iter082_noptx	262.17	DISCARD	memory_bound	stp + native-f16 + hoist + warpspec (no ptx-barrier)
+iter083	iter083_best_combo	262.17	DISCARD	memory_bound	best combo flags re-test
+iter084	iter084_opt_best	265.10	KEEP	memory_bound	stp + native-f16 + hoist + ptx-barrier + use-warpspec
+iter085	iter085_wn128_opt	182.30	DISCARD	memory_bound	WARP_N=128 STAGES=6 with best flags
+iter086	iter086_s5_opt	0	COMPILE_FAIL	unknown	STAGES=5 with WARP_N=256 - SMEM exceeded
+iter087	iter087_tk32_s6	184.81	DISCARD	memory_bound	TILE_K=32 STAGES=6 with best flags
+iter088	iter088_warpspec_alone	263.28	DISCARD	memory_bound	use-warpspec alone
+iter089	iter089_stp_warpspec	262.09	DISCARD	memory_bound	stp + use-warpspec
+iter090	iter090_stp_ptx_warp	264.42	DISCARD	memory_bound	stp + ptx-barrier + use-warpspec
+iter091	iter091_tk48	0	COMPILE_FAIL	unknown	TILE_K=48 with SWIZ=96 - invalid swizzle
+iter092	iter092_wn64_s8	121.22	DISCARD	latency_bound	WARP_N=64 STAGES=8
+iter093	iter093_s3_prepack	253.64	DISCARD	memory_bound	STAGES=3 with stp + prepack-v2 + warpspec
+iter094	iter094_tk32_wn256_s5	187.12	DISCARD	memory_bound	TILE_K=32 WARP_N=256 STAGES=5
+iter095	iter095_minimal	264.34	KEEP	memory_bound	single-thread-producer only
+iter097	iter097_tk32_s4	192.33	DISCARD	memory_bound	TILE_K=32 with STAGES=4
+iter098	iter098_nvccopt	261.98	DISCARD	memory_bound	O3 use_fast_math nvcc optimization
+iter099	iter099_baseline	263.54	DISCARD	memory_bound	baseline without choreo flags
+iter100	iter100_kchunk	262.21	DISCARD	memory_bound	all flags + tma-cluster-aware
+iter101	iter101_nativef16	263.70	DISCARD	memory_bound	native-f16 only
+iter102	iter102_hoistscale	262.19	DISCARD	memory_bound	hoist-scale only
+iter103	iter103_ptxhoist	262.21	DISCARD	memory_bound	ptx-barrier + hoist-offset
+iter104	iter104_prepack	265.02	KEEP	memory_bound	use-prepack-v2 only
+iter105	iter105_prepack_f16	264.32	DISCARD	memory_bound	use-prepack-v2 + native-f16
+iter106	iter106_launchbounds	261.22	DISCARD	compute_bound	Phase 2 .cu fine-tune: __launch_bounds__(256,1) + maxrregcount=154 to reduce reg
+iter107	iter107_persist_1p1c	121.35	DISCARD	compute_bound	STRUCTURAL: Persistent 1p1c warp-specialized kernel (NUM_SMS=114, WARP_N=256, ST
+iter108	iter108_mwg_1p3c_f32	210.68	DISCARD	compute_bound	STRUCTURAL: 1p3c warp-specialized MWG kernel TILE_M=192 WARP_N=128 STAGES=2 f32 
+iter109	iter109_mwg_1p2c_wn256	251.08	DISCARD	compute_bound	STRUCTURAL: 1p2c MWG TILE_M=128 WARP_N=256 STAGES=2 f32. Only 256 blocks (4 M-ti
+iter110	iter110_ptxbar_fastmath	262.07	DISCARD	compute_bound	Phase 2: --ptx-barrier --hoist-offset --hoist-scale --native-f16 --tma-cluster-a
+iter111	iter111_tk32_s8_deep	192.74	DISCARD	compute_bound	Pipeline deepening: TILE_K=32 STAGES=8 SWIZ=64. 2x deeper pipeline, same SMEM. S
+iter112	iter112_mwg_1p2c_wn128_s4	245.92	DISCARD	compute_bound	STRUCTURAL: 1p2c MWG TILE_M=128 WARP_N=128 STAGES=4 f32. 192KB SMEM, 96 regs/thr
+iter113	iter113_wn64_s3	180.85	DISCARD	compute_bound	SASS-guided: WARP_N=64 STAGES=3 to match cuBLAS HGMMA.64x64x16 shape. Only 58 re
+iter114	iter114_base_s3	262.59	DISCARD	compute_bound	All choreo+nvcc flags: stp+warpspec+native-f16+hoist-offset+hoist-scale+ptx-barr
+iter115	iter115_mwg_1p4c_wn64	202.09	DISCARD	compute_bound	STRUCTURAL: 1p4c MWG TILE_M=256 WARP_N=64 STAGES=3 f32. 4 consumers matching cuB
+iter116	iter116_cublas_mimic	245.914	DISCARD	compute_bound	STRUCTURAL: 1p2c MWG TILE_M=128 WARP_N=128 STAGES=4 f32 cuBLAS-mimic. 192KB SMEM
+iter117	iter117_tma_outside	257.792	DISCARD	compute_bound	1p1c WARP_N=256 STAGES=4 with tma.copy output outside consumer block + use_fast_
+iter118	iter118_culoop	261.725	DISCARD	compute_bound	Phase 2: hoisted warpgroup_arrive() outside inner loop + #pragma unroll on iv_wa
+iter119	iter119_batch_commit	262.009	DISCARD	compute_bound	Phase 2: batched warpgroup_commit with hoisted arrive + pragma unroll + precompu
+iter120	iter120_cluster_mc	257.686	DISCARD	compute_bound	STRUCTURAL: Phase 2 cluster launch 2x1x1 + TMA multicast for RHS. cudaLaunchKern
+iter121	iter121_dual_accum	250.402	DISCARD	compute_bound	STRUCTURAL: 1p2c TILE_M=128 WARP_N=256 STAGES=2 f32. 229KB SMEM 384 threads. 2 c
+iter122	iter122_mwg3c_wn128_s3	225.87	DISCARD	compute_bound	STRUCTURAL: 1p3c TILE_M=192 WARP_N=128 STAGES=3 f32. 216KB SMEM, 512 threads. 3 
+iter123	iter123_combo_best	232.10	DISCARD	compute_bound	STRUCTURAL: 1p1c WARP_N=128 STAGES=2 maxrregcount=128 launch_bounds(256,2) to fi
+iter124	iter124_regctrl_trade	265.87	KEEP	compute_bound	STRUCTURAL: setmaxnreg register trading in 1p1c. Producer dec 40, consumer inc 2
+iter125	iter125_wn128_regctrl_s4	0.0	HANG	compute_bound	STRUCTURAL: 1p1c WARP_N=128 STAGES=3 launch_bounds(256,2) + setmaxnreg register 
+iter126	iter126_wn128_s3_2cta	282.61	KEEP	compute_bound	STRUCTURAL: 1p1c WARP_N=128 STAGES=3 launch_bounds(256,2) no setmaxnreg. 104KB S
+iter127	iter127_wn192_s2_2cta	0.0	HANG	compute_bound	MACRO: 1p1c WARP_N=192 STAGES=2 launch_bounds(256,2). HANG: 112KB SMEM per CTA. 
+iter128	iter128_wn128_s2_2cta	232.60	DISCARD	compute_bound	MACRO: 1p1c WARP_N=128 STAGES=2 launch_bounds(256,2). 80KB SMEM. STAGES=2 too sh
+iter129	iter129_wn128_s3_unroll	283.76	KEEP	compute_bound	Phase 2: hoisted warpgroup_arrive + pragma unroll + precomputed stage offsets on
+iter130	iter130_tk32_s4_2cta	194.83	DISCARD	compute_bound	STRUCTURAL: TILE_K=32 SWIZ=64 STAGES=4 WARP_N=128 launch_bounds(256,2). 80KB SME

@@ -1,0 +1,18 @@
+{
+  "schema": "croq-checkpoint-v1",
+  "timestamp": "2026-04-18T12:31:19Z",
+  "dsl": "croqtile",
+  "shape_key": "matmul_fp16fp32_1024x1024x1024",
+  "iter": "iter073_p1c2_lb_wait1",
+  "bottleneck": "compute_bound",
+  "idea": "Starting from the 1p2c base, add __launch_bounds__(384,2) and relax warpgroup_wait from <0> to <1> so the lower-SMEM kernel can target 2-CTA residency while overlapping one WGMMA batch",
+  "expected_gain": "+3-10 TFLOPS",
+  "levers": [
+    "launch_bounds",
+    "warpgroup_wait",
+    "occupancy"
+  ],
+  "status": "VERIFIED",
+  "verified_iter": "iter073_p1c2_lb_wait1",
+  "drift_score": 1
+}

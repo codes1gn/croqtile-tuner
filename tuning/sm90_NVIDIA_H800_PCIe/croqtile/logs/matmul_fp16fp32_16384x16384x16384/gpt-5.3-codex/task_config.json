@@ -1,0 +1,28 @@
+{
+  "task_uid": "8976588e2eba",
+  "dsl": "croqtile",
+  "model": "gpt-5.3-codex",
+  "device": "NVIDIA H800 PCIe",
+  "status": "pending",
+  "task_id": 12,
+  "variant": "high",
+  "agent_type": "opencode",
+  "mode": "opencode",
+  "request_budget": 2,
+  "request_number": 3,
+  "max_iterations": 30,
+  "respawn_count": 0,
+  "opencode_session_id": "ses_25eb5c906ffeijkLC3JQ4cOAqT",
+  "sessions": [
+    {
+      "id": 29,
+      "task_id": 12,
+      "session_id": "ses_25ec6a47affe8lmx7ntKX6v62R",
+      "agent_type": "opencode",
+      "model": "github-copilot/gpt-5.3-codex",
+      "request_number": 1,
+      "started_at": "2026-04-18T15:33:36.391976",
+      "ended_at": null
+    }
+  ]
+}

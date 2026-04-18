@@ -1,0 +1,15 @@
+{
+  "tflops": 177.7342,
+  "dtype": "fp16fp32",
+  "m": 1024,
+  "n": 1024,
+  "k": 1024,
+  "warmup": 10,
+  "iters": 50,
+  "avg_ms": 0.0121,
+  "status": "ok",
+  "gpu": "sm90_NVIDIA_H800_PCIe",
+  "dsl": "croqtile",
+  "shape_key": "matmul_fp16fp32_1024x1024x1024",
+  "model": "opus-4"
+}

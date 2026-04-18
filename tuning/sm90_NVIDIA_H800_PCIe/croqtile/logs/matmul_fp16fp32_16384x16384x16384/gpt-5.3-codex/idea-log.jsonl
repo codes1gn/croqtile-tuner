@@ -1,0 +1,2 @@
+{"round": 0, "iter": "iter000", "bottleneck": "baseline", "idea": "cuBLAS reference baseline", "category": "baseline", "expected_gain": "baseline reference", "decision": "KEEP", "tflops": 420.2476, "timestamp": "2026-04-18T15:46:13Z"}
+{"round": 1, "iter": "iter001", "bottleneck": "memory_bound", "idea": "Started from persistent 1p2c FP16->FP32 kernel adapted to K=16384; established first custom baseline at 236.658 TFLOPS (KEEP).", "category": "tiling", "expected_gain": "establish custom baseline", "decision": "KEEP", "tflops": 236.658, "timestamp": "2026-04-18T15:55:20Z"}

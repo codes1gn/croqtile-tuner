@@ -1,0 +1,16 @@
+{"ts":"2026-04-18T15:46:09.815Z","tool":"store_baseline","msg":"Measuring cuBLAS baseline for f16fp32 16384x16384x16384","level":"info"}
+{"ts":"2026-04-18T15:46:13.333Z","tool":"store_baseline","msg":"cuBLAS baseline: 420.2476 TFLOPS (saved to tuning/sm90_NVIDIA_H800_PCIe/croqtile/baseline/matmul_fp16fp32_16384x16384x16384/gpt-5.3-codex/cublas_result.json)","level":"info"}
+{"ts":"2026-04-18T15:46:13.647Z","tool":"store_round","msg":"Storing iter000_cublas (KEEP 420.2476 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T15:46:13.668Z","tool":"store_round","msg":"Stored iter000_cublas: KEEP 420.2476 TFLOPS (round 0)","level":"info"}
+{"ts":"2026-04-18T15:46:13.681Z","tool":"store_baseline","msg":"Stored iter000_cublas: 420.2476 TFLOPS (baseline)","level":"info"}
+{"ts":"2026-04-18T15:52:42.590Z","tool":"co2cu","msg":"Compiling iter001_draft.co -> .cu (arch=sm_90)","level":"info"}
+{"ts":"2026-04-18T15:52:47.952Z","tool":"co2cu","msg":"Compiling iter001_draft.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T15:52:48.132Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x16384/gpt-5.3-codex/iter001_draft.cu","level":"info"}
+{"ts":"2026-04-18T15:53:47.374Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_fp16fp32_16384x16384x16384/gpt-5.3-codex/iter001_draft","level":"info"}
+{"ts":"2026-04-18T15:54:10.372Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/gpt-5.3-codex/ncu_iter001_draft_round1.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/gpt-5.3-codex/ncu_iter001_draft_round1.csv","level":"info"}
+{"ts":"2026-04-18T15:54:15.104Z","tool":"profile_extract","msg":"Analyzing iter001_draft from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/gpt-5.3-codex/ncu_iter001_draft_round1.csv","level":"info"}
+{"ts":"2026-04-18T15:54:49.685Z","tool":"checkpoint_write","msg":"PLANNED iter001_draft: Adapted proven persistent 1p2c kernel to target K=16384 as starting custom baseline.","level":"info"}
+{"ts":"2026-04-18T15:54:49.701Z","tool":"checkpoint_write","msg":"READ checkpoint for IMPLEMENT","level":"info"}
+{"ts":"2026-04-18T15:54:49.822Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter001_draft (drift=1)","level":"info"}
+{"ts":"2026-04-18T15:55:20.694Z","tool":"store_round","msg":"Storing iter001_draft (KEEP 236.658 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T15:55:20.713Z","tool":"store_round","msg":"Stored iter001_draft: KEEP 236.658 TFLOPS (round 1)","level":"info"}

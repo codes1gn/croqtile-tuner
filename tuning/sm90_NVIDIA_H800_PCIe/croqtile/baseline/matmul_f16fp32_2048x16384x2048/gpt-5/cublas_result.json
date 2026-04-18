@@ -1,0 +1,15 @@
+{
+  "tflops": 431.3489,
+  "dtype": "f16fp32",
+  "m": 2048,
+  "n": 16384,
+  "k": 2048,
+  "warmup": 10,
+  "iters": 50,
+  "avg_ms": 0.3186,
+  "status": "ok",
+  "gpu": "sm90_NVIDIA_H800_PCIe",
+  "dsl": "croqtile",
+  "shape_key": "matmul_f16fp32_2048x16384x2048",
+  "model": "gpt-5"
+}

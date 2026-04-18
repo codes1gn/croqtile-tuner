@@ -1,0 +1,45 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_cublas	177.7342	KEEP	baseline	cuBLAS reference baseline
+iter001	iter001_ws_1p1c_baseline	58.72	KEEP	unknown	Initial warpspec 1p1c baseline kernel
+iter002	iter002_wn64_tiles	68.57	KEEP	launch_bound	Reduced WARP_N from 128 to 64 to double CTA count
+iter003	iter003_persistent	69.95	KEEP	launch_bound	Persistent kernel with 132 CTAs for better SM utilization
+iter004	iter004_warpspec_p1c2	76.25	KEEP	launch_bound	1p2c warp specialization with TILE_M=128 for doubled consumer parallelism
+iter005	iter005_stages5_tilek32	63.48	DISCARD	memory_bound	5 pipeline stages with TILE_K=32 did not help
+iter006	iter006_wn128_p1c2	75.88	DISCARD	memory_bound	1p2c with WARP_N=128 did not improve
+iter007	iter007_warpspec_p1c3	76.65	KEEP	memory_bound	1p3c warp specialization with TILE_M=192 for triple compute parallelism
+iter008	iter008_p1c3_stages4	78.88	KEEP	memory_bound	1p3c with 4 pipeline stages for better latency hiding
+iter009	iter009_p1c3_persis	77.41	DISCARD	memory_bound	Persistent 1p3c kernel did not help due to tile iteration overhead
+iter010	iter010_p1c2_stages5	58.25	DISCARD	memory_bound	1p2c with 5 stages hurt - too much shared memory (155KB)
+iter012	iter012_tm64_1p1c	67.78	DISCARD	compute_bound	1p1c with TM=64 WN=64 for 256 CTAs
+iter014	iter014_tk32_swiz64	65.95	DISCARD	compute_bound	1p3c with TileK=32 and SWIZ=64
+iter015	iter015_s2_lowsync	76.99	DISCARD	compute_bound	1p3c with 2 stages to reduce sync
+iter016	iter016_s3_balanced	77.11	DISCARD	compute_bound	1p3c with 3 stages
+iter017	iter017_s5_deep	77.02	DISCARD	compute_bound	1p3c with 5 stages
+iter018	iter018_p1c4_tm256	70.27	DISCARD	compute_bound	1p4c with TILE_M=256
+iter019	iter019_wm128_wn32	54.91	DISCARD	compute_bound	WN=32 for more N-tiles (32 CTAs)
+iter020	iter020_tk32_s6	66.26	DISCARD	compute_bound	TK=32 with 6 stages
+iter021	iter021_p1c2_tm128	59.05	DISCARD	launch_bound	1p2c with TILE_M=128 for 128 CTAs
+iter022	iter022_p1c1_tm64	51.21	DISCARD	launch_bound	1p1c with TILE_M=64 for 256 CTAs
+iter024	iter024_wn128_tm128	74.16	DISCARD	compute_bound	WN=128 TM=128 for larger N tile
+iter025	iter025_p1c3_tk32	67.66	DISCARD	compute_bound	p1c3 with TK=32 SWIZ=64
+iter026	iter026_p1c3_s5	77.15	DISCARD	compute_bound	p1c3 with 5 stages
+iter027	iter027_p1c4_s3	1.40	DISCARD	launch_bound	1p4c with TILE_M=256 - too few CTAs
+iter028	iter028_wk8	0	COMPILE_FAIL	unknown	WARP_K=8 - not supported by WGMMA
+iter029	iter029_wk32	0	COMPILE_FAIL	unknown	WARP_K=32 - not supported by WGMMA
+iter031	iter031_p1c2_wn128	75.70	DISCARD	memory_bound	1p2c with WARP_N=128 for wider output tiles
+iter032	iter032_tm128_p1c2	57.47	DISCARD	compute_bound	1p2c with TILE_M=128 for more CTAs
+iter033	iter033_p1c3_s3	77.38	DISCARD	latency_bound	1p3c with 3 stages (reduced from 4)
+iter034	iter034_p1c4_tk32	59.72	DISCARD	latency_bound	1p4c with TILE_M=256 and TILE_K=32
+iter035	iter035_wn192	0	COMPILE_FAIL	unknown	1p3c with WARP_N=192 for wider output - SMEM overflow
+iter036	iter036_p1c3_s6	0	COMPILE_FAIL	unknown	1p3c with 6 stages - SMEM overflow
+iter037	iter037_p1c3_s5	77.56	DISCARD	memory_bound	1p3c with 5 stages - more SMEM, less occupancy
+iter038	iter038_tm64_s8	52.02	DISCARD	compute_bound	1p1c with TILE_M=64 and 8 stages - low compute intensity
+iter039	iter039_tm256	68.90	DISCARD	launch_bound	1p4c with TILE_M=256 - only 64 CTAs underutilizes GPU
+iter040	iter040_tm128_s5	57.74	DISCARD	compute_bound	1p2c with TILE_M=128 and 5 stages - not enough consumers
+iter041	iter041_wn256	0	COMPILE_FAIL	unknown	WARP_N=256 - SMEM overflow (393KB > 233KB)
+iter042	iter042_wn128_p1c2	74.39	DISCARD	memory_bound	64x128 WGMMA with 1p2c - less consumers than 1p3c
+iter043	iter043_wn128_p1c3	60.86	DISCARD	memory_bound	64x128 WGMMA with 1p3c - too much SMEM
+iter044	iter044_wn96_p1c3	68.46	DISCARD	memory_bound	64x96 WGMMA with 1p3c - intermediate shape
+iter071	iter071_wg_arrive_batch	77.1958	DISCARD	compute_bound	Hoisted warpgroup_arrive out of the inner WGMMA loop to reduce per-MMA synchroni
+iter072	iter072_split_epilogue	75.4032	DISCARD	compute_bound	Split the FP32 epilogue into three consumer-private 64x64 output buffers with in
+iter073	iter073_p1c2_lb_wait1	70.4925	DISCARD	compute_bound	Added __launch_bounds__(384,2) and warpgroup_wait<1> on the 1p2c base, but it me

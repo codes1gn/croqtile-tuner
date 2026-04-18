@@ -1,0 +1,2 @@
+{"round": 0, "iter": "iter000", "bottleneck": "baseline", "idea": "cuBLAS reference baseline", "category": "baseline", "expected_gain": "baseline reference", "decision": "KEEP", "tflops": 432.0588, "timestamp": "2026-04-18T15:51:56Z"}
+{"round": 1, "iter": "iter001", "bottleneck": "mixed", "idea": "Discovery seed: selected tm128 wn128 s4 over persistent 1p1c after direct benchmark at target shape", "category": "tiling", "expected_gain": "bootstrap seed", "decision": "KEEP", "tflops": 211.393, "timestamp": "2026-04-18T15:56:34Z"}

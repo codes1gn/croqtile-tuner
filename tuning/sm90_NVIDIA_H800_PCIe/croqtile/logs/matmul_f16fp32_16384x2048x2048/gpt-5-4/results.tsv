@@ -1,0 +1,3 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_cublas	432.0588	KEEP	baseline	cuBLAS reference baseline
+iter001	iter001_draft	211.393	KEEP	mixed	Discovery seed: selected tm128 wn128 s4 over persistent 1p1c after direct benchm

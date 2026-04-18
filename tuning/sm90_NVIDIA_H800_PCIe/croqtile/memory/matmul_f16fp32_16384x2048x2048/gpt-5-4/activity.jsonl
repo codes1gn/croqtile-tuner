@@ -1,0 +1,11 @@
+{"ts":"2026-04-18T15:51:53.670Z","tool":"store_baseline","msg":"Measuring cuBLAS baseline for f16fp32 16384x2048x2048","level":"info"}
+{"ts":"2026-04-18T15:51:55.910Z","tool":"store_baseline","msg":"cuBLAS baseline: 432.0588 TFLOPS (saved to tuning/sm90_NVIDIA_H800_PCIe/croqtile/baseline/matmul_f16fp32_16384x2048x2048/gpt-5-4/cublas_result.json)","level":"info"}
+{"ts":"2026-04-18T15:51:56.270Z","tool":"store_round","msg":"Storing iter000_cublas (KEEP 432.0588 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T15:51:56.290Z","tool":"store_round","msg":"Stored iter000_cublas: KEEP 432.0588 TFLOPS (round 0)","level":"info"}
+{"ts":"2026-04-18T15:51:56.302Z","tool":"store_baseline","msg":"Stored iter000_cublas: 432.0588 TFLOPS (baseline)","level":"info"}
+{"ts":"2026-04-18T15:54:51.000Z","tool":"co2cu","msg":"Compiling probe_seed_p1c1_wn128_s2.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T15:54:51.157Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x2048x2048/gpt-5-4/probe_seed_p1c1_wn128_s2.cu","level":"info"}
+{"ts":"2026-04-18T15:54:51.357Z","tool":"co2cu","msg":"Compiling probe_seed_tm128_wn128_s4.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T15:54:51.540Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x2048x2048/gpt-5-4/probe_seed_tm128_wn128_s4.cu","level":"info"}
+{"ts":"2026-04-18T15:56:34.028Z","tool":"store_round","msg":"Storing iter001_draft (KEEP 211.393 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T15:56:34.047Z","tool":"store_round","msg":"Stored iter001_draft: KEEP 211.393 TFLOPS (round 1)","level":"info"}

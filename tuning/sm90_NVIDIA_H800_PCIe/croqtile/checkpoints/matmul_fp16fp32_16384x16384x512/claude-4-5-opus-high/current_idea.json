@@ -1,14 +1,15 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-17T18:12:13Z",
+  "timestamp": "2026-04-17T18:49:52Z",
   "dsl": "croqtile",
   "shape_key": "matmul_fp16fp32_16384x16384x512",
-  "iter": "iter010_tm256_wn192_s2",
+  "iter": "iter026_tm128_wn128_s4",
   "bottleneck": "latency_bound",
-  "idea": "TM256 WN192 - N=16384 is divisible by 192 (85.33 tiles), less SMEM per output buffer",
-  "expected_gain": "+3-10 TFLOPS from cleaner tiling",
+  "idea": "Phase 1: TM=128 WN=128 S4 - perfect pow2 tiling with 4 pipeline stages for better overlap",
+  "expected_gain": "+5-15 TFLOPS from 4 stages with clean tiling",
   "levers": [
-    "WARP_N"
+    "warp_n",
+    "stages"
   ],
   "status": "PLANNED"
 }

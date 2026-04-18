@@ -1,0 +1,39 @@
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_512x16384x16384/claude-4-5-opus-high/iter129_wn128_s3_unroll.cu(313): warning #2361-D: invalid narrowing conversion from "unsigned long" to "unsigned int"
+    uint32_t __choreo_tma_1_box_shape[] = {(K / ((K + 63) / 64)), (N / ((N + 127) / 128))};
+                                           ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_512x16384x16384/claude-4-5-opus-high/iter129_wn128_s3_unroll.cu(313): warning #2361-D: invalid narrowing conversion from "unsigned long" to "unsigned int"
+    uint32_t __choreo_tma_1_box_shape[] = {(K / ((K + 63) / 64)), (N / ((N + 127) / 128))};
+                                                                  ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_512x16384x16384/claude-4-5-opus-high/iter129_wn128_s3_unroll.cu(166): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) cuda::barrier<cuda::thread_scope_block> choreo_copy_atom_t_0_barrier;
+                                                                    ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_512x16384x16384/claude-4-5-opus-high/iter129_wn128_s3_unroll.cu(175): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) cuda::barrier<cuda::thread_scope_block> full[3];
+                                                                    ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_512x16384x16384/claude-4-5-opus-high/iter129_wn128_s3_unroll.cu(184): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) cuda::barrier<cuda::thread_scope_block> empty[3];
+                                                                    ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_512x16384x16384/claude-4-5-opus-high/iter129_wn128_s3_unroll.cu(313): warning #2361-D: invalid narrowing conversion from "unsigned long" to "unsigned int"
+    uint32_t __choreo_tma_1_box_shape[] = {(K / ((K + 63) / 64)), (N / ((N + 127) / 128))};
+                                           ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_512x16384x16384/claude-4-5-opus-high/iter129_wn128_s3_unroll.cu(313): warning #2361-D: invalid narrowing conversion from "unsigned long" to "unsigned int"
+    uint32_t __choreo_tma_1_box_shape[] = {(K / ((K + 63) / 64)), (N / ((N + 127) / 128))};
+                                                                  ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_512x16384x16384/claude-4-5-opus-high/iter129_wn128_s3_unroll.cu: In function ‘void matmul(const choreo::spanned_view<__half, 2>&, const choreo::spanned_view<__half, 2>&, const choreo::spanned_view<float, 2>&)’:
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_512x16384x16384/claude-4-5-opus-high/iter129_wn128_s3_unroll.cu:313:42: warning: narrowing conversion of ‘(((long unsigned int)K) / ((((long unsigned int)K) + 63) / 64))’ from ‘long unsigned int’ to ‘uint32_t’ {aka ‘unsigned int’} [-Wnarrowing]
+  313 |   uint32_t __choreo_tma_1_box_shape[] = {(K / ((K + 63) / 64)), (N / ((N + 127) / 128))};
+      |                                        ~~^~~~~~~~~~~~~~~~~~~~~
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_512x16384x16384/claude-4-5-opus-high/iter129_wn128_s3_unroll.cu:313:67: warning: narrowing conversion of ‘(((long unsigned int)N) / ((((long unsigned int)N) + 127) / 128))’ from ‘long unsigned int’ to ‘uint32_t’ {aka ‘unsigned int’} [-Wnarrowing]
+  313 |   uint32_t __choreo_tma_1_box_shape[] = {(K / ((K + 63) / 64)), (N / ((N + 127) / 128))};
+      |                                                                 ~~^~~~~~~~~~~~~~~~~~~~~~~

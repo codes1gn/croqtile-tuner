@@ -1,0 +1,22 @@
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_1024x1024x1024/opus-4/iter003_persistent.cu(189): warning #177-D: variable "block_m" was declared but never referenced
+          int block_m = tile_id / ((N + 63) / 64);
+              ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_1024x1024x1024/opus-4/iter003_persistent.cu(190): warning #177-D: variable "block_n" was declared but never referenced
+          int block_n = tile_id % ((N + 63) / 64);
+              ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_1024x1024x1024/opus-4/iter003_persistent.cu(149): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) cuda::barrier<cuda::thread_scope_block> choreo_copy_atom_t_0_barrier;
+                                                                    ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_1024x1024x1024/opus-4/iter003_persistent.cu(158): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) cuda::barrier<cuda::thread_scope_block> full[4];
+                                                                    ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_1024x1024x1024/opus-4/iter003_persistent.cu(168): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) cuda::barrier<cuda::thread_scope_block> empty[4];
+                                                                    ^
+

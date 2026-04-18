@@ -1,0 +1,49 @@
+{"ts":"2026-04-18T12:51:31.779Z","tool":"resume_state","msg":"Loading tuning state for croqtile/matmul_fp16fp32_2048x2048x16384","level":"info"}
+{"ts":"2026-04-18T12:51:31.781Z","tool":"resume_state","msg":"No tuning artifacts found for croqtile/matmul_fp16fp32_2048x2048x16384","level":"error"}
+{"ts":"2026-04-18T12:51:42.397Z","tool":"store_baseline","msg":"Measuring cuBLAS baseline for fp16fp32 2048x2048x16384","level":"info"}
+{"ts":"2026-04-18T12:51:44.534Z","tool":"store_baseline","msg":"cuBLAS baseline: 418.4252 TFLOPS (saved to tuning/sm90_NVIDIA_H800_PCIe/croqtile/baseline/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/cublas_result.json)","level":"info"}
+{"ts":"2026-04-18T12:51:44.888Z","tool":"store_round","msg":"Storing iter000_cublas (KEEP 418.4252 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T12:51:44.908Z","tool":"store_round","msg":"Stored iter000_cublas: KEEP 418.4252 TFLOPS (round 0)","level":"info"}
+{"ts":"2026-04-18T12:51:44.920Z","tool":"store_baseline","msg":"Stored iter000_cublas: 418.4252 TFLOPS (baseline)","level":"info"}
+{"ts":"2026-04-18T12:52:16.419Z","tool":"next_iter","msg":"Resolved iter001_draft","level":"info"}
+{"ts":"2026-04-18T12:53:19.129Z","tool":"co2cu","msg":"Compiling iter001_draft.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T12:53:19.240Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter001_draft.cu","level":"info"}
+{"ts":"2026-04-18T12:54:12.904Z","tool":"store_round","msg":"Storing iter001_draft (KEEP 202.345 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T12:54:12.923Z","tool":"store_round","msg":"Stored iter001_draft: KEEP 202.345 TFLOPS (round 1)","level":"info"}
+{"ts":"2026-04-18T12:54:26.692Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter001_draft","level":"info"}
+{"ts":"2026-04-18T12:54:34.124Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/ncu_iter001_draft_round2.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/ncu_iter001_draft_round2.csv","level":"info"}
+{"ts":"2026-04-18T12:54:39.821Z","tool":"profile_extract","msg":"Analyzing iter001_draft from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/ncu_iter001_draft_round2.csv","level":"info"}
+{"ts":"2026-04-18T12:55:18.339Z","tool":"checkpoint_write","msg":"PLANNED iter002_tm64_wn128_1p1c: Reduce TILE_M 128->64, switch 1p2c->1p1c: 32x16=512 CTAs vs 256, halves SMEM, improves occupancy from 18% target 40%+","level":"info"}
+{"ts":"2026-04-18T12:55:23.452Z","tool":"next_iter","msg":"Resolved iter002_tm64_wn128_1p1c","level":"info"}
+{"ts":"2026-04-18T13:02:37.327Z","tool":"co2cu","msg":"Compiling iter002_tm64_wn128_1p1c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T13:02:37.436Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter002_tm64_wn128_1p1c.cu","level":"info"}
+{"ts":"2026-04-18T13:09:00.047Z","tool":"store_round","msg":"Storing iter002_tm64_wn128_1p1c (KEEP 227.796 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T13:09:00.067Z","tool":"store_round","msg":"Stored iter002_tm64_wn128_1p1c: KEEP 227.796 TFLOPS (round 2)","level":"info"}
+{"ts":"2026-04-18T13:09:29.224Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter002_tm64_wn128_1p1c","level":"info"}
+{"ts":"2026-04-18T13:09:36.947Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/ncu_iter002_tm64_wn128_1p1c_round3.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/ncu_iter002_tm64_wn128_1p1c_round3.csv","level":"info"}
+{"ts":"2026-04-18T13:10:14.320Z","tool":"profile_extract","msg":"Analyzing iter002_tm64_wn128_1p1c from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/ncu_iter002_tm64_wn128_1p1c_round3.csv","level":"info"}
+{"ts":"2026-04-18T13:17:18.282Z","tool":"checkpoint_write","msg":"PLANNED iter003_persis_1p1c_nm114: Persistent kernel NUM_SMS=114: 114 CTAs saturate all SMs eliminating wave quantization; each CTA processes ceil(512/114) output tiles sequentially via tile_id=tile_iter#block_id","level":"info"}
+{"ts":"2026-04-18T13:17:30.868Z","tool":"next_iter","msg":"Resolved iter003_persis_1p1c_nm114","level":"info"}
+{"ts":"2026-04-18T13:26:46.661Z","tool":"co2cu","msg":"Compiling iter003_persis_1p1c_nm114.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T13:26:46.821Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter003_persis_1p1c_nm114.cu","level":"info"}
+{"ts":"2026-04-18T13:27:52.663Z","tool":"resume_state","msg":"Loading tuning state for croqtile/matmul_fp16fp32_2048x2048x16384","level":"info"}
+{"ts":"2026-04-18T13:31:05.285Z","tool":"ncu_profile","msg":"Capturing profile: ./tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter003_persis_1p1c_nm114 --disable-timing","level":"info"}
+{"ts":"2026-04-18T13:31:14.276Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter003_persis_1p1c_nm114.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter003_persis_1p1c_nm114.csv","level":"info"}
+{"ts":"2026-04-18T13:31:20.864Z","tool":"profile_extract","msg":"Analyzing iter003_persis_1p1c_nm114 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter003_persis_1p1c_nm114.csv","level":"info"}
+{"ts":"2026-04-18T13:31:37.537Z","tool":"next_iter","msg":"Resolved iter004_persis_1p1c_wn96_s3","level":"info"}
+{"ts":"2026-04-18T13:32:55.396Z","tool":"store_round","msg":"Storing iter003_persis_1p1c_nm114 (DISCARD 201.0 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T13:32:55.415Z","tool":"store_round","msg":"Stored iter003_persis_1p1c_nm114: DISCARD 201.0 TFLOPS (round 3)","level":"info"}
+{"ts":"2026-04-18T13:33:12.408Z","tool":"checkpoint_write","msg":"PLANNED iter004_persis_1p1c_wn96_s3: Persistent WARP_N=96 STAGES=3: SMEM drops to 84KB enabling 2 CTAs/SM (vs 1 in iter003). 228 active CTAs across 114 SMs eliminate wave quantization. WARP_N=96 matches cuBLAS ref geometry for H800.","level":"info"}
+{"ts":"2026-04-18T13:34:12.292Z","tool":"co2cu","msg":"Compiling iter004_persis_1p1c_wn96_s3.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T13:34:12.450Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter004_persis_1p1c_wn96_s3.cu","level":"info"}
+{"ts":"2026-04-18T13:35:08.482Z","tool":"store_round","msg":"Storing iter004_persis_1p1c_wn96_s3 (DISCARD 148.3 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T13:35:08.501Z","tool":"store_round","msg":"Stored iter004_persis_1p1c_wn96_s3: DISCARD 148.3 TFLOPS (round 4)","level":"info"}
+{"ts":"2026-04-18T13:35:24.818Z","tool":"next_iter","msg":"Resolved iter005_persis_1p1c_wn128_s2","level":"info"}
+{"ts":"2026-04-18T13:37:44.982Z","tool":"co2cu","msg":"Compiling iter005_persis_1p1c_wn128_s2.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T13:37:45.141Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter005_persis_1p1c_wn128_s2.cu","level":"info"}
+{"ts":"2026-04-18T13:38:53.852Z","tool":"store_round","msg":"Storing iter005_persis_1p1c_wn128_s2 (DISCARD 139.3 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T13:38:53.871Z","tool":"store_round","msg":"Stored iter005_persis_1p1c_wn128_s2: DISCARD 139.3 TFLOPS (round 5)","level":"info"}
+{"ts":"2026-04-18T13:39:00.145Z","tool":"ncu_profile","msg":"Capturing profile: ./tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter002_tm64_wn128_1p1c --disable-timing","level":"info"}
+{"ts":"2026-04-18T13:39:07.452Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter002_tm64_wn128_1p1c.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter002_tm64_wn128_1p1c.csv","level":"info"}
+{"ts":"2026-04-18T13:39:16.990Z","tool":"profile_extract","msg":"Analyzing iter002_tm64_wn128_1p1c from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter002_tm64_wn128_1p1c.csv","level":"info"}
+{"ts":"2026-04-18T14:04:38.423Z","tool":"next_iter","msg":"Resolved iter006_wn256_1p1c_s3","level":"info"}

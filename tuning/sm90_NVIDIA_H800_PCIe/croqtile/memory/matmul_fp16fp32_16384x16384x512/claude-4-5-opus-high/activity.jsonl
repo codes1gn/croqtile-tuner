@@ -66,3 +66,89 @@
 {"ts":"2026-04-17T18:12:34.134Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x512/claude-4-5-opus-high/iter010_tm256_wn192_s2.cu","level":"info"}
 {"ts":"2026-04-17T18:13:25.345Z","tool":"store_round","msg":"Storing iter010_tm256_wn192_s2 (DISCARD 328.816 TFLOPS)","level":"info"}
 {"ts":"2026-04-17T18:13:25.365Z","tool":"store_round","msg":"Stored iter010_tm256_wn192_s2: DISCARD 328.816 TFLOPS (round 10)","level":"info"}
+{"ts":"2026-04-17T18:13:45.334Z","tool":"next_iter","msg":"Resolved iter011_tm256_wn200_unroll","level":"info"}
+{"ts":"2026-04-17T18:13:51.590Z","tool":"checkpoint_write","msg":"PLANNED iter011_tm256_wn200_unroll: Phase 2 .cu: Add pragma unroll to K-loop and warp-loop in consumer path for better instruction scheduling","level":"info"}
+{"ts":"2026-04-17T18:16:00.872Z","tool":"resume_state","msg":"Loading tuning state for croqtile/matmul_fp16fp32_16384x16384x512","level":"info"}
+{"ts":"2026-04-17T18:16:09.413Z","tool":"store_round","msg":"Storing iter011_tm256_wn200_unroll (KEEP 360.12 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T18:16:09.433Z","tool":"store_round","msg":"Stored iter011_tm256_wn200_unroll: KEEP 360.12 TFLOPS (round 11)","level":"info"}
+{"ts":"2026-04-17T18:16:31.415Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_fp16fp32_16384x16384x512/claude-4-5-opus-high/iter011_tm256_wn200_unroll 16384 16384 512 --skip-verify","level":"info"}
+{"ts":"2026-04-17T18:16:39.467Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x512/claude-4-5-opus-high/ncu_iter011.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x512/claude-4-5-opus-high/ncu_iter011.csv","level":"info"}
+{"ts":"2026-04-17T18:16:47.989Z","tool":"profile_extract","msg":"Analyzing iter011_tm256_wn200_unroll from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x512/claude-4-5-opus-high/ncu_iter011.csv","level":"info"}
+{"ts":"2026-04-17T18:17:52.767Z","tool":"next_iter","msg":"Resolved iter012_tm256_wn200_fastmath","level":"info"}
+{"ts":"2026-04-17T18:17:59.204Z","tool":"checkpoint_write","msg":"PLANNED iter012_tm256_wn200_fastmath: Phase 2 .cu: Add --use_fast_math to build flags on top of unrolled kernel for faster transcendentals and fused multiply-add","level":"info"}
+{"ts":"2026-04-17T18:19:07.706Z","tool":"store_round","msg":"Storing iter012_tm256_wn200_fastmath (DISCARD 360.20 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T18:19:07.727Z","tool":"store_round","msg":"Stored iter012_tm256_wn200_fastmath: DISCARD 360.20 TFLOPS (round 12)","level":"info"}
+{"ts":"2026-04-17T18:19:17.952Z","tool":"next_iter","msg":"Resolved iter013_tm256_wn200_swiz64","level":"info"}
+{"ts":"2026-04-17T18:19:23.123Z","tool":"checkpoint_write","msg":"PLANNED iter013_tm256_wn200_swiz64: Phase 1: Change MATMUL_SWIZ from 128 to 64 to reduce shared memory bank conflicts (2.2M observed)","level":"info"}
+{"ts":"2026-04-17T18:20:09.462Z","tool":"next_iter","msg":"Resolved iter014_tm256_wn256_s2","level":"info"}
+{"ts":"2026-04-17T18:20:15.625Z","tool":"checkpoint_write","msg":"PLANNED iter014_tm256_wn256_s2: Phase 1: WARP_N=256 for perfect power-of-2 tiling (64x64=4096 tiles), eliminates partial-tile overhead and aligns N dimension exactly","level":"info"}
+{"ts":"2026-04-17T18:21:12.587Z","tool":"co2cu","msg":"Compiling iter014_tm256_wn256_s2.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T18:21:46.243Z","tool":"next_iter","msg":"Resolved iter015_tm128_wn200_s2","level":"info"}
+{"ts":"2026-04-17T18:21:53.935Z","tool":"store_round","msg":"Storing iter014_tm256_wn256_s2 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T18:21:53.955Z","tool":"store_round","msg":"Stored iter014_tm256_wn256_s2: COMPILE_FAIL 0 TFLOPS (round 14)","level":"info"}
+{"ts":"2026-04-17T18:22:04.648Z","tool":"checkpoint_write","msg":"PLANNED iter015_tm128_wn200_s2: Phase 1: TM=128 WN=200 to reduce SMEM from 221KB to 186KB for potentially higher occupancy while keeping proven WN=200","level":"info"}
+{"ts":"2026-04-17T18:22:20.375Z","tool":"co2cu","msg":"Compiling iter015_tm128_wn200_s2.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T18:22:20.560Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x512/claude-4-5-opus-high/iter015_tm128_wn200_s2.cu","level":"info"}
+{"ts":"2026-04-17T18:23:20.108Z","tool":"store_round","msg":"Storing iter015_tm128_wn200_s2 (DISCARD 65.54 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T18:23:20.128Z","tool":"store_round","msg":"Stored iter015_tm128_wn200_s2: DISCARD 65.54 TFLOPS (round 15)","level":"info"}
+{"ts":"2026-04-17T18:23:41.889Z","tool":"next_iter","msg":"Resolved iter016_tm256_wn200_rowmajor","level":"info"}
+{"ts":"2026-04-17T18:23:48.781Z","tool":"checkpoint_write","msg":"PLANNED iter016_tm256_wn200_rowmajor: Phase 2 .cu: Change persistent tile order from col-major (block_n=tile_id/tiles_m) to row-major (block_m=tile_id/tiles_n) for better L2 cache reuse on output writes","level":"info"}
+{"ts":"2026-04-17T18:25:56.845Z","tool":"store_round","msg":"Storing iter016_tm256_wn200_rowmajor (DISCARD 37.45 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T18:25:56.866Z","tool":"store_round","msg":"Stored iter016_tm256_wn200_rowmajor: DISCARD 37.45 TFLOPS (round 16)","level":"info"}
+{"ts":"2026-04-17T18:26:10.255Z","tool":"next_iter","msg":"Resolved iter017_tm256_wn200_lb384","level":"info"}
+{"ts":"2026-04-17T18:26:16.466Z","tool":"checkpoint_write","msg":"PLANNED iter017_tm256_wn200_lb384: Phase 2 .cu: Add __launch_bounds__(384,1) to tell compiler only 1 CTA/SM, combined with unrolled warp-loop - allows compiler to freely allocate registers","level":"info"}
+{"ts":"2026-04-17T18:27:29.763Z","tool":"store_round","msg":"Storing iter017_tm256_wn200_lb384 (DISCARD 37.45 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T18:27:29.783Z","tool":"store_round","msg":"Stored iter017_tm256_wn200_lb384: DISCARD 37.45 TFLOPS (round 17)","level":"info"}
+{"ts":"2026-04-17T18:28:05.421Z","tool":"next_iter","msg":"Resolved iter018_tm256_wn200_reg160","level":"info"}
+{"ts":"2026-04-17T18:28:12.844Z","tool":"checkpoint_write","msg":"PLANNED iter018_tm256_wn200_reg160: Phase 2 .cu: maxrregcount=160 on unrolled kernel - force 8 fewer regs than current 168, try better reg allocation with minor spilling","level":"info"}
+{"ts":"2026-04-17T18:29:19.629Z","tool":"store_round","msg":"Storing iter018_tm256_wn200_reg160 (DISCARD 29.13 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T18:29:19.650Z","tool":"store_round","msg":"Stored iter018_tm256_wn200_reg160: DISCARD 29.13 TFLOPS (round 18)","level":"info"}
+{"ts":"2026-04-17T18:29:27.914Z","tool":"next_iter","msg":"Resolved iter019_tm256_wn200_132sms","level":"info"}
+{"ts":"2026-04-17T18:29:33.685Z","tool":"checkpoint_write","msg":"PLANNED iter019_tm256_wn200_132sms: Phase 1: NUM_SMS=132 to use all H800 SMs (was 114) - better SM utilization for persistent kernel","level":"info"}
+{"ts":"2026-04-17T18:29:49.240Z","tool":"co2cu","msg":"Compiling iter019_tm256_wn200_132sms.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T18:29:49.426Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x512/claude-4-5-opus-high/iter019_tm256_wn200_132sms.cu","level":"info"}
+{"ts":"2026-04-17T18:31:42.073Z","tool":"store_round","msg":"Storing iter019_tm256_wn200_132sms (DISCARD 230.06 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T18:31:42.093Z","tool":"store_round","msg":"Stored iter019_tm256_wn200_132sms: DISCARD 230.06 TFLOPS (round 19)","level":"info"}
+{"ts":"2026-04-17T18:31:52.117Z","tool":"next_iter","msg":"Resolved iter020_tm256_wn200_128sms","level":"info"}
+{"ts":"2026-04-17T18:31:58.261Z","tool":"checkpoint_write","msg":"PLANNED iter020_tm256_wn200_128sms: Phase 1: NUM_SMS=128, divides 5248 tiles evenly (41 iters/CTA, zero tail waste)","level":"info"}
+{"ts":"2026-04-17T18:32:13.708Z","tool":"co2cu","msg":"Compiling iter020_tm256_wn200_128sms.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T18:32:13.894Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x512/claude-4-5-opus-high/iter020_tm256_wn200_128sms.cu","level":"info"}
+{"ts":"2026-04-17T18:33:24.249Z","tool":"store_round","msg":"Storing iter020_tm256_wn200_128sms (DISCARD 217.81 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T18:33:24.269Z","tool":"store_round","msg":"Stored iter020_tm256_wn200_128sms: DISCARD 217.81 TFLOPS (round 20)","level":"info"}
+{"ts":"2026-04-17T18:34:19.698Z","tool":"next_iter","msg":"Resolved iter021_tm128_wn200_fixgrid","level":"info"}
+{"ts":"2026-04-17T18:34:26.527Z","tool":"checkpoint_write","msg":"PLANNED iter021_tm128_wn200_fixgrid: Phase 1: Fix grid calculation - use TILE_M=128 (WARP_M*NUM_CONSUMERS) so tiles cover all M rows. Current kernel only computes half the output.","level":"info"}
+{"ts":"2026-04-17T18:36:19.557Z","tool":"next_iter","msg":"Resolved iter021_tm128_wn200_unroll","level":"info"}
+{"ts":"2026-04-17T18:36:26.533Z","tool":"checkpoint_write","msg":"PLANNED iter021_tm128_wn200_unroll: Phase 1+2: TILE_M=128 (correct full-matrix coverage) + pragma unroll on warp-loop. Prior TILE_M=256 kernels only computed half the output.","level":"info"}
+{"ts":"2026-04-17T18:38:42.932Z","tool":"store_round","msg":"Storing iter021_tm128_wn200_unroll (KEEP 192.00 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T18:38:42.953Z","tool":"store_round","msg":"Stored iter021_tm128_wn200_unroll: KEEP 192.00 TFLOPS (round 21)","level":"info"}
+{"ts":"2026-04-17T18:38:58.576Z","tool":"next_iter","msg":"Resolved iter022_tm256_wn128_1p4c","level":"info"}
+{"ts":"2026-04-17T18:39:05.153Z","tool":"checkpoint_write","msg":"PLANNED iter022_tm256_wn128_1p4c: Phase 1: TM=256 WN=128 with 4 consumers (1P4C) - uses all 256 loaded A rows correctly. 5 warpgroups = 640 threads.","level":"info"}
+{"ts":"2026-04-17T18:39:58.478Z","tool":"co2cu","msg":"Compiling iter022_tm256_wn128_1p4c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T18:39:58.697Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x512/claude-4-5-opus-high/iter022_tm256_wn128_1p4c.cu","level":"info"}
+{"ts":"2026-04-17T18:41:08.730Z","tool":"store_round","msg":"Storing iter022_tm256_wn128_1p4c (SEGFAULT 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T18:41:08.750Z","tool":"store_round","msg":"Stored iter022_tm256_wn128_1p4c: SEGFAULT 0 TFLOPS (round 22)","level":"info"}
+{"ts":"2026-04-17T18:41:16.906Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_fp16fp32_16384x16384x512/claude-4-5-opus-high/iter021_tm128_wn200_unroll 16384 16384 512 --skip-verify","level":"info"}
+{"ts":"2026-04-17T18:41:27.346Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x512/claude-4-5-opus-high/ncu_iter021.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x512/claude-4-5-opus-high/ncu_iter021.csv","level":"info"}
+{"ts":"2026-04-17T18:41:31.990Z","tool":"profile_extract","msg":"Analyzing iter021_tm128_wn200_unroll from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x512/claude-4-5-opus-high/ncu_iter021.csv","level":"info"}
+{"ts":"2026-04-17T18:41:53.612Z","tool":"next_iter","msg":"Resolved iter023_tm128_wn248_s2","level":"info"}
+{"ts":"2026-04-17T18:42:00.373Z","tool":"checkpoint_write","msg":"PLANNED iter023_tm128_wn248_s2: Phase 1: TM=128 WN=248 - maximize WN within SMEM budget for correct kernel. Larger WGMMA output tile = better compute intensity.","level":"info"}
+{"ts":"2026-04-17T18:42:23.422Z","tool":"co2cu","msg":"Compiling iter023_tm128_wn248_s2.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T18:42:23.606Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x512/claude-4-5-opus-high/iter023_tm128_wn248_s2.cu","level":"info"}
+{"ts":"2026-04-17T18:44:23.586Z","tool":"store_round","msg":"Storing iter023_tm128_wn248_s2 (KEEP 199.00 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T18:44:23.607Z","tool":"store_round","msg":"Stored iter023_tm128_wn248_s2: KEEP 199.00 TFLOPS (round 23)","level":"info"}
+{"ts":"2026-04-17T18:44:35.004Z","tool":"next_iter","msg":"Resolved iter024_tm128_wn200_s3","level":"info"}
+{"ts":"2026-04-17T18:44:42.472Z","tool":"checkpoint_write","msg":"PLANNED iter024_tm128_wn200_s3: Phase 1: TM=128 WN=200 3 stages - better pipeline overlap for K=512 (only 8 K-steps, more stages helps)","level":"info"}
+{"ts":"2026-04-17T18:44:59.377Z","tool":"co2cu","msg":"Compiling iter024_tm128_wn200_s3.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T18:44:59.562Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x512/claude-4-5-opus-high/iter024_tm128_wn200_s3.cu","level":"info"}
+{"ts":"2026-04-17T18:47:13.132Z","tool":"store_round","msg":"Storing iter024_tm128_wn200_s3 (KEEP 201.50 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T18:47:13.152Z","tool":"store_round","msg":"Stored iter024_tm128_wn200_s3: KEEP 201.50 TFLOPS (round 24)","level":"info"}
+{"ts":"2026-04-17T18:47:47.758Z","tool":"next_iter","msg":"Resolved iter025_tm128_wn160_s4","level":"info"}
+{"ts":"2026-04-17T18:47:57.191Z","tool":"checkpoint_write","msg":"PLANNED iter025_tm128_wn160_s4: Phase 1: TM=128 WN=160 S4 - more pipeline stages for better overlap at cost of smaller WN","level":"info"}
+{"ts":"2026-04-17T18:48:17.995Z","tool":"co2cu","msg":"Compiling iter025_tm128_wn160_s4.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T18:48:18.179Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x512/claude-4-5-opus-high/iter025_tm128_wn160_s4.cu","level":"info"}
+{"ts":"2026-04-17T18:49:43.233Z","tool":"store_round","msg":"Storing iter025_tm128_wn160_s4 (SEGFAULT 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-17T18:49:43.255Z","tool":"store_round","msg":"Stored iter025_tm128_wn160_s4: SEGFAULT 0 TFLOPS (round 25)","level":"info"}
+{"ts":"2026-04-17T18:49:52.651Z","tool":"next_iter","msg":"Resolved iter026_tm128_wn128_s4","level":"info"}
+{"ts":"2026-04-17T18:49:52.729Z","tool":"checkpoint_write","msg":"PLANNED iter026_tm128_wn128_s4: Phase 1: TM=128 WN=128 S4 - perfect pow2 tiling with 4 pipeline stages for better overlap","level":"info"}
+{"ts":"2026-04-17T18:50:17.392Z","tool":"co2cu","msg":"Compiling iter026_tm128_wn128_s4.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-17T18:50:17.579Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x512/claude-4-5-opus-high/iter026_tm128_wn128_s4.cu","level":"info"}

@@ -1,0 +1,7 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_cublas	418.4252	KEEP	baseline	cuBLAS reference baseline
+iter001	iter001_draft	202.345	KEEP	latency_bound	1p2c warp-spec baseline: TM=128 WARP_N=128 stages=3 — starting point
+iter002	iter002_tm64_wn128_1p1c	227.796	KEEP	compute_bound	Reduce TILE_M 128->64, switch 1p2c->1p1c: 512 CTAs vs 256, halves SMEM from 163K
+iter003	iter003_persis_1p1c_nm114	201.0	DISCARD	compute_bound	Persistent 114 CTA STAGES=4 WARP_N=128: SMEM=128KB fills carveout, only 1 CTA/SM
+iter004	iter004_persis_1p1c_wn96_s3	148.3	DISCARD	compute_bound	Persistent WARP_N=96 STAGES=3: 2048 not divisible by 96 (22 tiles, last partial)
+iter005	iter005_persis_1p1c_wn128_s2	139.3	DISCARD	compute_bound	Persistent STAGES=2 WARP_N=128: SMEM=80KB, but 2-stage pipeline insufficient to 

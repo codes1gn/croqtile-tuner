@@ -1,0 +1,3 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_cublas	420.2476	KEEP	baseline	cuBLAS reference baseline
+iter001	iter001_draft	236.658	KEEP	memory_bound	Started from persistent 1p2c FP16->FP32 kernel adapted to K=16384; established f

@@ -1,0 +1,18 @@
+{
+  "schema": "croq-checkpoint-v1",
+  "timestamp": "2026-04-18T15:54:49Z",
+  "dsl": "croqtile",
+  "shape_key": "matmul_fp16fp32_16384x16384x16384",
+  "iter": "iter001_draft",
+  "bottleneck": "memory_bound",
+  "idea": "Adapted proven persistent 1p2c kernel to target K=16384 as starting custom baseline.",
+  "expected_gain": "+200+ TFLOPS over naive custom start",
+  "levers": [
+    "MATMUL_DEFAULT_K",
+    "persistent",
+    "warpspec"
+  ],
+  "status": "VERIFIED",
+  "verified_iter": "iter001_draft",
+  "drift_score": 1
+}

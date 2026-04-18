@@ -1,0 +1,17 @@
+{
+  "task_uid": "10sfjlf",
+  "dsl": "croqtile",
+  "model": "gpt-5",
+  "device": "NVIDIA H800 PCIe",
+  "status": "pending",
+  "task_id": 13,
+  "variant": "",
+  "agent_type": null,
+  "mode": "opencode",
+  "request_budget": 1,
+  "request_number": 0,
+  "max_iterations": 30,
+  "respawn_count": 1,
+  "opencode_session_id": null,
+  "sessions": []
+}

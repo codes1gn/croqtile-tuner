@@ -1,3 +1,32 @@
 iter	kernel	tflops	decision	bottleneck	idea_summary
 iter000	iter000_cublas	141.6295	KEEP	baseline	cuBLAS reference baseline
 iter001	iter001_baseline_ref	139.659	KEEP	compute_bound	Initial baseline: reference blockscale_gemm kernel with WARP_M=64 WARP_N=128 TIL
+iter002	iter002_warpspec_1p1c_2stage	223.844	KEEP	launch_bound	Warp specialization 1p1c with 2-stage pipeline: producer warpgroup handles TMA l
+iter003	iter003_warpspec_1p1c_lbounds	318.756	KEEP	memory_bound	Added __launch_bounds__(256, 2) to force 2 blocks/SM, reducing regs from 153 to 
+iter004	iter004_warpspec_1p1c_3stage	259.893	DISCARD	memory_bound	3-stage pipeline: more SMEM usage (106KB) hurts occupancy. 2 stages better for t
+iter005	iter005_persistent_1p1c_4stg	94.0005	DISCARD	memory_bound	Persistent kernel 114 SMs with 4-stage pipeline: too much SMEM, 1 block/SM, tile
+iter006	iter006_wn256_lbounds	76.2601	DISCARD	memory_bound	WARP_N=256: too much SMEM (144KB, 1 block/SM) and register pressure. N=128 with 
+iter007	iter007_unroll_cu_finetune	74.8983	DISCARD	memory_bound	maxrregcount=128 via nvcc flag causes excessive spilling. __launch_bounds__ in c
+iter008	iter008_fused_scale_warpspec	11.8618	DISCARD	memory_bound	Fused mma.row.row.scale in warpspec: generates heavy per-iteration scale overhea
+iter009	iter009_lbounds_3blk	0	COMPILE_FAIL	memory_bound	launch_bounds(256,3) requires ~85 regs/thread but WGMMA needs 90+. Cannot achiev
+iter010	iter010_warpspec_1p2c	237.069	DISCARD	memory_bound	1p2c warp spec with TILE_M=128: 384 threads, larger SMEM, only 1 block/SM. 1p1c 
+iter011	iter011_wn64_less_regpressure	148.768	DISCARD	launch_bound	WARP_N=64 halved accumulator but doubled grid from 32K to 65K blocks. Worse L2 r
+iter012	iter012_commit_before_scale	296.092	DISCARD	memory_bound	Moved warpgroup_commit+wait before scale_accumulator to ensure WGMMA results rea
+iter013	iter013_swizzled_blockid	338.795	KEEP	memory_bound	Block ID swizzle with group_size=8. Improves L2 cache reuse by clustering spatia
+iter014	iter014_swiz_group4	375.792	KEEP	memory_bound	Reduced swizzle group from 8 to 4. Better L2 reuse for 256x128 grid with tighter
+iter015	iter015_swiz_group2	172.031	DISCARD	memory_bound	Swizzle group=2 too tight for 256x128 grid. Excessive row scanning in N.
+iter016	iter016_swiz_group6	303.464	DISCARD	memory_bound	Swizzle group=6 worse than group=4. Non-power-of-2 creates uneven tile grouping.
+iter017	iter017_lbounds_1blk	120.153	DISCARD	launch_bound	launch_bounds(256,1) eliminates spilling but halves occupancy from 2 to 1 block/
+iter018	iter018_scale_dma_smem	0	DISCARD	compile_fail	Scale DMA to SMEM via cute::copy with AsyncCopyAtom crashes with CUDA error 717.
+iter019	iter019_wgmma_arrive_fix	361.259	DISCARD	memory_bound	Single warpgroup_arrive + commit/wait before scale_accumulator. Slightly worse, 
+iter020	iter020_swiz4_3stage	269.118	DISCARD	memory_bound	3-stage pipeline + swizzle. 106KB SMEM per block limits to 1 block/SM. Worse tha
+iter021	iter021_fast_math	374.535	DISCARD	memory_bound	Fast math flag. No measurable improvement - critical path is WGMMA not scalar ma
+iter022	iter022_swiz_group3	308.021	DISCARD	memory_bound	Swizzle group=3, non-power-of-2 creates uneven groups. Worse than group=4.
+iter023	iter023_l2_promo	375.518	DISCARD	memory_bound	L2 promotion (256B) on TMA descriptors. No change — L2 already well-utilized at 
+iter024	iter024_maxreg160	265.013	DISCARD	compute_bound	maxrregcount=160 without minBlocks. Only 1 block/SM, reduced parallelism.
+iter025	iter025_l1_carveout	228.508	DISCARD	memory_bound	L1 carveout=50% to help with local memory spills. Too aggressive, reduced availa
+iter026	iter026_transposed_scale	365.05	DISCARD	memory_bound	Transposed scale_lhs [DIV_BLK_K,M] for coalesced reads (stride=1). Slightly wors
+iter027	iter027_inline_scale	375.092	DISCARD	memory_bound	Manually inlined scale_accumulator with __ldg. No change — already __forceinline
+iter028	iter028_l2_persist	375.344	DISCARD	memory_bound	L2 persistence for scale_lhs. No effect — scale data too large for L2.
+iter029	iter029_diag_swiz	152.074	DISCARD	memory_bound	Diagonal block scheduling. Verification fails and 152 TFLOPS. Broken mapping.
+iter030	iter030_swiz_group5	276.753	DISCARD	memory_bound	Swizzle group=5, non-power-of-2 creates uneven tile groups. Worse than group=4.

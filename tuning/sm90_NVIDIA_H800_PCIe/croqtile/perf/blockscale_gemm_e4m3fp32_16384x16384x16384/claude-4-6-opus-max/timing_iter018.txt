@@ -1,0 +1,1 @@
+CUDA failure: 717 (operation not supported on global/shared address space)

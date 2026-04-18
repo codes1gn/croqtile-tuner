@@ -1,0 +1,38 @@
+{
+  "task_uid": "a25ab8705b2f",
+  "dsl": "croqtile",
+  "model": "gpt-5-3-codex-high",
+  "device": "NVIDIA H800 PCIe",
+  "status": "cancelled",
+  "task_id": 6,
+  "variant": "",
+  "agent_type": "cursor_cli",
+  "mode": "cursor_cli",
+  "request_budget": 0,
+  "request_number": 1,
+  "max_iterations": 30,
+  "respawn_count": 1,
+  "opencode_session_id": "ses_26118be69ffe5yUeWcFOoQPhXx",
+  "sessions": [
+    {
+      "id": 23,
+      "task_id": 6,
+      "session_id": "e4d352f7-dc64-4811-a845-6d7268bc52d2",
+      "agent_type": "cursor_cli",
+      "model": "gpt-5-3-codex-high",
+      "request_number": 0,
+      "started_at": "2026-04-18T05:42:36.441572",
+      "ended_at": null
+    },
+    {
+      "id": 24,
+      "task_id": 6,
+      "session_id": "ses_26118be69ffe5yUeWcFOoQPhXx",
+      "agent_type": null,
+      "model": "gpt-5-3-codex-high",
+      "request_number": 1,
+      "started_at": "2026-04-18T05:42:36.441574",
+      "ended_at": null
+    }
+  ]
+}
