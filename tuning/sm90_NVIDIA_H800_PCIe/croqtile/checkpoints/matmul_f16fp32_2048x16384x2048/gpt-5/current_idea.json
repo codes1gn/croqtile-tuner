@@ -1,18 +1,18 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-18T19:39:44Z",
+  "timestamp": "2026-04-18T19:46:33Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_2048x16384x2048",
-  "iter": "iter013_l2promo",
+  "iter": "iter015_rreg120",
   "bottleneck": "compute_bound",
-  "idea": "Keep iter011 with launch-bounds, arrive-once, and fast-math compute pipeline unchanged, but promote the two input TMA tensor maps to L2_256B so repeated wide-N tile fetches have a better chance to persist in cache.",
-  "expected_gain": "+1 to +5 TFLOPS",
+  "idea": "Keep iter013 with launch-bounds 256x2, arrive-once, fast-math, and input L2 promotion unchanged, but cap ptxas at 120 registers so the kernel gives up a small amount of ILP in exchange for potentially better residency without the impossible 256x3 target.",
+  "expected_gain": "+1 to +4 TFLOPS",
   "levers": [
-    "l2_promotion",
-    "use_fast_math",
-    "warpgroup_arrive_placement"
+    "maxrregcount",
+    "register_pressure",
+    "occupancy"
   ],
   "status": "VERIFIED",
-  "verified_iter": "iter013_l2promo",
+  "verified_iter": "iter015_rreg120",
   "drift_score": 1
 }
