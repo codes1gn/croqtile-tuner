@@ -1,18 +1,18 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-18T19:53:17Z",
+  "timestamp": "2026-04-18T19:55:58Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_2048x16384x2048",
-  "iter": "iter017_ptxbar",
+  "iter": "iter018_wait1",
   "bottleneck": "compute_bound",
-  "idea": "Keep iter013s launch-bounds, arrive-once, fast-math, and input L2 promotion path unchanged, but enable Choreo ptx-barrier so the CTA synchronization path uses lighter PTX barriers and may reduce remaining compute-side barrier overhead.",
-  "expected_gain": "+1 to +6 TFLOPS",
+  "idea": "Keep iter013s launch-bounds, arrive-once, fast-math, and input L2 promotion path unchanged, but move WGMMA completion waiting to warpgroup_wait<1>() inside the K-loop and leave warpgroup_wait<0>() only after the loop so TMA of tile K+1 can overlap with the tail of tile K compute.",
+  "expected_gain": "+2 to +12 TFLOPS",
   "levers": [
-    "ptx_barrier",
-    "synchronization",
-    "address_generation"
+    "warpgroup_wait",
+    "pipeline_overlap",
+    "synchronization"
   ],
   "status": "VERIFIED",
-  "verified_iter": "iter017_ptxbar",
+  "verified_iter": "iter018_wait1",
   "drift_score": 1
 }
