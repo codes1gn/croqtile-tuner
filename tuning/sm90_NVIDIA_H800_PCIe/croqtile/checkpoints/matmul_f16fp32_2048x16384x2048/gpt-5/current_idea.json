@@ -1,16 +1,16 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-18T16:30:50Z",
+  "timestamp": "2026-04-18T16:33:20Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_2048x16384x2048",
-  "iter": "iter008_unroll",
+  "iter": "iter009_arrive_once",
   "bottleneck": "compute_bound",
-  "idea": "Keep the launch_bounds(256,2) best kernel intact and explicitly unroll the 4-step WGMMA inner loop in generated CUDA so the compiler emits a tighter instruction schedule for the fixed TILE_K=64 microkernel.",
-  "expected_gain": "+2 to +8 TFLOPS",
+  "idea": "Keep the launch_bounds(256,2) best kernel intact but move warpgroup_arrive out of the 4-step WGMMA micro-loop so each K-stage opens the warpgroup once instead of four times, directly targeting the barrier-density gap versus baseline.",
+  "expected_gain": "+3 to +12 TFLOPS",
   "levers": [
-    "unroll"
+    "warpgroup_arrive_placement"
   ],
   "status": "VERIFIED",
-  "verified_iter": "iter008_unroll",
+  "verified_iter": "iter009_arrive_once",
   "drift_score": 1
 }

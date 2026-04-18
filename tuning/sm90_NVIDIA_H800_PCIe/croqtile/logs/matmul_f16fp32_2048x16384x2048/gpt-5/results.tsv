@@ -8,3 +8,4 @@ iter005	iter005_persistent_1p1c	115.792	DISCARD	compute_bound	Persistent 1p1c sc
 iter006	iter006_launchbounds	261.055	KEEP	compute_bound	Adding __launch_bounds__(256, 2) to the proven 1p1c CUDA raised throughput to 26
 iter007	iter007_fastmath	260.805	DISCARD	compute_bound	Adding nvcc --use_fast_math on top of the launch_bounds(256,2) best held perform
 iter008	iter008_unroll	260.853	DISCARD	compute_bound	Explicitly unrolling the fixed 4-step WGMMA loop on top of launch_bounds(256,2) 
+iter009	iter009_arrive_once	262.241	KEEP	compute_bound	Moving warpgroup_arrive out of the 4-step WGMMA micro-loop raised throughput to 
