@@ -1,16 +1,16 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-18T16:28:45Z",
+  "timestamp": "2026-04-18T16:30:50Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_2048x16384x2048",
-  "iter": "iter007_fastmath",
+  "iter": "iter008_unroll",
   "bottleneck": "compute_bound",
-  "idea": "Keep the new launch_bounds(256,2) best kernel intact and add nvcc --use_fast_math so the fp16-to-fp32 warp-specialized path gets more aggressive math lowering without changing tiling or synchronization.",
-  "expected_gain": "+2 to +10 TFLOPS",
+  "idea": "Keep the launch_bounds(256,2) best kernel intact and explicitly unroll the 4-step WGMMA inner loop in generated CUDA so the compiler emits a tighter instruction schedule for the fixed TILE_K=64 microkernel.",
+  "expected_gain": "+2 to +8 TFLOPS",
   "levers": [
-    "fast_math"
+    "unroll"
   ],
   "status": "VERIFIED",
-  "verified_iter": "iter007_fastmath",
+  "verified_iter": "iter008_unroll",
   "drift_score": 1
 }
