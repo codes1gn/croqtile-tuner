@@ -16,3 +16,4 @@ iter013	iter013_l2promo	263.300	KEEP	compute_bound	Promoting the two input TMA t
 iter014	iter014_lb3	0.0	COMPILE_FAIL	compute_bound	Forcing launch_bounds(256,3) on top of iter013 could not compile because ptxas h
 iter015	iter015_rreg120	263.127	DISCARD	compute_bound	Capping ptxas at 120 registers on top of iter013 did not change the compiled ker
 iter016	iter016_hoist	263.004	DISCARD	compute_bound	Adding Choreo hoist-offset and hoist-scale on top of iter013 preserved correctne
+iter017	iter017_ptxbar	263.270	DISCARD	compute_bound	Switching the iter013 base onto Choreo ptx-barrier preserved correctness and nea

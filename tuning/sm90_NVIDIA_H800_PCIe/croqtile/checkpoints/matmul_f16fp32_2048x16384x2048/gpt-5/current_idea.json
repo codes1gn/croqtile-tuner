@@ -1,18 +1,18 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-18T19:50:40Z",
+  "timestamp": "2026-04-18T19:53:17Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_2048x16384x2048",
-  "iter": "iter016_hoist",
+  "iter": "iter017_ptxbar",
   "bottleneck": "compute_bound",
-  "idea": "Keep iter013s launch-bounds, arrive-once, fast-math, and input L2 promotion path unchanged, but enable Choreo hoist-offset and hoist-scale so address-generation work is lifted out of the hot loop and integer issue pressure drops.",
-  "expected_gain": "+1 to +5 TFLOPS",
+  "idea": "Keep iter013s launch-bounds, arrive-once, fast-math, and input L2 promotion path unchanged, but enable Choreo ptx-barrier so the CTA synchronization path uses lighter PTX barriers and may reduce remaining compute-side barrier overhead.",
+  "expected_gain": "+1 to +6 TFLOPS",
   "levers": [
-    "hoist_offset",
-    "hoist_scale",
+    "ptx_barrier",
+    "synchronization",
     "address_generation"
   ],
   "status": "VERIFIED",
-  "verified_iter": "iter016_hoist",
+  "verified_iter": "iter017_ptxbar",
   "drift_score": 1
 }
