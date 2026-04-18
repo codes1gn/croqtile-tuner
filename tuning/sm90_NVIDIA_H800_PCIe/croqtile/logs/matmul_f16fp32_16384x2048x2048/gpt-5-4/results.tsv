@@ -1,3 +1,4 @@
 iter	kernel	tflops	decision	bottleneck	idea_summary
 iter000	iter000_cublas	432.0588	KEEP	baseline	cuBLAS reference baseline
 iter001	iter001_draft	211.393	KEEP	mixed	Discovery seed: selected tm128 wn128 s4 over persistent 1p1c after direct benchm
+iter002	iter002_wn64_s3_2cta	109.267	DISCARD	memory_bound	Reduced WARP_N to 64 and STAGES to 3 to try for 2 CTAs/SM; occupancy target impr

@@ -1,0 +1,17 @@
+{
+  "schema": "croq-checkpoint-v1",
+  "timestamp": "2026-04-18T15:59:33Z",
+  "dsl": "croqtile",
+  "shape_key": "matmul_f16fp32_16384x2048x2048",
+  "iter": "iter002_wn64_s3_2cta",
+  "bottleneck": "memory_bound",
+  "idea": "Reduce WARP_N to 64 and STAGES to 3 on the iter001 1p2c base to cut shared memory and enable 2 CTAs/SM",
+  "expected_gain": "+20-40 TFLOPS via higher occupancy and better memory hiding",
+  "levers": [
+    "MATMUL_WARP_N",
+    "MATMUL_STAGES"
+  ],
+  "status": "VERIFIED",
+  "verified_iter": "iter002_wn64_s3_2cta",
+  "drift_score": 1
+}

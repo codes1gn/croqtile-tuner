@@ -3,3 +3,9 @@
 {"ts":"2026-04-18T15:52:56.461Z","tool":"store_round","msg":"Storing iter000_cublas (KEEP 431.3489 TFLOPS)","level":"info"}
 {"ts":"2026-04-18T15:52:56.481Z","tool":"store_round","msg":"Stored iter000_cublas: KEEP 431.3489 TFLOPS (round 0)","level":"info"}
 {"ts":"2026-04-18T15:52:56.493Z","tool":"store_baseline","msg":"Stored iter000_cublas: 431.3489 TFLOPS (baseline)","level":"info"}
+{"ts":"2026-04-18T15:58:16.787Z","tool":"next_iter","msg":"Resolved iter001_draft","level":"info"}
+{"ts":"2026-04-18T15:59:21.644Z","tool":"co2cu","msg":"Compiling iter001_draft.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T15:59:21.751Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_2048x16384x2048/gpt-5/iter001_draft.cu","level":"info"}
+{"ts":"2026-04-18T16:00:21.746Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_2048x16384x2048/gpt-5/iter001_draft","level":"info"}
+{"ts":"2026-04-18T16:00:28.458Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter001_draft_round1.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter001_draft_round1.csv","level":"info"}
+{"ts":"2026-04-18T16:00:39.246Z","tool":"profile_extract","msg":"Analyzing iter001_draft from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter001_draft_round1.csv","level":"info"}

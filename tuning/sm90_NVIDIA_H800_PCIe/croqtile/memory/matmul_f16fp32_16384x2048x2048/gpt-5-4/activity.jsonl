@@ -9,3 +9,14 @@
 {"ts":"2026-04-18T15:54:51.540Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x2048x2048/gpt-5-4/probe_seed_tm128_wn128_s4.cu","level":"info"}
 {"ts":"2026-04-18T15:56:34.028Z","tool":"store_round","msg":"Storing iter001_draft (KEEP 211.393 TFLOPS)","level":"info"}
 {"ts":"2026-04-18T15:56:34.047Z","tool":"store_round","msg":"Stored iter001_draft: KEEP 211.393 TFLOPS (round 1)","level":"info"}
+{"ts":"2026-04-18T15:57:21.299Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_16384x2048x2048/gpt-5-4/iter001_draft","level":"info"}
+{"ts":"2026-04-18T15:57:28.456Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16384x2048x2048/gpt-5-4/ncu_iter001_draft_round2.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16384x2048x2048/gpt-5-4/ncu_iter001_draft_round2.csv","level":"info"}
+{"ts":"2026-04-18T15:57:39.900Z","tool":"profile_extract","msg":"Analyzing iter001_draft_round2 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16384x2048x2048/gpt-5-4/ncu_iter001_draft_round2.csv","level":"info"}
+{"ts":"2026-04-18T15:59:33.069Z","tool":"checkpoint_write","msg":"PLANNED iter002_wn64_s3_2cta: Reduce WARP_N to 64 and STAGES to 3 on the iter001 1p2c base to cut shared memory and enable 2 CTAs/SM","level":"info"}
+{"ts":"2026-04-18T15:59:33.260Z","tool":"checkpoint_write","msg":"READ checkpoint for IMPLEMENT","level":"info"}
+{"ts":"2026-04-18T15:59:40.131Z","tool":"next_iter","msg":"Resolved iter002_wn64_s3_2cta","level":"info"}
+{"ts":"2026-04-18T15:59:57.621Z","tool":"co2cu","msg":"Compiling iter002_wn64_s3_2cta.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T15:59:57.801Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x2048x2048/gpt-5-4/iter002_wn64_s3_2cta.cu","level":"info"}
+{"ts":"2026-04-18T16:00:26.189Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter002_wn64_s3_2cta (drift=1)","level":"info"}
+{"ts":"2026-04-18T16:00:45.093Z","tool":"store_round","msg":"Storing iter002_wn64_s3_2cta (DISCARD 109.267 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T16:00:45.113Z","tool":"store_round","msg":"Stored iter002_wn64_s3_2cta: DISCARD 109.267 TFLOPS (round 2)","level":"info"}
