@@ -103,6 +103,26 @@ else
   fi
 fi
 
+# --- GPU contention check ---
+CONTENTION_TOOL="$SCRIPT_DIR/gpu_contention.sh"
+if [[ -x "$CONTENTION_TOOL" ]]; then
+  GPU_STATUS=$(bash "$CONTENTION_TOOL" --json 2>/dev/null || echo '{}')
+  GPU_IDLE=$(echo "$GPU_STATUS" | python3 -c "import sys,json; print(json.load(sys.stdin).get('idle', '?'))" 2>/dev/null || echo "?")
+  FOREIGN_COUNT=$(echo "$GPU_STATUS" | python3 -c "
+import sys, json
+d = json.load(sys.stdin)
+print(sum(1 for c in d.get('contenders',[]) if not c.get('is_ours',False)))
+" 2>/dev/null || echo "0")
+  if [[ "$GPU_IDLE" == "True" ]]; then
+    echo "[validate_env] OK: GPU idle (no contention)" >&2
+  elif [[ "$FOREIGN_COUNT" -gt 0 ]]; then
+    WARNINGS+=("GPU has ${FOREIGN_COUNT} foreign compute process(es) — run gpu_contention.sh --kill before profiling")
+    echo "[validate_env] WARN: GPU has ${FOREIGN_COUNT} foreign compute process(es)" >&2
+  else
+    echo "[validate_env] INFO: GPU busy but only croq-tune harness processes found" >&2
+  fi
+fi
+
 # --- DSL-specific checks ---
 
 case "$DSL" in

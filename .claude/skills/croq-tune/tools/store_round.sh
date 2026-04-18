@@ -78,6 +78,23 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+# ── GPU contention preflight (before benchmark results are recorded) ──────────
+# If foreign processes are on the GPU when this is called, benchmark TFLOPS may
+# be unreliable. Kill them now so re-runs land on a clean GPU.
+_CONTENTION_TOOL="$(dirname "$0")/gpu_contention.sh"
+if [[ -x "$_CONTENTION_TOOL" ]]; then
+  _GPU_STATUS=$(bash "$_CONTENTION_TOOL" --json 2>/dev/null || echo '{"idle":true}')
+  _FOREIGN=$(echo "$_GPU_STATUS" | python3 -c "
+import sys, json
+d = json.load(sys.stdin)
+print(sum(1 for c in d.get('contenders',[]) if not c.get('is_ours',False)))
+" 2>/dev/null || echo "0")
+  if [[ "$_FOREIGN" -gt 0 ]]; then
+    echo "[store_round] WARNING: ${_FOREIGN} foreign GPU process(es) active — killing for measurement integrity." >&2
+    bash "$_CONTENTION_TOOL" --kill 2>&1 | grep -E '^\s+\[(kill|FAIL)\]' >&2 || true
+  fi
+fi
+
 # ── auto-detect GPU if not provided ───────────────────────────────────────────
 # --gpu is optional; if omitted the script calls detect_gpu.sh automatically.
 if [[ -z "$GPU" ]]; then

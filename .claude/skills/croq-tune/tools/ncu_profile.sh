@@ -95,6 +95,29 @@ if [[ -z "$OUT" || ${#CMD_ARGS[@]} -eq 0 ]]; then
     exit 1
 fi
 
+# ── Preflight: GPU contention check ──────────────────────────────────────────
+_CONTENTION_TOOL="$(dirname "$0")/gpu_contention.sh"
+if [[ -x "$_CONTENTION_TOOL" ]]; then
+    echo "[ncu_profile] Checking GPU contention before profiling..." >&2
+    _GPU_STATUS=$(bash "$_CONTENTION_TOOL" --json 2>/dev/null || echo '{"idle":true}')
+    _IDLE=$(echo "$_GPU_STATUS" | python3 -c "import sys,json; print(json.load(sys.stdin).get('idle', True))" 2>/dev/null || echo "True")
+    _FOREIGN=$(echo "$_GPU_STATUS" | python3 -c "
+import sys, json
+d = json.load(sys.stdin)
+foreign = [c for c in d.get('contenders', []) if not c.get('is_ours', False)]
+print(len(foreign))
+" 2>/dev/null || echo "0")
+    if [[ "$_IDLE" != "True" && "$_FOREIGN" -gt 0 ]]; then
+        echo "[ncu_profile] WARNING: ${_FOREIGN} foreign GPU process(es) detected. Killing them for clean profile..." >&2
+        bash "$_CONTENTION_TOOL" --kill 2>&1 | grep -E '^\s+\[(kill|FAIL|spare|skip)\]' >&2 || true
+        echo "[ncu_profile] GPU contention cleared. Proceeding." >&2
+    elif [[ "$_IDLE" != "True" ]]; then
+        echo "[ncu_profile] INFO: GPU busy but only croq-tune harness processes found — proceeding." >&2
+    else
+        echo "[ncu_profile] GPU idle. Proceeding." >&2
+    fi
+fi
+
 # ── Preflight: perf_event_paranoid ───────────────────────────────────────────
 PARANOID=$(cat /proc/sys/kernel/perf_event_paranoid 2>/dev/null || echo "99")
 if (( PARANOID > 2 )); then

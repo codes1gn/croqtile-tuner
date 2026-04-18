@@ -45,6 +45,24 @@ if [[ -z "$DTYPE" || -z "$M" || -z "$N" || -z "$K" ]]; then
     exit 1
 fi
 
+# ── GPU contention preflight ──────────────────────────────────────────────────
+_CONTENTION_TOOL="$(dirname "$0")/gpu_contention.sh"
+if [[ -x "$_CONTENTION_TOOL" ]]; then
+    _GPU_STATUS=$(bash "$_CONTENTION_TOOL" --json 2>/dev/null || echo '{"idle":true}')
+    _IDLE=$(echo "$_GPU_STATUS" | python3 -c "import sys,json; print(json.load(sys.stdin).get('idle', True))" 2>/dev/null || echo "True")
+    _FOREIGN=$(echo "$_GPU_STATUS" | python3 -c "
+import sys, json
+d = json.load(sys.stdin)
+foreign = [c for c in d.get('contenders', []) if not c.get('is_ours', False)]
+print(len(foreign))
+" 2>/dev/null || echo "0")
+    if [[ "$_IDLE" != "True" && "$_FOREIGN" -gt 0 ]]; then
+        echo "[cublas_baseline] WARNING: ${_FOREIGN} foreign GPU process(es) detected — killing for clean baseline." >&2
+        bash "$_CONTENTION_TOOL" --kill 2>&1 | grep -E '^\s+\[(kill|FAIL|spare|skip)\]' >&2 || true
+        sleep 1
+    fi
+fi
+
 python3 - "$DTYPE" "$M" "$N" "$K" "$WARMUP" "$ITERS" <<'PYEOF'
 import sys
 import json

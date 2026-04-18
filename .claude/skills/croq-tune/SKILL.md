@@ -191,8 +191,9 @@ artifacts, and records `iter000_cublas` in `results.tsv` — making it impossibl
 to accidentally skip the baseline.
 
 ```bash
-GPU_STATE=$(bash .claude/skills/croq-tune/tools/gpu_check.sh)
-# Wait for idle GPU before baseline measurement
+# store_baseline.sh calls cublas_baseline.sh, which already runs gpu_contention.sh --kill
+# automatically. For an explicit check before calling store_baseline.sh:
+bash .claude/skills/croq-tune/tools/gpu_contention.sh --kill 2>/dev/null || true
 
 bash .claude/skills/croq-tune/tools/store_baseline.sh \
     --dsl <dsl> --shape-key <shape_key> --model <model> \
@@ -341,27 +342,46 @@ python3 .claude/skills/croq-tune/tools/clean_kernel_work_state.py --gpu "$GPU" -
 
 ## Per-Round Contract
 
-Round-loop preamble on every round:
-1. Ensure there is an in-progress todo: `Continue /croq-tune <dsl> <dtype> [shape_key]`
-2. If context usage is `>= 80%`, trigger proactive compaction (add continuation todo first, then compact)
+**Round-loop preamble — FIRST ACTIONS on every round (before PROFILE):**
+
+1. **TodoWrite durable anchor** — set the round-step todo to `in_progress` AND keep `continue-croq-tune` as `in_progress`. Both MUST be present before any other action:
+   ```
+   TodoWrite([
+     { id: "continue-croq-tune", content: "Continue /croq-tune <dsl> <dtype> <shape_key>", status: "in_progress" },
+     { id: "round-step",         content: "Round <N>: PROFILE → IDEA → IMPLEMENT → VERIFY → MEASURE → DECIDE → STORE", status: "in_progress" }
+   ], merge=true)
+   ```
+2. **TodoWrite cleanup** — if todo count > 20, run cleanup first:
+   ```bash
+   echo '$CURRENT_TODOS_JSON' | bash ~/.cursor/skills/durable-request/todo-cleanup.sh
+   ```
+   Then `TodoWrite({ todos: <cleaned>, merge: false })`.
+3. If context usage is `>= 80%`, trigger proactive compaction (the two todos above must already be written first).
 
 ### 1) PROFILE
 
 **Every PROFILE step MUST run `ncu` on the current best kernel.** No exceptions. No timing-only shortcuts.
 
 **Step 0 — GPU Contention Check (MANDATORY before profiling AND benchmarking):**
+
+`ncu_profile.sh`, `cublas_baseline.sh`, and `store_round.sh` all run `gpu_contention.sh` automatically. For manual invocation or when running benchmark binaries directly:
+
 ```bash
-GPU_STATE=$(bash .claude/skills/croq-tune/tools/gpu_check.sh)
+# Scan — see who is on the GPU (dry run)
+bash .claude/skills/croq-tune/tools/gpu_contention.sh
+
+# Kill foreign processes (spares our own ncu/choreo/iter* — no password needed)
+bash .claude/skills/croq-tune/tools/gpu_contention.sh --kill
 ```
-If `idle` is `false` (GPU utilization >= 15%), the performance numbers will be unreliable:
-1. Wait for the GPU to become idle: `bash .claude/skills/croq-tune/tools/gpu_check.sh --wait --timeout 120`
-2. If timeout: kill other GPU processes: `bash .claude/skills/croq-tune/tools/gpu_check.sh --kill-others`
-3. If still busy after kill: attempt GPU reset: `bash .claude/skills/croq-tune/tools/gpu_check.sh --reset`
-4. If reset fails: STOP and report to user — GPU requires manual intervention
 
-**NEVER trust TFLOPS numbers collected while the GPU is under contention.** A sudden extreme drop in performance (e.g. 50%+ below the previous best) is a strong signal of GPU contention. When this happens, re-run the GPU check and re-benchmark.
+`gpu_contention.sh` classifies each GPU process as **ours** (croq-tune harness: ncu, choreo, nvcc, compiled iter* binaries, cublas_baseline) or **foreign** (vllm, jupyter, other ML workloads). Foreign processes are killed; ours are spared. Use `--kill-ours` only as a last resort.
 
-**Note:** `--kill-others` and `--reset` require sudo. If sudo is not available, the agent should set up a passwordless sudoer entry for `nvidia-smi` via: `echo "$USER ALL=(ALL) NOPASSWD: /usr/bin/nvidia-smi, /usr/bin/kill" | sudo tee /etc/sudoers.d/gpu-tune`
+If you suspect the GPU is still busy after the kill:
+1. Wait: `bash .claude/skills/croq-tune/tools/gpu_check.sh --wait --timeout 120`
+2. Reset (last resort): `bash .claude/skills/croq-tune/tools/gpu_check.sh --reset`
+3. If reset fails: STOP and report to user — GPU requires manual intervention
+
+**NEVER trust TFLOPS numbers collected while the GPU is under contention.** A sudden extreme drop in performance (e.g. 50%+ below the previous best) is a strong signal of GPU contention. When this happens, re-run `gpu_contention.sh` and re-benchmark.
 
 **Step 1 — Profile + Export:**
 ```bash
@@ -501,12 +521,12 @@ attempts: COMPILE_FAIL → STORE → return to IDEA.
 
 ### 5) MEASURE
 
-- **GPU contention check before benchmarking** — run `gpu_check.sh` (same as PROFILE Step 0). If GPU is busy, wait or clean before measuring.
+- **GPU contention check before benchmarking** — `store_round.sh` runs `gpu_contention.sh` automatically before recording results. When running the benchmark binary directly, call `bash .claude/skills/croq-tune/tools/gpu_contention.sh --kill` first if GPU is not idle.
 - Run benchmark using DSL-specific defaults from `croq-dsl-<dsl>` (default: 10 warmup + 50 timed)
 - Use CUDA event timing, never wall-clock time
 - Minimum 3 timed iterations for stability
 - Compute and record TFLOPS; include raw timing in STORE payload
-- **Contention sanity check:** If measured TFLOPS is < 50% of the current best, suspect GPU contention. Re-run `gpu_check.sh`, wait for idle, then re-measure before accepting the result.
+- **Contention sanity check:** If measured TFLOPS is < 50% of the current best, suspect GPU contention. Re-run `gpu_contention.sh`, wait for idle, then re-measure before accepting the result.
 
 ### 6) DECIDE
 
@@ -538,16 +558,24 @@ Do NOT proceed to CONTINUE until the harness prints `[store_round] STORE complet
 For a public measured `iter<NNN>` result, also persist: source snapshot, build/run scripts, timing output, profile output.
 For a failed `attempt<AAAA>`, also persist: attempted source, build script, build log/stderr.
 
-**Post-STORE:** mark `round-step` as `completed`, ensure `continue-croq-tune` is `in_progress`.
+**Post-STORE — mandatory sequence (in this exact order):**
 
-**Post-STORE REINFORCEMENT (MANDATORY):** After every `store_round.sh` call, you MUST call the reinforcement gate:
+1. **Mark current round done AND anchor next round** — single `TodoWrite` call:
+   ```
+   TodoWrite([
+     { id: "round-step",         status: "completed" },
+     { id: "continue-croq-tune", content: "Continue /croq-tune <dsl> <dtype> <shape_key>", status: "in_progress" },
+     { id: "round-step",         content: "Round <N+1>: PROFILE → IDEA → IMPLEMENT → VERIFY → MEASURE → DECIDE → STORE", status: "in_progress" }
+   ], merge=true)
+   ```
+   Writing the next `round-step` as `in_progress` **before** calling reinforce ensures context compaction cannot silently end the loop — the `in_progress` anchor is always present.
 
-```bash
-bash .claude/skills/croq-tune/tools/reinforce.sh \
-  --dsl <dsl> --shape-key <shape_key> --model <model>
-```
-
-This script reads your progress, re-emits the loop contract rules, and tells you what to do next. **You MUST read its output and follow the instructions.** Do NOT skip this step. Do NOT proceed to the next iteration without calling reinforce.sh first.
+2. **Call reinforce** (MANDATORY):
+   ```bash
+   bash .claude/skills/croq-tune/tools/reinforce.sh \
+     --dsl <dsl> --shape-key <shape_key> --model <model>
+   ```
+   The script prints a one-line progress summary and **mandates an immediate full re-read of both skill files**. You MUST read `.claude/skills/croq-tune/SKILL.md` and `.claude/skills/croq-dsl-<dsl>/SKILL.md` before starting the next round. This is the continuation contract — reading the full protocol is the confirmation that the loop will proceed.
 
 **Session Transcript as Memory:** The raw chat session JSONL is the primary memory — NOT summarized round logs. At session end or context compaction, copy the full session JSONL from `~/.cursor/projects/<slug>/agent-transcripts/<id>/` to `memory/<key>/<model>/sessions/`. Do NOT generate summarized `rounds.md` — the raw transcript IS the memory.
 
@@ -633,7 +661,8 @@ Tag: 2-31 chars, lowercase alphanumeric + underscores, descriptive of the idea.
 | `co2cu.sh` | IMPLEMENT Phase 1 (croqtile only) | `--co --arch [--flags]` |
 | `ncu_profile.sh` | PROFILE step | `--out --cmd` |
 | `profile_extract.sh` | After ncu CSV | `--csv --iter` |
-| `gpu_check.sh` | Before PROFILE and MEASURE | (none), or `--wait`, `--kill-others`, `--reset` |
+| `gpu_check.sh` | Before PROFILE and MEASURE (lightweight poll) | (none), or `--wait`, `--kill-others`, `--reset` |
+| `gpu_contention.sh` | Before PROFILE/MEASURE — auto-called by ncu_profile, cublas_baseline, store_round | (none) scan; `--kill` kill foreign; `--kill-ours` last resort; `--json` agent-friendly; `--except <pid>` spare one PID |
 | `store_baseline.sh` | PREPARATION_ONCE step 2b | `--dsl --shape-key --model --dtype --m --n --k --task-uid [--warmup --iters]` |
 | `cublas_baseline.sh` | Called by store_baseline.sh | `--dtype --m --n --k [--warmup --iters]` |
 | `prepare_baseline_env.py` | PREPARATION_ONCE step 2a | `--dsl --operator --kernel --shape-key --libs` |
