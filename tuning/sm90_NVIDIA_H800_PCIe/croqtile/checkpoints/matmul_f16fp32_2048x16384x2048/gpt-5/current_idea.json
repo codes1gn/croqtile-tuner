@@ -1,18 +1,18 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-18T20:09:34Z",
+  "timestamp": "2026-04-18T22:59:56Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_2048x16384x2048",
-  "iter": "iter021_split_epilogue",
+  "iter": "iter022_dual_tma_epilogue",
   "bottleneck": "compute_bound",
-  "idea": "Keep iter020s wait1+ptxbar pipeline intact, but split the 64x128 output shared store into two 64x64 store_fragment_d calls over the same 128-stride tile so shared-store bank conflicts drop without changing the final 128-wide TMA store-to-global path.",
+  "idea": "Keep iter021 wait1+ptxbar intact, but replace the shared 64x128 output tile with two independent 64x64 output buffers and two 64-wide TMA shared-to-global stores so the remaining epilogue shared-store bank conflicts drop further.",
   "expected_gain": "+0.1 to +3 TFLOPS",
   "levers": [
-    "epilogue",
-    "shared_store",
-    "bank_conflict"
+    "epilogue_split",
+    "dual_tma",
+    "shared_layout"
   ],
   "status": "VERIFIED",
-  "verified_iter": "iter021_split_epilogue",
+  "verified_iter": "iter022_dual_tma_epilogue",
   "drift_score": 1
 }

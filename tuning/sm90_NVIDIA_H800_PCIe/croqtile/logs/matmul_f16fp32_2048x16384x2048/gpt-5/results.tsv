@@ -22,3 +22,4 @@ iter018	iter018_wait1	264.555	KEEP	compute_bound	Moving WGMMA completion waiting
 iter019	iter019_splitarrive	264.512	DISCARD	compute_bound	Keeping iter018s wait1 overlap but moving empty[stage].arrive() ahead of warpgro
 iter020	iter020_wait1_ptxbar	264.98	KEEP	compute_bound	Regenerating the iter018 wait1-overlap base with Choreo ptx-barrier and then res
 iter021	iter021_split_epilogue	265.073	KEEP	compute_bound	Keeping the iter020 wait1+ptxbar pipeline intact but splitting the 64x128 epilog
+iter022	iter022_dual_tma_epilogue	264.012	DISCARD	compute_bound	Keeping iter021 wait1+ptxbar intact but replacing the shared 64x128 output tile 
