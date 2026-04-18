@@ -1,18 +1,18 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-18T22:59:56Z",
+  "timestamp": "2026-04-18T23:03:02Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_2048x16384x2048",
-  "iter": "iter022_dual_tma_epilogue",
+  "iter": "iter023_wait2",
   "bottleneck": "compute_bound",
-  "idea": "Keep iter021 wait1+ptxbar intact, but replace the shared 64x128 output tile with two independent 64x64 output buffers and two 64-wide TMA shared-to-global stores so the remaining epilogue shared-store bank conflicts drop further.",
+  "idea": "Keep iter021 split-epilogue as the active best, but deepen the overlapped main-loop drain from warpgroup_wait<1>() to warpgroup_wait<2>() so the three-stage pipeline exposes more producer-consumer overlap and reduces CTA-barrier-driven no-eligible cycles.",
   "expected_gain": "+0.1 to +3 TFLOPS",
   "levers": [
-    "epilogue_split",
-    "dual_tma",
-    "shared_layout"
+    "wait_depth",
+    "pipeline_overlap",
+    "barrier_schedule"
   ],
   "status": "VERIFIED",
-  "verified_iter": "iter022_dual_tma_epilogue",
+  "verified_iter": "iter023_wait2",
   "drift_score": 1
 }
