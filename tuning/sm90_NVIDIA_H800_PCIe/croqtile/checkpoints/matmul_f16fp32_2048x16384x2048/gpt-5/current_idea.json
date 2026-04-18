@@ -1,16 +1,16 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-18T16:18:52Z",
+  "timestamp": "2026-04-18T16:28:45Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_2048x16384x2048",
-  "iter": "iter006_launchbounds",
+  "iter": "iter007_fastmath",
   "bottleneck": "compute_bound",
-  "idea": "Keep the proven 1p1c 64x128 kernel unchanged at the .co level and add __launch_bounds__(256, 2) in the generated CUDA so Hopper schedules for two resident CTAs per SM more aggressively on this low-occupancy compute-bound kernel.",
-  "expected_gain": "+3 to +12 TFLOPS",
+  "idea": "Keep the new launch_bounds(256,2) best kernel intact and add nvcc --use_fast_math so the fp16-to-fp32 warp-specialized path gets more aggressive math lowering without changing tiling or synchronization.",
+  "expected_gain": "+2 to +10 TFLOPS",
   "levers": [
-    "launch_bounds"
+    "fast_math"
   ],
   "status": "VERIFIED",
-  "verified_iter": "iter006_launchbounds",
+  "verified_iter": "iter007_fastmath",
   "drift_score": 1
 }

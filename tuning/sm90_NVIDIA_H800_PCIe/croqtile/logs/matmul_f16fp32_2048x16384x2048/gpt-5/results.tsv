@@ -6,3 +6,4 @@ iter003	iter003_wn160	175.719	DISCARD	compute_bound	Increased WARP_N from 128 to
 iter004	iter004_stmatrix	0	COMPILE_FAIL	compute_bound	Tried the stmatrix compiler flag on the 1p1c fp32-accumulator base after SASS co
 iter005	iter005_persistent_1p1c	115.792	DISCARD	compute_bound	Persistent 1p1c scheduling preserved the 64x128 microkernel but cut throughput t
 iter006	iter006_launchbounds	261.055	KEEP	compute_bound	Adding __launch_bounds__(256, 2) to the proven 1p1c CUDA raised throughput to 26
+iter007	iter007_fastmath	260.805	DISCARD	compute_bound	Adding nvcc --use_fast_math on top of the launch_bounds(256,2) best held perform
