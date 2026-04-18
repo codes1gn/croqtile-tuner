@@ -12,3 +12,4 @@ iter009	iter009_arrive_once	262.241	KEEP	compute_bound	Moving warpgroup_arrive o
 iter010	iter010_arrive_unroll	262.212	DISCARD	compute_bound	Adding explicit unroll on top of the iter009 arrive_once synchronization cleanup
 iter011	iter011_arrive_fastmath	262.281	KEEP	compute_bound	Adding nvcc --use_fast_math on top of the iter009 arrive_once synchronization cl
 iter012	iter012_blockswizzle	232.022	DISCARD	compute_bound	Remapping CTAs through a 4-way block swizzle on top of iter011 collapsed through
+iter013	iter013_l2promo	263.300	KEEP	compute_bound	Promoting the two input TMA tensor maps to L2_256B on top of iter011 raised thro

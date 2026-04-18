@@ -1,18 +1,18 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-18T19:36:39Z",
+  "timestamp": "2026-04-18T19:39:44Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_2048x16384x2048",
-  "iter": "iter012_blockswizzle",
+  "iter": "iter013_l2promo",
   "bottleneck": "compute_bound",
-  "idea": "Keep iter011 with launch_bounds, once-per-stage warpgroup_arrive, and fast math, but remap CTAs through a small swizzled block schedule so TMA loads and output stores see a more locality-friendly tile order on this wide-N shape.",
-  "expected_gain": "+1 to +8 TFLOPS",
+  "idea": "Keep iter011 with launch-bounds, arrive-once, and fast-math compute pipeline unchanged, but promote the two input TMA tensor maps to L2_256B so repeated wide-N tile fetches have a better chance to persist in cache.",
+  "expected_gain": "+1 to +5 TFLOPS",
   "levers": [
-    "block_swizzle",
-    "warpgroup_arrive_placement",
-    "use_fast_math"
+    "l2_promotion",
+    "use_fast_math",
+    "warpgroup_arrive_placement"
   ],
   "status": "VERIFIED",
-  "verified_iter": "iter012_blockswizzle",
+  "verified_iter": "iter013_l2promo",
   "drift_score": 1
 }
