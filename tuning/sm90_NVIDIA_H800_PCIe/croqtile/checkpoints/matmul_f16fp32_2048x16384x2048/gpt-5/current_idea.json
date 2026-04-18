@@ -1,18 +1,18 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-18T19:58:04Z",
+  "timestamp": "2026-04-18T20:02:23Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_2048x16384x2048",
-  "iter": "iter019_splitarrive",
+  "iter": "iter020_wait1_ptxbar",
   "bottleneck": "compute_bound",
-  "idea": "Keep iter018s wait1-overlap pipeline unchanged, but move empty[stage].arrive() before warpgroup_wait<1>() so the producer warp is released as soon as shared-memory reads are dispatched instead of waiting for the partial WGMMA drain.",
-  "expected_gain": "+0.2 to +3 TFLOPS",
+  "idea": "Keep iter018s wait1-overlap pipeline intact, but regenerate the base with --ptx-barrier so the same overlapped producer-consumer schedule uses lighter PTX-backed CTA barriers and may shave the remaining synchronization cost that plain wait1 did not remove.",
+  "expected_gain": "+0.1 to +2 TFLOPS",
   "levers": [
-    "empty_arrive",
+    "ptx_barrier",
     "warpgroup_wait",
     "pipeline_overlap"
   ],
   "status": "VERIFIED",
-  "verified_iter": "iter019_splitarrive",
+  "verified_iter": "iter020_wait1_ptxbar",
   "drift_score": 1
 }

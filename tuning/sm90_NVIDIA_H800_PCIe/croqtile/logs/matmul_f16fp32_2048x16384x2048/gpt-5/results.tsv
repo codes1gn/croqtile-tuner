@@ -20,3 +20,4 @@ iter017	iter017_ptxbar	263.270	DISCARD	compute_bound	Switching the iter013 base 
 iter018	iter018_wait1	264.555	KEEP	compute_bound	Moving WGMMA completion waiting to warpgroup_wait<1>() inside the K-loop and flu
 iter018	iter018_wait1	264.555	KEEP	compute_bound	Moving WGMMA completion waiting to warpgroup_wait<1>() inside the K-loop and flu
 iter019	iter019_splitarrive	264.512	DISCARD	compute_bound	Keeping iter018s wait1 overlap but moving empty[stage].arrive() ahead of warpgro
+iter020	iter020_wait1_ptxbar	264.98	KEEP	compute_bound	Regenerating the iter018 wait1-overlap base with Choreo ptx-barrier and then res
