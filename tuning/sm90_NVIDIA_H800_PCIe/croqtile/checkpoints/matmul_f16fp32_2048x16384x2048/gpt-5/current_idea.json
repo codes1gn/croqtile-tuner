@@ -1,17 +1,18 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-18T16:39:09Z",
+  "timestamp": "2026-04-18T19:36:39Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_2048x16384x2048",
-  "iter": "iter011_arrive_fastmath",
+  "iter": "iter012_blockswizzle",
   "bottleneck": "compute_bound",
-  "idea": "Keep iter009 with once-per-stage warpgroup_arrive placement and add nvcc --use_fast_math so the cleaner synchronization base can test whether math contraction helps the remaining compute-side issue overhead.",
-  "expected_gain": "+1 to +6 TFLOPS",
+  "idea": "Keep iter011 with launch_bounds, once-per-stage warpgroup_arrive, and fast math, but remap CTAs through a small swizzled block schedule so TMA loads and output stores see a more locality-friendly tile order on this wide-N shape.",
+  "expected_gain": "+1 to +8 TFLOPS",
   "levers": [
+    "block_swizzle",
     "warpgroup_arrive_placement",
     "use_fast_math"
   ],
   "status": "VERIFIED",
-  "verified_iter": "iter011_arrive_fastmath",
+  "verified_iter": "iter012_blockswizzle",
   "drift_score": 1
 }

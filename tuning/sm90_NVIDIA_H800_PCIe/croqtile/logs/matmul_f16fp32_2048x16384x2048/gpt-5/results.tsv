@@ -11,3 +11,4 @@ iter008	iter008_unroll	260.853	DISCARD	compute_bound	Explicitly unrolling the fi
 iter009	iter009_arrive_once	262.241	KEEP	compute_bound	Moving warpgroup_arrive out of the 4-step WGMMA micro-loop raised throughput to 
 iter010	iter010_arrive_unroll	262.212	DISCARD	compute_bound	Adding explicit unroll on top of the iter009 arrive_once synchronization cleanup
 iter011	iter011_arrive_fastmath	262.281	KEEP	compute_bound	Adding nvcc --use_fast_math on top of the iter009 arrive_once synchronization cl
+iter012	iter012_blockswizzle	232.022	DISCARD	compute_bound	Remapping CTAs through a 4-way block swizzle on top of iter011 collapsed through
