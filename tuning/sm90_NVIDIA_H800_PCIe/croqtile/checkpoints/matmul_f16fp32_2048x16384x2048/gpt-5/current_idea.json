@@ -1,18 +1,18 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-18T23:06:02Z",
+  "timestamp": "2026-04-18T23:09:04Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_2048x16384x2048",
-  "iter": "iter024_prearrive_wait2",
+  "iter": "iter025_kunroll32_wait2",
   "bottleneck": "compute_bound",
-  "idea": "Keep iter023 wait2 split-epilogue as the active best, but pre-arrive the next full barrier before its TMA completes so the next stage can close earlier while current WGMMA work is still in flight, reducing CTA-barrier-driven no-eligible cycles without changing the output path.",
-  "expected_gain": "+0.2 to +3 TFLOPS",
+  "idea": "Keep iter023 wait2 split-epilogue as the active best, but explicitly unroll the 32-step outer K loop so nvcc can schedule a larger steady-state instruction window around the existing wait2 overlap without changing the synchronization or output path.",
+  "expected_gain": "+0.1 to +3 TFLOPS",
   "levers": [
-    "prearrive_next_full",
+    "outer_k_unroll32",
     "wait2",
-    "barrier_schedule"
+    "codegen_schedule"
   ],
   "status": "VERIFIED",
-  "verified_iter": "iter024_prearrive_wait2",
+  "verified_iter": "iter025_kunroll32_wait2",
   "drift_score": 1
 }
