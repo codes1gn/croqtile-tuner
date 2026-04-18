@@ -1,2 +1,7 @@
 iter	kernel	tflops	decision	bottleneck	idea_summary
 iter000	iter000_cublas	431.3489	KEEP	baseline	cuBLAS reference baseline
+iter001	iter001_draft	255.305	KEEP	compute_bound	Adapted proven 64x128 1p1c wide-N starting kernel to the 2048x16384x2048 target;
+iter002	iter002_ws1p2c_tm128	221.098	DISCARD	compute_bound	Tried a structural ws1p2c 128x128 tile to raise WGMMA issue on the compute-bound
+iter003	iter003_wn160	175.719	DISCARD	compute_bound	Increased WARP_N from 128 to 160 on the 1p1c base to raise WGMMA work per produc
+iter004	iter004_stmatrix	0	COMPILE_FAIL	compute_bound	Tried the stmatrix compiler flag on the 1p1c fp32-accumulator base after SASS co
+iter005	iter005_persistent_1p1c	115.792	DISCARD	compute_bound	Persistent 1p1c scheduling preserved the 64x128 microkernel but cut throughput t
