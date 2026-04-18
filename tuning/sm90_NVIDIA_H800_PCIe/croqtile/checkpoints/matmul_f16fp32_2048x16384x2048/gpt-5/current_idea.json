@@ -1,17 +1,16 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-18T16:15:38Z",
+  "timestamp": "2026-04-18T16:18:52Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_2048x16384x2048",
-  "iter": "iter005_persistent_1p1c",
+  "iter": "iter006_launchbounds",
   "bottleneck": "compute_bound",
-  "idea": "Convert the proven 1p1c wide-N base to persistent scheduling so each SM reuses the same warp-specialized pipeline across multiple tiles, reducing launch churn and improving producer-consumer steady state on a low-occupancy compute-bound kernel.",
-  "expected_gain": "+5 to +15 TFLOPS",
+  "idea": "Keep the proven 1p1c 64x128 kernel unchanged at the .co level and add __launch_bounds__(256, 2) in the generated CUDA so Hopper schedules for two resident CTAs per SM more aggressively on this low-occupancy compute-bound kernel.",
+  "expected_gain": "+3 to +12 TFLOPS",
   "levers": [
-    "persistent_schedule",
-    "num_sms"
+    "launch_bounds"
   ],
   "status": "VERIFIED",
-  "verified_iter": "iter005_persistent_1p1c",
+  "verified_iter": "iter006_launchbounds",
   "drift_score": 1
 }
