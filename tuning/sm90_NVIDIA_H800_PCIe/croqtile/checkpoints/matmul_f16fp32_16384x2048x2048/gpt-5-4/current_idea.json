@@ -1,17 +1,16 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-18T15:59:33Z",
+  "timestamp": "2026-04-18T16:02:34Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_16384x2048x2048",
-  "iter": "iter002_wn64_s3_2cta",
+  "iter": "iter003_mmajor",
   "bottleneck": "memory_bound",
-  "idea": "Reduce WARP_N to 64 and STAGES to 3 on the iter001 1p2c base to cut shared memory and enable 2 CTAs/SM",
-  "expected_gain": "+20-40 TFLOPS via higher occupancy and better memory hiding",
+  "idea": "Switch iter001 tile traversal from N-major to M-major to improve L2 reuse of lhs rows across the small-N sweep",
+  "expected_gain": "+10-25 TFLOPS via better lhs reuse and lower DRAM pressure",
   "levers": [
-    "MATMUL_WARP_N",
-    "MATMUL_STAGES"
+    "tile_order"
   ],
   "status": "VERIFIED",
-  "verified_iter": "iter002_wn64_s3_2cta",
+  "verified_iter": "iter003_mmajor",
   "drift_score": 1
 }

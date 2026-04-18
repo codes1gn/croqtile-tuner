@@ -20,3 +20,14 @@
 {"ts":"2026-04-18T16:00:26.189Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter002_wn64_s3_2cta (drift=1)","level":"info"}
 {"ts":"2026-04-18T16:00:45.093Z","tool":"store_round","msg":"Storing iter002_wn64_s3_2cta (DISCARD 109.267 TFLOPS)","level":"info"}
 {"ts":"2026-04-18T16:00:45.113Z","tool":"store_round","msg":"Stored iter002_wn64_s3_2cta: DISCARD 109.267 TFLOPS (round 2)","level":"info"}
+{"ts":"2026-04-18T16:01:13.479Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_16384x2048x2048/gpt-5-4/iter001_draft","level":"info"}
+{"ts":"2026-04-18T16:01:20.613Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16384x2048x2048/gpt-5-4/ncu_iter001_draft_round3.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16384x2048x2048/gpt-5-4/ncu_iter001_draft_round3.csv","level":"info"}
+{"ts":"2026-04-18T16:01:41.897Z","tool":"profile_extract","msg":"Analyzing iter001_draft_round3 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16384x2048x2048/gpt-5-4/ncu_iter001_draft_round3.csv","level":"info"}
+{"ts":"2026-04-18T16:02:34.669Z","tool":"checkpoint_write","msg":"PLANNED iter003_mmajor: Switch iter001 tile traversal from N-major to M-major to improve L2 reuse of lhs rows across the small-N sweep","level":"info"}
+{"ts":"2026-04-18T16:02:34.943Z","tool":"checkpoint_write","msg":"READ checkpoint for IMPLEMENT","level":"info"}
+{"ts":"2026-04-18T16:02:39.664Z","tool":"next_iter","msg":"Resolved iter003_mmajor","level":"info"}
+{"ts":"2026-04-18T16:02:53.709Z","tool":"co2cu","msg":"Compiling iter003_mmajor.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T16:02:53.889Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x2048x2048/gpt-5-4/iter003_mmajor.cu","level":"info"}
+{"ts":"2026-04-18T16:03:30.328Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter003_mmajor (drift=1)","level":"info"}
+{"ts":"2026-04-18T16:03:42.246Z","tool":"store_round","msg":"Storing iter003_mmajor (KEEP 267.028 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T16:03:42.265Z","tool":"store_round","msg":"Stored iter003_mmajor: KEEP 267.028 TFLOPS (round 3)","level":"info"}
