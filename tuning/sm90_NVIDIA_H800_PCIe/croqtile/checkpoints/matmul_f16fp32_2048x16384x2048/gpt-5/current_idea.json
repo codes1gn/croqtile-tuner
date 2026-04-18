@@ -1,18 +1,18 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-18T20:02:23Z",
+  "timestamp": "2026-04-18T20:09:34Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_2048x16384x2048",
-  "iter": "iter020_wait1_ptxbar",
+  "iter": "iter021_split_epilogue",
   "bottleneck": "compute_bound",
-  "idea": "Keep iter018s wait1-overlap pipeline intact, but regenerate the base with --ptx-barrier so the same overlapped producer-consumer schedule uses lighter PTX-backed CTA barriers and may shave the remaining synchronization cost that plain wait1 did not remove.",
-  "expected_gain": "+0.1 to +2 TFLOPS",
+  "idea": "Keep iter020s wait1+ptxbar pipeline intact, but split the 64x128 output shared store into two 64x64 store_fragment_d calls over the same 128-stride tile so shared-store bank conflicts drop without changing the final 128-wide TMA store-to-global path.",
+  "expected_gain": "+0.1 to +3 TFLOPS",
   "levers": [
-    "ptx_barrier",
-    "warpgroup_wait",
-    "pipeline_overlap"
+    "epilogue",
+    "shared_store",
+    "bank_conflict"
   ],
   "status": "VERIFIED",
-  "verified_iter": "iter020_wait1_ptxbar",
+  "verified_iter": "iter021_split_epilogue",
   "drift_score": 1
 }
