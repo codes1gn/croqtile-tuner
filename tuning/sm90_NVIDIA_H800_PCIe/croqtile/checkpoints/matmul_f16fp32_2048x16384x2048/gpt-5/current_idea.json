@@ -1,18 +1,18 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-18T23:03:02Z",
+  "timestamp": "2026-04-18T23:06:02Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_2048x16384x2048",
-  "iter": "iter023_wait2",
+  "iter": "iter024_prearrive_wait2",
   "bottleneck": "compute_bound",
-  "idea": "Keep iter021 split-epilogue as the active best, but deepen the overlapped main-loop drain from warpgroup_wait<1>() to warpgroup_wait<2>() so the three-stage pipeline exposes more producer-consumer overlap and reduces CTA-barrier-driven no-eligible cycles.",
-  "expected_gain": "+0.1 to +3 TFLOPS",
+  "idea": "Keep iter023 wait2 split-epilogue as the active best, but pre-arrive the next full barrier before its TMA completes so the next stage can close earlier while current WGMMA work is still in flight, reducing CTA-barrier-driven no-eligible cycles without changing the output path.",
+  "expected_gain": "+0.2 to +3 TFLOPS",
   "levers": [
-    "wait_depth",
-    "pipeline_overlap",
+    "prearrive_next_full",
+    "wait2",
     "barrier_schedule"
   ],
   "status": "VERIFIED",
-  "verified_iter": "iter023_wait2",
+  "verified_iter": "iter024_prearrive_wait2",
   "drift_score": 1
 }
