@@ -1,18 +1,18 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-18T19:55:58Z",
+  "timestamp": "2026-04-18T19:58:04Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_2048x16384x2048",
-  "iter": "iter018_wait1",
+  "iter": "iter019_splitarrive",
   "bottleneck": "compute_bound",
-  "idea": "Keep iter013s launch-bounds, arrive-once, fast-math, and input L2 promotion path unchanged, but move WGMMA completion waiting to warpgroup_wait<1>() inside the K-loop and leave warpgroup_wait<0>() only after the loop so TMA of tile K+1 can overlap with the tail of tile K compute.",
-  "expected_gain": "+2 to +12 TFLOPS",
+  "idea": "Keep iter018s wait1-overlap pipeline unchanged, but move empty[stage].arrive() before warpgroup_wait<1>() so the producer warp is released as soon as shared-memory reads are dispatched instead of waiting for the partial WGMMA drain.",
+  "expected_gain": "+0.2 to +3 TFLOPS",
   "levers": [
+    "empty_arrive",
     "warpgroup_wait",
-    "pipeline_overlap",
-    "synchronization"
+    "pipeline_overlap"
   ],
   "status": "VERIFIED",
-  "verified_iter": "iter018_wait1",
+  "verified_iter": "iter019_splitarrive",
   "drift_score": 1
 }
