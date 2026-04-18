@@ -1,17 +1,17 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-18T16:37:20Z",
+  "timestamp": "2026-04-18T16:39:09Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_2048x16384x2048",
-  "iter": "iter010_arrive_unroll",
+  "iter": "iter011_arrive_fastmath",
   "bottleneck": "compute_bound",
-  "idea": "Keep iter009 with once-per-stage warpgroup_arrive placement and explicitly unroll the fixed 4-step WGMMA micro-loop so the cleaner synchronization pattern also exposes a fully straight-line issue sequence.",
+  "idea": "Keep iter009 with once-per-stage warpgroup_arrive placement and add nvcc --use_fast_math so the cleaner synchronization base can test whether math contraction helps the remaining compute-side issue overhead.",
   "expected_gain": "+1 to +6 TFLOPS",
   "levers": [
     "warpgroup_arrive_placement",
-    "loop_unroll"
+    "use_fast_math"
   ],
   "status": "VERIFIED",
-  "verified_iter": "iter010_arrive_unroll",
+  "verified_iter": "iter011_arrive_fastmath",
   "drift_score": 1
 }
