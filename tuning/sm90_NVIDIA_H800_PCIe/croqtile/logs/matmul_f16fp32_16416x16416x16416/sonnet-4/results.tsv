@@ -10,3 +10,4 @@ iter007	iter007_p1c2_so_wn128_s3	185.627	DISCARD	memory_bound	STRUCTURAL 1p2c sp
 iter008	iter008_tk128_s2	265.27	DISCARD	compute_bound	TILE_K=128 via 2 TMA loads/barrier with STAGES=2: doubles WGMMA per sync but 2x 
 iter009	iter009_single_wgarrive	275.718	DISCARD	compute_bound	Move warpgroup_arrive() before inner loop (1 call vs 4): compiler likely already
 iter010	iter010_tk32_s5	230.691	DISCARD	compute_bound	TILE_K=32 STAGES=5 with B64 swizzle: B64 vs B128 swizzle causes WGMMA inefficien
+iter011	iter011_asym_barrier	272.315	DISCARD	latency_bound	Asymmetric full barrier init(1): consumer PTX poll via mbarrier.test_wait.parity

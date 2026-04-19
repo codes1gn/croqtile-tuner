@@ -13,3 +13,9 @@ iter010	iter010_warpspec_p3c_wn128_tm192	218.687	DISCARD	memory_bound	1p3c WN=12
 iter011	iter011_wn128_s3_1p1c_2cta	205.741	DISCARD	memory_bound	1p1c WN=128 STAGES=3 for 2 CTAs/SM: 104KB SMEM. Lower AI hurt more than occupanc
 iter011	iter011_wn128_s3_1p1c_2cta	205.741	DISCARD	memory_bound	1p1c WN=128 STAGES=3 for 2 CTAs/SM: 104KB SMEM. Lower AI hurt more than occupanc
 iter012	iter012_wn256_s4_1p1c_warpspec	296.287	KEEP	compute_bound	WN=256 STAGES=4 1p1c + --use-warpspec --hoist-offset: explicit warpgroup barrier
+iter012	iter012_wn256_s4_1p1c_warpspec	296.287	KEEP	compute_bound	NCU R12: same metrics as iter008. Barrier stall 3.75 (TMA 3x slower than WGMMA).
+iter013	iter013_wn256_s4_tma_cluster	285.337	DISCARD	compute_bound	tma-cluster-aware: uses cluster TMA mbarrier. No cluster launch config -> cluste
+iter013	iter013_wn256_s4_tma_cluster	285.337	DISCARD	compute_bound	cluster TMA (tma-cluster-aware) without cluster_size launch config: cluster_size
+iter014	iter014_wn256_s4_async_pipeline	299.562	KEEP	compute_bound	Manual .cu: L2_PROMOTION_L2_256B for both lhs and rhs TMA tensor maps. B tile 32
+iter014	iter014_wn256_s4_async_pipeline	299.562	KEEP	compute_bound	NCU R14: L2 promotion worked - LTS 68->75%, DRAM 60.9->60.3%. Barrier still 3.75
+iter015	iter015_wn256_s4_l2promo_warpopt	299.327	DISCARD	compute_bound	warpgroup_arrive() moved before iv_warp loop + L2_256B. No measurable improvemen

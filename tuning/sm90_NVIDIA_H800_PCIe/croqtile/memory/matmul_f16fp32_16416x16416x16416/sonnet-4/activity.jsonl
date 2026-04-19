@@ -88,3 +88,7 @@
 {"ts":"2026-04-19T09:29:56.641Z","tool":"store_round","msg":"Stored iter010_tk32_s5: DISCARD 230.691 TFLOPS (round 10)","level":"info"}
 {"ts":"2026-04-19T09:34:00.441Z","tool":"checkpoint_write","msg":"PLANNED iter011_asym_barrier: Asymmetric barrier design: full[s] init(1) so only producer arrives (via arrive_tx), consumer waits WITHOUT arriving - eliminating 128 redundant arrivals per barrier cycle. empty[s] stays symmetric (129). Consumer signals empty via pure arrive without waiting on full. This reduces barrier overhead by removing 128 no-op consumer arrivals at full barrier.","level":"info"}
 {"ts":"2026-04-19T09:34:07.052Z","tool":"next_iter","msg":"Resolved iter011_asym_barrier","level":"info"}
+{"ts":"2026-04-19T09:42:27.858Z","tool":"resume_state","msg":"Loading tuning state for croqtile/matmul_f16fp32_16416x16416x16416","level":"info"}
+{"ts":"2026-04-19T09:42:37.931Z","tool":"store_round","msg":"Storing iter011_asym_barrier (DISCARD 272.315 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T09:42:37.951Z","tool":"store_round","msg":"Stored iter011_asym_barrier: DISCARD 272.315 TFLOPS (round 11)","level":"info"}
+{"ts":"2026-04-19T09:48:01.865Z","tool":"next_iter","msg":"Resolved iter012_persistent_astat","level":"info"}

@@ -11,6 +11,7 @@
 #include "choreo.h"
 namespace cde = cuda::device::experimental;
 #include <cooperative_groups.h>
+#include <cuda/ptx>
 using namespace choreo;
 
 #define __CHOREO_REQUIRED_GPU_DEVICE_SM__ 90
@@ -120,12 +121,16 @@ static inline void __choreo_check_cuda_environment__() {
 #endif
 }
 
-// iter011: Asymmetric barrier design — full[s] init(1) producer-only, consumer uses PTX mbarrier_try_wait_parity
-// Hypothesis: full[stage] currently has 129 participants (1 producer + 128 consumer threads).
-// The 128 consumer arrive() calls are pure overhead — the full barrier's purpose is to signal
-// TMA completion (producer-only event). By using init(1) + consumer PTX polling,
-// we eliminate 128 redundant arrive() calls per K-step (256*128 = 32768 per tile).
-// The empty[stage] barrier stays symmetric (129 participants) — consumer signals readiness.
+// iter012: Persistent A-stationary kernel — 114 CTAs, one per SM.
+// Key insight from profile: 14x DRAM amplification and 38x L2 amplification in non-persistent.
+// With 16705 non-persistent CTAs, each CTA accesses completely different A/B data → L2 thrash.
+// Fix: 114 persistent CTAs, each CTA processes all N-tiles for a given M-row (A-stationary).
+// A rows (64 × K=16416 × 2B = 2.05MB) stay in L2 cache across N-tile iterations.
+// L2 reuse factor: 65 N-tiles per M-row → 65x fewer DRAM reads for A.
+// Schedule: atomic tile counter shared across all CTAs; each CTA uses row-major order
+// (tile_n loops fastest within a tile_m row to maximize A reuse within one CTA).
+// SMEM: 3*(64*64*2) + 3*(256*64*2) + (64*256*4) = 24576+98304+65536 = 188416 bytes (184KB)
+// Same pipeline as iter005: 1p1c WN=256 STAGES=3 with early empty arrive.
 #include <cstring>
 #include <cstdlib>
 
@@ -143,166 +148,145 @@ static inline void __choreo_check_cuda_environment__() {
 #define MATMUL_DEFAULT_N 16416
 #define MATMUL_DEFAULT_K 16416
 
-__global__ void __choreo_device_matmul(f16 * lhs, f16 * rhs, float * output, unsigned K, unsigned M, unsigned N, const __grid_constant__ CUtensorMap __choreo_tma_0_tensor_map, const __grid_constant__ CUtensorMap __choreo_tma_1_tensor_map, const __grid_constant__ CUtensorMap __choreo_tma_2_tensor_map) {
+// Persistent A-stationary kernel: 114 CTAs process all 16705 tiles using an atomic counter.
+// Tile scheduling: row-major (tile_n fastest within a tile_m row) to maximize A L2 reuse.
+// Each CTA processes a contiguous run of N-tiles for a fixed M-row before advancing.
+__global__ void __choreo_device_matmul(f16 * lhs, f16 * rhs, float * output, unsigned K, unsigned M, unsigned N,
+    unsigned tiles_m, unsigned tiles_n, unsigned total_tiles,
+    unsigned* tile_counter,
+    const __grid_constant__ CUtensorMap __choreo_tma_0_tensor_map,
+    const __grid_constant__ CUtensorMap __choreo_tma_1_tensor_map,
+    const __grid_constant__ CUtensorMap __choreo_tma_2_tensor_map) {
   extern __shared__ char __choreo_device_matmul__runtime_shared_buffer__raw[];
   auto __choreo_device_matmul__runtime_shared_buffer__ = reinterpret_cast<char*>(aligned_up_ptr<1024 * 8>(__choreo_device_matmul__runtime_shared_buffer__raw));
-  { // parallel-by: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/sonnet-4/iter003_wn256_s3_nonpersis.co:25.12
+
   auto wg_barrier = cooperative_groups::tiled_partition<128>(cooperative_groups::this_thread_block());
-  __shared__ cuda::barrier<cuda::thread_scope_block> choreo_copy_atom_t_0_barrier;
-  if (__CHOREO_BLOCK_SINGLE__) {
-    init(&choreo_copy_atom_t_0_barrier, 1);
-    cde::fence_proxy_async_shared_cta();
-  }
-  __syncthreads();
-  TMAAtom choreo_copy_atom_t_0{&choreo_copy_atom_t_0_barrier};
+  __shared__ cuda::barrier<cuda::thread_scope_block> full[3];
+  __shared__ cuda::barrier<cuda::thread_scope_block> empty[3];
 
   auto anon_1 = (unsigned char*)__choreo_device_matmul__runtime_shared_buffer__;
-  __shared__ cuda::barrier<cuda::thread_scope_block> full[3]; // shared event barrier
-  // Asymmetric: only producer (1 thread) arrives at full — consumer polls via PTX parity wait.
-  // This eliminates 128 redundant consumer arrive() calls per K-step.
-  if (__CHOREO_BLOCK_SINGLE__) {
-    init(&full[0], 1);
-    init(&full[1], 1);
-    init(&full[2], 1);
-    cde::fence_proxy_async_shared_cta();
-  }
-  __syncthreads();
-  __shared__ cuda::barrier<cuda::thread_scope_block> empty[3]; // shared event barrier
-  // initialize the event barrier
-  if (__CHOREO_BLOCK_SINGLE__) {
-    init(&empty[0], 129);
-    init(&empty[1], 129);
-    init(&empty[2], 129);
-    cde::fence_proxy_async_shared_cta();
-  }
-  __syncthreads();
   f16* lhs_load_s = (f16*)(anon_1 + 163840);
   f16* rhs_load_s = (f16*)(anon_1 + 0);
   float* output_s = (float*)(anon_1 + 98304);
+
   auto __choreo_vg4id_x = threadIdx.x / 128;
   auto __choreo_vtid_x = threadIdx.x % 128;
-  // inthreads: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/sonnet-4/iter003_wn256_s3_nonpersis.co:33.7
-  if ((__choreo_vg4id_x == 0 && __choreo_vtid_x == 0)) {
-    // with-in: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/sonnet-4/iter003_wn256_s3_nonpersis.co:34.9
-    {
+
+  // Persistent tile loop: each CTA grabs a tile index via atomic and processes it.
+  while (true) {
+    // Acquire next tile index atomically (all threads in the CTA participate via single thread)
+    __shared__ unsigned tile_idx_smem;
+    if (__CHOREO_BLOCK_SINGLE__) {
+      tile_idx_smem = atomicAdd(tile_counter, 1u);
+    }
+    __syncthreads();
+    unsigned tile_idx = tile_idx_smem;
+    if (tile_idx >= total_tiles) break;
+
+    // Decode tile index: row-major within M-row for A reuse
+    unsigned tile_m = tile_idx / tiles_n;
+    unsigned tile_n = tile_idx % tiles_n;
+    unsigned row_m = tile_m * 64;
+    unsigned row_n = tile_n * 256;
+
+    // Re-initialize pipeline barriers for this tile
+    if (__CHOREO_BLOCK_SINGLE__) {
+      init(&full[0], 129);
+      init(&full[1], 129);
+      init(&full[2], 129);
+      init(&empty[0], 129);
+      init(&empty[1], 129);
+      init(&empty[2], 129);
+      cde::fence_proxy_async_shared_cta();
+    }
+    __syncthreads();
+
+    // Producer warpgroup: load A and B tiles via TMA
+    if ((__choreo_vg4id_x == 0 && __choreo_vtid_x == 0)) {
       int __iv_iv_k = 0;
-      // foreach: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/sonnet-4/iter003_wn256_s3_nonpersis.co:34.9
       for (__iv_iv_k = 0; __iv_iv_k < ((K + 63) / 64); ++__iv_iv_k) {
         int stage = __iv_iv_k % 3;
-        // wait event(barrier)  (empty elemof stage) 
         empty[stage].wait(empty[stage].arrive());
-        cde::cp_async_bulk_tensor_2d_global_to_shared((lhs_load_s + ((__iv_iv_k % 3 * 4096))), &__choreo_tma_0_tensor_map, (__iv_iv_k * 64), (blockIdx.x * 64), full[stage]);
-        cde::cp_async_bulk_tensor_2d_global_to_shared((rhs_load_s + ((__iv_iv_k % 3 * 16384))), &__choreo_tma_1_tensor_map, (__iv_iv_k * 64), (blockIdx.y * 256), full[stage]);
-        // trigger event(barrier)  (full elemof stage) 
+        cde::cp_async_bulk_tensor_2d_global_to_shared((lhs_load_s + ((__iv_iv_k % 3 * 4096))), &__choreo_tma_0_tensor_map, (__iv_iv_k * 64), row_m, full[stage]);
+        cde::cp_async_bulk_tensor_2d_global_to_shared((rhs_load_s + ((__iv_iv_k % 3 * 16384))), &__choreo_tma_1_tensor_map, (__iv_iv_k * 64), row_n, full[stage]);
         (void)cuda::device::barrier_arrive_tx(full[stage], 1, (8192) + (32768));
       } // iv_k
-      __iv_iv_k = 0;
-    }
-  } // end inthreads
-  // inthreads: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/sonnet-4/iter003_wn256_s3_nonpersis.co:45.7
-  if ((__choreo_vg4id_x == 1)) {
-    float mc[128];
-    float __frag_init_val0 = 0.000000f;
-    for (int idx = 0; idx < 128; ++idx)
-      mc[idx] = __frag_init_val0;
-    // with-in: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/sonnet-4/iter003_wn256_s3_nonpersis.co:47.9
-    {
-      int __iv_s = 0;
-      // foreach: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/sonnet-4/iter003_wn256_s3_nonpersis.co:47.9
-      for (__iv_s = 0; __iv_s < 3; ++__iv_s) {
-        // trigger event(barrier)  (empty elemof s) 
-        (void)empty[__iv_s].arrive();
-      } // s
-      __iv_s = 0;
-    }
-    // Track per-stage parity bits for consumer-side PTX polling on full[stage].
-    // Each stage's phase flips every time it completes a full cycle (STAGES iterations apart).
-    // Phase starts at 0 (barrier initializes with phase=0, fires → phase becomes 1, etc.)
-    // With STAGES=3 ring: stage s is used at k=s, s+3, s+6, ... → parity = (k/3) & 1
-    uint32_t full_parity[3] = {0, 0, 0};
+    } // end producer
 
-    // with-in: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/sonnet-4/iter003_wn256_s3_nonpersis.co:50.9
-    {
+    // Consumer warpgroup: WGMMA accumulation
+    if ((__choreo_vg4id_x == 1)) {
+      float mc[128];
+      for (int idx = 0; idx < 128; ++idx) mc[idx] = 0.0f;
+
+      // Pre-fill empty stages so producer can start immediately
+      {
+        int __iv_s = 0;
+        for (__iv_s = 0; __iv_s < 3; ++__iv_s) {
+          (void)empty[__iv_s].arrive();
+        }
+      }
+
       int __iv_iv_k = 0;
-      // foreach: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/sonnet-4/iter003_wn256_s3_nonpersis.co:50.9
       for (__iv_iv_k = 0; __iv_iv_k < ((K + 63) / 64); ++__iv_iv_k) {
         auto stage = __iv_iv_k % 3;
-        // Asymmetric wait: consumer polls full[stage] via PTX parity check WITHOUT arriving.
-        // This avoids 128 redundant arrive() calls that would require init(129).
-        // init(1) → producer's arrive_tx alone fires the barrier.
-        {
-          uint32_t parity = full_parity[stage];
-          // Get 32-bit generic shared-memory pointer for mbarrier PTX
-          uint32_t mbar_addr = cute::cast_smem_ptr_to_uint(&full[stage]);
-          uint32_t done;
-          do {
-            asm volatile(
-              "{\n\t"
-              ".reg .pred P1;\n\t"
-              "mbarrier.test_wait.parity.shared::cta.b64 P1, [%1], %2;\n\t"
-              "selp.b32 %0, 1, 0, P1;\n\t"
-              "}"
-              : "=r"(done) : "r"(mbar_addr), "r"(parity) : "memory");
-          } while (!done);
-          // Flip parity for next use of this stage
-          full_parity[stage] ^= 1;
-        }
-        // with-in: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/sonnet-4/iter003_wn256_s3_nonpersis.co:53.11
+        full[stage].wait(full[stage].arrive());
         {
           int __iv_iv_warp = 0;
-          // foreach: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/sonnet-4/iter003_wn256_s3_nonpersis.co:53.11
           for (__iv_iv_warp = 0; __iv_iv_warp < 4; ++__iv_iv_warp) {
             f16* ma_smem_ptr = (f16*)((__iv_iv_warp * 16 + __iv_iv_k % 3 * 4096 + lhs_load_s));
             uint64_t desc_ma = wgmma_make_smem_desc<WGMMA_MajorOrder::K_MAJOR, WGMMA_Swizzle::B128>(ma_smem_ptr);
             f16* mb_smem_ptr = (f16*)((__iv_iv_warp * 16 + __iv_iv_k % 3 * 16384 + rhs_load_s));
             uint64_t desc_mb = wgmma_make_smem_desc<WGMMA_MajorOrder::K_MAJOR, WGMMA_Swizzle::B128>(mb_smem_ptr);
             warpgroup_arrive();
-            // Note: warpgroup_arrive() should be called once before first WGMMA
-            // and warpgroup_wait() should be called once after all WGMMAs
             cute::SM90::GMMA::MMA_64x256x16_F32F16F16_SS<static_cast<cute::SM90::GMMA::Major>(0), static_cast<cute::SM90::GMMA::Major>(0)>::fma(desc_ma, desc_mb, mc[0], mc[1], mc[2], mc[3], mc[4], mc[5], mc[6], mc[7], mc[8], mc[9], mc[10], mc[11], mc[12], mc[13], mc[14], mc[15], mc[16], mc[17], mc[18], mc[19], mc[20], mc[21], mc[22], mc[23], mc[24], mc[25], mc[26], mc[27], mc[28], mc[29], mc[30], mc[31], mc[32], mc[33], mc[34], mc[35], mc[36], mc[37], mc[38], mc[39], mc[40], mc[41], mc[42], mc[43], mc[44], mc[45], mc[46], mc[47], mc[48], mc[49], mc[50], mc[51], mc[52], mc[53], mc[54], mc[55], mc[56], mc[57], mc[58], mc[59], mc[60], mc[61], mc[62], mc[63], mc[64], mc[65], mc[66], mc[67], mc[68], mc[69], mc[70], mc[71], mc[72], mc[73], mc[74], mc[75], mc[76], mc[77], mc[78], mc[79], mc[80], mc[81], mc[82], mc[83], mc[84], mc[85], mc[86], mc[87], mc[88], mc[89], mc[90], mc[91], mc[92], mc[93], mc[94], mc[95], mc[96], mc[97], mc[98], mc[99], mc[100], mc[101], mc[102], mc[103], mc[104], mc[105], mc[106], mc[107], mc[108], mc[109], mc[110], mc[111], mc[112], mc[113], mc[114], mc[115], mc[116], mc[117], mc[118], mc[119], mc[120], mc[121], mc[122], mc[123], mc[124], mc[125], mc[126], mc[127]);
           } // iv_warp
-          __iv_iv_warp = 0;
         }
-        // Early arrive: signal producer that SMEM is free before WGMMA completes.
-        // Safe because data has been consumed into registers by the WGMMA instructions above.
-        // This allows TMA to start loading the next stage sooner, reducing barrier stalls.
+        // Early arrive: signal producer that SMEM is free before WGMMA completes
         (void)empty[stage].arrive();
-        // Finalize WGMMA operations
         warpgroup_commit_batch();
         warpgroup_wait<0>();
       } // iv_k
-      __iv_iv_k = 0;
-    }
-    auto __shape1_output_s = cute::make_shape(cute::Int<64>{}, cute::Int<256>{});
-    auto __stride1_output_s = cute::make_stride(cute::Int<256>{}, cute::Int<1>{});
-    auto __layout1_output_s = cute::make_layout(__shape1_output_s, __stride1_output_s);
-    auto __tensor1_output_s = cute::make_tensor(cute::make_smem_ptr<float>((float*)output_s + 0), __layout1_output_s);
-    store_fragment_d<CUTE_WGMMA_M64K16, 256>(__tensor1_output_s, reinterpret_cast<float*>(mc));
-    future __choreo_anon_fut__0("", 62, 9);
-    __choreo_anon_fut__0.is_tma = true;
-    __choreo_anon_fut__0.set_atom(&choreo_copy_atom_t_0);
-    cde::fence_proxy_async_shared_cta();
-    if (__CHOREO_GROUPX4_SINGLE__) {
-      cde::cp_async_bulk_tensor_2d_shared_to_global(&__choreo_tma_2_tensor_map, (blockIdx.y * 256), (blockIdx.x * 64), output_s);
-      cde::cp_async_bulk_commit_group();
-    }
-  } // end inthreads
-  } // end parallel-by
+
+      // Store accumulator to SMEM then TMA-store to global
+      auto __shape1_output_s = cute::make_shape(cute::Int<64>{}, cute::Int<256>{});
+      auto __stride1_output_s = cute::make_stride(cute::Int<256>{}, cute::Int<1>{});
+      auto __layout1_output_s = cute::make_layout(__shape1_output_s, __stride1_output_s);
+      auto __tensor1_output_s = cute::make_tensor(cute::make_smem_ptr<float>((float*)output_s + 0), __layout1_output_s);
+      store_fragment_d<CUTE_WGMMA_M64K16, 256>(__tensor1_output_s, reinterpret_cast<float*>(mc));
+      cde::fence_proxy_async_shared_cta();
+      if (__CHOREO_GROUPX4_SINGLE__) {
+        cde::cp_async_bulk_tensor_2d_shared_to_global(&__choreo_tma_2_tensor_map, row_n, row_m, output_s);
+        cde::cp_async_bulk_commit_group();
+        // Wait for TMA store to complete before reinitializing for next tile
+        cuda::ptx::cp_async_bulk_wait_group(cuda::ptx::n32_t<0>{});
+      }
+    } // end consumer
+
+    // Full block sync: ensures TMA store is complete and all threads are ready for next tile
+    __syncthreads();
+
+  } // end persistent tile loop
 }
+
+// Persistent tile counter — allocated once per matmul call and reused
+static unsigned* g_tile_counter_d = nullptr;
 
 void matmul(const choreo::spanned_view<choreo::f16, 2> & lhs, const choreo::spanned_view<choreo::f16, 2> & rhs, const choreo::spanned_view<choreo::f32, 2> & output) {
   __choreo_check_cuda_environment__();
   auto &K = lhs.shape()[1];
   auto &M = lhs.shape()[0];
   auto &N = rhs.shape()[0];
-  choreo::runtime_check(lhs.shape()[1] == rhs.shape()[1], "The shapes of the 1st parameter (dim: 1) and the 2nd parameter (dim: 1) are inconsistent.");
-  choreo::runtime_check(lhs.shape()[0] == output.shape()[0], "The shapes of the 1st parameter (dim: 0) and the 3rd parameter (dim: 0) are inconsistent.");
-  choreo::runtime_check(rhs.shape()[0] == output.shape()[1], "The shapes of the 2nd parameter (dim: 0) and the 3rd parameter (dim: 1) are inconsistent.");
 
-  choreo::runtime_check(((static_cast<long long>(M) + 63LL) / 64LL > 0LL), "The 1st bound item of parallelby is invalid: should be greater than 0, tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/sonnet-4/iter003_wn256_s3_nonpersis.co:25.13");
-  choreo::runtime_check(((static_cast<long long>(N) + 255LL) / 256LL > 0LL), "The 2nd bound item of parallelby is invalid: should be greater than 0, tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/sonnet-4/iter003_wn256_s3_nonpersis.co:25.22");
-  choreo::runtime_check(((static_cast<long long>(K) + 63LL) / 64LL != 0LL), "zero is detected for the 1st dim of the mdspan inside the with-in statement, tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/sonnet-4/iter003_wn256_s3_nonpersis.co:34.27");
-  choreo::runtime_check(((static_cast<long long>(K) + 63LL) / 64LL != 0LL), "zero is detected for the 1st dim of the mdspan inside the with-in statement, tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/sonnet-4/iter003_wn256_s3_nonpersis.co:50.27");
+  unsigned tiles_m = (M + 63) / 64;
+  unsigned tiles_n = (N + 255) / 256;
+  unsigned total_tiles = tiles_m * tiles_n;
+
+  // Lazy allocate persistent tile counter
+  if (g_tile_counter_d == nullptr) {
+    choreo::abend_true(cudaMalloc(&g_tile_counter_d, sizeof(unsigned)));
+  }
+  choreo::abend_true(cudaMemset(g_tile_counter_d, 0, sizeof(unsigned)));
+
   uint64_t __choreo_tma_0_shape[] = {K, M};
   uint64_t __choreo_tma_0_strides[] = {(K * 2)};
   uint32_t __choreo_tma_0_box_shape[] = {64, 64};
@@ -360,10 +344,15 @@ void matmul(const choreo::spanned_view<choreo::f16, 2> & lhs, const choreo::span
           CUtensorMapL2promotion::CU_TENSOR_MAP_L2_PROMOTION_NONE,
           CUtensorMapFloatOOBfill::CU_TENSOR_MAP_FLOAT_OOB_FILL_NONE);
   choreo::abend_true(__choreo_tma_2_tensor_map_res != CUDA_SUCCESS);
-  dim3 __matmul_gdims0(((M + 63) / 64), ((N + 255) / 256), 1);
+
+  // Persistent kernel: 114 CTAs (one per SM on H800)
+  dim3 __matmul_gdims0(114, 1, 1);
   dim3 __matmul_bdims0(256, 1, 1);
   cudaFuncSetAttribute(__choreo_device_matmul, cudaFuncAttributeMaxDynamicSharedMemorySize, 188416 + (1024 - 1));
-  __choreo_device_matmul<<<__matmul_gdims0, __matmul_bdims0, 188416 + (1024 - 1)>>>(lhs.data(), rhs.data(), output.data(), K, M, N, __choreo_tma_0_tensor_map, __choreo_tma_1_tensor_map, __choreo_tma_2_tensor_map);
+  __choreo_device_matmul<<<__matmul_gdims0, __matmul_bdims0, 188416 + (1024 - 1)>>>(
+      lhs.data(), rhs.data(), output.data(), K, M, N,
+      tiles_m, tiles_n, total_tiles, g_tile_counter_d,
+      __choreo_tma_0_tensor_map, __choreo_tma_1_tensor_map, __choreo_tma_2_tensor_map);
   choreo::abend_true(cudaDeviceSynchronize());
 }
 

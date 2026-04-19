@@ -102,3 +102,32 @@
 {"ts":"2026-04-19T09:37:40.272Z","tool":"store_round","msg":"Stored iter011_wn128_s3_1p1c_2cta: DISCARD 205.741 TFLOPS (round 11)","level":"info"}
 {"ts":"2026-04-19T09:37:40.611Z","tool":"store_round","msg":"Storing iter012_wn256_s4_1p1c_warpspec (KEEP 296.287 TFLOPS)","level":"info"}
 {"ts":"2026-04-19T09:37:40.630Z","tool":"store_round","msg":"Stored iter012_wn256_s4_1p1c_warpspec: KEEP 296.287 TFLOPS (round 11)","level":"info"}
+{"ts":"2026-04-19T09:38:01.147Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_fp16fp32_16384x16384x16384/sonnet46/iter012_wn256_s4_1p1c_warpspec","level":"info"}
+{"ts":"2026-04-19T09:38:20.830Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/sonnet46/ncu_iter012_wn256_s4_1p1c_warpspec_round12.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/sonnet46/ncu_iter012_wn256_s4_1p1c_warpspec_round12.csv","level":"info"}
+{"ts":"2026-04-19T09:39:21.452Z","tool":"next_iter","msg":"Resolved iter013_wn256_s4_ptxbarrier","level":"info"}
+{"ts":"2026-04-19T09:39:31.115Z","tool":"co2cu","msg":"Compiling iter013_wn256_s4_ptxbarrier.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T09:39:31.221Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x16384/sonnet46/iter013_wn256_s4_ptxbarrier.cu","level":"info"}
+{"ts":"2026-04-19T09:42:14.662Z","tool":"next_iter","msg":"Resolved iter013_wn256_s4_tma_cluster","level":"info"}
+{"ts":"2026-04-19T09:42:24.741Z","tool":"co2cu","msg":"Compiling iter013_wn256_s4_tma_cluster.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T09:42:24.848Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x16384/sonnet46/iter013_wn256_s4_tma_cluster.cu","level":"info"}
+{"ts":"2026-04-19T09:45:30.715Z","tool":"store_round","msg":"Storing iter012_wn256_s4_1p1c_warpspec (KEEP 296.287 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T09:45:30.734Z","tool":"store_round","msg":"Stored iter012_wn256_s4_1p1c_warpspec: KEEP 296.287 TFLOPS (round 12)","level":"info"}
+{"ts":"2026-04-19T09:45:31.074Z","tool":"store_round","msg":"Storing iter013_wn256_s4_tma_cluster (DISCARD 285.337 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T09:45:31.093Z","tool":"store_round","msg":"Stored iter013_wn256_s4_tma_cluster: DISCARD 285.337 TFLOPS (round 12)","level":"info"}
+{"ts":"2026-04-19T09:45:53.005Z","tool":"next_iter","msg":"Resolved iter014_wn256_s4_async_pipeline","level":"info"}
+{"ts":"2026-04-19T09:46:02.844Z","tool":"co2cu","msg":"Compiling iter014_wn256_s4_async_pipeline.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T09:46:02.950Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x16384/sonnet46/iter014_wn256_s4_async_pipeline.cu","level":"info"}
+{"ts":"2026-04-19T09:50:26.531Z","tool":"co2cu","msg":"Compiling iter014_wn256_s4_async_pipeline.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T09:50:26.636Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x16384/sonnet46/iter014_wn256_s4_async_pipeline.cu","level":"info"}
+{"ts":"2026-04-19T09:53:19.239Z","tool":"next_iter","msg":"Resolved iter015_wn256_s4_l2promo_warpopt","level":"info"}
+{"ts":"2026-04-19T09:53:28.995Z","tool":"store_round","msg":"Storing iter013_wn256_s4_tma_cluster (DISCARD 285.337 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T09:53:29.014Z","tool":"store_round","msg":"Stored iter013_wn256_s4_tma_cluster: DISCARD 285.337 TFLOPS (round 13)","level":"info"}
+{"ts":"2026-04-19T09:53:29.355Z","tool":"store_round","msg":"Storing iter014_wn256_s4_async_pipeline (KEEP 299.562 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T09:53:29.374Z","tool":"store_round","msg":"Stored iter014_wn256_s4_async_pipeline: KEEP 299.562 TFLOPS (round 13)","level":"info"}
+{"ts":"2026-04-19T09:55:44.649Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_fp16fp32_16384x16384x16384/sonnet46/iter014_wn256_s4_async_pipeline","level":"info"}
+{"ts":"2026-04-19T09:56:04.264Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/sonnet46/ncu_iter014_wn256_s4_async_pipeline_round14.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/sonnet46/ncu_iter014_wn256_s4_async_pipeline_round14.csv","level":"info"}
+{"ts":"2026-04-19T09:56:43.279Z","tool":"next_iter","msg":"Resolved iter016_wn256_s4_l2p_maxreg256","level":"info"}
+{"ts":"2026-04-19T09:56:52.738Z","tool":"store_round","msg":"Storing iter014_wn256_s4_async_pipeline (KEEP 299.562 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T09:56:52.757Z","tool":"store_round","msg":"Stored iter014_wn256_s4_async_pipeline: KEEP 299.562 TFLOPS (round 14)","level":"info"}
+{"ts":"2026-04-19T09:56:53.094Z","tool":"store_round","msg":"Storing iter015_wn256_s4_l2promo_warpopt (DISCARD 299.327 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T09:56:53.112Z","tool":"store_round","msg":"Stored iter015_wn256_s4_l2promo_warpopt: DISCARD 299.327 TFLOPS (round 14)","level":"info"}
