@@ -10,3 +10,6 @@ iter007	iter007_wn192_s2_1p1c	196.133	DISCARD	memory_bound	1p1c WN=192 STAGES=2:
 iter008	iter008_wn256_s4_1p1c	293.326	KEEP	memory_bound	1p1c WN=256 STAGES=4: increased stages from 3 to 4, slight improvement 291T->293
 iter009	iter009_wn256_s2_1p2c_so_tm128	0.0	COMPILE_FAIL	memory_bound	1p2c split-output WN=256 TM=128 STAGES=2 FP32: verification fails with all-zero 
 iter010	iter010_warpspec_p3c_wn128_tm192	218.687	DISCARD	memory_bound	1p3c WN=128 TM=192 STAGES=3: verified correct but 218.7T vs iter008 293.3T; 512-
+iter011	iter011_wn128_s3_1p1c_2cta	205.741	DISCARD	memory_bound	1p1c WN=128 STAGES=3 for 2 CTAs/SM: 104KB SMEM. Lower AI hurt more than occupanc
+iter011	iter011_wn128_s3_1p1c_2cta	205.741	DISCARD	memory_bound	1p1c WN=128 STAGES=3 for 2 CTAs/SM: 104KB SMEM. Lower AI hurt more than occupanc
+iter012	iter012_wn256_s4_1p1c_warpspec	296.287	KEEP	compute_bound	WN=256 STAGES=4 1p1c + --use-warpspec --hoist-offset: explicit warpgroup barrier

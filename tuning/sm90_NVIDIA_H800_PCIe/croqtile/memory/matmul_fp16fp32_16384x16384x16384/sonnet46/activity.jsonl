@@ -94,3 +94,11 @@
 {"ts":"2026-04-19T09:29:01.462Z","tool":"next_iter","msg":"Resolved iter011_wn128_s3_1p1c_2cta","level":"info"}
 {"ts":"2026-04-19T09:29:59.248Z","tool":"co2cu","msg":"Compiling iter011_wn128_s3_1p1c_2cta.co -> .cu (arch=sm_90a)","level":"info"}
 {"ts":"2026-04-19T09:29:59.352Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x16384/sonnet46/iter011_wn128_s3_1p1c_2cta.cu","level":"info"}
+{"ts":"2026-04-19T09:34:08.217Z","tool":"co2cu","msg":"Compiling iter012_wn256_s4_1p1c_warpspec.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T09:34:08.322Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x16384/sonnet46/iter012_wn256_s4_1p1c_warpspec.cu","level":"info"}
+{"ts":"2026-04-19T09:37:34.274Z","tool":"store_round","msg":"Storing iter011_wn128_s3_1p1c_2cta (DISCARD 205.741 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T09:37:34.293Z","tool":"store_round","msg":"Stored iter011_wn128_s3_1p1c_2cta: DISCARD 205.741 TFLOPS (round 11)","level":"info"}
+{"ts":"2026-04-19T09:37:40.252Z","tool":"store_round","msg":"Storing iter011_wn128_s3_1p1c_2cta (DISCARD 205.741 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T09:37:40.272Z","tool":"store_round","msg":"Stored iter011_wn128_s3_1p1c_2cta: DISCARD 205.741 TFLOPS (round 11)","level":"info"}
+{"ts":"2026-04-19T09:37:40.611Z","tool":"store_round","msg":"Storing iter012_wn256_s4_1p1c_warpspec (KEEP 296.287 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T09:37:40.630Z","tool":"store_round","msg":"Stored iter012_wn256_s4_1p1c_warpspec: KEEP 296.287 TFLOPS (round 11)","level":"info"}
