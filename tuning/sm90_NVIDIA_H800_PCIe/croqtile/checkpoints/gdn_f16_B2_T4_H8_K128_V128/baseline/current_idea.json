@@ -1,14 +1,14 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-19T22:20:57Z",
+  "timestamp": "2026-04-19T22:22:52Z",
   "dsl": "croqtile",
   "shape_key": "gdn_f16_B2_T4_H8_K128_V128",
-  "iter": "iter007_unroll2",
+  "iter": "iter008_reg64",
   "bottleneck": "launch_bound",
-  "idea": "Process 2 timesteps per iteration to increase arithmetic intensity and hide latency",
+  "idea": "Reduce register pressure by limiting max registers to 64 per thread via nvcc flag",
   "expected_gain": "+0.005 TFLOPS",
   "levers": [
-    "unroll"
+    "maxrregcount"
   ],
   "status": "PLANNED"
 }

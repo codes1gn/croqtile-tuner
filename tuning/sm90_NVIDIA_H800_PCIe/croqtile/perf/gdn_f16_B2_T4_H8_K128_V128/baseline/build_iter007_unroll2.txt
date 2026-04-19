@@ -1,0 +1,27 @@
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter007_unroll2.co:244.9: warning: unable to find a device function 'computation_tight'.
+          call computation_tight<BK, BV, THREADS, USE_QK_L2NORM_IN_KERNEL, IS_KDA>
+          ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter007_unroll2.co:234.41: warning: 'span_as' may be applied to non-contiguous spanned data ([::gdn_f16_BK128_BV128_tight::B, 1, ::gdn_f16_BK128_BV128_tight::K, ::gdn_f16_BK128_BV128_tight::V] {(::gdn_f16_BK128_BV128_tight::HV * (::gdn_f16_BK128_BV128_tight::K * ::gdn_f16_BK128_BV128_tight::V)), (::gdn_f16_BK128_BV128_tight::K * ::gdn_f16_BK128_BV128_tight::V), ::gdn_f16_BK128_BV128_tight::V, 1}).
+                                          .span_as([1, BV]) => hidden_l.view(1, _).from(r, 0);
+                                          ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter007_unroll2.co:244.9: warning: The 4th template argument of type 'bool` can not be evaluated at choreo compile time.
+          call computation_tight<BK, BV, THREADS, USE_QK_L2NORM_IN_KERNEL, IS_KDA>
+          ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter007_unroll2.co:244.9: warning: The 5th template argument of type 'bool` can not be evaluated at choreo compile time.
+          call computation_tight<BK, BV, THREADS, USE_QK_L2NORM_IN_KERNEL, IS_KDA>
+          ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter007_unroll2.co:254.26: warning: 'span_as' may be applied to non-contiguous spanned data ([1, 1, ::gdn_f16_BK128_BV128_tight::V] {(::gdn_f16_BK128_BV128_tight::HV * ::gdn_f16_BK128_BV128_tight::V), ::gdn_f16_BK128_BV128_tight::V, 1}).
+                           .span_as([BV]);
+                           ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter007_unroll2.co:266.54: warning: 'span_as' may be applied to non-contiguous spanned data ([::gdn_f16_BK128_BV128_tight::B, 1, ::gdn_f16_BK128_BV128_tight::K, ::gdn_f16_BK128_BV128_tight::V] {(::gdn_f16_BK128_BV128_tight::HV * (::gdn_f16_BK128_BV128_tight::K * ::gdn_f16_BK128_BV128_tight::V)), (::gdn_f16_BK128_BV128_tight::K * ::gdn_f16_BK128_BV128_tight::V), ::gdn_f16_BK128_BV128_tight::V, 1}).
+                                                       .span_as([1, BV]);
+                                                       ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter007_unroll2.co:232.11: info: DMA is lowered to low-performance opt_copy API.
+            dma.copy initial_state_source.view(_, _, _, _).from(idx, 0, r#t, 0)
+            ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter007_unroll2.co:252.9: info: DMA is lowered to low-performance opt_copy API.
+          dma.copy o_l => o.span_as([B * T, HV, V])
+          ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter007_unroll2.co:262.13: info: DMA is lowered to low-performance opt_copy API.
+              dma.copy hidden_l.view(1, _).from(r, 0)
+              ^

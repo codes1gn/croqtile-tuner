@@ -1,0 +1,416 @@
+#ifndef ENABLE_DEBUG
+#define ENABLE_DEBUG 1
+#endif
+
+__cok__ {
+  template <typename T>
+  __device__ __forceinline__ T SHFL_XOR(T var, int lane_mask, int width) {
+    return __shfl_xor_sync(uint32_t(-1), var, lane_mask, width);
+  }
+  template <int BK, int BV, int THREADS, bool USE_QK_L2NORM_IN_KERNEL, bool IS_KDA>
+  __device__ void computation_tight(
+      const choreo::f16 a_f16, const choreo::f16 b_f16,
+      const choreo::f16 dt_bias_f16, const choreo::f32 a_log_f32,
+      const choreo::f32 softplus_beta, const choreo::f32 softplus_threshold,
+      const choreo::f32 scale, choreo::f16 *__restrict__ q_f16,
+      choreo::f16 *__restrict__ k_f16, choreo::f16 *__restrict__ v_f16,
+      choreo::f16 *__restrict__ o_f16, choreo::f32 *__restrict__ h) {
+    int tid = threadIdx.x;
+    constexpr int WARP_SIZE = 32;
+    constexpr int NUM_WARPS = THREADS / WARP_SIZE;
+    constexpr int ROWS_PER_THREAD = BK / THREADS;
+    const float a = __half2float(a_f16);
+    const float b = __half2float(b_f16);
+    const float dt_bias = __half2float(dt_bias_f16);
+    const float a_log = a_log_f32;
+    
+    float q[ROWS_PER_THREAD];
+    float k[ROWS_PER_THREAD];
+#pragma unroll
+    for (int ii = 0; ii < ROWS_PER_THREAD; ++ii) {
+      q[ii] = __half2float(q_f16[tid + ii * THREADS]);
+      k[ii] = __half2float(k_f16[tid + ii * THREADS]);
+    }
+    
+    float v_local = tid < BV ? __half2float(v_f16[tid]) : 0.0f;
+    
+    float x = a + dt_bias;
+    float beta_x = softplus_beta * x;
+    float softplus_x = beta_x < softplus_threshold
+                           ? (1.0f / softplus_beta) * __logf(1.0f + __expf(beta_x))
+                           : x;
+    float g = -__expf(a_log) * softplus_x;
+    float beta = 1.0f / (1.0f + __expf(-b));
+    
+    if constexpr (USE_QK_L2NORM_IN_KERNEL) {
+      float q_sum = 0.0f, k_sum = 0.0f;
+#pragma unroll
+      for (int ii = 0; ii < ROWS_PER_THREAD; ++ii) {
+        q_sum = __fmaf_rn(q[ii], q[ii], q_sum);
+        k_sum = __fmaf_rn(k[ii], k[ii], k_sum);
+      }
+#pragma unroll
+      for (int offset = WARP_SIZE / 2; offset > 0; offset /= 2) {
+        q_sum += SHFL_XOR(q_sum, offset, WARP_SIZE);
+        k_sum += SHFL_XOR(k_sum, offset, WARP_SIZE);
+      }
+      __shared__ float warp_q_sum[NUM_WARPS];
+      __shared__ float warp_k_sum[NUM_WARPS];
+      int warp_id = tid / WARP_SIZE;
+      int lane_id = tid % WARP_SIZE;
+      if (lane_id == 0) {
+        warp_q_sum[warp_id] = q_sum;
+        warp_k_sum[warp_id] = k_sum;
+      }
+      __syncthreads();
+      if (tid == 0) {
+        float sum_q = 0, sum_k = 0;
+#pragma unroll
+        for (int i = 0; i < NUM_WARPS; ++i) {
+          sum_q += warp_q_sum[i];
+          sum_k += warp_k_sum[i];
+        }
+        warp_q_sum[0] = sum_q;
+        warp_k_sum[0] = sum_k;
+      }
+      __syncthreads();
+      q_sum = warp_q_sum[0];
+      k_sum = warp_k_sum[0];
+      float q_div = rsqrtf(q_sum + 1e-6f);
+      float k_div = rsqrtf(k_sum + 1e-6f);
+#pragma unroll
+      for (int ii = 0; ii < ROWS_PER_THREAD; ++ii) {
+        q[ii] = q[ii] * q_div;
+        k[ii] = k[ii] * k_div;
+      }
+    }
+#pragma unroll
+    for (int ii = 0; ii < ROWS_PER_THREAD; ++ii) {
+      q[ii] = q[ii] * scale;
+    }
+    
+    float h_scale = __expf(g);
+#pragma unroll
+    for (int ii = 0; ii < ROWS_PER_THREAD; ++ii) {
+#pragma unroll
+      for (int j = 0; j < BV; ++j) {
+        h[ii * BV + j] = h[ii * BV + j] * h_scale;
+      }
+    }
+    
+    float vp[BV];
+#pragma unroll
+    for (int j = 0; j < BV; ++j) {
+      vp[j] = 0.0f;
+#pragma unroll
+      for (int ii = 0; ii < ROWS_PER_THREAD; ++ii)
+        vp[j] = __fmaf_rn(h[ii * BV + j], k[ii], vp[j]);
+    }
+#pragma unroll
+    for (int offset = WARP_SIZE / 2; offset > 0; offset /= 2) {
+#pragma unroll
+      for (int j = 0; j < BV; ++j)
+        vp[j] += SHFL_XOR(vp[j], offset, WARP_SIZE);
+    }
+    
+    __shared__ float warp_vp[NUM_WARPS][BV];
+    int warp_id = tid / WARP_SIZE;
+    int lane_id = tid % WARP_SIZE;
+    if (lane_id < BV) {
+      warp_vp[warp_id][lane_id] = vp[lane_id];
+    }
+    __syncthreads();
+    
+    if (tid < BV) {
+      float sum_vp = 0;
+#pragma unroll
+      for (int w = 0; w < NUM_WARPS; ++w) {
+        sum_vp += warp_vp[w][tid];
+      }
+      v_local -= sum_vp;
+      v_local *= beta;
+    }
+    __syncthreads();
+
+    __shared__ float vb_shared[BV];
+    if (tid < BV) {
+      vb_shared[tid] = v_local;
+    }
+    __syncthreads();
+    
+    float vb[BV];
+#pragma unroll
+    for (int j = 0; j < BV; ++j)
+      vb[j] = vb_shared[j];
+#pragma unroll
+    for (int j = 0; j < BV; ++j) {
+#pragma unroll
+      for (int ii = 0; ii < ROWS_PER_THREAD; ++ii)
+        h[ii * BV + j] += k[ii] * vb[j];
+    }
+
+    float op[BV];
+#pragma unroll
+    for (int j = 0; j < BV; ++j) {
+      op[j] = 0.0f;
+#pragma unroll
+      for (int ii = 0; ii < ROWS_PER_THREAD; ++ii)
+        op[j] = __fmaf_rn(h[ii * BV + j], q[ii], op[j]);
+    }
+#pragma unroll
+    for (int offset = WARP_SIZE / 2; offset > 0; offset /= 2) {
+#pragma unroll
+      for (int j = 0; j < BV; ++j)
+        op[j] += SHFL_XOR(op[j], offset, WARP_SIZE);
+    }
+    
+    __shared__ float warp_op[NUM_WARPS][BV];
+    if (lane_id < BV) {
+      warp_op[warp_id][lane_id] = op[lane_id];
+    }
+    __syncthreads();
+    
+    if (tid < BV) {
+      float sum_op = 0;
+#pragma unroll
+      for (int w = 0; w < NUM_WARPS; ++w) {
+        sum_op += warp_op[w][tid];
+      }
+      o_f16[tid] = __float2half(sum_op);
+    }
+  }
+}
+// clang-format off
+__co__ void gdn_f16_BK128_BV128_tight(
+  f32 [HV] A_log,
+  f16 [B, T, HV] a,
+  f16 [HV] dt_bias,
+  f16 [B, T, H, K] q,
+  f16 [B, T, H, K] k,
+  f16 [B, T, HV, V] v,
+  f16 [B, T, HV] b,
+  f16 [B, T, HV, V] & o,
+  f32 [B, HV, K, V] initial_state_source,
+  s32 [B] initial_state_indices,
+  s32 [N] cu_seqlens,
+  f32 scale,
+  f32 softplus_beta,
+  f32 softplus_threshold
+) {
+  bool IS_KDA = false;
+  bool IS_VARLEN = false;
+  bool USE_QK_L2NORM_IN_KERNEL = true;
+  bool USE_INITAL_STATE = true;
+  BK = 128;
+  BV = 128;
+  THREADS = 128;
+  ROWS_PER_THREAD = BK / THREADS;
+  int NV = 1;
+#if ENABLE_DEBUG
+  assert(N == B && !IS_VARLEN, "N should equal to B when IS_VARLEN is not true.");
+  assert(BK >= K, "BK should be next_power_of_2(K)");
+  assert(V == BV, "BV should equal V for this kernel");
+#endif
+  parallel {i_n, i_hv} by [N, HV] : block,
+           t by THREADS : thread {
+    i_h = i_hv / (HV / H);
+    s32 bos = i_n * T;
+    s32 eos = i_n * T + T;
+    s32 LEN = T;
+    if (IS_VARLEN) {
+      bos = cu_seqlens.at(i_n);
+      eos = cu_seqlens.at(i_n + 1);
+      LEN = eos - bos;
+    }
+    f32 a_log_l = A_log.at(i_hv);
+    f16 dt_bias_l = dt_bias.at(i_hv);
+    local f32 [ROWS_PER_THREAD, BV] hidden_l{0};
+    idx = initial_state_indices.at(i_n);
+    if (idx >= 0) {
+      with r in [ROWS_PER_THREAD] {
+        foreach r {
+          dma.copy initial_state_source.view(_, _, _, _).from(idx, 0, r#t, 0)
+                                        .chunkat(_, i_hv, _, _)
+                                        .span_as([1, BV]) => hidden_l.view(1, _).from(r, 0);
+        }
+      }
+    }
+
+    with i_l in LEN {
+      foreach i_l {
+        f16 a_val = a.at(i_n, i_l, i_hv);
+        f16 b_val = b.at(i_n, i_l, i_hv);
+        local f16 [BV] o_l;
+        call computation_tight<BK, BV, THREADS, USE_QK_L2NORM_IN_KERNEL, IS_KDA>
+          (a_val, b_val, dt_bias_l,
+           a_log_l, softplus_beta, softplus_threshold, scale,
+           q.span_as([B * T, H, K]).view(1, 1, _).from(bos + i_l, i_h, 0),
+           k.span_as([B * T, H, K]).view(1, 1, _).from(bos + i_l, i_h, 0),
+           v.span_as([B * T, HV, V]).view(1, 1, _).from(bos + i_l, i_hv, 0),
+           o_l, hidden_l);
+
+        dma.copy o_l => o.span_as([B * T, HV, V])
+                         .view(1, 1, _).from(bos + i_l, i_hv, 0)
+                         .span_as([BV]);
+      }
+    }
+    if (USE_INITAL_STATE) {
+      idx = initial_state_indices.at(i_n);
+      if (idx >= 0) {
+        with r in [ROWS_PER_THREAD] {
+          foreach r {
+            dma.copy hidden_l.view(1, _).from(r, 0)
+                              .span_as([1, BV])
+                              => initial_state_source.view(_, _, _, _).from(idx, 0, r#t, 0)
+                                                     .chunkat(_, i_hv, _, _)
+                                                     .span_as([1, BV]);
+          }
+        }
+      }
+    }
+  }
+}
+// clang-format on
+
+int main() {
+  const int B = 2;
+  const int T = 4;
+  const int H = 8;
+  const int K = 128;
+  const int V = 128;
+  const int HV = H * K / 64;
+  const int N = B;
+
+  const int BK = K;
+  const int BV = V;
+
+  const choreo::f32 softplus_beta = 1.0f;
+  const choreo::f32 softplus_threshold = 20.0f;
+  const choreo::f32 scale = 1.0f / std::sqrt(static_cast<choreo::f32>(K));
+
+  std::vector<uint32_t> A_log_bits(HV);
+  std::vector<uint16_t> a_bits(B * T * HV);
+  std::vector<uint16_t> dt_bias_bits(HV);
+  std::vector<uint16_t> q_bits(B * T * H * K);
+  std::vector<uint16_t> k_bits(B * T * H * K);
+  std::vector<uint16_t> v_bits(B * T * HV * V);
+  std::vector<uint16_t> b_bits(B * T * HV);
+  std::vector<int32_t> indices_bits(B);
+  std::vector<uint32_t> initial_state_bits(B * HV * K * V);
+
+  srand(42);
+  for (size_t i = 0; i < A_log_bits.size(); ++i) {
+    float val = -1.0f + 0.1f * (rand() % 20);
+    A_log_bits[i] = *reinterpret_cast<uint32_t*>(&val);
+  }
+  for (size_t i = 0; i < a_bits.size(); ++i) {
+    __half h = __float2half(0.1f * ((rand() % 20) - 10));
+    a_bits[i] = *reinterpret_cast<uint16_t*>(&h);
+  }
+  for (size_t i = 0; i < dt_bias_bits.size(); ++i) {
+    __half h = __float2half(0.01f * ((rand() % 100) - 50));
+    dt_bias_bits[i] = *reinterpret_cast<uint16_t*>(&h);
+  }
+  for (size_t i = 0; i < q_bits.size(); ++i) {
+    __half h = __float2half(0.01f * ((rand() % 200) - 100));
+    q_bits[i] = *reinterpret_cast<uint16_t*>(&h);
+  }
+  for (size_t i = 0; i < k_bits.size(); ++i) {
+    __half h = __float2half(0.01f * ((rand() % 200) - 100));
+    k_bits[i] = *reinterpret_cast<uint16_t*>(&h);
+  }
+  for (size_t i = 0; i < v_bits.size(); ++i) {
+    __half h = __float2half(0.01f * ((rand() % 200) - 100));
+    v_bits[i] = *reinterpret_cast<uint16_t*>(&h);
+  }
+  for (size_t i = 0; i < b_bits.size(); ++i) {
+    __half h = __float2half(0.1f * ((rand() % 20) - 10));
+    b_bits[i] = *reinterpret_cast<uint16_t*>(&h);
+  }
+  for (size_t i = 0; i < indices_bits.size(); ++i) {
+    indices_bits[i] = i;
+  }
+  for (size_t i = 0; i < initial_state_bits.size(); ++i) {
+    float val = 0.001f * ((rand() % 200) - 100);
+    initial_state_bits[i] = *reinterpret_cast<uint32_t*>(&val);
+  }
+
+  auto A_log = choreo::make_spanview<1, choreo::f32>(
+      reinterpret_cast<choreo::f32 *>(A_log_bits.data()),
+      {static_cast<size_t>(HV)});
+  auto a = choreo::make_spanview<3, choreo::f16>(
+      reinterpret_cast<choreo::f16 *>(a_bits.data()),
+      {static_cast<size_t>(B), static_cast<size_t>(T),
+       static_cast<size_t>(HV)});
+  auto dt_bias = choreo::make_spanview<1, choreo::f16>(
+      reinterpret_cast<choreo::f16 *>(dt_bias_bits.data()),
+      {static_cast<size_t>(HV)});
+  auto q = choreo::make_spanview<4, choreo::f16>(
+      reinterpret_cast<choreo::f16 *>(q_bits.data()),
+      {static_cast<size_t>(B), static_cast<size_t>(T), static_cast<size_t>(H),
+       static_cast<size_t>(K)});
+  auto k_tensor = choreo::make_spanview<4, choreo::f16>(
+      reinterpret_cast<choreo::f16 *>(k_bits.data()),
+      {static_cast<size_t>(B), static_cast<size_t>(T), static_cast<size_t>(H),
+       static_cast<size_t>(K)});
+  auto v = choreo::make_spanview<4, choreo::f16>(
+      reinterpret_cast<choreo::f16 *>(v_bits.data()),
+      {static_cast<size_t>(B), static_cast<size_t>(T), static_cast<size_t>(HV),
+       static_cast<size_t>(V)});
+  auto b = choreo::make_spanview<3, choreo::f16>(
+      reinterpret_cast<choreo::f16 *>(b_bits.data()),
+      {static_cast<size_t>(B), static_cast<size_t>(T),
+       static_cast<size_t>(HV)});
+  auto indices = choreo::make_spanview<1, choreo::s32>(
+      indices_bits.data(), {static_cast<size_t>(B)});
+  std::vector<choreo::s32> cu_seqlens_dummy(N, 0);
+  auto cu_seqlens = choreo::make_spanview<1, choreo::s32>(
+      cu_seqlens_dummy.data(), {static_cast<size_t>(N)});
+
+  auto initial_state_source = choreo::make_spandata<choreo::f32>(B, HV, K, V);
+  std::memcpy(initial_state_source.data(),
+              reinterpret_cast<choreo::f32 *>(initial_state_bits.data()),
+              B * HV * K * V * sizeof(choreo::f32));
+
+  auto o = choreo::make_spandata<choreo::f16>(B, T, HV, V);
+
+  int warmup = 10;
+  int repeat = 50;
+
+  char* warmup_env = std::getenv("CHOREO_TIMING_WARMUP");
+  char* repeat_env = std::getenv("CHOREO_TIMING_REPEAT");
+  if (warmup_env) warmup = std::atoi(warmup_env);
+  if (repeat_env) repeat = std::atoi(repeat_env);
+
+  for (int i = 0; i < warmup; ++i) {
+    gdn_f16_BK128_BV128_tight(
+        A_log, a, dt_bias, q, k_tensor, v, b, o.view(), initial_state_source.view(),
+        indices, cu_seqlens, scale, softplus_beta, softplus_threshold);
+  }
+  cudaDeviceSynchronize();
+
+  auto start = std::chrono::high_resolution_clock::now();
+  for (int i = 0; i < repeat; ++i) {
+    gdn_f16_BK128_BV128_tight(
+        A_log, a, dt_bias, q, k_tensor, v, b, o.view(), initial_state_source.view(),
+        indices, cu_seqlens, scale, softplus_beta, softplus_threshold);
+  }
+  cudaDeviceSynchronize();
+  auto end = std::chrono::high_resolution_clock::now();
+  double elapsed_ms = std::chrono::duration<double, std::milli>(end - start).count();
+  double avg_ms = elapsed_ms / repeat;
+
+  size_t total_ops = 0;
+  total_ops += (size_t)B * T * HV * BK * BV * 2;
+  total_ops += (size_t)B * T * HV * BK * BV * 2;
+  total_ops += (size_t)B * T * HV * BK * BV * 2;
+  double tflops = (double)total_ops / (avg_ms * 1e9);
+
+  std::cout << "GDN FP16->FP32 Kernel Performance (tight intrinsics):" << std::endl;
+  std::cout << "  Shape: B=" << B << " T=" << T << " H=" << H << " K=" << K << " V=" << V << std::endl;
+  std::cout << "  Average time: " << avg_ms << " ms" << std::endl;
+  std::cout << "  TFLOPS: " << tflops << std::endl;
+
+  std::cout << "TEST PASSED" << std::endl;
+  return 0;
+}

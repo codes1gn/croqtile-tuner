@@ -6,3 +6,5 @@ iter003	iter003_bv128_128threads	0.0326	KEEP	launch_bound	BV=128 (full V), 128 t
 iter004	iter004_threads256	0.0019	DISCARD	launch_bound	256 threads with atomicAdd - too slow due to atomic contention
 iter005	iter005_doublebuf	0.0	COMPILE_FAIL	launch_bound	Double buffering with rotate - syntax errors with buffer rotation
 iter006	iter006_vec2load	0.0320	DISCARD	launch_bound	Vec2 load with shared mem buffers - slightly slower due to extra copies
+iter007	iter007_unroll2	0.00095	DISCARD	launch_bound	Fast math intrinsics caused correctness issues with sync
+iter008	iter008_reg64	0.0276	DISCARD	launch_bound	Maxrregcount=64 caused register spilling

@@ -80,3 +80,6 @@
 {"ts":"2026-04-19T22:21:33.662Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter017_tma_lhs (drift=1)","level":"info"}
 {"ts":"2026-04-19T22:21:41.880Z","tool":"store_round","msg":"Storing iter017_tma_lhs (KEEP 12.88 TFLOPS)","level":"info"}
 {"ts":"2026-04-19T22:21:41.900Z","tool":"store_round","msg":"Stored iter017_tma_lhs: KEEP 12.88 TFLOPS (round 17)","level":"info"}
+{"ts":"2026-04-19T22:22:09.997Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bins/M128_N512_K2048/qwen35_moe_fp8/iter017_tma_lhs","level":"info"}
+{"ts":"2026-04-19T22:22:16.803Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/M128_N512_K2048/qwen35_moe_fp8/ncu_iter017_tma_lhs_round18.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/M128_N512_K2048/qwen35_moe_fp8/ncu_iter017_tma_lhs_round18.csv","level":"info"}
+{"ts":"2026-04-19T22:22:37.915Z","tool":"profile_extract","msg":"Analyzing iter017_tma_lhs from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/M128_N512_K2048/qwen35_moe_fp8/ncu_iter017_tma_lhs_round18b.csv","level":"info"}

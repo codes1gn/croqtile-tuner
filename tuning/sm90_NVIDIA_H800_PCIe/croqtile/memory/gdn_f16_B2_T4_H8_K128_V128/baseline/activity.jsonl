@@ -40,3 +40,13 @@
 {"ts":"2026-04-19T22:20:45.486Z","tool":"store_round","msg":"Stored iter006_vec2load: DISCARD 0.0320 TFLOPS (round 6)","level":"info"}
 {"ts":"2026-04-19T22:20:57.408Z","tool":"next_iter","msg":"Resolved iter007_unroll2","level":"info"}
 {"ts":"2026-04-19T22:20:57.442Z","tool":"checkpoint_write","msg":"PLANNED iter007_unroll2: Process 2 timesteps per iteration to increase arithmetic intensity and hide latency","level":"info"}
+{"ts":"2026-04-19T22:22:18.909Z","tool":"co2cu","msg":"Compiling iter007_unroll2.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T22:22:19.098Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter007_unroll2.cu","level":"info"}
+{"ts":"2026-04-19T22:22:39.722Z","tool":"store_round","msg":"Storing iter007_unroll2 (DISCARD 0.00095 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T22:22:39.741Z","tool":"store_round","msg":"Stored iter007_unroll2: DISCARD 0.00095 TFLOPS (round 7)","level":"info"}
+{"ts":"2026-04-19T22:22:45.362Z","tool":"next_iter","msg":"Resolved iter008_reg64","level":"info"}
+{"ts":"2026-04-19T22:22:45.642Z","tool":"next_iter","msg":"Resolved iter008_nowarp_red","level":"info"}
+{"ts":"2026-04-19T22:22:45.921Z","tool":"next_iter","msg":"Resolved iter008_smempad","level":"info"}
+{"ts":"2026-04-19T22:22:52.828Z","tool":"checkpoint_write","msg":"PLANNED iter008_reg64: Reduce register pressure by limiting max registers to 64 per thread via nvcc flag","level":"info"}
+{"ts":"2026-04-19T22:23:23.237Z","tool":"store_round","msg":"Storing iter008_reg64 (DISCARD 0.0276 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T22:23:23.256Z","tool":"store_round","msg":"Stored iter008_reg64: DISCARD 0.0276 TFLOPS (round 8)","level":"info"}
