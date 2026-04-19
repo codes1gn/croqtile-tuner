@@ -1,15 +1,15 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-19T22:40:22Z",
+  "timestamp": "2026-04-19T22:46:23Z",
   "dsl": "croqtile",
   "shape_key": "M128_N512_K2048",
-  "iter": "iter022_scale_prefetch",
+  "iter": "iter024_km_swap",
   "bottleneck": "memory_bound",
-  "idea": "Prefetch scale_a and scale_b values into registers before the WGMMA loop. Currently scale_accumulator loads scale_a from global memory after WGMMA, causing L1TEX scoreboard stalls. By loading scale factors before WGMMA starts, the loads overlap with TMA wait and WGMMA compute.",
-  "expected_gain": "+2-5% TFLOPS from hiding scale load latency",
+  "idea": "STRUCTURAL: Swap K and M loop order. K-loop outer, M-loop inner. Load RHS once per K-tile via TMA, then loop over all M-tiles sharing the same RHS. LHS loaded separately for each M-tile. Reduces RHS DRAM traffic by M_tiles factor (2x for this shape). Each CTA loads RHS 16x instead of 32x.",
+  "expected_gain": "+10-20% TFLOPS from halved RHS memory traffic",
   "levers": [
-    "memory_access_pattern",
-    "prefetch"
+    "loop_structure",
+    "tiling"
   ],
   "status": "PLANNED"
 }
