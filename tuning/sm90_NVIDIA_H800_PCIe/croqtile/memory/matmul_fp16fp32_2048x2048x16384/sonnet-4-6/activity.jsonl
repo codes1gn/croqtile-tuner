@@ -164,3 +164,71 @@
 {"ts":"2026-04-19T06:04:51.008Z","tool":"next_iter","msg":"Resolved iter023_reg160","level":"info"}
 {"ts":"2026-04-19T06:05:38.639Z","tool":"store_round","msg":"Storing iter023_reg160 (DISCARD 178.72 TFLOPS)","level":"info"}
 {"ts":"2026-04-19T06:05:38.659Z","tool":"store_round","msg":"Stored iter023_reg160: DISCARD 178.72 TFLOPS (round 24)","level":"info"}
+{"ts":"2026-04-19T06:14:59.974Z","tool":"resume_state","msg":"Loading tuning state for croqtile/matmul_fp16fp32_2048x2048x16384","level":"info"}
+{"ts":"2026-04-19T06:16:13.847Z","tool":"sass_compare","msg":"Extracting baseline SASS for fp16fp32 2048x2048x16384","level":"info"}
+{"ts":"2026-04-19T06:16:19.346Z","tool":"sass_compare","msg":"Baseline SASS extracted via ncu (1418 lines)","level":"info"}
+{"ts":"2026-04-19T06:16:23.934Z","tool":"sass_compare","msg":"Extracting custom SASS for iter015_regctrl","level":"info"}
+{"ts":"2026-04-19T06:16:34.163Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter015_regctrl","level":"info"}
+{"ts":"2026-04-19T06:16:42.970Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/ncu_iter015_regctrl_round25.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/ncu_iter015_regctrl_round25.csv","level":"info"}
+{"ts":"2026-04-19T06:16:47.862Z","tool":"profile_extract","msg":"Analyzing iter015_regctrl from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/ncu_iter015_regctrl_round25.csv","level":"info"}
+{"ts":"2026-04-19T06:17:28.281Z","tool":"checkpoint_write","msg":"PLANNED iter024_tm192_1p2c: STRUCTURAL: Increase TILE_M to 192 (cuBLAS uses 320) with 1p2c warp-spec. Larger M-tile improves data reuse on K-heavy shape (K=16384). Use 3 stages for better pipeline depth.","level":"info"}
+{"ts":"2026-04-19T06:18:33.331Z","tool":"co2cu","msg":"Compiling iter024_tm192_1p2c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T06:18:33.456Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter024_tm192_1p2c.cu","level":"info"}
+{"ts":"2026-04-19T06:20:59.008Z","tool":"store_round","msg":"Storing iter024_tm192_1p2c (HANG 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T06:21:03.584Z","tool":"store_round","msg":"Storing iter024_tm192_1p2c (HANG 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T06:21:03.604Z","tool":"store_round","msg":"Stored iter024_tm192_1p2c: HANG 0 TFLOPS (round 25)","level":"info"}
+{"ts":"2026-04-19T06:21:19.944Z","tool":"checkpoint_write","msg":"PLANNED iter025_wn256_1p1c: STRUCTURAL: Increase WARP_N from 128 to 256 with 1p1c. Double N-tile per CTA increases compute density. Grid becomes 32x8=256 CTAs. Keep maxrregcount=128 for register control.","level":"info"}
+{"ts":"2026-04-19T06:22:15.879Z","tool":"co2cu","msg":"Compiling iter025_wn256_1p1c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T06:22:15.989Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter025_wn256_1p1c.cu","level":"info"}
+{"ts":"2026-04-19T06:23:03.942Z","tool":"store_round","msg":"Storing iter025_wn256_1p1c (DISCARD 211.295 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T06:23:03.963Z","tool":"store_round","msg":"Stored iter025_wn256_1p1c: DISCARD 211.295 TFLOPS (round 26)","level":"info"}
+{"ts":"2026-04-19T06:23:24.440Z","tool":"checkpoint_write","msg":"PLANNED iter026_stg4_swiz64: STRUCTURAL: 4 stages instead of 3 with TILE_K=32 and SWIZ=64 (smaller K-chunks). K=16384 means 512 K-iterations with TILE_K=32 vs 256 with TILE_K=64. More stages may help pipeline depth.","level":"info"}
+{"ts":"2026-04-19T06:24:19.810Z","tool":"co2cu","msg":"Compiling iter026_stg4_swiz64.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T06:24:19.919Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter026_stg4_swiz64.cu","level":"info"}
+{"ts":"2026-04-19T06:24:54.549Z","tool":"store_round","msg":"Storing iter026_stg4_swiz64 (DISCARD 180.056 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T06:24:54.568Z","tool":"store_round","msg":"Stored iter026_stg4_swiz64: DISCARD 180.056 TFLOPS (round 27)","level":"info"}
+{"ts":"2026-04-19T06:26:29.945Z","tool":"checkpoint_write","msg":"PLANNED iter027_launch_bounds_opt: Phase 2 optimization: Add __launch_bounds__(256, 2) to kernel. 256 threads/CTA, hint 2 CTAs/SM. May help register allocation and occupancy without changing .co structure.","level":"info"}
+{"ts":"2026-04-19T06:26:37.253Z","tool":"co2cu","msg":"Compiling iter027_launch_bounds_opt.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T06:26:37.362Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter027_launch_bounds_opt.cu","level":"info"}
+{"ts":"2026-04-19T06:27:25.149Z","tool":"store_round","msg":"Storing iter027_launch_bounds_opt (DISCARD 169.333 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T06:27:25.169Z","tool":"store_round","msg":"Stored iter027_launch_bounds_opt: DISCARD 169.333 TFLOPS (round 28)","level":"info"}
+{"ts":"2026-04-19T06:27:35.118Z","tool":"checkpoint_write","msg":"PLANNED iter028_ptxas_opts: Phase 2: Try ptxas optimization flags: -Xptxas -dlcm=ca (cache all loads at L1), --use_fast_math, and -ftz=true (flush denorms to zero). May help memory and compute throughput.","level":"info"}
+{"ts":"2026-04-19T06:27:41.414Z","tool":"co2cu","msg":"Compiling iter028_ptxas_opts.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T06:27:41.523Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter028_ptxas_opts.cu","level":"info"}
+{"ts":"2026-04-19T06:28:15.167Z","tool":"store_round","msg":"Storing iter028_ptxas_opts (DISCARD 169.741 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T06:28:15.189Z","tool":"store_round","msg":"Stored iter028_ptxas_opts: DISCARD 169.741 TFLOPS (round 29)","level":"info"}
+{"ts":"2026-04-19T06:28:24.848Z","tool":"checkpoint_write","msg":"PLANNED iter029_wn192_1p1c: STRUCTURAL: WARP_N=192 (midpoint between 128 and 256). Grid 32×11=352 CTAs. SMEM ~135KB. May balance compute density vs register pressure better.","level":"info"}
+{"ts":"2026-04-19T06:29:20.460Z","tool":"co2cu","msg":"Compiling iter029_wn192_1p1c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T06:29:20.571Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter029_wn192_1p1c.cu","level":"info"}
+{"ts":"2026-04-19T06:30:10.516Z","tool":"store_round","msg":"Storing iter029_wn192_1p1c (DISCARD 145.923 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T06:30:10.537Z","tool":"store_round","msg":"Stored iter029_wn192_1p1c: DISCARD 145.923 TFLOPS (round 30)","level":"info"}
+{"ts":"2026-04-19T06:34:19.109Z","tool":"next_iter","msg":"Resolved iter030_acc5_tm320","level":"info"}
+{"ts":"2026-04-19T06:34:19.142Z","tool":"checkpoint_write","msg":"PLANNED iter030_acc5_tm320: DEEP STRUCTURAL: Imitate cuBLAS 320x128 tile with 5 accumulators per warpgroup. Each consumer handles 5 64x128 sub-tiles using 5 separate mma accumulators.","level":"info"}
+{"ts":"2026-04-19T06:35:24.499Z","tool":"co2cu","msg":"Compiling iter030_acc5_tm320.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T06:36:28.548Z","tool":"co2cu","msg":"Compiling iter030_acc5_tm320.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T06:37:29.326Z","tool":"co2cu","msg":"Compiling iter030_acc5_tm320.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T06:37:29.454Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter030_acc5_tm320.cu","level":"info"}
+{"ts":"2026-04-19T06:39:28.849Z","tool":"co2cu","msg":"Compiling iter031_acc2_tm128.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T06:39:28.969Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter031_acc2_tm128.cu","level":"info"}
+{"ts":"2026-04-19T06:40:41.082Z","tool":"store_round","msg":"Storing iter030_acc5_tm320 (DISCARD 7.87 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T06:40:41.101Z","tool":"store_round","msg":"Stored iter030_acc5_tm320: DISCARD 7.87 TFLOPS (round 30)","level":"info"}
+{"ts":"2026-04-19T06:40:55.172Z","tool":"next_iter","msg":"Resolved iter032_tm128_1p2c","level":"info"}
+{"ts":"2026-04-19T06:40:55.206Z","tool":"checkpoint_write","msg":"PLANNED iter032_tm128_1p2c: 1p2c with TILE_M=128: 2 consumer warp-groups each handling 64 rows. Distributes register pressure.","level":"info"}
+{"ts":"2026-04-19T06:41:49.906Z","tool":"co2cu","msg":"Compiling iter032_tm128_1p2c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T06:41:50.039Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter032_tm128_1p2c.cu","level":"info"}
+{"ts":"2026-04-19T06:42:20.043Z","tool":"store_round","msg":"Storing iter032_tm128_1p2c (DISCARD 206.18 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T06:42:20.062Z","tool":"store_round","msg":"Stored iter032_tm128_1p2c: DISCARD 206.18 TFLOPS (round 32)","level":"info"}
+{"ts":"2026-04-19T06:45:09.353Z","tool":"next_iter","msg":"Resolved iter033_stg2_occ","level":"info"}
+{"ts":"2026-04-19T06:45:09.388Z","tool":"checkpoint_write","msg":"PLANNED iter033_stg2_occ: 2 stages to reduce SMEM: 2×(64×64+128×64)×2B = 49152B + 32KB output = 81KB. Should fit 3 CTAs/SM vs 2.","level":"info"}
+{"ts":"2026-04-19T06:46:08.950Z","tool":"co2cu","msg":"Compiling iter033_stg2_occ.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T06:46:09.061Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter033_stg2_occ.cu","level":"info"}
+{"ts":"2026-04-19T06:46:33.995Z","tool":"store_round","msg":"Storing iter033_stg2_occ (DISCARD 155.38 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T06:46:34.016Z","tool":"store_round","msg":"Stored iter033_stg2_occ: DISCARD 155.38 TFLOPS (round 33)","level":"info"}
+{"ts":"2026-04-19T06:49:36.284Z","tool":"next_iter","msg":"Resolved iter034_cublas_struct","level":"info"}
+{"ts":"2026-04-19T06:49:36.321Z","tool":"checkpoint_write","msg":"PLANNED iter034_cublas_struct: cuBLAS structure: 384 threads (1p2c), TILE_M=192 (3×64), TILE_N=128, 2 stages, 168+ regs. Each consumer handles 96 rows.","level":"info"}
+{"ts":"2026-04-19T06:50:41.480Z","tool":"co2cu","msg":"Compiling iter034_cublas_struct.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T06:50:41.624Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter034_cublas_struct.cu","level":"info"}
+{"ts":"2026-04-19T06:51:37.539Z","tool":"store_round","msg":"Storing iter034_cublas_struct (DISCARD 191.96 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T06:51:37.560Z","tool":"store_round","msg":"Stored iter034_cublas_struct: DISCARD 191.96 TFLOPS (round 34)","level":"info"}
+{"ts":"2026-04-19T07:02:36.666Z","tool":"co2cu","msg":"Compiling iter036_direct_global_store.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T07:02:36.813Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter036_direct_global_store.cu","level":"info"}

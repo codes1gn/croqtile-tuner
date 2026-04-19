@@ -15,13 +15,13 @@
   "opencode_session_id": "ses_261b0c646ffeQ3TdQL4vF9f80C",
   "sessions": [
     {
-      "id": 26,
+      "id": 28,
       "task_id": 8,
       "session_id": "59fe0370-378a-42e1-a4e8-32c45bda79b8",
       "agent_type": "cursor_cli",
       "model": "cursor/claude-4.6-opus-max",
       "request_number": 1,
-      "started_at": "2026-04-18T16:06:36.164855",
+      "started_at": "2026-04-19T07:45:39.330083",
       "ended_at": null
     }
   ]

@@ -14,13 +14,13 @@
   "opencode_session_id": "ses_2611935b2ffe6Y1VFVdDkatb2P",
   "sessions": [
     {
-      "id": 28,
+      "id": 30,
       "task_id": 11,
       "session_id": "ses_2611935b2ffe6Y1VFVdDkatb2P",
       "agent_type": null,
       "model": "opus-4",
       "request_number": 1,
-      "started_at": "2026-04-18T16:06:36.202621",
+      "started_at": "2026-04-19T07:45:39.395014",
       "ended_at": null
     }
   ]

@@ -1,0 +1,69 @@
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter036_direct_global_store.co:39.12: info: In the current kernel `__choreo_device_matmul`, cudaFuncAttributeMaxDynamicSharedMemorySize is set to `147456` bytes, cause shared memory usagtuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter036_direct_global_store.co:39.12: info: In the          ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter036_direct_global_store.co:59.29: warning: The implicit type conversion may lose precision: 'f64' to 'f32'
+          mc0 = mma.fill.f32 0.0;
+                              ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter036_direct_global_store.co:60.29: warning: The implicit type conversion may lose precision: 'f64' to 'f32'
+          mc1 = mma.fill.f32 0.0;
+                              ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter036_direct_global_store.co:91.29: warning: The implicit type conversion may lose precision: 'f64' to 'f32'
+          mc2 = mma.fill.f32 0.0;
+                              ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter036_direct_global_store.co:92.29: warning: The implicit type conversion may lose precision: 'f64' to 'f32'
+          mc3 = mma.fill.f32 0.0;
+                              ^
+       ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter036_direct_global_store.co:92.29: warning: The implicit type conversion may lose precision: 'f64' to 'f32'
+          mc3 = mma.fill.f32 0.0;
+                              ^
+[co2cu] Extracting .cu from tuning/sm90_NVIDIA_H800_PCIe/croqtile/cmd/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter036_direct_global_store.cute.result
+Extracted 511 lines to tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter036_direct_global_store.cu
+{"co": "tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter036_direct_global_store.co", "cu": "tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter036_direct_global_store.cu", "result": "tuning/sm90_NVIDIA_H800_PCIe/croqtile/cmd/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter036_direct_global_store.cute.result", "nvcc_flags": "-gencode arch=compute_90a,code=sm_90a -std=c++17 -DCUTLASS_ENABLE_TENSOR_CORE_MMA=1 -D__CHOREO_TARGET_CUTE__ -Xcompiler -static-libstdc++ -lcuda -O3 -D__USE_CUDA_TYPE__ -D__CHOREO_DMA_DIAGNOSIS__ --expt-relaxed-constexpr -I${CUTE_HOME}/include -L${CUDA_HOME}/lib64 -lcuda -I/home/albert/workspace/croqtile-tuner/.claude/skills/croq-tune/tools/choreo_headers", "headers_dir": "/home/albert/workspace/croqtile-tuner/.claude/skills/croq-tune/tools/choreo_headers", "status": "ready"}
+
+[READY] Phase 2: .cu at tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter036_direct_global_store.cu. Edit the kernel section, then build with nvcc.
+[READY] Headers at: /home/albert/workspace/croqtile-tuner/.claude/skills/croq-tune/tools/choreo_headers
+[READY] Suggested nvcc flags: -gencode arch=compute_90a,code=sm_90a -std=c++17 -DCUTLASS_ENABLE_TENSOR_CORE_MMA=1 -D__CHOREO_TARGET_CUTE__ -Xcompiler -static-libstdc++ -lcuda -O3 -D__USE_CUDA_TYPE__ -D__CHOREO_DMA_DIAGNOSIS__ --expt-relaxed-constexpr -I${CUTE_HOME}/include -L${CUDA_HOME}/lib64 -lcuda -I/home/albert/workspace/croqtile-tuner/.claude/skills/croq-tune/tools/choreo_headers
+[READY] WMMA note: if nvcc reports 'store_matrix_sync' type mismatch, your .co uses wrong accumulator type.
+[READY]   f16f32/bf16fp32 kernels need 'mma.fill.f32' + 'f32 [M,N] output' in the .co file.
+[READY]   f16-only kernels use 'mma.fill' + 'f16 [M,N] output'. See croq-dsl-croqtile SKILL.md.
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter036_direct_global_store.cu(241): warning #177-D: variable "anon_1" was declared but never referenced
+              auto anon_1 = stage * 4 + 0;
+                   ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter036_direct_global_store.cu(242): warning #177-D: variable "anon_2" was declared but never referenced
+              auto anon_2 = stage * 4 + 1;
+                   ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter036_direct_global_store.cu(208): warning #177-D: variable "anon_3" was declared but never referenced
+      auto anon_3 = blockIdx.x * 4 + 0;
+           ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter036_direct_global_store.cu(209): warning #177-D: variable "anon_4" was declared but never referenced
+      auto anon_4 = blockIdx.x * 4 + 1;
+           ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter036_direct_global_store.cu(313): warning #177-D: variable "anon_5" was declared but never referenced
+              auto anon_5 = stage * 4 + 2;
+                   ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter036_direct_global_store.cu(314): warning #177-D: variable "anon_6" was declared but never referenced
+              auto anon_6 = stage * 4 + 3;
+                   ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter036_direct_global_store.cu(280): warning #177-D: variable "anon_7" was declared but never referenced
+      auto anon_7 = blockIdx.x * 4 + 2;
+           ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter036_direct_global_store.cu(281): warning #177-D: variable "anon_8" was declared but never referenced
+      auto anon_8 = blockIdx.x * 4 + 3;
+           ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter036_direct_global_store.cu(166): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) cuda::barrier<cuda::thread_scope_block> full[3];
+                                                                    ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter036_direct_global_store.cu(175): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) cuda::barrier<cuda::thread_scope_block> empty[3];
+                                                                    ^
+

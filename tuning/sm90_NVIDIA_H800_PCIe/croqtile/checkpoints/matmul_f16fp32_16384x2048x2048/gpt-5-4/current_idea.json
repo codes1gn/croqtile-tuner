@@ -1,15 +1,17 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-19T05:44:49Z",
+  "timestamp": "2026-04-19T06:39:44Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_16384x2048x2048",
-  "iter": "iter049_wk32",
+  "iter": "iter055_cublas_imitate",
   "bottleneck": "compute_bound",
-  "idea": "WARP_K=32 (double inner loop stride); test if fewer inner iterations helps",
-  "expected_gain": "+2 TFLOPS",
+  "idea": "Imitate cuBLAS: TILE_M=128, TILE_N=256, K=64, STAGES=4, CLUSTER_M=2, multicast A",
+  "expected_gain": "+100 TFLOPS (match cuBLAS)",
   "levers": [
-    "WARP_K 32",
-    "maxreg=128"
+    "TILE_M=128",
+    "TILE_N=256",
+    "CLUSTER_M=2",
+    "tma.copy.multicast on lhs"
   ],
   "status": "PLANNED"
 }

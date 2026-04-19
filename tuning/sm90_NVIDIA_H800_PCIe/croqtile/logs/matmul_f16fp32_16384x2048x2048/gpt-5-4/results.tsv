@@ -49,3 +49,9 @@ iter046	iter046_maxreg96	304.515	DISCARD	compute_bound	maxreg=96; too constraine
 iter047	iter047_sm64	143.272	DISCARD	compute_bound	NUM_SMS=64; underutilizes GPU
 iter048	iter048_sm228	248.746	DISCARD	compute_bound	NUM_SMS=228; oversubscription hurts
 iter049	iter049_wk32	0	COMPILE_FAIL	compute_bound	WARP_K=32 violates WGMMA f16 constraint (must be 16)
+iter050	iter050_cluster2	164.5	DISCARD	compute_bound	Cluster + persistent grid incompatible; kernel not scaling with size
+iter051	iter051_cluster_np	149.2	DISCARD	compute_bound	Cluster non-persistent; cluster overhead without multicast TMA benefit
+iter052	iter052_tbc_multicast	117.7	DISCARD	compute_bound	tbc-style with TILE_M=64 and multicast; WGMMA serialized, does not scale
+iter053	iter053_noreg	305.2	DISCARD	compute_bound	No maxreg cap; compiler uses 148 regs; worse than 128-limited
+iter054	iter054_wn256_168reg	150.6	DISCARD	unknown	WARP_N=256 with 168 regs; timing not scaling with problem size
+iter055	iter055_cublas_imitate	147.3	DISCARD	unknown	cuBLAS imitation with cluster, multicast; STAGES=2 due to SMEM; anomalous timing

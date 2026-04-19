@@ -1,13 +1,15 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-19T06:04:50Z",
+  "timestamp": "2026-04-19T06:49:36Z",
   "dsl": "croqtile",
   "shape_key": "matmul_fp16fp32_2048x2048x16384",
-  "iter": "iter023_reg160",
+  "iter": "iter034_cublas_struct",
   "bottleneck": "compute_bound",
-  "idea": "Try maxrregcount=160 (between iter015 128 and cuBLAS 187). More registers may allow better instruction scheduling while maintaining some occupancy benefits.",
-  "expected_gain": "+5 TFLOPS",
+  "idea": "cuBLAS structure: 384 threads (1p2c), TILE_M=192 (3\u00d764), TILE_N=128, 2 stages, 168+ regs. Each consumer handles 96 rows.",
+  "expected_gain": "+50 TFLOPS",
   "levers": [
+    "warp_spec",
+    "TILE_M",
     "maxrregcount"
   ],
   "status": "PLANNED"

@@ -1,0 +1,3 @@
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x2048x2048/gpt-5-4/iter052_tbc_multicast.co:52.9: warning: Dimensions could be inconsistent between DMA 'from[0]((::matmul::N / ((::matmul::N + 127) / 128)))' v.s. 'to[0](128) 'from[1]((::matmul::K / ((::matmul::K + 63) / 64)))' v.s. 'to[1](64)).
+          tma.copy.multicast.swiz<MATMUL_SWIZ> rhs.chunkat(block_n, iv_k) => rhs_load_s;
+          ^

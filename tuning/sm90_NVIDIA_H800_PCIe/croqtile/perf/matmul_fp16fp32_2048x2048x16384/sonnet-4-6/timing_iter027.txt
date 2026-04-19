@@ -1,0 +1,5 @@
+Verification passed (sampled 2000 elements)
+M=2048 N=2048 K=16384
+Timing avg ms: 0.811649
+TFLOPS: 169.333
+HW efficiency: 11.1919%

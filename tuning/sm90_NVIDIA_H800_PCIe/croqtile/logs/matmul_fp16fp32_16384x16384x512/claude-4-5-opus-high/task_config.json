@@ -21,7 +21,7 @@
       "agent_type": "cursor_cli",
       "model": "cursor/claude-4.6-opus-max",
       "request_number": 1,
-      "started_at": "2026-04-18T16:06:36.036890",
+      "started_at": "2026-04-19T07:45:39.181241",
       "ended_at": null
     },
     {
@@ -31,27 +31,27 @@
       "agent_type": "cursor_cli",
       "model": "cursor/claude-4.6-opus-max",
       "request_number": 1,
-      "started_at": "2026-04-18T16:06:36.036892",
+      "started_at": "2026-04-19T07:45:39.181243",
       "ended_at": null
     },
     {
-      "id": 30,
+      "id": 23,
       "task_id": 5,
       "session_id": "06905cdf-26a4-44c3-98e7-15e46aed2727",
       "agent_type": "cursor_cli",
       "model": "claude-4-5-opus-high",
       "request_number": 2,
-      "started_at": "2026-04-19T04:50:31.138355",
+      "started_at": "2026-04-19T07:45:39.181244",
       "ended_at": null
     },
     {
-      "id": 31,
+      "id": 24,
       "task_id": 5,
       "session_id": "7976d9e1-d4f9-4627-9498-955071bcbdec",
       "agent_type": "cursor_cli",
       "model": "claude-4-5-opus-high",
       "request_number": 2,
-      "started_at": "2026-04-19T05:18:01.171167+00:00",
+      "started_at": "2026-04-19T07:45:39.181244",
       "ended_at": null
     }
   ]

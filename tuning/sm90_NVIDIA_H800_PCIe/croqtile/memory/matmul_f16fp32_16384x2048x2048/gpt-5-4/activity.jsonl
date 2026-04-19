@@ -315,3 +315,35 @@
 {"ts":"2026-04-19T05:44:49.280Z","tool":"checkpoint_write","msg":"PLANNED iter049_wk32: WARP_K=32 (double inner loop stride); test if fewer inner iterations helps","level":"info"}
 {"ts":"2026-04-19T05:45:00.855Z","tool":"store_round","msg":"Storing iter049_wk32 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
 {"ts":"2026-04-19T05:45:00.873Z","tool":"store_round","msg":"Stored iter049_wk32: COMPILE_FAIL 0 TFLOPS (round 50)","level":"info"}
+{"ts":"2026-04-19T06:12:03.902Z","tool":"checkpoint_write","msg":"PLANNED iter050_cluster2: Enable SM clustering (CLUSTER_M=2) like cuBLAS baseline; requires restructuring parallel hierarchy","level":"info"}
+{"ts":"2026-04-19T06:12:46.428Z","tool":"co2cu","msg":"Compiling iter050_cluster2.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T06:12:46.610Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x2048x2048/gpt-5-4/iter050_cluster2.cu","level":"info"}
+{"ts":"2026-04-19T06:13:50.769Z","tool":"co2cu","msg":"Compiling iter050_cluster2.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T06:13:50.961Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x2048x2048/gpt-5-4/iter050_cluster2.cu","level":"info"}
+{"ts":"2026-04-19T06:14:26.177Z","tool":"store_round","msg":"Storing iter050_cluster2 (DISCARD 164.5 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T06:14:26.195Z","tool":"store_round","msg":"Stored iter050_cluster2: DISCARD 164.5 TFLOPS (round 51)","level":"info"}
+{"ts":"2026-04-19T06:15:35.392Z","tool":"checkpoint_write","msg":"PLANNED iter051_cluster_np: Cluster with non-persistent grid; one block per output tile like cuBLAS baseline","level":"info"}
+{"ts":"2026-04-19T06:16:29.786Z","tool":"co2cu","msg":"Compiling iter051_cluster_np.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T06:16:29.908Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x2048x2048/gpt-5-4/iter051_cluster_np.cu","level":"info"}
+{"ts":"2026-04-19T06:17:24.203Z","tool":"store_round","msg":"Storing iter051_cluster_np (DISCARD 149.2 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T06:17:24.224Z","tool":"store_round","msg":"Stored iter051_cluster_np: DISCARD 149.2 TFLOPS (round 52)","level":"info"}
+{"ts":"2026-04-19T06:26:46.447Z","tool":"checkpoint_write","msg":"PLANNED iter052_tbc_multicast: Proper cluster with tma.copy.multicast for rhs; simpler tbc-style kernel with TILE_M=64","level":"info"}
+{"ts":"2026-04-19T06:27:32.652Z","tool":"co2cu","msg":"Compiling iter052_tbc_multicast.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T06:27:32.750Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x2048x2048/gpt-5-4/iter052_tbc_multicast.cu","level":"info"}
+{"ts":"2026-04-19T06:28:07.436Z","tool":"store_round","msg":"Storing iter052_tbc_multicast (DISCARD 117.7 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T06:28:07.457Z","tool":"store_round","msg":"Stored iter052_tbc_multicast: DISCARD 117.7 TFLOPS (round 53)","level":"info"}
+{"ts":"2026-04-19T06:31:35.258Z","tool":"checkpoint_write","msg":"PLANNED iter053_noreg: Remove maxreg=128 cap; let compiler use natural register count like cuBLAS (168 regs)","level":"info"}
+{"ts":"2026-04-19T06:32:24.664Z","tool":"store_round","msg":"Storing iter053_noreg (DISCARD 305.2 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T06:32:24.685Z","tool":"store_round","msg":"Stored iter053_noreg: DISCARD 305.2 TFLOPS (round 54)","level":"info"}
+{"ts":"2026-04-19T06:35:20.911Z","tool":"checkpoint_write","msg":"PLANNED iter054_wn256_168reg: Match cuBLAS: WARP_N=256, no reg cap (168 regs), STAGES=2 to fit SMEM","level":"info"}
+{"ts":"2026-04-19T06:36:03.983Z","tool":"co2cu","msg":"Compiling iter054_wn256_168reg.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T06:36:04.166Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x2048x2048/gpt-5-4/iter054_wn256_168reg.cu","level":"info"}
+{"ts":"2026-04-19T06:38:03.796Z","tool":"store_round","msg":"Storing iter054_wn256_168reg (DISCARD 150.6 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T06:38:03.818Z","tool":"store_round","msg":"Stored iter054_wn256_168reg: DISCARD 150.6 TFLOPS (round 55)","level":"info"}
+{"ts":"2026-04-19T06:39:44.787Z","tool":"checkpoint_write","msg":"PLANNED iter055_cublas_imitate: Imitate cuBLAS: TILE_M=128, TILE_N=256, K=64, STAGES=4, CLUSTER_M=2, multicast A","level":"info"}
+{"ts":"2026-04-19T06:40:37.900Z","tool":"co2cu","msg":"Compiling iter055_cublas_imitate.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T06:40:49.445Z","tool":"co2cu","msg":"Compiling iter055_cublas_imitate.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T06:41:01.581Z","tool":"co2cu","msg":"Compiling iter055_cublas_imitate.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T06:41:01.702Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x2048x2048/gpt-5-4/iter055_cublas_imitate.cu","level":"info"}
+{"ts":"2026-04-19T06:42:42.289Z","tool":"store_round","msg":"Storing iter055_cublas_imitate (DISCARD 147.3 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T06:42:42.310Z","tool":"store_round","msg":"Stored iter055_cublas_imitate: DISCARD 147.3 TFLOPS (round 56)","level":"info"}

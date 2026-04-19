@@ -23,3 +23,13 @@ iter020	iter020_stg2_reg128	206.81	DISCARD	compute_bound	STAGES=2 + maxrregcount
 iter021	iter021_tm128_1p1c_reg128	0	COMPILE_FAIL	compute_bound	TILE_M=128 1p1c: WGMMA only supports m64. Would need 2 mma accumulators with sep
 iter022	iter022_fastmath_reg128	232.52	DISCARD	compute_bound	use_fast_math + maxrregcount=128: 232.5T vs 232.7T. No improvement - fast_math h
 iter023	iter023_reg160	178.72	DISCARD	compute_bound	maxrregcount=160: 179T vs 233T. 160 regs forces spilling and reduces occupancy. 
+iter024	iter024_tm192_1p2c	0	HANG	compute_bound	STRUCTURAL: TILE_M=128 with 1p2c warp-spec. HANG due to synchronization deadlock
+iter025	iter025_wn256_1p1c	211.295	DISCARD	compute_bound	STRUCTURAL: WARP_N=256 with 1p1c and maxrregcount=160. 211T vs 233T - larger N-t
+iter026	iter026_stg4_swiz64	180.056	DISCARD	compute_bound	STRUCTURAL: 4 stages with TILE_K=32 SWIZ=64. 180T vs 233T - smaller K-tile doubl
+iter027	iter027_launch_bounds_opt	169.333	DISCARD	compute_bound	Phase 2: launch_bounds(256, 2). 169T vs 233T - minBlocks=2 but SMEM 106KB does n
+iter028	iter028_ptxas_opts	169.741	DISCARD	compute_bound	Phase 2: fast_math+ftz+dlcm=ca. 170T vs 233T - dlcm=ca may conflict with TMA asy
+iter029	iter029_wn192_1p1c	145.923	DISCARD	compute_bound	STRUCTURAL: WARP_N=192. 146T vs 233T - N=2048 not divisible by 192 causes partia
+iter030	iter030_acc5_tm320	7.87	DISCARD	compute_bound	4-acc TILE_M=256 2-stage: WGMMA serialization due to 128+ regs per accumulator
+iter032	iter032_tm128_1p2c	206.18	DISCARD	compute_bound	1p2c TILE_M=128: Each consumer handles 64 rows. Works but 3 warp-groups increase
+iter033	iter033_stg2_occ	155.38	DISCARD	occupancy_limited	2 stages to reduce SMEM 106KB->82KB: Insufficient pipeline depth for K=16384. TM
+iter034	iter034_cublas_struct	191.96	DISCARD	compute_bound	cuBLAS structure: 384 threads 1p2c, TILE_M=256, 2 stages, 168 regs. Works but 2 

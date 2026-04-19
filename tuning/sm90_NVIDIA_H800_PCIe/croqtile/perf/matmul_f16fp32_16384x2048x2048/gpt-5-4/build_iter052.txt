@@ -1,0 +1,37 @@
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x2048x2048/gpt-5-4/iter052_tbc_multicast.cu(307): warning #2361-D: invalid narrowing conversion from "unsigned long" to "unsigned int"
+    uint32_t __choreo_tma_1_box_shape[] = {(K / ((K + 63) / 64)), (N / ((N + 127) / 128))};
+                                           ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x2048x2048/gpt-5-4/iter052_tbc_multicast.cu(307): warning #2361-D: invalid narrowing conversion from "unsigned long" to "unsigned int"
+    uint32_t __choreo_tma_1_box_shape[] = {(K / ((K + 63) / 64)), (N / ((N + 127) / 128))};
+                                                                  ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x2048x2048/gpt-5-4/iter052_tbc_multicast.cu(236): warning #177-D: variable "__choreo_vg4id_x" was declared but never referenced
+            auto __choreo_vg4id_x = threadIdx.x / 128;
+                 ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x2048x2048/gpt-5-4/iter052_tbc_multicast.cu(168): warning #177-D: variable "__choreo_device_matmul__ring__" was declared but never referenced
+    auto __choreo_device_matmul__ring__ = nullptr;
+         ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x2048x2048/gpt-5-4/iter052_tbc_multicast.cu(307): warning #2361-D: invalid narrowing conversion from "unsigned long" to "unsigned int"
+    uint32_t __choreo_tma_1_box_shape[] = {(K / ((K + 63) / 64)), (N / ((N + 127) / 128))};
+                                           ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x2048x2048/gpt-5-4/iter052_tbc_multicast.cu(307): warning #2361-D: invalid narrowing conversion from "unsigned long" to "unsigned int"
+    uint32_t __choreo_tma_1_box_shape[] = {(K / ((K + 63) / 64)), (N / ((N + 127) / 128))};
+                                                                  ^
+
+ptxas info    : (C7519) warpgroup.arrive is injected in around line 505 by compiler to allow use of registers in GMMA in function '_Z22__choreo_device_matmulP6__halfS0_Pfjjj14CUtensorMap_stS2_S2_'
+ptxas info    : (C7510) Potential Performance Loss: wgmma.mma_async instructions are serialized due to wgmma pipeline crossing function boundary at a function call in the function '_Z22__choreo_device_matmulP6__halfS0_Pfjjj14CUtensorMap_stS2_S2_'
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x2048x2048/gpt-5-4/iter052_tbc_multicast.cu: In function ‘void matmul(const choreo::spanned_view<__half, 2>&, const choreo::spanned_view<__half, 2>&, const choreo::spanned_view<float, 2>&)’:
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x2048x2048/gpt-5-4/iter052_tbc_multicast.cu:307:42: warning: narrowing conversion of ‘(((long unsigned int)K) / ((((long unsigned int)K) + 63) / 64))’ from ‘long unsigned int’ to ‘uint32_t’ {aka ‘unsigned int’} [-Wnarrowing]
+  307 |   uint32_t __choreo_tma_1_box_shape[] = {(K / ((K + 63) / 64)), (N / ((N + 127) / 128))};
+      |                                        ~~^~~~~~~~~~~~~~~~~~~~~
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x2048x2048/gpt-5-4/iter052_tbc_multicast.cu:307:67: warning: narrowing conversion of ‘(((long unsigned int)N) / ((((long unsigned int)N) + 127) / 128))’ from ‘long unsigned int’ to ‘uint32_t’ {aka ‘unsigned int’} [-Wnarrowing]
+  307 |   uint32_t __choreo_tma_1_box_shape[] = {(K / ((K + 63) / 64)), (N / ((N + 127) / 128))};
+      |                                                                 ~~^~~~~~~~~~~~~~~~~~~~~~~
