@@ -45,3 +45,17 @@
 {"ts":"2026-04-19T08:58:16.740Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter005_early_empty_arrive (drift=1)","level":"info"}
 {"ts":"2026-04-19T08:58:17.077Z","tool":"store_round","msg":"Storing iter005_early_empty_arrive (KEEP 276.88 TFLOPS)","level":"info"}
 {"ts":"2026-04-19T08:58:17.095Z","tool":"store_round","msg":"Stored iter005_early_empty_arrive: KEEP 276.88 TFLOPS (round 5)","level":"info"}
+{"ts":"2026-04-19T08:58:27.751Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_16416x16416x16416/sonnet-4/iter005_early_empty_arrive","level":"info"}
+{"ts":"2026-04-19T08:58:48.588Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16416x16416x16416/sonnet-4/ncu_iter005_early_arrive_round6.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16416x16416x16416/sonnet-4/ncu_iter005_early_arrive_round6.csv","level":"info"}
+{"ts":"2026-04-19T08:58:55.611Z","tool":"profile_extract","msg":"Analyzing iter005_early_empty_arrive from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16416x16416x16416/sonnet-4/ncu_iter005_early_arrive_round6.csv","level":"info"}
+{"ts":"2026-04-19T08:59:37.835Z","tool":"next_iter","msg":"Resolved iter006_wgmma_wait1_pipeline","level":"info"}
+{"ts":"2026-04-19T08:59:43.349Z","tool":"checkpoint_write","msg":"PLANNED iter006_wgmma_wait1_pipeline: warpgroup_wait<1> instead of wait<0>: allow 1 in-flight WGMMA batch so compute for stage K overlaps with TMA for stage K+1, plus early empty arrive from iter005","level":"info"}
+{"ts":"2026-04-19T09:01:03.556Z","tool":"store_round","msg":"Storing iter006_wgmma_wait1_pipeline (DISCARD 275.366 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T09:01:03.575Z","tool":"store_round","msg":"Stored iter006_wgmma_wait1_pipeline: DISCARD 275.366 TFLOPS (round 6)","level":"info"}
+{"ts":"2026-04-19T09:01:54.053Z","tool":"next_iter","msg":"Resolved iter007_p1c2_so_wn128_s3","level":"info"}
+{"ts":"2026-04-19T09:02:00.936Z","tool":"checkpoint_write","msg":"PLANNED iter007_p1c2_so_wn128_s3: STRUCTURAL: switch from 1p1c WN=256 to 1p2c split-output TILE_M=128 WN=128 STAGES=3 non-persistent: 2 consumers each compute 64x128 tiles per TMA fetch, doubling compute/SMEM ratio while reducing register pressure","level":"info"}
+{"ts":"2026-04-19T09:02:57.453Z","tool":"co2cu","msg":"Compiling iter007_p1c2_so_wn128_s3.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T09:02:57.564Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/sonnet-4/iter007_p1c2_so_wn128_s3.cu","level":"info"}
+{"ts":"2026-04-19T09:03:59.458Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter007_p1c2_so_wn128_s3 (drift=1)","level":"info"}
+{"ts":"2026-04-19T09:03:59.795Z","tool":"store_round","msg":"Storing iter007_p1c2_so_wn128_s3 (DISCARD 185.627 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T09:03:59.813Z","tool":"store_round","msg":"Stored iter007_p1c2_so_wn128_s3: DISCARD 185.627 TFLOPS (round 7)","level":"info"}

@@ -8,3 +8,4 @@ iter005	iter005_wn256_s3_pad_output	291.949	DISCARD	memory_bound	1p1c WN=256 STA
 iter006	iter006_wn128_s3_1p1c_2cta	206.236	DISCARD	memory_bound	1p1c WN=128 STAGES=3 hoped for 2 CTAs/SM via SMEM reduction: got worse at 206T v
 iter007	iter007_wn192_s2_1p1c	196.133	DISCARD	memory_bound	1p1c WN=192 STAGES=2: 196T, even worse than WN=256. Narrower tile consistently l
 iter008	iter008_wn256_s4_1p1c	293.326	KEEP	memory_bound	1p1c WN=256 STAGES=4: increased stages from 3 to 4, slight improvement 291T->293
+iter009	iter009_wn256_s2_1p2c_so_tm128	0.0	COMPILE_FAIL	memory_bound	1p2c split-output WN=256 TM=128 STAGES=2 FP32: verification fails with all-zero 

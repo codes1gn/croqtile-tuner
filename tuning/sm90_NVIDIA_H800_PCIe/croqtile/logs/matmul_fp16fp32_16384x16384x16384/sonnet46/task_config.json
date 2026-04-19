@@ -3,7 +3,7 @@
   "dsl": "croqtile",
   "model": "sonnet46",
   "device": "NVIDIA H800 PCIe",
-  "status": "waiting",
+  "status": "running",
   "task_id": 9,
   "variant": "high",
   "agent_type": "opencode",

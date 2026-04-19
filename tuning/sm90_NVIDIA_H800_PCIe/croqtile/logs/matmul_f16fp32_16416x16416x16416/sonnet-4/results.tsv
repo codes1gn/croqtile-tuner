@@ -5,3 +5,5 @@ iter002	iter002_wn256_1p1c_s3	208.987	KEEP	memory_bound	Switch 1p2c→1p1c WN=25
 iter003	iter003_wn256_s3_nonpersis	265.656	KEEP	launch_bound	Switch persistent 114-CTA → non-persistent 16705-CTA (TILE_M=64, WN=256, STAGES=
 iter004	iter004_wn256_s4_nonpersis	262.769	DISCARD	memory_bound	STAGES=4 with WN=256 (224KB SMEM): slightly worse than STAGES=3 (184KB SMEM) — e
 iter005	iter005_early_empty_arrive	276.88	KEEP	memory_bound	Phase 2: move empty[stage].arrive() before warpgroup_commit_batch (early arrive)
+iter006	iter006_wgmma_wait1_pipeline	275.366	DISCARD	memory_bound	warpgroup_wait<1> with extra final wait<0>: slight regression 277T→275T, extra d
+iter007	iter007_p1c2_so_wn128_s3	185.627	DISCARD	memory_bound	STRUCTURAL 1p2c split-out WN=128: 3 warpgroups (384 threads) slower than 1p1c WN

@@ -1,17 +1,19 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-19T08:56:57Z",
+  "timestamp": "2026-04-19T09:02:00Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_16416x16416x16416",
-  "iter": "iter005_early_empty_arrive",
+  "iter": "iter007_p1c2_so_wn128_s3",
   "bottleneck": "memory_bound",
-  "idea": "Phase 2 optimization: move empty[stage].arrive() BEFORE warpgroup_commit_batch/wait<0> so producer can start next TMA load as soon as SMEM is consumed, reducing barrier stall ratio from 3.72 to <2",
-  "expected_gain": "+20T estimate (from 266T to 286T)",
+  "idea": "STRUCTURAL: switch from 1p1c WN=256 to 1p2c split-output TILE_M=128 WN=128 STAGES=3 non-persistent: 2 consumers each compute 64x128 tiles per TMA fetch, doubling compute/SMEM ratio while reducing register pressure",
+  "expected_gain": "+30T estimate (from 277T to 307T)",
   "levers": [
-    "empty_barrier_placement",
-    "producer_consumer_overlap"
+    "warp_spec_topology",
+    "TILE_M",
+    "MATMUL_WARP_N",
+    "num_consumers"
   ],
   "status": "VERIFIED",
-  "verified_iter": "iter005_early_empty_arrive",
+  "verified_iter": "iter007_p1c2_so_wn128_s3",
   "drift_score": 1
 }
