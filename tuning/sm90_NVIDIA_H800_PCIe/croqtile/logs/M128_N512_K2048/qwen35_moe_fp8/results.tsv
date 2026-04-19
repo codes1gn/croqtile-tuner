@@ -16,3 +16,4 @@ iter013	iter013_dlcm	12.25	DISCARD	memory_bound	Added -Xptxas -dlcm=cg for all l
 iter014	iter014_rhs_dbuf	11.85	DISCARD	memory_bound	Double-buffer only RHS TMA sB 16KB keeping LHS single-buffered. Total shared 40K
 iter015	iter015_launchbounds	12.26	DISCARD	memory_bound	Added __launch_bounds__(128, 2) to all 3 WGMMA kernels. No measurable improvemen
 iter016	iter016_inline_scale	12.27	DISCARD	memory_bound	Moved warpgroup_commit_batch+wait inside K-loop before scale_accumulator. Elimin
+iter017	iter017_tma_lhs	12.88	KEEP	memory_bound	STRUCTURAL: Replace cp.async LHS loads with TMA bulk tensor copy, freeing all 12

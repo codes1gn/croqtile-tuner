@@ -1,17 +1,18 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-19T22:14:32Z",
+  "timestamp": "2026-04-19T22:17:47Z",
   "dsl": "croqtile",
   "shape_key": "M128_N512_K2048",
-  "iter": "iter016_inline_scale",
+  "iter": "iter017_tma_lhs",
   "bottleneck": "memory_bound",
-  "idea": "Inline scale_accumulator: remove mc_scale_frag temp array and scale+accumulate directly into mc after WGMMA wait. Saves 64 floats register pressure per K-iter. warpgroup_commit_batch+wait moved inside K-loop right after WGMMA.",
-  "expected_gain": "+2-5% TFLOPS",
+  "idea": "STRUCTURAL: Replace cp.async LHS loads with TMA (cp_async_bulk_tensor_2d). Frees all 128 threads from memory load work. Only thread 0 issues TMA for both LHS and RHS. Requires second TMA descriptor for LHS with stride-K layout. Eliminates the barrier-heavy cp.async fence+wait pattern.",
+  "expected_gain": "+5-15% TFLOPS",
   "levers": [
-    "register_pressure",
-    "inline_scale"
+    "tma_lhs",
+    "cp_async_elimination",
+    "thread_utilization"
   ],
   "status": "VERIFIED",
-  "verified_iter": "iter016_inline_scale",
+  "verified_iter": "iter017_tma_lhs",
   "drift_score": 1
 }

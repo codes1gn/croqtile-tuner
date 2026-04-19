@@ -4,3 +4,5 @@ round	iter	kernel	tflops	decision	bottleneck	idea_summary
 iter002	iter002_bv64_threads64	0.0179	KEEP	launch_bound	Increase BV 32->64, use 64 threads to reduce block count
 iter003	iter003_bv128_128threads	0.0326	KEEP	launch_bound	BV=128 (full V), 128 threads, single NV slice per block
 iter004	iter004_threads256	0.0019	DISCARD	launch_bound	256 threads with atomicAdd - too slow due to atomic contention
+iter005	iter005_doublebuf	0.0	COMPILE_FAIL	launch_bound	Double buffering with rotate - syntax errors with buffer rotation
+iter006	iter006_vec2load	0.0320	DISCARD	launch_bound	Vec2 load with shared mem buffers - slightly slower due to extra copies

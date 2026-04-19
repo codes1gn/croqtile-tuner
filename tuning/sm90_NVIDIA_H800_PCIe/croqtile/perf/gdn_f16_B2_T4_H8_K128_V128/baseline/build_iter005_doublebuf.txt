@@ -1,0 +1,40 @@
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter005_doublebuf.co:253.14: error: DMA statement has a rank mismatch between 'from' and 'to': 3 != 1.
+        q_s1 = dma.copy.async q.span_as([B * T, H, K]).view(1, 1, _).from(bos, i_h, 0)
+               ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter005_doublebuf.co:255.14: error: DMA statement has a rank mismatch between 'from' and 'to': 3 != 1.
+        k_s1 = dma.copy.async k.span_as([B * T, H, K]).view(1, 1, _).from(bos, i_h, 0)
+               ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter005_doublebuf.co:257.14: error: DMA statement has a rank mismatch between 'from' and 'to': 3 != 1.
+        v_s1 = dma.copy.async v.span_as([B * T, HV, V]).view(1, 1, _).from(bos, i_hv, 0)
+               ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter005_doublebuf.co:261.16: error: DMA statement has a rank mismatch between 'from' and 'to': 3 != 1.
+          q_s0 = dma.copy.async q.span_as([B * T, H, K]).view(1, 1, _).from(bos, i_h, 0)
+                 ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter005_doublebuf.co:263.16: error: DMA statement has a rank mismatch between 'from' and 'to': 3 != 1.
+          k_s0 = dma.copy.async k.span_as([B * T, H, K]).view(1, 1, _).from(bos, i_h, 0)
+                 ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter005_doublebuf.co:265.16: error: DMA statement has a rank mismatch between 'from' and 'to': 3 != 1.
+          v_s0 = dma.copy.async v.span_as([B * T, HV, V]).view(1, 1, _).from(bos, i_hv, 0)
+                 ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter005_doublebuf.co:271.9: warning: unable to find a device function 'computation'.
+          call computation<BK, BV, THREADS, USE_QK_L2NORM_IN_KERNEL, IS_KDA>
+          ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter005_doublebuf.co:282.9: error: only support swapping of 'future'. (q_buf0: invalid).
+          rotate(q_buf0, q_buf1);
+          ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter005_doublebuf.co:283.9: error: only support swapping of 'future'. (k_buf0: invalid).
+          rotate(k_buf0, k_buf1);
+          ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter005_doublebuf.co:284.9: error: only support swapping of 'future'. (v_buf0: invalid).
+          rotate(v_buf0, v_buf1);
+          ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter005_doublebuf.co:291.7: warning: unable to find a device function 'computation'.
+        call computation<BK, BV, THREADS, USE_QK_L2NORM_IN_KERNEL, IS_KDA>
+        ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter005_doublebuf.co:297.44: error: in operation "+": unable to apply to the 'getith' bounded variable (i_l[-1]).
+                         .view(1, 1, _).from(bos + i_l(-1), i_hv, 0)
+                                             ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter005_doublebuf.co:297.44: error: expect ' (bos + i_l[-1]) ` to be either an integer, ituple, mdspan type or bounded type (but got unknown).
+                         .view(1, 1, _).from(bos + i_l(-1), i_hv, 0)
+                                             ^
+Totally 11 errors have been detected.

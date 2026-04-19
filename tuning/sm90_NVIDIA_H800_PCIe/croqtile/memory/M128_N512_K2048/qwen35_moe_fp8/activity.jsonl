@@ -75,3 +75,8 @@
 {"ts":"2026-04-19T22:17:12.101Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter016_inline_scale (drift=1)","level":"info"}
 {"ts":"2026-04-19T22:17:12.443Z","tool":"store_round","msg":"Storing iter016_inline_scale (DISCARD 12.27 TFLOPS)","level":"info"}
 {"ts":"2026-04-19T22:17:12.463Z","tool":"store_round","msg":"Stored iter016_inline_scale: DISCARD 12.27 TFLOPS (round 16)","level":"info"}
+{"ts":"2026-04-19T22:17:39.992Z","tool":"next_iter","msg":"Resolved iter017_tma_lhs","level":"info"}
+{"ts":"2026-04-19T22:17:47.593Z","tool":"checkpoint_write","msg":"PLANNED iter017_tma_lhs: STRUCTURAL: Replace cp.async LHS loads with TMA (cp_async_bulk_tensor_2d). Frees all 128 threads from memory load work. Only thread 0 issues TMA for both LHS and RHS. Requires second TMA descriptor for LHS with stride-K layout. Eliminates the barrier-heavy cp.async fence+wait pattern.","level":"info"}
+{"ts":"2026-04-19T22:21:33.662Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter017_tma_lhs (drift=1)","level":"info"}
+{"ts":"2026-04-19T22:21:41.880Z","tool":"store_round","msg":"Storing iter017_tma_lhs (KEEP 12.88 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T22:21:41.900Z","tool":"store_round","msg":"Stored iter017_tma_lhs: KEEP 12.88 TFLOPS (round 17)","level":"info"}

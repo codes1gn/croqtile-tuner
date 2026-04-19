@@ -29,3 +29,14 @@
 {"ts":"2026-04-19T22:17:05.893Z","tool":"store_round","msg":"Stored iter004_threads256: DISCARD 0.0019 TFLOPS (round 4)","level":"info"}
 {"ts":"2026-04-19T22:17:12.237Z","tool":"next_iter","msg":"Resolved iter005_doublebuf","level":"info"}
 {"ts":"2026-04-19T22:17:12.271Z","tool":"checkpoint_write","msg":"PLANNED iter005_doublebuf: Add double buffering with async copy to overlap memory loads with computation","level":"info"}
+{"ts":"2026-04-19T22:18:38.692Z","tool":"co2cu","msg":"Compiling iter005_doublebuf.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T22:18:50.682Z","tool":"store_round","msg":"Storing iter005_doublebuf (COMPILE_FAIL 0.0 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T22:18:50.700Z","tool":"store_round","msg":"Stored iter005_doublebuf: COMPILE_FAIL 0.0 TFLOPS (round 5)","level":"info"}
+{"ts":"2026-04-19T22:18:50.914Z","tool":"next_iter","msg":"Resolved iter006_vec2load","level":"info"}
+{"ts":"2026-04-19T22:18:59.996Z","tool":"checkpoint_write","msg":"PLANNED iter006_vec2load: Use vectorized __half2 loads and stores to improve memory bandwidth utilization","level":"info"}
+{"ts":"2026-04-19T22:20:22.207Z","tool":"co2cu","msg":"Compiling iter006_vec2load.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T22:20:22.410Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter006_vec2load.cu","level":"info"}
+{"ts":"2026-04-19T22:20:45.467Z","tool":"store_round","msg":"Storing iter006_vec2load (DISCARD 0.0320 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T22:20:45.486Z","tool":"store_round","msg":"Stored iter006_vec2load: DISCARD 0.0320 TFLOPS (round 6)","level":"info"}
+{"ts":"2026-04-19T22:20:57.408Z","tool":"next_iter","msg":"Resolved iter007_unroll2","level":"info"}
+{"ts":"2026-04-19T22:20:57.442Z","tool":"checkpoint_write","msg":"PLANNED iter007_unroll2: Process 2 timesteps per iteration to increase arithmetic intensity and hide latency","level":"info"}

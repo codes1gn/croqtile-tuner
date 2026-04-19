@@ -1,15 +1,14 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-19T22:17:12Z",
+  "timestamp": "2026-04-19T22:20:57Z",
   "dsl": "croqtile",
   "shape_key": "gdn_f16_B2_T4_H8_K128_V128",
-  "iter": "iter005_doublebuf",
+  "iter": "iter007_unroll2",
   "bottleneck": "launch_bound",
-  "idea": "Add double buffering with async copy to overlap memory loads with computation",
-  "expected_gain": "+0.01 TFLOPS",
+  "idea": "Process 2 timesteps per iteration to increase arithmetic intensity and hide latency",
+  "expected_gain": "+0.005 TFLOPS",
   "levers": [
-    "doublebuf",
-    "async"
+    "unroll"
   ],
   "status": "PLANNED"
 }
