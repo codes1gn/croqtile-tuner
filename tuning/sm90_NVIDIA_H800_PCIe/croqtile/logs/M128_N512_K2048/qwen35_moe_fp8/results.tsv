@@ -17,3 +17,7 @@ iter014	iter014_rhs_dbuf	11.85	DISCARD	memory_bound	Double-buffer only RHS TMA s
 iter015	iter015_launchbounds	12.26	DISCARD	memory_bound	Added __launch_bounds__(128, 2) to all 3 WGMMA kernels. No measurable improvemen
 iter016	iter016_inline_scale	12.27	DISCARD	memory_bound	Moved warpgroup_commit_batch+wait inside K-loop before scale_accumulator. Elimin
 iter017	iter017_tma_lhs	12.88	KEEP	memory_bound	STRUCTURAL: Replace cp.async LHS loads with TMA bulk tensor copy, freeing all 12
+iter018	iter018_regcap128	11.84	DISCARD	memory_bound	Reduce register pressure from 168 to 128 via maxrregcount=128 to increase occupa
+iter019	iter019_dbuf_tma	12.07	DISCARD	memory_bound	STRUCTURAL: Double-buffer both LHS and RHS TMA loads with 2 barriers. Prologue+p
+iter020	iter020_cg_cache	12.89	DISCARD	memory_bound	Change global load cache policy to cache-global (-Xptxas -dlcm=cg) bypassing L1 
+iter021	iter021_wgmma_overlap	12.96	KEEP	memory_bound	STRUCTURAL: Overlap TMA prefetch with scale_accumulator. Prologue issues TMA for

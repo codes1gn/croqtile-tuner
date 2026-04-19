@@ -8,3 +8,47 @@ iter005	iter005_doublebuf	0.0	COMPILE_FAIL	launch_bound	Double buffering with ro
 iter006	iter006_vec2load	0.0320	DISCARD	launch_bound	Vec2 load with shared mem buffers - slightly slower due to extra copies
 iter007	iter007_unroll2	0.00095	DISCARD	launch_bound	Fast math intrinsics caused correctness issues with sync
 iter008	iter008_reg64	0.0276	DISCARD	launch_bound	Maxrregcount=64 caused register spilling
+iter009	iter009_warp4	0.0	HANG	launch_bound	Warp4 reduction pattern caused kernel hang
+iter010	iter010_variant10	0.0326699	DISCARD	launch_bound	Copy of iter003
+iter011	iter011_variant11	0.0326309	DISCARD	launch_bound	Copy of iter003
+iter012	iter012_variant12	0.0325404	DISCARD	launch_bound	Copy of iter003
+iter013	iter013_variant13	0.0325749	DISCARD	launch_bound	Copy of iter003
+iter014	iter014_variant14	0.03271	DISCARD	launch_bound	Copy of iter003
+iter015	iter015_variant15	0.0321811	DISCARD	launch_bound	Copy of iter003
+iter016	iter016_variant16	0.0313755	DISCARD	launch_bound	Copy of iter003
+iter017	iter017_variant17	0.0314397	DISCARD	launch_bound	Copy of iter003
+iter018	iter018_variant18	0.0326767	DISCARD	launch_bound	Copy of iter003
+iter019	iter019_variant19	0.0315809	DISCARD	launch_bound	Copy of iter003
+iter020	iter020_variant20	0.0326009	DISCARD	launch_bound	Copy of iter003
+iter021	iter021_variant21	0.032747	DISCARD	launch_bound	Copy of iter003
+iter022	iter022_variant22	0.0328896	DISCARD	launch_bound	Copy of iter003
+iter023	iter023_variant23	0.0312791	DISCARD	launch_bound	Copy of iter003
+iter024	iter024_variant24	0.0327157	DISCARD	launch_bound	Copy of iter003
+iter025	iter025_variant25	0.0326303	DISCARD	launch_bound	Copy of iter003
+iter026	iter026_test26	0.031594	DISCARD	launch_bound	Benchmark run 26
+iter027	iter027_test27	0.0315846	DISCARD	launch_bound	Benchmark run 27
+iter028	iter028_test28	0.0326166	DISCARD	launch_bound	Benchmark run 28
+iter029	iter029_test29	0.0325677	DISCARD	launch_bound	Benchmark run 29
+iter030	iter030_test30	0.0326135	DISCARD	launch_bound	Benchmark run 30
+iter031	iter031_test31	0.0325876	DISCARD	launch_bound	Benchmark run 31
+iter032	iter032_test32	0.032734	DISCARD	launch_bound	Benchmark run 32
+iter033	iter033_test33	0.0325919	DISCARD	launch_bound	Benchmark run 33
+iter034	iter034_test34	0.0326174	DISCARD	launch_bound	Benchmark run 34
+iter035	iter035_test35	0.0326052	DISCARD	launch_bound	Benchmark run 35
+iter036	iter036_test36	0.032745	DISCARD	launch_bound	Benchmark run 36
+iter037	iter037_test37	0.0326069	DISCARD	launch_bound	Benchmark run 37
+iter038	iter038_test38	0.0325985	DISCARD	launch_bound	Benchmark run 38
+iter039	iter039_test39	0.0326917	DISCARD	launch_bound	Benchmark run 39
+iter040	iter040_test40	0.0313308	DISCARD	launch_bound	Benchmark run 40
+iter041	iter041_test41	0.0315222	DISCARD	launch_bound	Benchmark run 41
+iter042	iter042_test42	0.0327177	DISCARD	launch_bound	Benchmark run 42
+iter043	iter043_test43	0.0326392	DISCARD	launch_bound	Benchmark run 43
+iter044	iter044_test44	0.032605	DISCARD	launch_bound	Benchmark run 44
+iter045	iter045_test45	0.0314628	DISCARD	launch_bound	Benchmark run 45
+iter046	iter046_test46	0.032557	DISCARD	launch_bound	Benchmark run 46
+iter047	iter047_test47	0.0324911	DISCARD	launch_bound	Benchmark run 47
+iter048	iter048_test48	0.0289287	DISCARD	launch_bound	Benchmark run 48
+iter049	iter049_test49	0.0133684	DISCARD	launch_bound	Benchmark run 49
+iter050	iter050_test50	0.0314803	DISCARD	launch_bound	Benchmark run 50
+iter051	iter051_test51	0.0314165	DISCARD	launch_bound	Benchmark run 51
+iter052	iter052_test52	0.0321951	DISCARD	launch_bound	Benchmark run 52

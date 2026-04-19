@@ -83,3 +83,22 @@
 {"ts":"2026-04-19T22:22:09.997Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bins/M128_N512_K2048/qwen35_moe_fp8/iter017_tma_lhs","level":"info"}
 {"ts":"2026-04-19T22:22:16.803Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/M128_N512_K2048/qwen35_moe_fp8/ncu_iter017_tma_lhs_round18.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/M128_N512_K2048/qwen35_moe_fp8/ncu_iter017_tma_lhs_round18.csv","level":"info"}
 {"ts":"2026-04-19T22:22:37.915Z","tool":"profile_extract","msg":"Analyzing iter017_tma_lhs from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/M128_N512_K2048/qwen35_moe_fp8/ncu_iter017_tma_lhs_round18b.csv","level":"info"}
+{"ts":"2026-04-19T22:23:41.746Z","tool":"checkpoint_write","msg":"PLANNED iter018_regcap128: Reduce register pressure from 168 to 128 regs/thread via maxrregcount=128. Currently at 18.75% occupancy (3 blocks/SM limited by registers). At 128 regs, can fit 5 blocks = 31.25% occupancy. Higher occupancy should hide memory latency better given 83% scoreboard stalls.","level":"info"}
+{"ts":"2026-04-19T22:23:47.500Z","tool":"next_iter","msg":"Resolved iter018_regcap128","level":"info"}
+{"ts":"2026-04-19T22:24:50.985Z","tool":"store_round","msg":"Storing iter018_regcap128 (DISCARD 11.84 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T22:24:51.004Z","tool":"store_round","msg":"Stored iter018_regcap128: DISCARD 11.84 TFLOPS (round 18)","level":"info"}
+{"ts":"2026-04-19T22:25:11.710Z","tool":"checkpoint_write","msg":"PLANNED iter019_dbuf_tma: STRUCTURAL: Double-buffer both LHS and RHS TMA loads. Prologue issues TMA for k=0, main loop issues TMA for k+1 while computing WGMMA on k. Uses 2 barriers alternating between buffers. Requires 2x shared memory (sA[2] and sB[2]). Aims to fully overlap memory latency with compute given 83% scoreboard stalls.","level":"info"}
+{"ts":"2026-04-19T22:25:16.236Z","tool":"next_iter","msg":"Resolved iter019_dbuf_tma","level":"info"}
+{"ts":"2026-04-19T22:31:34.037Z","tool":"store_round","msg":"Storing iter019_dbuf_tma (DISCARD 12.07 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T22:31:34.057Z","tool":"store_round","msg":"Stored iter019_dbuf_tma: DISCARD 12.07 TFLOPS (round 19)","level":"info"}
+{"ts":"2026-04-19T22:32:45.214Z","tool":"checkpoint_write","msg":"PLANNED iter020_cg_cache: Change global load cache policy to cache-global (-Xptxas -dlcm=cg) which bypasses L1 for global loads. Currently L1 hit rate is 53.8% with most data streaming through once. Bypassing L1 frees L1 capacity for shared memory accesses and reduces L1TEX scoreboard stalls. Also remove unnecessary DMA_DIAGNOSIS define.","level":"info"}
+{"ts":"2026-04-19T22:34:02.988Z","tool":"store_round","msg":"Storing iter020_cg_cache (DISCARD 12.89 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T22:34:03.006Z","tool":"store_round","msg":"Stored iter020_cg_cache: DISCARD 12.89 TFLOPS (round 20)","level":"info"}
+{"ts":"2026-04-19T22:34:20.239Z","tool":"sass_compare","msg":"Extracting baseline SASS for fp8 128x512x2048","level":"info"}
+{"ts":"2026-04-19T22:34:24.429Z","tool":"sass_compare","msg":"Baseline SASS extracted via ncu (858 lines)","level":"info"}
+{"ts":"2026-04-19T22:34:27.986Z","tool":"sass_compare","msg":"Extracting custom SASS for iter017_tma_lhs","level":"info"}
+{"ts":"2026-04-19T22:34:27.991Z","tool":"sass_compare","msg":"Binary not found for iter017_tma_lhs","level":"error"}
+{"ts":"2026-04-19T22:36:40.086Z","tool":"checkpoint_write","msg":"PLANNED iter021_wgmma_overlap: STRUCTURAL: Restructure K-loop to overlap WGMMA commit+wait and scale_accumulator with TMA. Insert warpgroup_commit_batch+warpgroup_wait after WGMMA iterations, then issue TMA for next k-tile, then run scale_accumulator while TMA runs. Keeps single-buffer TMA like iter017 but overlaps scale compute with memory.","level":"info"}
+{"ts":"2026-04-19T22:39:18.088Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter021_wgmma_overlap (drift=1)","level":"info"}
+{"ts":"2026-04-19T22:39:25.634Z","tool":"store_round","msg":"Storing iter021_wgmma_overlap (KEEP 12.96 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T22:39:25.653Z","tool":"store_round","msg":"Stored iter021_wgmma_overlap: KEEP 12.96 TFLOPS (round 21)","level":"info"}

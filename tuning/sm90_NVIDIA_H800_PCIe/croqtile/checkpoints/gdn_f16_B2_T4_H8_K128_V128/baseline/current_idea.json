@@ -1,14 +1,14 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-19T22:22:52Z",
+  "timestamp": "2026-04-19T22:23:35Z",
   "dsl": "croqtile",
   "shape_key": "gdn_f16_B2_T4_H8_K128_V128",
-  "iter": "iter008_reg64",
+  "iter": "iter009_warp4",
   "bottleneck": "launch_bound",
-  "idea": "Reduce register pressure by limiting max registers to 64 per thread via nvcc flag",
+  "idea": "Use 4 warps (128 threads) with better warp-level reduction pattern",
   "expected_gain": "+0.005 TFLOPS",
   "levers": [
-    "maxrregcount"
+    "warp_reduction"
   ],
   "status": "PLANNED"
 }

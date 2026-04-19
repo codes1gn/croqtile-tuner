@@ -1,18 +1,17 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-19T22:17:47Z",
+  "timestamp": "2026-04-19T22:36:40Z",
   "dsl": "croqtile",
   "shape_key": "M128_N512_K2048",
-  "iter": "iter017_tma_lhs",
+  "iter": "iter021_wgmma_overlap",
   "bottleneck": "memory_bound",
-  "idea": "STRUCTURAL: Replace cp.async LHS loads with TMA (cp_async_bulk_tensor_2d). Frees all 128 threads from memory load work. Only thread 0 issues TMA for both LHS and RHS. Requires second TMA descriptor for LHS with stride-K layout. Eliminates the barrier-heavy cp.async fence+wait pattern.",
-  "expected_gain": "+5-15% TFLOPS",
+  "idea": "STRUCTURAL: Restructure K-loop to overlap WGMMA commit+wait and scale_accumulator with TMA. Insert warpgroup_commit_batch+warpgroup_wait after WGMMA iterations, then issue TMA for next k-tile, then run scale_accumulator while TMA runs. Keeps single-buffer TMA like iter017 but overlaps scale compute with memory.",
+  "expected_gain": "+3-8% TFLOPS from better overlap",
   "levers": [
-    "tma_lhs",
-    "cp_async_elimination",
-    "thread_utilization"
+    "pipeline_structure",
+    "wgmma_fence_placement"
   ],
   "status": "VERIFIED",
-  "verified_iter": "iter017_tma_lhs",
+  "verified_iter": "iter021_wgmma_overlap",
   "drift_score": 1
 }
