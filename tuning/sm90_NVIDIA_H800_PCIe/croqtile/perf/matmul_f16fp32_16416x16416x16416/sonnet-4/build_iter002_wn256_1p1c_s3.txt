@@ -1,0 +1,3 @@
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/sonnet-4/iter002_wn256_1p1c_s3.co:31.12: info: In the current kernel `__choreo_device_matmul`, cudaFuncAttributeMaxDynamicSharedMemorySize is set to `147456` bytes, cause shared memory usage has exceeded the default limit 48KB.
+    parallel block_id by NUM_SMS : block {
+             ^

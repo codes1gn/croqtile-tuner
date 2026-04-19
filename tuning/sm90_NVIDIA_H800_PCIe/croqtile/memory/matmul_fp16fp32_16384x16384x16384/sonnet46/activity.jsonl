@@ -1,0 +1,75 @@
+{"ts":"2026-04-19T08:15:04.419Z","tool":"store_baseline","msg":"Measuring cuBLAS baseline for fp16fp32 16384x16384x16384","level":"info"}
+{"ts":"2026-04-19T08:15:10.122Z","tool":"store_baseline","msg":"cuBLAS baseline: 421.6146 TFLOPS (saved to tuning/sm90_NVIDIA_H800_PCIe/croqtile/baseline/matmul_fp16fp32_16384x16384x16384/sonnet46/cublas_result.json)","level":"info"}
+{"ts":"2026-04-19T08:15:10.437Z","tool":"store_round","msg":"Storing iter000_cublas (KEEP 421.6146 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T08:15:10.456Z","tool":"store_round","msg":"Stored iter000_cublas: KEEP 421.6146 TFLOPS (round 0)","level":"info"}
+{"ts":"2026-04-19T08:15:10.465Z","tool":"store_baseline","msg":"Stored iter000_cublas: 421.6146 TFLOPS (baseline)","level":"info"}
+{"ts":"2026-04-19T08:16:12.909Z","tool":"co2cu","msg":"Compiling iter001_1p2c_so_wn160_s2.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T08:16:13.036Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x16384/sonnet46/iter001_1p2c_so_wn160_s2.cu","level":"info"}
+{"ts":"2026-04-19T08:18:27.427Z","tool":"co2cu","msg":"Compiling iter001_1p2c_so_wn128_s2.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T08:18:27.551Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x16384/sonnet46/iter001_1p2c_so_wn128_s2.cu","level":"info"}
+{"ts":"2026-04-19T08:18:46.010Z","tool":"co2cu","msg":"Compiling iter001_1p2c_so_wn128_s2.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T08:18:46.135Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x16384/sonnet46/iter001_1p2c_so_wn128_s2.cu","level":"info"}
+{"ts":"2026-04-19T08:19:47.927Z","tool":"store_round","msg":"Storing iter001_wn128_s2_1p2c_so (KEEP 198.559 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T08:19:47.945Z","tool":"store_round","msg":"Stored iter001_wn128_s2_1p2c_so: KEEP 198.559 TFLOPS (round 1)","level":"info"}
+{"ts":"2026-04-19T08:20:06.088Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_fp16fp32_16384x16384x16384/sonnet46/iter001_1p2c_so_wn128_s2","level":"info"}
+{"ts":"2026-04-19T08:20:28.101Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/sonnet46/ncu_iter001_wn128_s2_1p2c_so_round1.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/sonnet46/ncu_iter001_wn128_s2_1p2c_so_round1.csv","level":"info"}
+{"ts":"2026-04-19T08:20:33.303Z","tool":"profile_extract","msg":"Analyzing iter001_wn128_s2_1p2c_so from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/sonnet46/ncu_iter001_wn128_s2_1p2c_so_round1.csv","level":"info"}
+{"ts":"2026-04-19T08:22:03.248Z","tool":"next_iter","msg":"Resolved iter002_wn256_s3_1p1c","level":"info"}
+{"ts":"2026-04-19T08:22:09.376Z","tool":"checkpoint_write","msg":"PLANNED iter002_wn256_s3_1p1c: Switch from 1p2c to 1p1c WN=256 STAGES=3: single consumer warpgroup computes 64x256 tile. Reduces from 3 warpgroups (384 threads) to 2 warpgroups (256 threads), enabling 2+ CTAs/SM vs current 1 CTA/SM","level":"info"}
+{"ts":"2026-04-19T08:23:04.648Z","tool":"co2cu","msg":"Compiling iter002_wn256_s3_1p1c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T08:23:04.753Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x16384/sonnet46/iter002_wn256_s3_1p1c.cu","level":"info"}
+{"ts":"2026-04-19T08:23:48.718Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter002_wn256_s3_1p1c (drift=1)","level":"info"}
+{"ts":"2026-04-19T08:23:49.052Z","tool":"store_round","msg":"Storing iter002_wn256_s3_1p1c (KEEP 291.072 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T08:23:49.071Z","tool":"store_round","msg":"Stored iter002_wn256_s3_1p1c: KEEP 291.072 TFLOPS (round 2)","level":"info"}
+{"ts":"2026-04-19T08:24:00.228Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_fp16fp32_16384x16384x16384/sonnet46/iter002_wn256_s3_1p1c","level":"info"}
+{"ts":"2026-04-19T08:24:19.909Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/sonnet46/ncu_iter002_wn256_s3_1p1c_round2.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/sonnet46/ncu_iter002_wn256_s3_1p1c_round2.csv","level":"info"}
+{"ts":"2026-04-19T08:24:26.958Z","tool":"profile_extract","msg":"Analyzing iter002_wn256_s3_1p1c from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/sonnet46/ncu_iter002_wn256_s3_1p1c_round2.csv","level":"info"}
+{"ts":"2026-04-19T08:25:00.437Z","tool":"next_iter","msg":"Resolved iter003_persis_wn256_s4","level":"info"}
+{"ts":"2026-04-19T08:25:00.469Z","tool":"checkpoint_write","msg":"PLANNED iter003_persis_wn256_s4: Persistent 1p1c WN=256 STAGES=4: launch 114 CTAs (1 per SM), each iterates total_tiles/114 output tiles. Maximizes L2 cache reuse for lhs/rhs tiles across multiple K-loops; eliminates wave boundary idle; 4 stages hides TMA latency for deep K=16384 loop","level":"info"}
+{"ts":"2026-04-19T08:25:54.763Z","tool":"co2cu","msg":"Compiling iter003_persis_wn256_s4.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T08:25:54.915Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x16384/sonnet46/iter003_persis_wn256_s4.cu","level":"info"}
+{"ts":"2026-04-19T08:26:44.036Z","tool":"store_round","msg":"Storing iter003_persis_wn256_s4 (DISCARD 119.803 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T08:26:44.055Z","tool":"store_round","msg":"Stored iter003_persis_wn256_s4: DISCARD 119.803 TFLOPS (round 3)","level":"info"}
+{"ts":"2026-04-19T08:27:08.741Z","tool":"next_iter","msg":"Resolved iter004_wn256_s3_regcap128","level":"info"}
+{"ts":"2026-04-19T08:27:08.775Z","tool":"checkpoint_write","msg":"PLANNED iter004_wn256_s3_regcap128: 1p1c WN=256 STAGES=3 with --maxrregcount=128 compiler flag: force register spilling to enable 2 CTAs/SM (128 regs x 256 threads = 32768 < 65536/2). Spill overhead may be worth it vs 1 CTA/SM inefficiency","level":"info"}
+{"ts":"2026-04-19T08:27:16.060Z","tool":"co2cu","msg":"Compiling iter004_wn256_s3_regcap128.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T08:27:16.164Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x16384/sonnet46/iter004_wn256_s3_regcap128.cu","level":"info"}
+{"ts":"2026-04-19T08:28:22.464Z","tool":"store_round","msg":"Storing iter004_wn256_s3_regcap128 (DISCARD 291.078 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T08:28:28.015Z","tool":"store_round","msg":"Storing iter004_wn256_s3_regcap128 (DISCARD 291.078 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T08:28:28.035Z","tool":"store_round","msg":"Stored iter004_wn256_s3_regcap128: DISCARD 291.078 TFLOPS (round 4)","level":"info"}
+{"ts":"2026-04-19T08:29:20.289Z","tool":"next_iter","msg":"Resolved iter005_wn256_s3_pad_output","level":"info"}
+{"ts":"2026-04-19T08:29:20.322Z","tool":"checkpoint_write","msg":"PLANNED iter005_wn256_s3_pad_output: Fix 8-way SMEM bank conflict on fp32 output store: pad output_s from [64,256] to [64,257] columns to shift bank alignment and eliminate the 75% excess wavefronts from shared store conflicts detected by NCU","level":"info"}
+{"ts":"2026-04-19T08:30:47.788Z","tool":"co2cu","msg":"Compiling iter005_wn256_s3_pad_output.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T08:30:47.894Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x16384/sonnet46/iter005_wn256_s3_pad_output.cu","level":"info"}
+{"ts":"2026-04-19T08:32:22.087Z","tool":"store_round","msg":"Storing iter005_wn256_s3_pad_output (DISCARD 291.949 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T08:32:22.106Z","tool":"store_round","msg":"Stored iter005_wn256_s3_pad_output: DISCARD 291.949 TFLOPS (round 5)","level":"info"}
+{"ts":"2026-04-19T08:32:34.631Z","tool":"next_iter","msg":"Resolved iter006_wn128_s3_1p1c_2cta","level":"info"}
+{"ts":"2026-04-19T08:32:34.664Z","tool":"checkpoint_write","msg":"PLANNED iter006_wn128_s3_1p1c_2cta: Reduce WN from 256 to 128 in 1p1c: SMEM drops from 184KB to 104KB, enabling 2 CTAs/SM (2x104KB=208KB<228KB limit). Trade compute width for 2x occupancy improvement","level":"info"}
+{"ts":"2026-04-19T08:33:27.687Z","tool":"co2cu","msg":"Compiling iter006_wn128_s3_1p1c_2cta.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T08:33:27.792Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x16384/sonnet46/iter006_wn128_s3_1p1c_2cta.cu","level":"info"}
+{"ts":"2026-04-19T08:34:47.481Z","tool":"store_round","msg":"Storing iter006_wn128_s3_1p1c_2cta (DISCARD 206.236 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T08:34:47.500Z","tool":"store_round","msg":"Stored iter006_wn128_s3_1p1c_2cta: DISCARD 206.236 TFLOPS (round 6)","level":"info"}
+{"ts":"2026-04-19T08:35:08.304Z","tool":"next_iter","msg":"Resolved iter007_wn192_s2_1p1c","level":"info"}
+{"ts":"2026-04-19T08:35:08.339Z","tool":"checkpoint_write","msg":"PLANNED iter007_wn192_s2_1p1c: 1p1c WN=192 STAGES=2: SMEM=112KB (2x<228KB for 2 CTAs/SM), arithmetic intensity 50% of WN=256 but doubles occupancy. WN=192 is valid SM90 F32F16 MMA shape. Uses setmaxnreg via maxrregcount=120 to enable 2 CTAs/SM from register side","level":"info"}
+{"ts":"2026-04-19T08:36:06.457Z","tool":"co2cu","msg":"Compiling iter007_wn192_s2_1p1c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T08:36:06.562Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x16384/sonnet46/iter007_wn192_s2_1p1c.cu","level":"info"}
+{"ts":"2026-04-19T08:37:14.766Z","tool":"store_round","msg":"Storing iter007_wn192_s2_1p1c (DISCARD 196.133 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T08:37:14.785Z","tool":"store_round","msg":"Stored iter007_wn192_s2_1p1c: DISCARD 196.133 TFLOPS (round 7)","level":"info"}
+{"ts":"2026-04-19T08:37:26.645Z","tool":"next_iter","msg":"Resolved iter008_wn256_s4_1p1c","level":"info"}
+{"ts":"2026-04-19T08:37:26.679Z","tool":"checkpoint_write","msg":"PLANNED iter008_wn256_s4_1p1c: Increase stages from 3 to 4 in 1p1c WN=256: 4 stages reduce consumer stall at wait-full. NCU shows 40% barrier stall; more stages keep TMA ahead of consumer. SMEM=224KB fits in 228KB limit","level":"info"}
+{"ts":"2026-04-19T08:38:21.147Z","tool":"co2cu","msg":"Compiling iter008_wn256_s4_1p1c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T08:38:21.253Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x16384/sonnet46/iter008_wn256_s4_1p1c.cu","level":"info"}
+{"ts":"2026-04-19T08:39:08.499Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter008_wn256_s4_1p1c (drift=1)","level":"info"}
+{"ts":"2026-04-19T08:39:08.838Z","tool":"store_round","msg":"Storing iter008_wn256_s4_1p1c (KEEP 293.326 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T08:39:08.856Z","tool":"store_round","msg":"Stored iter008_wn256_s4_1p1c: KEEP 293.326 TFLOPS (round 8)","level":"info"}
+{"ts":"2026-04-19T08:39:16.834Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_fp16fp32_16384x16384x16384/sonnet46/iter008_wn256_s4_1p1c","level":"info"}
+{"ts":"2026-04-19T08:39:36.514Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/sonnet46/ncu_iter008_wn256_s4_1p1c_round8.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/sonnet46/ncu_iter008_wn256_s4_1p1c_round8.csv","level":"info"}
+{"ts":"2026-04-19T08:39:43.474Z","tool":"profile_extract","msg":"Analyzing iter008_wn256_s4_1p1c from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/sonnet46/ncu_iter008_wn256_s4_1p1c_round8.csv","level":"info"}
+{"ts":"2026-04-19T08:42:00.425Z","tool":"next_iter","msg":"Resolved iter009_wn256_s2_1p2c_so_tm128","level":"info"}
+{"ts":"2026-04-19T08:42:00.457Z","tool":"checkpoint_write","msg":"PLANNED iter009_wn256_s2_1p2c_so_tm128: STRUCTURAL: 1p2c split-output WN=256 TILE_M=128 STAGES=2, analogous to iter061 fp16 design that got 382T at 8192^3. 2 consumers compute rows 0-63 and 64-127 simultaneously, hiding each others TMA wait. SMEM=224KB fits in 228KB","level":"info"}
+{"ts":"2026-04-19T08:42:59.289Z","tool":"co2cu","msg":"Compiling iter009_wn256_s2_1p2c_so_tm128.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T08:42:59.414Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x16384/sonnet46/iter009_wn256_s2_1p2c_so_tm128.cu","level":"info"}
+{"ts":"2026-04-19T08:46:12.174Z","tool":"co2cu","msg":"Compiling iter009_wn256_s2_1p2c_so_tm128.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T08:46:12.295Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x16384/sonnet46/iter009_wn256_s2_1p2c_so_tm128.cu","level":"info"}
+{"ts":"2026-04-19T08:47:27.873Z","tool":"co2cu","msg":"Compiling iter009_wn256_s2_1p2c_so_tm128.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T08:47:28.000Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x16384/sonnet46/iter009_wn256_s2_1p2c_so_tm128.cu","level":"info"}

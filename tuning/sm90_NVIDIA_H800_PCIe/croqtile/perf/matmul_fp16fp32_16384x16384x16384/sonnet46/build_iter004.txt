@@ -1,0 +1,16 @@
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x16384/sonnet46/iter004_wn256_s3_regcap128.cu(152): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) cuda::barrier<cuda::thread_scope_block> choreo_copy_atom_t_0_barrier;
+                                                                    ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x16384/sonnet46/iter004_wn256_s3_regcap128.cu(161): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) cuda::barrier<cuda::thread_scope_block> full[3];
+                                                                    ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x16384/sonnet46/iter004_wn256_s3_regcap128.cu(170): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) cuda::barrier<cuda::thread_scope_block> empty[3];
+                                                                    ^
+
+ptxas fatal   : (C7602) Insufficient registers (128) to compile instruction at line 518 in function _Z22__choreo_device_matmulP6__halfS0_Pfjjj14CUtensorMap_stS2_S2_. Try to compile with register target of 154 or higher.
+ptxas fatal   : Ptx assembly aborted due to errors

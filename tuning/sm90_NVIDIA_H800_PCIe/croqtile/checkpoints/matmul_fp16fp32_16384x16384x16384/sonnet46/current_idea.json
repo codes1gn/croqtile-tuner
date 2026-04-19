@@ -1,0 +1,16 @@
+{
+  "schema": "croq-checkpoint-v1",
+  "timestamp": "2026-04-19T08:42:00Z",
+  "dsl": "croqtile",
+  "shape_key": "matmul_fp16fp32_16384x16384x16384",
+  "iter": "iter009_wn256_s2_1p2c_so_tm128",
+  "bottleneck": "memory_bound",
+  "idea": "STRUCTURAL: 1p2c split-output WN=256 TILE_M=128 STAGES=2, analogous to iter061 fp16 design that got 382T at 8192^3. 2 consumers compute rows 0-63 and 64-127 simultaneously, hiding each others TMA wait. SMEM=224KB fits in 228KB",
+  "expected_gain": "+30% TFLOPS from 2-consumer overlap beating 1-consumer at same WN",
+  "levers": [
+    "MATMUL_TILE_M",
+    "MATMUL_STAGES",
+    "parallel_p1_topology"
+  ],
+  "status": "PLANNED"
+}

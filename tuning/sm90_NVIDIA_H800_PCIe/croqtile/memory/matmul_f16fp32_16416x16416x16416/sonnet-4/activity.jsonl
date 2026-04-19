@@ -1,0 +1,21 @@
+{"ts":"2026-04-19T08:37:38.371Z","tool":"store_baseline","msg":"Measuring cuBLAS baseline for f16fp32 16416x16416x16416","level":"info"}
+{"ts":"2026-04-19T08:37:41.695Z","tool":"store_baseline","msg":"cuBLAS baseline: 409.8731 TFLOPS (saved to tuning/sm90_NVIDIA_H800_PCIe/croqtile/baseline/matmul_f16fp32_16416x16416x16416/sonnet-4/cublas_result.json)","level":"info"}
+{"ts":"2026-04-19T08:37:42.014Z","tool":"store_round","msg":"Storing iter000_cublas (KEEP 409.8731 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T08:37:42.032Z","tool":"store_round","msg":"Stored iter000_cublas: KEEP 409.8731 TFLOPS (round 0)","level":"info"}
+{"ts":"2026-04-19T08:37:42.042Z","tool":"store_baseline","msg":"Stored iter000_cublas: 409.8731 TFLOPS (baseline)","level":"info"}
+{"ts":"2026-04-19T08:39:32.517Z","tool":"co2cu","msg":"Compiling iter001_draft.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T08:39:32.692Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/sonnet-4/iter001_draft.cu","level":"info"}
+{"ts":"2026-04-19T08:43:14.016Z","tool":"store_round","msg":"Storing iter001_draft (KEEP 181.49 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T08:43:14.035Z","tool":"store_round","msg":"Stored iter001_draft: KEEP 181.49 TFLOPS (round 1)","level":"info"}
+{"ts":"2026-04-19T08:43:29.299Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_16416x16416x16416/sonnet-4/iter001_draft","level":"info"}
+{"ts":"2026-04-19T08:43:51.307Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16416x16416x16416/sonnet-4/ncu_iter001_draft_round2.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16416x16416x16416/sonnet-4/ncu_iter001_draft_round2.csv","level":"info"}
+{"ts":"2026-04-19T08:43:56.140Z","tool":"profile_extract","msg":"Analyzing iter001_draft from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16416x16416x16416/sonnet-4/ncu_iter001_draft_round2.csv","level":"info"}
+{"ts":"2026-04-19T08:44:47.243Z","tool":"next_iter","msg":"Resolved iter002_wn256_1p1c_s3","level":"info"}
+{"ts":"2026-04-19T08:44:53.207Z","tool":"checkpoint_write","msg":"PLANNED iter002_wn256_1p1c_s3: Switch from 1p2c (147 regs/thread, 196KB SMEM, 14% occupancy) to 1p1c WN=256 STAGES=3 to reduce SMEM to ~128KB enabling better occupancy","level":"info"}
+{"ts":"2026-04-19T08:45:04.034Z","tool":"checkpoint_write","msg":"READ checkpoint for IMPLEMENT","level":"info"}
+{"ts":"2026-04-19T08:45:59.380Z","tool":"co2cu","msg":"Compiling iter002_wn256_1p1c_s3.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T08:46:31.889Z","tool":"co2cu","msg":"Compiling iter002_wn256_1p1c_s3.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T08:46:32.042Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/sonnet-4/iter002_wn256_1p1c_s3.cu","level":"info"}
+{"ts":"2026-04-19T08:47:34.050Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter002_wn256_1p1c_s3 (drift=1)","level":"info"}
+{"ts":"2026-04-19T08:47:41.554Z","tool":"store_round","msg":"Storing iter002_wn256_1p1c_s3 (KEEP 208.987 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T08:47:41.573Z","tool":"store_round","msg":"Stored iter002_wn256_1p1c_s3: KEEP 208.987 TFLOPS (round 2)","level":"info"}

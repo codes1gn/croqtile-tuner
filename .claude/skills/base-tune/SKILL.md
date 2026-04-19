@@ -537,9 +537,8 @@ Before submitting each iteration, verify you are NOT doing any of these:
 
 The ONLY valid reasons to stop the loop:
 1. User manually stops the loop.
-2. 10 consecutive discarded ideas (stuck in local minimum — report to user).
-3. Compiler crashes repeatedly (likely a bug — escalate to user).
-4. GPU failure that cannot be remediated by `gpu_check.sh --reset`.
+2. Compiler crashes repeatedly (likely a bug — escalate to user).
+3. GPU failure that cannot be remediated by `gpu_check.sh --reset`.
 
 **NEVER STOP otherwise.** User may leave the experiment overnight. Do NOT ask for
 confirmation. Make all decisions autonomously. On context compaction, commit

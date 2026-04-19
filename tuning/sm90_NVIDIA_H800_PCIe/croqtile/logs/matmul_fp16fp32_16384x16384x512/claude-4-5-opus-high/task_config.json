@@ -53,6 +53,16 @@
       "request_number": 2,
       "started_at": "2026-04-19T07:45:39.181244",
       "ended_at": null
+    },
+    {
+      "id": 32,
+      "task_id": 5,
+      "session_id": "4eae169e-5bc4-4767-81cc-2dc27264e1b6",
+      "agent_type": "cursor_cli",
+      "model": "claude-4-5-opus-high",
+      "request_number": 2,
+      "started_at": "2026-04-19T08:37:07.099674+00:00",
+      "ended_at": null
     }
   ]
 }
