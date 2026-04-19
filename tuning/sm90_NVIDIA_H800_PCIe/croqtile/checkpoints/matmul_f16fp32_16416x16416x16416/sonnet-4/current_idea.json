@@ -10,5 +10,7 @@
   "levers": [
     "warpgroup_arrive placement"
   ],
-  "status": "PLANNED"
+  "status": "VERIFIED",
+  "verified_iter": "iter009_single_wgarrive",
+  "drift_score": 1
 }

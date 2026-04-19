@@ -76,3 +76,6 @@
 {"ts":"2026-04-19T09:16:27.271Z","tool":"store_round","msg":"Stored iter008_tk128_s2: DISCARD 265.27 TFLOPS (round 8)","level":"info"}
 {"ts":"2026-04-19T09:18:03.977Z","tool":"checkpoint_write","msg":"PLANNED iter009_single_wgarrive: Move warpgroup_arrive() outside inner WGMMA loop (call once per K-tile instead of 4x): multiple warpgroup_arrive() calls create 4 separate fence groups, keeping WGMMAs from forming a single batch. One arrive before the loop lets all 4 WGMMAs pipeline as one batch, reducing WGMMA overhead.","level":"info"}
 {"ts":"2026-04-19T09:18:08.937Z","tool":"next_iter","msg":"Resolved iter009_single_wgarrive","level":"info"}
+{"ts":"2026-04-19T09:19:55.284Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter009_single_wgarrive (drift=1)","level":"info"}
+{"ts":"2026-04-19T09:19:55.628Z","tool":"store_round","msg":"Storing iter009_single_wgarrive (DISCARD 275.718 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T09:19:55.648Z","tool":"store_round","msg":"Stored iter009_single_wgarrive: DISCARD 275.718 TFLOPS (round 9)","level":"info"}
