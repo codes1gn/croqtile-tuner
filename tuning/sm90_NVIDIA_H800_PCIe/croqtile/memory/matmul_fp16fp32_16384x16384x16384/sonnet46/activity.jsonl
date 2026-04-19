@@ -131,3 +131,16 @@
 {"ts":"2026-04-19T09:56:52.757Z","tool":"store_round","msg":"Stored iter014_wn256_s4_async_pipeline: KEEP 299.562 TFLOPS (round 14)","level":"info"}
 {"ts":"2026-04-19T09:56:53.094Z","tool":"store_round","msg":"Storing iter015_wn256_s4_l2promo_warpopt (DISCARD 299.327 TFLOPS)","level":"info"}
 {"ts":"2026-04-19T09:56:53.112Z","tool":"store_round","msg":"Stored iter015_wn256_s4_l2promo_warpopt: DISCARD 299.327 TFLOPS (round 14)","level":"info"}
+{"ts":"2026-04-19T10:01:04.533Z","tool":"store_round","msg":"Storing iter016_wn256_s4_l2p_maxreg256 (DISCARD 147.554 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T10:01:04.551Z","tool":"store_round","msg":"Stored iter016_wn256_s4_l2p_maxreg256: DISCARD 147.554 TFLOPS (round 15)","level":"info"}
+{"ts":"2026-04-19T10:01:05.269Z","tool":"next_iter","msg":"Resolved iter017_wn256_s4_l2p_cluster2","level":"info"}
+{"ts":"2026-04-19T10:09:14.532Z","tool":"store_round","msg":"Storing iter016_wn256_s4_l2p_maxreg256 (DISCARD 147.554 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T10:09:14.552Z","tool":"store_round","msg":"Stored iter016_wn256_s4_l2p_maxreg256: DISCARD 147.554 TFLOPS (round 15)","level":"info"}
+{"ts":"2026-04-19T10:09:14.890Z","tool":"store_round","msg":"Storing iter017_wn256_s4_l2p_cluster2 (KEEP 311.787 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T10:09:14.909Z","tool":"store_round","msg":"Stored iter017_wn256_s4_l2p_cluster2: KEEP 311.787 TFLOPS (round 15)","level":"info"}
+{"ts":"2026-04-19T10:09:23.797Z","tool":"next_iter","msg":"Resolved iter018_wn256_s4_kunroll4","level":"info"}
+{"ts":"2026-04-19T10:12:02.666Z","tool":"store_round","msg":"Storing iter017_wn256_s4_l2p_cluster2 (KEEP 311.787 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T10:12:02.685Z","tool":"store_round","msg":"Stored iter017_wn256_s4_l2p_cluster2: KEEP 311.787 TFLOPS (round 16)","level":"info"}
+{"ts":"2026-04-19T10:12:03.024Z","tool":"store_round","msg":"Storing iter018_wn256_s4_kunroll4 (DISCARD 171.916 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T10:12:03.043Z","tool":"store_round","msg":"Stored iter018_wn256_s4_kunroll4: DISCARD 171.916 TFLOPS (round 16)","level":"info"}
+{"ts":"2026-04-19T10:12:15.307Z","tool":"next_iter","msg":"Resolved iter019_wn256_s4_wgmma_depth2","level":"info"}

@@ -19,3 +19,8 @@ iter013	iter013_wn256_s4_tma_cluster	285.337	DISCARD	compute_bound	cluster TMA (
 iter014	iter014_wn256_s4_async_pipeline	299.562	KEEP	compute_bound	Manual .cu: L2_PROMOTION_L2_256B for both lhs and rhs TMA tensor maps. B tile 32
 iter014	iter014_wn256_s4_async_pipeline	299.562	KEEP	compute_bound	NCU R14: L2 promotion worked - LTS 68->75%, DRAM 60.9->60.3%. Barrier still 3.75
 iter015	iter015_wn256_s4_l2promo_warpopt	299.327	DISCARD	compute_bound	warpgroup_arrive() moved before iv_warp loop + L2_256B. No measurable improvemen
+iter016	iter016_wn256_s4_l2p_maxreg256	147.554	DISCARD	compute_bound	maxrregcount=256 ptxas ignores it - unconstrained regs cause spilling. Worse 147
+iter016	iter016_wn256_s4_l2p_maxreg256	147.554	DISCARD	compute_bound	maxrregcount=256 ignored by ptxas: unconstrained regs -> severe spilling, 147T
+iter017	iter017_wn256_s4_l2p_cluster2	311.787	KEEP	compute_bound	2x K-loop unroll: process 2 K-tiles per iteration, issue both WGMMA batches befo
+iter017	iter017_wn256_s4_l2p_cluster2	311.787	KEEP	compute_bound	2x K-unroll: 311.8T. Next: try depth-2 WGMMA pipeline with warpgroup_wait<1>.
+iter018	iter018_wn256_s4_kunroll4	171.916	DISCARD	compute_bound	4x K-unroll: waits for 4 stages before computing, causing 4x initial stall. 172T

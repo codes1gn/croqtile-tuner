@@ -92,3 +92,7 @@
 {"ts":"2026-04-19T09:42:37.931Z","tool":"store_round","msg":"Storing iter011_asym_barrier (DISCARD 272.315 TFLOPS)","level":"info"}
 {"ts":"2026-04-19T09:42:37.951Z","tool":"store_round","msg":"Stored iter011_asym_barrier: DISCARD 272.315 TFLOPS (round 11)","level":"info"}
 {"ts":"2026-04-19T09:48:01.865Z","tool":"next_iter","msg":"Resolved iter012_persistent_astat","level":"info"}
+{"ts":"2026-04-19T10:04:17.841Z","tool":"checkpoint_write","msg":"PLANNED iter012_persistent_astat: Persistent A-stationary kernel: 114 CTAs, atomic tile counter, row-major tile scheduling (A-reuse). Per-tile barrier reinit via init(). Result: 98 TFLOPS — major regression due to (1) serial tile processing with __syncthreads() overhead, (2) cp_async_bulk_wait_group per tile serializing output TMA, (3) atomic tile counter contention. Tensor active dropped to 20% vs iter005 56%.","level":"info"}
+{"ts":"2026-04-19T10:04:24.124Z","tool":"store_round","msg":"Storing iter012_persistent_astat (DISCARD 98.35 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T10:04:24.143Z","tool":"store_round","msg":"Stored iter012_persistent_astat: DISCARD 98.35 TFLOPS (round 12)","level":"info"}
+{"ts":"2026-04-19T10:08:39.981Z","tool":"next_iter","msg":"Resolved iter013_astat_grid","level":"info"}

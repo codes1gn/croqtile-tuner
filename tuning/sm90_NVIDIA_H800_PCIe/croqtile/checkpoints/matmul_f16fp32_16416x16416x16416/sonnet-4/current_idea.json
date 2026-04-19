@@ -1,14 +1,15 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-19T09:34:00Z",
+  "timestamp": "2026-04-19T10:04:17Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_16416x16416x16416",
-  "iter": "iter011_asym_barrier",
+  "iter": "iter012_persistent_astat",
   "bottleneck": "compute_bound",
-  "idea": "Asymmetric barrier design: full[s] init(1) so only producer arrives (via arrive_tx), consumer waits WITHOUT arriving - eliminating 128 redundant arrivals per barrier cycle. empty[s] stays symmetric (129). Consumer signals empty via pure arrive without waiting on full. This reduces barrier overhead by removing 128 no-op consumer arrivals at full barrier.",
-  "expected_gain": "+10-20 TFLOPS from reduced barrier overhead",
+  "idea": "Persistent A-stationary kernel: 114 CTAs, atomic tile counter, row-major tile scheduling (A-reuse). Per-tile barrier reinit via init(). Result: 98 TFLOPS \u2014 major regression due to (1) serial tile processing with __syncthreads() overhead, (2) cp_async_bulk_wait_group per tile serializing output TMA, (3) atomic tile counter contention. Tensor active dropped to 20% vs iter005 56%.",
+  "expected_gain": "regression \u2014 DISCARD",
   "levers": [
-    "barrier_init_count",
+    "grid_dims",
+    "tile_scheduling",
     "barrier_design"
   ],
   "status": "PLANNED"
