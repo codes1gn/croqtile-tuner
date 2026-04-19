@@ -1,18 +1,18 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-19T03:31:52Z",
+  "timestamp": "2026-04-19T03:37:45Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_2048x16384x2048",
-  "iter": "iter027_regctrl_lb1",
+  "iter": "iter028_lb1_only",
   "bottleneck": "compute_bound",
-  "idea": "Keep iter023 wait2 split-epilogue as the active best, but switch to launch_bounds(256,1) and trade registers explicitly with setmaxnreg so the producer runs lean while the consumer gets a larger accumulator budget, testing whether higher per-warp ILP can overcome the current high barrier density.",
-  "expected_gain": "+0.1 to +3 TFLOPS",
+  "idea": "Keep iter023 wait2 split-epilogue as the active best and change only launch_bounds from (256,2) to (256,1), testing whether a larger compiler register budget without setmaxnreg can raise consumer ILP enough to offset the lower CTA residency.",
+  "expected_gain": "+0.1 to +2 TFLOPS",
   "levers": [
     "launch_bounds_256_1",
-    "setmaxnreg_regtrade",
-    "wait2"
+    "wait2",
+    "split_epilogue"
   ],
   "status": "VERIFIED",
-  "verified_iter": "iter027_regctrl_lb1",
+  "verified_iter": "iter028_lb1_only",
   "drift_score": 1
 }
