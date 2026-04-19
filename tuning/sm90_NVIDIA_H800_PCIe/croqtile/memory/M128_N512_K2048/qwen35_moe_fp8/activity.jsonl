@@ -102,3 +102,7 @@
 {"ts":"2026-04-19T22:39:18.088Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter021_wgmma_overlap (drift=1)","level":"info"}
 {"ts":"2026-04-19T22:39:25.634Z","tool":"store_round","msg":"Storing iter021_wgmma_overlap (KEEP 12.96 TFLOPS)","level":"info"}
 {"ts":"2026-04-19T22:39:25.653Z","tool":"store_round","msg":"Stored iter021_wgmma_overlap: KEEP 12.96 TFLOPS (round 21)","level":"info"}
+{"ts":"2026-04-19T22:40:03.241Z","tool":"profile_extract","msg":"Analyzing iter021_wgmma_overlap from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/M128_N512_K2048/qwen35_moe_fp8/ncu_iter021_wgmma_overlap_round22.csv","level":"info"}
+{"ts":"2026-04-19T22:40:22.816Z","tool":"checkpoint_write","msg":"PLANNED iter022_scale_prefetch: Prefetch scale_a and scale_b values into registers before the WGMMA loop. Currently scale_accumulator loads scale_a from global memory after WGMMA, causing L1TEX scoreboard stalls. By loading scale factors before WGMMA starts, the loads overlap with TMA wait and WGMMA compute.","level":"info"}
+{"ts":"2026-04-19T22:43:02.182Z","tool":"store_round","msg":"Storing iter022_scale_prefetch (KEEP 13.00 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T22:43:02.201Z","tool":"store_round","msg":"Stored iter022_scale_prefetch: KEEP 13.00 TFLOPS (round 22)","level":"info"}

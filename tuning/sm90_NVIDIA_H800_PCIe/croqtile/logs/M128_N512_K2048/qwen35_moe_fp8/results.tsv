@@ -21,3 +21,4 @@ iter018	iter018_regcap128	11.84	DISCARD	memory_bound	Reduce register pressure fr
 iter019	iter019_dbuf_tma	12.07	DISCARD	memory_bound	STRUCTURAL: Double-buffer both LHS and RHS TMA loads with 2 barriers. Prologue+p
 iter020	iter020_cg_cache	12.89	DISCARD	memory_bound	Change global load cache policy to cache-global (-Xptxas -dlcm=cg) bypassing L1 
 iter021	iter021_wgmma_overlap	12.96	KEEP	memory_bound	STRUCTURAL: Overlap TMA prefetch with scale_accumulator. Prologue issues TMA for
+iter022	iter022_scale_prefetch	13.00	KEEP	memory_bound	Prefetch scale_a and scale_b into registers before TMA wait and WGMMA. Inline sc

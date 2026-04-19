@@ -1,17 +1,15 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-19T22:36:40Z",
+  "timestamp": "2026-04-19T22:40:22Z",
   "dsl": "croqtile",
   "shape_key": "M128_N512_K2048",
-  "iter": "iter021_wgmma_overlap",
+  "iter": "iter022_scale_prefetch",
   "bottleneck": "memory_bound",
-  "idea": "STRUCTURAL: Restructure K-loop to overlap WGMMA commit+wait and scale_accumulator with TMA. Insert warpgroup_commit_batch+warpgroup_wait after WGMMA iterations, then issue TMA for next k-tile, then run scale_accumulator while TMA runs. Keeps single-buffer TMA like iter017 but overlaps scale compute with memory.",
-  "expected_gain": "+3-8% TFLOPS from better overlap",
+  "idea": "Prefetch scale_a and scale_b values into registers before the WGMMA loop. Currently scale_accumulator loads scale_a from global memory after WGMMA, causing L1TEX scoreboard stalls. By loading scale factors before WGMMA starts, the loads overlap with TMA wait and WGMMA compute.",
+  "expected_gain": "+2-5% TFLOPS from hiding scale load latency",
   "levers": [
-    "pipeline_structure",
-    "wgmma_fence_placement"
+    "memory_access_pattern",
+    "prefetch"
   ],
-  "status": "VERIFIED",
-  "verified_iter": "iter021_wgmma_overlap",
-  "drift_score": 1
+  "status": "PLANNED"
 }
