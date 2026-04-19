@@ -30,3 +30,4 @@ iter026	iter026_padded_repack	243.621	DISCARD	compute_bound	Keeping iter023 wait
 iter027	iter027_regctrl_lb1	0.0	HANG	compute_bound	Keeping iter023 wait2 split-epilogue intact but switching to launch_bounds(256,1
 iter028	iter028_lb1_only	265.205	DISCARD	compute_bound	Keeping iter023 wait2 split-epilogue intact and changing only launch_bounds from
 iter029	iter029_stages2_wait1	244.323	DISCARD	compute_bound	Keeping the iter023 wait2 split-epilogue best path but reducing pipeline depth t
+iter030	iter030_padded_single_tma	0.0	COMPILE_FAIL	compute_bound	Tried to keep iter023 wait2 single-TMA output path while padding the shared outp

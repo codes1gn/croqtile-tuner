@@ -1,19 +1,17 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-19T04:35:54Z",
+  "timestamp": "2026-04-19T04:38:03Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_2048x16384x2048",
-  "iter": "iter029_stages2_wait1",
+  "iter": "iter030_padded_single_tma",
   "bottleneck": "compute_bound",
-  "idea": "Keep iter023 split-epilogue topology and launch_bounds(256,2) but reduce pipeline depth from 3 stages to 2 and use an in-loop wait1 drain, testing whether lower barrier traffic and smaller shared staging can increase eligible warps on this barrier-limited kernel.",
-  "expected_gain": "+0.1 to +2 TFLOPS",
+  "idea": "Keep iter023 wait2 overlap and single shared-to-global TMA path, but pad the shared output tile to 64x129 and store only the leading 64x128 view, testing whether bank conflicts can drop without the repack overhead that hurt iter026.",
+  "expected_gain": "+0.1 to +3 TFLOPS",
   "levers": [
-    "stages2",
-    "wait1",
-    "launch_bounds_256_2",
+    "output_smem_padding_+1",
+    "single_tma",
+    "wait2",
     "split_epilogue"
   ],
-  "status": "VERIFIED",
-  "verified_iter": "iter029_stages2_wait1",
-  "drift_score": 1
+  "status": "PLANNED"
 }
