@@ -19,3 +19,13 @@
 {"ts":"2026-04-19T08:47:34.050Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter002_wn256_1p1c_s3 (drift=1)","level":"info"}
 {"ts":"2026-04-19T08:47:41.554Z","tool":"store_round","msg":"Storing iter002_wn256_1p1c_s3 (KEEP 208.987 TFLOPS)","level":"info"}
 {"ts":"2026-04-19T08:47:41.573Z","tool":"store_round","msg":"Stored iter002_wn256_1p1c_s3: KEEP 208.987 TFLOPS (round 2)","level":"info"}
+{"ts":"2026-04-19T08:48:03.759Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_16416x16416x16416/sonnet-4/iter002_wn256_1p1c_s3","level":"info"}
+{"ts":"2026-04-19T08:48:26.056Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16416x16416x16416/sonnet-4/ncu_iter002_wn256_1p1c_s3_round3.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16416x16416x16416/sonnet-4/ncu_iter002_wn256_1p1c_s3_round3.csv","level":"info"}
+{"ts":"2026-04-19T08:48:32.973Z","tool":"profile_extract","msg":"Analyzing iter002_wn256_1p1c_s3 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16416x16416x16416/sonnet-4/ncu_iter002_wn256_1p1c_s3_round3.csv","level":"info"}
+{"ts":"2026-04-19T08:49:26.158Z","tool":"next_iter","msg":"Resolved iter003_wn256_s3_nonpersis","level":"info"}
+{"ts":"2026-04-19T08:49:32.170Z","tool":"checkpoint_write","msg":"PLANNED iter003_wn256_s3_nonpersis: Switch from persistent 114-CTA kernel to non-persistent 16705-CTA kernel (TILE_M=64 WN=256 STAGES=3): get full GPU parallelism instead of 146 serialized tiles per CTA","level":"info"}
+{"ts":"2026-04-19T08:50:28.697Z","tool":"co2cu","msg":"Compiling iter003_wn256_s3_nonpersis.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T08:50:28.805Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/sonnet-4/iter003_wn256_s3_nonpersis.cu","level":"info"}
+{"ts":"2026-04-19T08:51:32.998Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter003_wn256_s3_nonpersis (drift=1)","level":"info"}
+{"ts":"2026-04-19T08:51:33.334Z","tool":"store_round","msg":"Storing iter003_wn256_s3_nonpersis (KEEP 265.656 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T08:51:33.353Z","tool":"store_round","msg":"Stored iter003_wn256_s3_nonpersis: KEEP 265.656 TFLOPS (round 3)","level":"info"}

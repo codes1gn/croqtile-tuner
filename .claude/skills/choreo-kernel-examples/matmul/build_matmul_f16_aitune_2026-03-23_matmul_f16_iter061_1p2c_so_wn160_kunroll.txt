@@ -1,0 +1,9 @@
+.claude/skills/choreo-kernel-examples/matmul/matmul_f16_aitune_2026-03-23_matmul_f16_iter061_1p2c_so_wn160_kunroll.co:20.12: info: In the current kernel `__choreo_device_matmul`, cudaFuncAttributeMaxDynamicSharedMemorySize is set to `114688` bytes, cause shared memory usage has exceeded the default limit 48KB.
+    parallel {block_m, block_n} by [cdiv(M, MATMUL_TILE_M), cdiv(N, MATMUL_WARP_N)] : block {
+             ^
+.claude/skills/choreo-kernel-examples/matmul/matmul_f16_aitune_2026-03-23_matmul_f16_iter061_1p2c_so_wn160_kunroll.co:39.28: warning: The implicit type conversion may lose precision: 'f32' to 'f16'
+          mc = mma.fill.f16 0.0f;
+                             ^
+.claude/skills/choreo-kernel-examples/matmul/matmul_f16_aitune_2026-03-23_matmul_f16_iter061_1p2c_so_wn160_kunroll.co:59.28: warning: The implicit type conversion may lose precision: 'f32' to 'f16'
+          mc = mma.fill.f16 0.0f;
+                             ^

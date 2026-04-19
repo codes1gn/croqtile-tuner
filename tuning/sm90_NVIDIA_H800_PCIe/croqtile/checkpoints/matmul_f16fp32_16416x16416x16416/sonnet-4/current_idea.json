@@ -1,18 +1,18 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-19T08:44:53Z",
+  "timestamp": "2026-04-19T08:49:32Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_16416x16416x16416",
-  "iter": "iter002_wn256_1p1c_s3",
-  "bottleneck": "memory_bound",
-  "idea": "Switch from 1p2c (147 regs/thread, 196KB SMEM, 14% occupancy) to 1p1c WN=256 STAGES=3 to reduce SMEM to ~128KB enabling better occupancy",
-  "expected_gain": "+50 TFLOPS est",
+  "iter": "iter003_wn256_s3_nonpersis",
+  "bottleneck": "launch_bound",
+  "idea": "Switch from persistent 114-CTA kernel to non-persistent 16705-CTA kernel (TILE_M=64 WN=256 STAGES=3): get full GPU parallelism instead of 146 serialized tiles per CTA",
+  "expected_gain": "+80T estimate (from 209T to 290T)",
   "levers": [
-    "MATMUL_WARP_N",
-    "MATMUL_STAGES",
-    "warp_spec_topology"
+    "persistent_vs_static",
+    "grid_size",
+    "MATMUL_STAGES"
   ],
   "status": "VERIFIED",
-  "verified_iter": "iter002_wn256_1p1c_s3",
+  "verified_iter": "iter003_wn256_s3_nonpersis",
   "drift_score": 1
 }
