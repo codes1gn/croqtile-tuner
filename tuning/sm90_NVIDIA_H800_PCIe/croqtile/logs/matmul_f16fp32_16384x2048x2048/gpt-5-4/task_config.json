@@ -3,7 +3,7 @@
   "dsl": "croqtile",
   "model": "gpt-5-4",
   "device": "NVIDIA H800 PCIe",
-  "status": "running",
+  "status": "waiting",
   "task_id": 3,
   "variant": "high",
   "agent_type": "opencode",

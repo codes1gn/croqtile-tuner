@@ -1,0 +1,11 @@
+---
+alwaysApply: true
+---
+# /croq-tune-iterative — Durable Wrapper Dispatcher
+
+When the user says "/croq-tune-iterative":
+
+1. Read `.cursor/skills/cursor-croq-tune-iterative/SKILL.md`
+2. Parse the user's `dsl`, `dtype`, optional `shape_key`, any `--model`, any `--task-uid`, and any stated round-budget language from their message
+3. Follow the wrapper protocol in `.cursor/skills/cursor-croq-tune-iterative/SKILL.md` exactly
+4. Delegate the actual tuning loop to the existing `croqtile-tuner` subagent instead of re-implementing `/croq-tune` inline

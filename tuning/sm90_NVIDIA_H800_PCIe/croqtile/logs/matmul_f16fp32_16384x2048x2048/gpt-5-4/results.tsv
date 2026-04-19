@@ -36,3 +36,16 @@ iter033	iter033_tm192_st3	326.025	DISCARD	compute_bound	TILE_M=192 STAGES=3; wor
 iter034	iter034_wn192	0	COMPILE_FAIL	compute_bound	WARP_N=192; SMEM overflow 295KB > 233KB
 iter035	iter035_wn64	270.748	DISCARD	compute_bound	WARP_N=64 too narrow; significant regression
 iter036	iter036_st5	0	COMPILE_FAIL	compute_bound	STAGES=5; SMEM overflow 270KB > 233KB
+iter037	iter037_tk128	0	COMPILE_FAIL	compute_bound	TILE_K=128 violates SWIZ constraint (max 128)
+iter038	iter038_tm192_1p1c	0	COMPILE_FAIL	compute_bound	1p1c with TILE_M=192 requires code restructure; skipped
+iter039	iter039_tm192_3c	244.3	DISCARD	compute_bound	TILE_M=192 with 3 consumers (correct); 512 threads + 3 stages hurts perf
+iter040	iter040_tm128_wn96	224.081	DISCARD	compute_bound	WARP_N=96 does not align with N=2048; poor tile coverage
+iter041	iter041_wn256_st2	0	COMPILE_FAIL	compute_bound	WARP_N=256 requires 154+ regs; incompatible with maxreg=128
+iter042	iter042_wn256_noreg	292.201	DISCARD	compute_bound	WARP_N=256 without maxreg; lower occupancy hurts
+iter043	iter043_tk32	196.892	DISCARD	compute_bound	TILE_K=32; more K iterations hurts
+iter044	iter044_swp_eager	311.0	DISCARD	compute_bound	--ftz=true flag; within noise of baseline
+iter045	iter045_maxreg160	308.892	DISCARD	compute_bound	maxreg=160; slightly worse than 128
+iter046	iter046_maxreg96	304.515	DISCARD	compute_bound	maxreg=96; too constrained, register spills
+iter047	iter047_sm64	143.272	DISCARD	compute_bound	NUM_SMS=64; underutilizes GPU
+iter048	iter048_sm228	248.746	DISCARD	compute_bound	NUM_SMS=228; oversubscription hurts
+iter049	iter049_wk32	0	COMPILE_FAIL	compute_bound	WARP_K=32 violates WGMMA f16 constraint (must be 16)

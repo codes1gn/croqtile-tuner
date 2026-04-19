@@ -262,3 +262,56 @@
 {"ts":"2026-04-19T05:33:11.972Z","tool":"co2cu","msg":"Compiling iter036_st5.co -> .cu (arch=sm_90a)","level":"info"}
 {"ts":"2026-04-19T05:33:19.645Z","tool":"store_round","msg":"Storing iter036_st5 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
 {"ts":"2026-04-19T05:33:19.664Z","tool":"store_round","msg":"Stored iter036_st5: COMPILE_FAIL 0 TFLOPS (round 37)","level":"info"}
+{"ts":"2026-04-19T05:33:26.605Z","tool":"checkpoint_write","msg":"PLANNED iter037_tk128: TILE_M=192 TILE_K=128 STAGES=2; larger K reduces iteration count, less sync overhead","level":"info"}
+{"ts":"2026-04-19T05:33:37.928Z","tool":"store_round","msg":"Storing iter037_tk128 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T05:33:37.948Z","tool":"store_round","msg":"Stored iter037_tk128: COMPILE_FAIL 0 TFLOPS (round 38)","level":"info"}
+{"ts":"2026-04-19T05:33:44.279Z","tool":"checkpoint_write","msg":"PLANNED iter038_tm192_1p1c: TILE_M=192 with 1p1c (single consumer); fewer threads, higher occupancy","level":"info"}
+{"ts":"2026-04-19T05:34:55.238Z","tool":"store_round","msg":"Storing iter038_tm192_1p1c (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T05:34:55.257Z","tool":"store_round","msg":"Stored iter038_tm192_1p1c: COMPILE_FAIL 0 TFLOPS (round 39)","level":"info"}
+{"ts":"2026-04-19T05:35:39.614Z","tool":"checkpoint_write","msg":"PLANNED iter039_tm192_3c: TILE_M=192 with NUM_CONSUMERS=3; fix correctness bug by matching 192/64=3 consumers","level":"info"}
+{"ts":"2026-04-19T05:36:12.982Z","tool":"co2cu","msg":"Compiling iter039_tm192_3c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T05:36:21.257Z","tool":"co2cu","msg":"Compiling iter039_tm192_3c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T05:36:21.454Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x2048x2048/gpt-5-4/iter039_tm192_3c.cu","level":"info"}
+{"ts":"2026-04-19T05:37:03.152Z","tool":"store_round","msg":"Storing iter039_tm192_3c (DISCARD 244.3 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T05:37:03.172Z","tool":"store_round","msg":"Stored iter039_tm192_3c: DISCARD 244.3 TFLOPS (round 40)","level":"info"}
+{"ts":"2026-04-19T05:37:11.754Z","tool":"checkpoint_write","msg":"PLANNED iter040_tm128_wn96: TILE_M=128 WARP_N=96; different aspect ratio, correct config (128/64=2 consumers)","level":"info"}
+{"ts":"2026-04-19T05:37:19.268Z","tool":"co2cu","msg":"Compiling iter040_tm128_wn96.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T05:37:19.451Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x2048x2048/gpt-5-4/iter040_tm128_wn96.cu","level":"info"}
+{"ts":"2026-04-19T05:38:03.445Z","tool":"store_round","msg":"Storing iter040_tm128_wn96 (DISCARD 224.081 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T05:38:07.575Z","tool":"store_round","msg":"Storing iter040_tm128_wn96 (DISCARD 224.081 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T05:38:07.594Z","tool":"store_round","msg":"Stored iter040_tm128_wn96: DISCARD 224.081 TFLOPS (round 41)","level":"info"}
+{"ts":"2026-04-19T05:38:15.201Z","tool":"checkpoint_write","msg":"PLANNED iter041_wn256_st2: TILE_M=128 WARP_N=256 STAGES=2; wider tiles for better N coverage (256 evenly divides 2048)","level":"info"}
+{"ts":"2026-04-19T05:38:26.786Z","tool":"co2cu","msg":"Compiling iter041_wn256_st2.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T05:38:26.967Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x2048x2048/gpt-5-4/iter041_wn256_st2.cu","level":"info"}
+{"ts":"2026-04-19T05:39:03.261Z","tool":"store_round","msg":"Storing iter041_wn256_st2 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T05:39:03.281Z","tool":"store_round","msg":"Stored iter041_wn256_st2: COMPILE_FAIL 0 TFLOPS (round 42)","level":"info"}
+{"ts":"2026-04-19T05:39:10.026Z","tool":"checkpoint_write","msg":"PLANNED iter042_wn256_noreg: TILE_M=128 WARP_N=256 STAGES=2 without maxreg limit; test if wider tiles help despite lower occupancy","level":"info"}
+{"ts":"2026-04-19T05:39:41.311Z","tool":"store_round","msg":"Storing iter042_wn256_noreg (DISCARD 292.201 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T05:39:41.331Z","tool":"store_round","msg":"Stored iter042_wn256_noreg: DISCARD 292.201 TFLOPS (round 43)","level":"info"}
+{"ts":"2026-04-19T05:40:21.384Z","tool":"checkpoint_write","msg":"PLANNED iter043_tk32: TILE_K=32 instead of 64; smaller K tiles, more iterations but potentially better register usage","level":"info"}
+{"ts":"2026-04-19T05:40:32.794Z","tool":"co2cu","msg":"Compiling iter043_tk32.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T05:40:32.976Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x2048x2048/gpt-5-4/iter043_tk32.cu","level":"info"}
+{"ts":"2026-04-19T05:41:03.045Z","tool":"store_round","msg":"Storing iter043_tk32 (DISCARD 196.892 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T05:41:03.066Z","tool":"store_round","msg":"Stored iter043_tk32: DISCARD 196.892 TFLOPS (round 44)","level":"info"}
+{"ts":"2026-04-19T05:41:18.781Z","tool":"checkpoint_write","msg":"PLANNED iter044_swp_eager: Add software pipelining pragma hints for more aggressive scheduling","level":"info"}
+{"ts":"2026-04-19T05:42:03.740Z","tool":"store_round","msg":"Storing iter044_swp_eager (DISCARD 311.0 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T05:42:03.759Z","tool":"store_round","msg":"Stored iter044_swp_eager: DISCARD 311.0 TFLOPS (round 45)","level":"info"}
+{"ts":"2026-04-19T05:42:11.179Z","tool":"checkpoint_write","msg":"PLANNED iter045_maxreg160: maxreg=160; more registers than 128, less spilling but lower occupancy","level":"info"}
+{"ts":"2026-04-19T05:42:41.744Z","tool":"store_round","msg":"Storing iter045_maxreg160 (DISCARD 308.892 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T05:42:41.765Z","tool":"store_round","msg":"Stored iter045_maxreg160: DISCARD 308.892 TFLOPS (round 46)","level":"info"}
+{"ts":"2026-04-19T05:42:48.614Z","tool":"checkpoint_write","msg":"PLANNED iter046_maxreg96: maxreg=96; even more constrained registers, test occupancy ceiling","level":"info"}
+{"ts":"2026-04-19T05:43:22.069Z","tool":"store_round","msg":"Storing iter046_maxreg96 (DISCARD 304.515 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T05:43:22.090Z","tool":"store_round","msg":"Stored iter046_maxreg96: DISCARD 304.515 TFLOPS (round 47)","level":"info"}
+{"ts":"2026-04-19T05:43:28.733Z","tool":"checkpoint_write","msg":"PLANNED iter047_sm64: NUM_SMS=64 instead of 114; test if fewer blocks with persistent threads helps","level":"info"}
+{"ts":"2026-04-19T05:43:44.785Z","tool":"co2cu","msg":"Compiling iter047_sm64.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T05:43:44.967Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x2048x2048/gpt-5-4/iter047_sm64.cu","level":"info"}
+{"ts":"2026-04-19T05:44:01.764Z","tool":"store_round","msg":"Storing iter047_sm64 (DISCARD 143.272 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T05:44:01.784Z","tool":"store_round","msg":"Stored iter047_sm64: DISCARD 143.272 TFLOPS (round 48)","level":"info"}
+{"ts":"2026-04-19T05:44:08.470Z","tool":"checkpoint_write","msg":"PLANNED iter048_sm228: NUM_SMS=228 (2x SMs); test oversubscription with smaller grid iterations","level":"info"}
+{"ts":"2026-04-19T05:44:24.953Z","tool":"co2cu","msg":"Compiling iter048_sm228.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T05:44:25.136Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16384x2048x2048/gpt-5-4/iter048_sm228.cu","level":"info"}
+{"ts":"2026-04-19T05:44:42.033Z","tool":"store_round","msg":"Storing iter048_sm228 (DISCARD 248.746 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T05:44:42.052Z","tool":"store_round","msg":"Stored iter048_sm228: DISCARD 248.746 TFLOPS (round 49)","level":"info"}
+{"ts":"2026-04-19T05:44:49.280Z","tool":"checkpoint_write","msg":"PLANNED iter049_wk32: WARP_K=32 (double inner loop stride); test if fewer inner iterations helps","level":"info"}
+{"ts":"2026-04-19T05:45:00.855Z","tool":"store_round","msg":"Storing iter049_wk32 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T05:45:00.873Z","tool":"store_round","msg":"Stored iter049_wk32: COMPILE_FAIL 0 TFLOPS (round 50)","level":"info"}

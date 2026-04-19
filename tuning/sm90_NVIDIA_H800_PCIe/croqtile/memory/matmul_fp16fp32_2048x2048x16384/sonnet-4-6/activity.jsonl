@@ -93,3 +93,74 @@
 {"ts":"2026-04-19T05:32:24.692Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter010_stages2_wn128.cu","level":"info"}
 {"ts":"2026-04-19T05:33:00.234Z","tool":"store_round","msg":"Storing iter010_stages2_wn128 (DISCARD 199.268 TFLOPS)","level":"info"}
 {"ts":"2026-04-19T05:33:00.255Z","tool":"store_round","msg":"Stored iter010_stages2_wn128: DISCARD 199.268 TFLOPS (round 11)","level":"info"}
+{"ts":"2026-04-19T05:33:35.750Z","tool":"next_iter","msg":"Resolved iter011_stages4_wn128","level":"info"}
+{"ts":"2026-04-19T05:33:42.694Z","tool":"checkpoint_write","msg":"PLANNED iter011_stages4_wn128: STAGES=4: Increase from 3 to 4 stages for deeper pipeline. SMEM = 4 × (64×64 + 128×64) × 2B = 98304B = 96KB. More overlap between producer and consumer.","level":"info"}
+{"ts":"2026-04-19T05:34:42.407Z","tool":"co2cu","msg":"Compiling iter011_stages4_wn128.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T05:34:42.516Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter011_stages4_wn128.cu","level":"info"}
+{"ts":"2026-04-19T05:35:11.369Z","tool":"store_round","msg":"Storing iter011_stages4_wn128 (DISCARD 173.65 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T05:35:11.388Z","tool":"store_round","msg":"Stored iter011_stages4_wn128: DISCARD 173.65 TFLOPS (round 12)","level":"info"}
+{"ts":"2026-04-19T05:40:09.201Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter002_tm64_wn128_1p1c","level":"info"}
+{"ts":"2026-04-19T05:40:16.693Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/ncu_iter002_tm64_wn128_1p1c_round13.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/ncu_iter002_tm64_wn128_1p1c_round13.csv","level":"info"}
+{"ts":"2026-04-19T05:40:22.733Z","tool":"profile_extract","msg":"Analyzing iter002_tm64_wn128_1p1c_round13 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/ncu_iter002_tm64_wn128_1p1c_round13.csv","level":"info"}
+{"ts":"2026-04-19T05:41:21.957Z","tool":"sass_compare","msg":"Extracting custom SASS for iter002_tm64_wn128_1p1c","level":"info"}
+{"ts":"2026-04-19T05:41:22.584Z","tool":"sass_compare","msg":"Custom SASS extracted for iter002_tm64_wn128_1p1c (1067 lines)","level":"info"}
+{"ts":"2026-04-19T05:41:25.794Z","tool":"sass_compare","msg":"Comparing baseline vs iter002_tm64_wn128_1p1c SASS","level":"info"}
+{"ts":"2026-04-19T05:41:25.822Z","tool":"sass_compare","msg":"SASS comparison complete for iter002_tm64_wn128_1p1c (saved to tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/sass_compare_iter002_tm64_wn128_1p1c.json)","level":"info"}
+{"ts":"2026-04-19T05:42:22.106Z","tool":"checkpoint_write","msg":"PLANNED iter012_tm128_1p2c: 1p2c warp-spec with TILE_M=128 TILE_N=256: double the MMA work per CTA, 2 consumers each doing 64x128. Targets barrier stall (52%) and low HGMMA count (4 vs cuBLAS 40) by increasing compute/sync ratio.","level":"info"}
+{"ts":"2026-04-19T05:42:26.062Z","tool":"next_iter","msg":"Resolved iter012_tm128_1p2c","level":"info"}
+{"ts":"2026-04-19T05:45:37.894Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter012_tm128_1p2c (drift=1)","level":"info"}
+{"ts":"2026-04-19T05:45:38.236Z","tool":"store_round","msg":"Storing iter012_tm128_1p2c (DISCARD 179.92 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T05:45:38.255Z","tool":"store_round","msg":"Stored iter012_tm128_1p2c: DISCARD 179.92 TFLOPS (round 13)","level":"info"}
+{"ts":"2026-04-19T05:46:20.941Z","tool":"checkpoint_write","msg":"PLANNED iter013_warpk32_swiz64: Increase WARP_K from 16 to 32: halves iv_warp loop iterations (2 vs 4), doubles work per MMA. Also try SWIZ=64 to reduce bank conflicts (9.4-way to ~4-way). TILE_M=64 WARP_N=128 STAGES=3 (same as iter002).","level":"info"}
+{"ts":"2026-04-19T05:46:25.503Z","tool":"next_iter","msg":"Resolved iter013_warpk32_swiz64","level":"info"}
+{"ts":"2026-04-19T05:48:57.728Z","tool":"store_round","msg":"Storing iter013_warpk32_swiz64 (SEGFAULT 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T05:48:57.749Z","tool":"store_round","msg":"Stored iter013_warpk32_swiz64: SEGFAULT 0 TFLOPS (round 14)","level":"info"}
+{"ts":"2026-04-19T05:49:35.355Z","tool":"checkpoint_write","msg":"PLANNED iter014_stages4_chunkat: Try STAGES=4 and use rhs.chunkat pattern (from reference kernel) instead of subspan.at. Reference kernel uses STAGES=4 with 4 pipeline stages to better hide memory latency for long K dimension.","level":"info"}
+{"ts":"2026-04-19T05:50:32.725Z","tool":"checkpoint_write","msg":"PLANNED iter014_swiz32_stg3: Target 9.4-way bank conflict: try SWIZ=32 (smallest valid swizzle) instead of 128. This changes SMEM layout to reduce bank conflicts at cost of TMA efficiency. Keep TILE_K=16 (so SWIZ=32=2*16), TILE_M=64, WARP_N=128, STAGES=3.","level":"info"}
+{"ts":"2026-04-19T05:50:37.521Z","tool":"next_iter","msg":"Resolved iter014_swiz32_stg3","level":"info"}
+{"ts":"2026-04-19T05:52:09.161Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter014_swiz32_stg3 (drift=1)","level":"info"}
+{"ts":"2026-04-19T05:52:09.507Z","tool":"store_round","msg":"Storing iter014_swiz32_stg3 (DISCARD 97.99 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T05:52:09.526Z","tool":"store_round","msg":"Stored iter014_swiz32_stg3: DISCARD 97.99 TFLOPS (round 15)","level":"info"}
+{"ts":"2026-04-19T05:52:41.160Z","tool":"sass_compare","msg":"Comparing baseline vs iter002_tm64_wn128_1p1c SASS","level":"info"}
+{"ts":"2026-04-19T05:52:41.186Z","tool":"sass_compare","msg":"SASS comparison complete for iter002_tm64_wn128_1p1c (saved to tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/sass_compare_iter002_tm64_wn128_1p1c.json)","level":"info"}
+{"ts":"2026-04-19T05:53:24.560Z","tool":"checkpoint_write","msg":"PLANNED iter015_regctrl: Address 25% occupancy limitation with maxrregcount=128. cuBLAS uses 187 regs, iter002 uses 92. Try limiting to 128 regs which should allow 50% occupancy (64 regs/warp x 32 warps = 2048 regs budget fits 128/thread). Phase 2 .cu change only - add nvcc -maxrregcount=128.","level":"info"}
+{"ts":"2026-04-19T05:53:36.290Z","tool":"next_iter","msg":"Resolved iter015_regctrl","level":"info"}
+{"ts":"2026-04-19T05:55:14.589Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter015_regctrl (drift=1)","level":"info"}
+{"ts":"2026-04-19T05:55:14.915Z","tool":"store_round","msg":"Storing iter015_regctrl (KEEP 232.71 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T05:55:14.934Z","tool":"store_round","msg":"Stored iter015_regctrl: KEEP 232.71 TFLOPS (round 16)","level":"info"}
+{"ts":"2026-04-19T05:55:29.171Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter015_regctrl","level":"info"}
+{"ts":"2026-04-19T05:55:36.661Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/ncu_iter015_regctrl_round17.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/ncu_iter015_regctrl_round17.csv","level":"info"}
+{"ts":"2026-04-19T05:55:42.068Z","tool":"profile_extract","msg":"Analyzing iter015_regctrl from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/ncu_iter015_regctrl_round17.csv","level":"info"}
+{"ts":"2026-04-19T05:56:11.408Z","tool":"checkpoint_write","msg":"PLANNED iter016_reg96: Try more aggressive register limiting: maxrregcount=96 (vs 128). Base kernel uses ~92 regs, so 96 is minimal overhead. This should maintain occupancy while forcing better register allocation from compiler.","level":"info"}
+{"ts":"2026-04-19T05:56:11.966Z","tool":"next_iter","msg":"Resolved iter016_reg96","level":"info"}
+{"ts":"2026-04-19T05:56:33.503Z","tool":"store_round","msg":"Storing iter016_reg96 (DISCARD 232.69 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T05:56:33.522Z","tool":"store_round","msg":"Stored iter016_reg96: DISCARD 232.69 TFLOPS (round 17)","level":"info"}
+{"ts":"2026-04-19T05:56:50.320Z","tool":"checkpoint_write","msg":"PLANNED iter017_reg128_wn64: Combine maxrregcount=128 with WARP_N=64 (vs 128). Smaller WARP_N gives 1024 CTAs (vs 512), better wave quantization. Combine with regctrl for double optimization.","level":"info"}
+{"ts":"2026-04-19T05:56:50.908Z","tool":"next_iter","msg":"Resolved iter017_reg128_wn64","level":"info"}
+{"ts":"2026-04-19T05:58:26.682Z","tool":"store_round","msg":"Storing iter017_reg128_wn64 (DISCARD 167.57 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T05:58:26.702Z","tool":"store_round","msg":"Stored iter017_reg128_wn64: DISCARD 167.57 TFLOPS (round 18)","level":"info"}
+{"ts":"2026-04-19T05:58:42.555Z","tool":"checkpoint_write","msg":"PLANNED iter018_launch_bounds: Add __launch_bounds__(256, 1) to kernel in .cu - forces compiler to optimize for fixed block size. Combined with maxrregcount=128 from iter015 base.","level":"info"}
+{"ts":"2026-04-19T05:58:43.196Z","tool":"next_iter","msg":"Resolved iter018_launch_bounds","level":"info"}
+{"ts":"2026-04-19T05:59:58.682Z","tool":"store_round","msg":"Storing iter018_launch_bounds (DISCARD 232.98 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T05:59:58.702Z","tool":"store_round","msg":"Stored iter018_launch_bounds: DISCARD 232.98 TFLOPS (round 19)","level":"info"}
+{"ts":"2026-04-19T06:00:15.951Z","tool":"checkpoint_write","msg":"PLANNED iter019_wn192_reg128: WARP_N=192 (vs 128): larger CTA tile (64x192) may better amortize sync overhead. 2048/192=10.67 → 11 blocks per N-dim, 32*11=352 CTAs (3.1 waves). Combined with maxrregcount=128.","level":"info"}
+{"ts":"2026-04-19T06:00:16.614Z","tool":"next_iter","msg":"Resolved iter019_wn192_reg128","level":"info"}
+{"ts":"2026-04-19T06:01:05.746Z","tool":"store_round","msg":"Storing iter019_wn192_reg128 (DISCARD 184.37 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T06:01:05.765Z","tool":"store_round","msg":"Stored iter019_wn192_reg128: DISCARD 184.37 TFLOPS (round 20)","level":"info"}
+{"ts":"2026-04-19T06:01:37.468Z","tool":"checkpoint_write","msg":"PLANNED iter020_stg2_reg128: STAGES=2 + maxrregcount=128: iter010 got 199T without regctrl. Regctrl improved iter002→iter015 by 5T. Test if regctrl+STAGES=2 synergy exists. SMEM drops from 72KB to 48KB, might allow higher occupancy.","level":"info"}
+{"ts":"2026-04-19T06:01:38.151Z","tool":"next_iter","msg":"Resolved iter020_stg2_reg128","level":"info"}
+{"ts":"2026-04-19T06:02:03.283Z","tool":"store_round","msg":"Storing iter020_stg2_reg128 (DISCARD 206.81 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T06:02:03.302Z","tool":"store_round","msg":"Stored iter020_stg2_reg128: DISCARD 206.81 TFLOPS (round 21)","level":"info"}
+{"ts":"2026-04-19T06:02:19.362Z","tool":"checkpoint_write","msg":"PLANNED iter021_tm128_1p1c_reg128: TILE_M=128 + 1p1c + maxrregcount=128: iter012 used 1p2c and got 180T. Try 1p1c structure (simpler sync) with TILE_M=128 (double work). STAGES=2 to fit SMEM. Consumer loads 2 tiles via 2 mma.load per k-iter.","level":"info"}
+{"ts":"2026-04-19T06:02:20.083Z","tool":"next_iter","msg":"Resolved iter021_tm128_1p1c_reg128","level":"info"}
+{"ts":"2026-04-19T06:03:30.903Z","tool":"checkpoint_write","msg":"PLANNED iter022_fastmath_reg128: Add --use_fast_math to nvcc flags combined with maxrregcount=128. Fast math enables optimizations like fused operations and relaxed precision that may improve throughput.","level":"info"}
+{"ts":"2026-04-19T06:03:31.236Z","tool":"store_round","msg":"Storing iter021_tm128_1p1c_reg128 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T06:03:31.255Z","tool":"store_round","msg":"Stored iter021_tm128_1p1c_reg128: COMPILE_FAIL 0 TFLOPS (round 22)","level":"info"}
+{"ts":"2026-04-19T06:03:49.818Z","tool":"next_iter","msg":"Resolved iter022_fastmath_reg128","level":"info"}
+{"ts":"2026-04-19T06:04:10.252Z","tool":"store_round","msg":"Storing iter022_fastmath_reg128 (DISCARD 232.52 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T06:04:15.272Z","tool":"store_round","msg":"Storing iter022_fastmath_reg128 (DISCARD 232.52 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T06:04:15.291Z","tool":"store_round","msg":"Stored iter022_fastmath_reg128: DISCARD 232.52 TFLOPS (round 23)","level":"info"}
+{"ts":"2026-04-19T06:04:50.218Z","tool":"checkpoint_write","msg":"PLANNED iter023_reg160: Try maxrregcount=160 (between iter015 128 and cuBLAS 187). More registers may allow better instruction scheduling while maintaining some occupancy benefits.","level":"info"}
+{"ts":"2026-04-19T06:04:51.008Z","tool":"next_iter","msg":"Resolved iter023_reg160","level":"info"}
+{"ts":"2026-04-19T06:05:38.639Z","tool":"store_round","msg":"Storing iter023_reg160 (DISCARD 178.72 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T06:05:38.659Z","tool":"store_round","msg":"Stored iter023_reg160: DISCARD 178.72 TFLOPS (round 24)","level":"info"}

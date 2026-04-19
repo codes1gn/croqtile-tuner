@@ -1,16 +1,14 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-19T05:33:04Z",
+  "timestamp": "2026-04-19T05:44:49Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_16384x2048x2048",
-  "iter": "iter036_st5",
+  "iter": "iter049_wk32",
   "bottleneck": "compute_bound",
-  "idea": "TILE_M=192 with STAGES=5; more pipeline depth for better latency hiding",
-  "expected_gain": "+5 TFLOPS",
+  "idea": "WARP_K=32 (double inner loop stride); test if fewer inner iterations helps",
+  "expected_gain": "+2 TFLOPS",
   "levers": [
-    "TILE_M 192",
-    "WARP_N 128",
-    "STAGES 5",
+    "WARP_K 32",
     "maxreg=128"
   ],
   "status": "PLANNED"

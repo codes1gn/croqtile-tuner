@@ -1,0 +1,19 @@
+/tmp/1776578498210770075_125454099834688/__choreo_cute_iter020_stg2_reg128.cu(168): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) cuda::barrier<cuda::thread_scope_block> choreo_copy_atom_t_0_barrier;
+                                                                    ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/tmp/1776578498210770075_125454099834688/__choreo_cute_iter020_stg2_reg128.cu(177): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) cuda::barrier<cuda::thread_scope_block> full[2];
+                                                                    ^
+
+/tmp/1776578498210770075_125454099834688/__choreo_cute_iter020_stg2_reg128.cu(185): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) cuda::barrier<cuda::thread_scope_block> empty[2];
+                                                                    ^
+
+Verification passed (sampled 2000 elements)
+M=2048 N=2048 K=16384
+Timing avg ms: 0.664565
+TFLOPS: 206.81
+HW efficiency: 13.6689%

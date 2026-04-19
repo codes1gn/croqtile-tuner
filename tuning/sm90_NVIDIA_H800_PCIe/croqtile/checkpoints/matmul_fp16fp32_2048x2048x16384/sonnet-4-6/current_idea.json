@@ -1,15 +1,14 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-19T05:31:30Z",
+  "timestamp": "2026-04-19T06:04:50Z",
   "dsl": "croqtile",
   "shape_key": "matmul_fp16fp32_2048x2048x16384",
-  "iter": "iter010_stages2_wn128",
+  "iter": "iter023_reg160",
   "bottleneck": "compute_bound",
-  "idea": "STAGES=2: Reduce from 3 to 2 stages. Simplifies pipeline, reduces barrier count. SMEM drops from 72KB to 48KB. May enable higher occupancy (2+ CTAs/SM).",
-  "expected_gain": "+30 TFLOPS (target 260T)",
+  "idea": "Try maxrregcount=160 (between iter015 128 and cuBLAS 187). More registers may allow better instruction scheduling while maintaining some occupancy benefits.",
+  "expected_gain": "+5 TFLOPS",
   "levers": [
-    "stages",
-    "occupancy"
+    "maxrregcount"
   ],
   "status": "PLANNED"
 }
