@@ -13,5 +13,7 @@
     "MATMUL_STAGES",
     "warp_spec_topology"
   ],
-  "status": "PLANNED"
+  "status": "VERIFIED",
+  "verified_iter": "iter010_warpspec_p3c_wn128_tm192",
+  "drift_score": 1
 }

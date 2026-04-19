@@ -1,17 +1,14 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-19T09:09:00Z",
+  "timestamp": "2026-04-19T09:18:03Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_16416x16416x16416",
-  "iter": "iter008_tk128_s2",
+  "iter": "iter009_single_wgarrive",
   "bottleneck": "compute_bound",
-  "idea": "Increase TILE_K from 64 to 128 with STAGES=2: 8 WGMMAs per barrier vs 4 reduces barrier stall frequency by 2x. SMEM: 2*(64*128*2+256*128*2)+64*256*4=2*(16384+65536)+65536=196608+65536=262144<228KB? No 262KB>228KB. Actually: LHS=2*64*128*2=32768, RHS=2*256*128*2=131072, OUT=65536. Total=229376=224KB. Fits!",
-  "expected_gain": "+15-25 TFLOPS from halved barrier stall rate",
+  "idea": "Move warpgroup_arrive() outside inner WGMMA loop (call once per K-tile instead of 4x): multiple warpgroup_arrive() calls create 4 separate fence groups, keeping WGMMAs from forming a single batch. One arrive before the loop lets all 4 WGMMAs pipeline as one batch, reducing WGMMA overhead.",
+  "expected_gain": "+5-15 TFLOPS from improved WGMMA batching",
   "levers": [
-    "TILE_K",
-    "STAGES"
+    "warpgroup_arrive placement"
   ],
-  "status": "VERIFIED",
-  "verified_iter": "iter008_tk128_s2",
-  "drift_score": 1
+  "status": "PLANNED"
 }

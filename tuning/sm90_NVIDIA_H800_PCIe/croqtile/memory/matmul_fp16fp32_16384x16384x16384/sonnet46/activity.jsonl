@@ -82,3 +82,6 @@
 {"ts":"2026-04-19T09:10:16.305Z","tool":"checkpoint_write","msg":"PLANNED iter010_warpspec_p3c_wn128_tm192: 1p3c warpspec: 3 consumers each 64x128 of 192x128 CTA tile, single sync TMA store after all consumers done, avoids 1p2c async-store Choreo bug","level":"info"}
 {"ts":"2026-04-19T09:11:11.782Z","tool":"co2cu","msg":"Compiling iter010_warpspec_p3c_wn128_tm192.co -> .cu (arch=sm_90a)","level":"info"}
 {"ts":"2026-04-19T09:11:11.891Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x16384/sonnet46/iter010_warpspec_p3c_wn128_tm192.cu","level":"info"}
+{"ts":"2026-04-19T09:18:48.698Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter010_warpspec_p3c_wn128_tm192 (drift=1)","level":"info"}
+{"ts":"2026-04-19T09:18:56.469Z","tool":"store_round","msg":"Storing iter010_warpspec_p3c_wn128_tm192 (DISCARD 218.687 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T09:18:56.489Z","tool":"store_round","msg":"Stored iter010_warpspec_p3c_wn128_tm192: DISCARD 218.687 TFLOPS (round 10)","level":"info"}
