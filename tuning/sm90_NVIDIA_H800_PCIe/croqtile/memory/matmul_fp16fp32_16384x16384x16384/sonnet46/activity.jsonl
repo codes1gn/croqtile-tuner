@@ -78,3 +78,7 @@
 {"ts":"2026-04-19T09:01:25.696Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_fp16fp32_16384x16384x16384/sonnet46/iter008_wn256_s4_1p1c","level":"info"}
 {"ts":"2026-04-19T09:01:45.330Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/sonnet46/ncu_iter008_wn256_s4_1p1c_round10.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/sonnet46/ncu_iter008_wn256_s4_1p1c_round10.csv","level":"info"}
 {"ts":"2026-04-19T09:01:50.540Z","tool":"profile_extract","msg":"Analyzing iter008_wn256_s4_1p1c from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/sonnet46/ncu_iter008_wn256_s4_1p1c_round10.csv","level":"info"}
+{"ts":"2026-04-19T09:10:11.358Z","tool":"next_iter","msg":"Resolved iter010_warpspec_p3c_wn128_tm192","level":"info"}
+{"ts":"2026-04-19T09:10:16.305Z","tool":"checkpoint_write","msg":"PLANNED iter010_warpspec_p3c_wn128_tm192: 1p3c warpspec: 3 consumers each 64x128 of 192x128 CTA tile, single sync TMA store after all consumers done, avoids 1p2c async-store Choreo bug","level":"info"}
+{"ts":"2026-04-19T09:11:11.782Z","tool":"co2cu","msg":"Compiling iter010_warpspec_p3c_wn128_tm192.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T09:11:11.891Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x16384/sonnet46/iter010_warpspec_p3c_wn128_tm192.cu","level":"info"}

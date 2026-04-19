@@ -59,3 +59,18 @@
 {"ts":"2026-04-19T09:03:59.458Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter007_p1c2_so_wn128_s3 (drift=1)","level":"info"}
 {"ts":"2026-04-19T09:03:59.795Z","tool":"store_round","msg":"Storing iter007_p1c2_so_wn128_s3 (DISCARD 185.627 TFLOPS)","level":"info"}
 {"ts":"2026-04-19T09:03:59.813Z","tool":"store_round","msg":"Stored iter007_p1c2_so_wn128_s3: DISCARD 185.627 TFLOPS (round 7)","level":"info"}
+{"ts":"2026-04-19T09:04:15.293Z","tool":"sass_compare","msg":"Extracting baseline SASS for f16fp32 16416x16416x16416","level":"info"}
+{"ts":"2026-04-19T09:04:20.147Z","tool":"sass_compare","msg":"Baseline SASS extracted via ncu (1290 lines)","level":"info"}
+{"ts":"2026-04-19T09:04:25.239Z","tool":"sass_compare","msg":"Extracting custom SASS for iter005_early_empty_arrive","level":"info"}
+{"ts":"2026-04-19T09:04:25.847Z","tool":"sass_compare","msg":"Custom SASS extracted for iter005_early_empty_arrive (1303 lines)","level":"info"}
+{"ts":"2026-04-19T09:04:25.861Z","tool":"sass_compare","msg":"Comparing baseline vs iter005_early_empty_arrive SASS","level":"info"}
+{"ts":"2026-04-19T09:04:25.888Z","tool":"sass_compare","msg":"SASS comparison complete for iter005_early_empty_arrive (saved to tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16416x16416x16416/sonnet-4/sass_compare_iter005_early_empty_arrive.json)","level":"info"}
+{"ts":"2026-04-19T09:05:35.738Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_16416x16416x16416/sonnet-4/iter005_early_empty_arrive 16416 16416 16416 fp16fp32","level":"info"}
+{"ts":"2026-04-19T09:05:42.994Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_16416x16416x16416/sonnet-4/iter005_early_empty_arrive --args 16416 16416 16416 fp16fp32","level":"info"}
+{"ts":"2026-04-19T09:06:03.884Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16416x16416x16416/sonnet-4/ncu_iter005_early_empty_arrive_round8.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16416x16416x16416/sonnet-4/ncu_iter005_early_empty_arrive_round8.csv","level":"info"}
+{"ts":"2026-04-19T09:06:07.404Z","tool":"profile_extract","msg":"Analyzing iter005_early_empty_arrive_round8 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16416x16416x16416/sonnet-4/ncu_iter005_early_empty_arrive_round8.csv","level":"info"}
+{"ts":"2026-04-19T09:09:00.646Z","tool":"checkpoint_write","msg":"PLANNED iter008_tk128_s2: Increase TILE_K from 64 to 128 with STAGES=2: 8 WGMMAs per barrier vs 4 reduces barrier stall frequency by 2x. SMEM: 2*(64*128*2+256*128*2)+64*256*4=2*(16384+65536)+65536=196608+65536=262144<228KB? No 262KB>228KB. Actually: LHS=2*64*128*2=32768, RHS=2*256*128*2=131072, OUT=65536. Total=229376=224KB. Fits!","level":"info"}
+{"ts":"2026-04-19T09:09:04.753Z","tool":"next_iter","msg":"Resolved iter008_tk128_s2","level":"info"}
+{"ts":"2026-04-19T09:16:26.917Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter008_tk128_s2 (drift=1)","level":"info"}
+{"ts":"2026-04-19T09:16:27.253Z","tool":"store_round","msg":"Storing iter008_tk128_s2 (DISCARD 265.27 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T09:16:27.271Z","tool":"store_round","msg":"Stored iter008_tk128_s2: DISCARD 265.27 TFLOPS (round 8)","level":"info"}
