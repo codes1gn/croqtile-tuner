@@ -1,18 +1,18 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-19T03:27:09Z",
+  "timestamp": "2026-04-19T03:31:52Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_2048x16384x2048",
-  "iter": "iter026_padded_repack",
+  "iter": "iter027_regctrl_lb1",
   "bottleneck": "compute_bound",
-  "idea": "Keep iter023 wait2 split-epilogue as the active best, but store the two 64x64 output fragments into padded 64x65 shared tiles and then repack them into the existing contiguous 64x128 output tile before the single TMA store, targeting the remaining 10-way shared-store bank conflicts without paying the dual-TMA overhead.",
+  "idea": "Keep iter023 wait2 split-epilogue as the active best, but switch to launch_bounds(256,1) and trade registers explicitly with setmaxnreg so the producer runs lean while the consumer gets a larger accumulator budget, testing whether higher per-warp ILP can overcome the current high barrier density.",
   "expected_gain": "+0.1 to +3 TFLOPS",
   "levers": [
-    "padded_epilogue",
-    "repack_single_tma",
+    "launch_bounds_256_1",
+    "setmaxnreg_regtrade",
     "wait2"
   ],
   "status": "VERIFIED",
-  "verified_iter": "iter026_padded_repack",
+  "verified_iter": "iter027_regctrl_lb1",
   "drift_score": 1
 }
