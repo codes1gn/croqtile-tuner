@@ -85,3 +85,12 @@
 {"ts":"2026-04-19T09:18:48.698Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter010_warpspec_p3c_wn128_tm192 (drift=1)","level":"info"}
 {"ts":"2026-04-19T09:18:56.469Z","tool":"store_round","msg":"Storing iter010_warpspec_p3c_wn128_tm192 (DISCARD 218.687 TFLOPS)","level":"info"}
 {"ts":"2026-04-19T09:18:56.489Z","tool":"store_round","msg":"Stored iter010_warpspec_p3c_wn128_tm192: DISCARD 218.687 TFLOPS (round 10)","level":"info"}
+{"ts":"2026-04-19T09:20:08.802Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_fp16fp32_16384x16384x16384/sonnet46/iter008_wn256_s4_1p1c","level":"info"}
+{"ts":"2026-04-19T09:20:28.474Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/sonnet46/ncu_iter008_wn256_s4_1p1c_round11.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/sonnet46/ncu_iter008_wn256_s4_1p1c_round11.csv","level":"info"}
+{"ts":"2026-04-19T09:21:09.295Z","tool":"profile_extract","msg":"Analyzing iter008_wn256_s4_1p1c from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/sonnet46/ncu_iter008_wn256_s4_1p1c_round11.csv","level":"info"}
+{"ts":"2026-04-19T09:27:54.585Z","tool":"next_iter","msg":"Resolved iter011_wn256_s4_1p1c_stmatrix","level":"info"}
+{"ts":"2026-04-19T09:28:12.028Z","tool":"co2cu","msg":"Compiling iter011_wn256_s4_1p1c_stmatrix.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T09:28:12.133Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x16384/sonnet46/iter011_wn256_s4_1p1c_stmatrix.cu","level":"info"}
+{"ts":"2026-04-19T09:29:01.462Z","tool":"next_iter","msg":"Resolved iter011_wn128_s3_1p1c_2cta","level":"info"}
+{"ts":"2026-04-19T09:29:59.248Z","tool":"co2cu","msg":"Compiling iter011_wn128_s3_1p1c_2cta.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T09:29:59.352Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16384x16384x16384/sonnet46/iter011_wn128_s3_1p1c_2cta.cu","level":"info"}

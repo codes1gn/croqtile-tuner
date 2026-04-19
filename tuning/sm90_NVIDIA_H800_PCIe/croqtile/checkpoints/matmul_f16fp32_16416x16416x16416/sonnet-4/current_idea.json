@@ -1,16 +1,17 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-19T09:18:03Z",
+  "timestamp": "2026-04-19T09:24:22Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_16416x16416x16416",
-  "iter": "iter009_single_wgarrive",
+  "iter": "iter010_tk32_s5",
   "bottleneck": "compute_bound",
-  "idea": "Move warpgroup_arrive() outside inner WGMMA loop (call once per K-tile instead of 4x): multiple warpgroup_arrive() calls create 4 separate fence groups, keeping WGMMAs from forming a single batch. One arrive before the loop lets all 4 WGMMAs pipeline as one batch, reducing WGMMA overhead.",
-  "expected_gain": "+5-15 TFLOPS from improved WGMMA batching",
+  "idea": "TILE_K=32 STAGES=5: halve K-tile to 32 (2 WGMMAs/stage), increase stages to 5 so producer is 4 stages=1536 cycles ahead. TMA latency ~300-400 cycles < 1536 \u2192 should eliminate barrier stalls that now dominate at 41% of cycles. SMEM: 5*(64*32*2+256*32*2)+64*256*4=5*(4096+16384)+65536=100KB+65KB=165KB<228KB",
+  "expected_gain": "+20-40 TFLOPS from eliminating 41% barrier stall overhead",
   "levers": [
-    "warpgroup_arrive placement"
+    "TILE_K",
+    "STAGES"
   ],
   "status": "VERIFIED",
-  "verified_iter": "iter009_single_wgarrive",
+  "verified_iter": "iter010_tk32_s5",
   "drift_score": 1
 }

@@ -79,3 +79,10 @@
 {"ts":"2026-04-19T09:19:55.284Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter009_single_wgarrive (drift=1)","level":"info"}
 {"ts":"2026-04-19T09:19:55.628Z","tool":"store_round","msg":"Storing iter009_single_wgarrive (DISCARD 275.718 TFLOPS)","level":"info"}
 {"ts":"2026-04-19T09:19:55.648Z","tool":"store_round","msg":"Stored iter009_single_wgarrive: DISCARD 275.718 TFLOPS (round 9)","level":"info"}
+{"ts":"2026-04-19T09:20:14.237Z","tool":"sass_compare","msg":"Extracting custom SASS for iter009_single_wgarrive","level":"info"}
+{"ts":"2026-04-19T09:20:14.836Z","tool":"sass_compare","msg":"Custom SASS extracted for iter009_single_wgarrive (1303 lines)","level":"info"}
+{"ts":"2026-04-19T09:24:22.078Z","tool":"checkpoint_write","msg":"PLANNED iter010_tk32_s5: TILE_K=32 STAGES=5: halve K-tile to 32 (2 WGMMAs/stage), increase stages to 5 so producer is 4 stages=1536 cycles ahead. TMA latency ~300-400 cycles < 1536 → should eliminate barrier stalls that now dominate at 41% of cycles. SMEM: 5*(64*32*2+256*32*2)+64*256*4=5*(4096+16384)+65536=100KB+65KB=165KB<228KB","level":"info"}
+{"ts":"2026-04-19T09:25:02.962Z","tool":"next_iter","msg":"Resolved iter010_tk32_s5","level":"info"}
+{"ts":"2026-04-19T09:29:56.283Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter010_tk32_s5 (drift=1)","level":"info"}
+{"ts":"2026-04-19T09:29:56.623Z","tool":"store_round","msg":"Storing iter010_tk32_s5 (DISCARD 230.691 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T09:29:56.641Z","tool":"store_round","msg":"Stored iter010_tk32_s5: DISCARD 230.691 TFLOPS (round 10)","level":"info"}
