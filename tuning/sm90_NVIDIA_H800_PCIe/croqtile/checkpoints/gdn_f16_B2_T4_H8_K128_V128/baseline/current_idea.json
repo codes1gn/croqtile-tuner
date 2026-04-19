@@ -1,0 +1,15 @@
+{
+  "schema": "croq-checkpoint-v1",
+  "timestamp": "2026-04-19T22:13:12Z",
+  "dsl": "croqtile",
+  "shape_key": "gdn_f16_B2_T4_H8_K128_V128",
+  "iter": "iter003_bv128_128threads",
+  "bottleneck": "launch_bound",
+  "idea": "Increase BV to 128 (full V dimension), use 128 threads per block, single block per NV slice",
+  "expected_gain": "+0.01 TFLOPS",
+  "levers": [
+    "BV",
+    "THREADS"
+  ],
+  "status": "PLANNED"
+}

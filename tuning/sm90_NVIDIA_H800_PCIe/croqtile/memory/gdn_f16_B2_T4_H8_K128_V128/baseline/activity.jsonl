@@ -3,3 +3,14 @@
 {"ts":"2026-04-19T22:10:15.258Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/gdn_f16_B2_T4_H8_K128_V128/baseline/iter001_baseline","level":"info"}
 {"ts":"2026-04-19T22:10:20.611Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/gdn_f16_B2_T4_H8_K128_V128/baseline/ncu_iter001_baseline_round1.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/gdn_f16_B2_T4_H8_K128_V128/baseline/ncu_iter001_baseline_round1.csv","level":"info"}
 {"ts":"2026-04-19T22:10:25.312Z","tool":"profile_extract","msg":"Analyzing iter001_baseline from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/gdn_f16_B2_T4_H8_K128_V128/baseline/ncu_iter001_baseline_round1.csv","level":"info"}
+{"ts":"2026-04-19T22:10:54.693Z","tool":"next_iter","msg":"Resolved iter002_bv64_threads64","level":"info"}
+{"ts":"2026-04-19T22:10:54.727Z","tool":"checkpoint_write","msg":"PLANNED iter002_bv64_threads64: Increase BV from 32 to 64 to reduce block count and use 64 threads/block to better utilize warps","level":"info"}
+{"ts":"2026-04-19T22:12:15.915Z","tool":"co2cu","msg":"Compiling iter002_bv64_threads64.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T22:12:16.112Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter002_bv64_threads64.cu","level":"info"}
+{"ts":"2026-04-19T22:12:42.812Z","tool":"store_round","msg":"Storing iter002_bv64_threads64 (KEEP 0.0179 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T22:12:42.831Z","tool":"store_round","msg":"Stored iter002_bv64_threads64: KEEP 0.0179 TFLOPS (round 2)","level":"info"}
+{"ts":"2026-04-19T22:12:52.241Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/gdn_f16_B2_T4_H8_K128_V128/baseline/iter002_bv64_threads64","level":"info"}
+{"ts":"2026-04-19T22:12:57.954Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/gdn_f16_B2_T4_H8_K128_V128/baseline/ncu_iter002_bv64_round2.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/gdn_f16_B2_T4_H8_K128_V128/baseline/ncu_iter002_bv64_round2.csv","level":"info"}
+{"ts":"2026-04-19T22:13:02.800Z","tool":"profile_extract","msg":"Analyzing iter002_bv64 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/gdn_f16_B2_T4_H8_K128_V128/baseline/ncu_iter002_bv64_round2.csv","level":"info"}
+{"ts":"2026-04-19T22:13:12.524Z","tool":"next_iter","msg":"Resolved iter003_bv128_128threads","level":"info"}
+{"ts":"2026-04-19T22:13:12.558Z","tool":"checkpoint_write","msg":"PLANNED iter003_bv128_128threads: Increase BV to 128 (full V dimension), use 128 threads per block, single block per NV slice","level":"info"}

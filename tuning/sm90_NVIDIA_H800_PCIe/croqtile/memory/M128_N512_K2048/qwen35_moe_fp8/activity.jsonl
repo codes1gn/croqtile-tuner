@@ -67,3 +67,7 @@
 {"ts":"2026-04-19T22:10:24.094Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter014_rhs_dbuf (drift=1)","level":"info"}
 {"ts":"2026-04-19T22:10:31.455Z","tool":"store_round","msg":"Storing iter014_rhs_dbuf (DISCARD 11.85 TFLOPS)","level":"info"}
 {"ts":"2026-04-19T22:10:31.474Z","tool":"store_round","msg":"Stored iter014_rhs_dbuf: DISCARD 11.85 TFLOPS (round 14)","level":"info"}
+{"ts":"2026-04-19T22:11:34.876Z","tool":"checkpoint_write","msg":"PLANNED iter015_launchbounds: Add __launch_bounds__(128, 3) to all 3 WGMMA kernels to hint compiler for 3 blocks per SM. Current 168 regs allows 3 blocks at 128 threads. Explicit hint helps compiler not exceed register budget.","level":"info"}
+{"ts":"2026-04-19T22:13:58.079Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter015_launchbounds (drift=1)","level":"info"}
+{"ts":"2026-04-19T22:13:58.423Z","tool":"store_round","msg":"Storing iter015_launchbounds (DISCARD 12.26 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T22:13:58.441Z","tool":"store_round","msg":"Stored iter015_launchbounds: DISCARD 12.26 TFLOPS (round 15)","level":"info"}

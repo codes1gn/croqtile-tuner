@@ -14,3 +14,4 @@ iter011	iter011_l2scatter	11.0	DISCARD	memory_bound	Changed L2 persistence from 
 iter012	iter012_scatter_opt	9.3	DISCARD	memory_bound	Preloaded scale_b into registers + CACHEGLOBAL. Severe regression (-24%) from re
 iter013	iter013_dlcm	12.25	DISCARD	memory_bound	Added -Xptxas -dlcm=cg for all loads. No change — CACHEGLOBAL already explicit o
 iter014	iter014_rhs_dbuf	11.85	DISCARD	memory_bound	Double-buffer only RHS TMA sB 16KB keeping LHS single-buffered. Total shared 40K
+iter015	iter015_launchbounds	12.26	DISCARD	memory_bound	Added __launch_bounds__(128, 2) to all 3 WGMMA kernels. No measurable improvemen

@@ -1,3 +1,4 @@
 round	iter	kernel	tflops	decision	bottleneck	idea_summary
 0	iter000	cublas_ref	0.0	REFERENCE	baseline	N/A - no cuBLAS reference for GDN
 1	iter001	iter001_baseline	0.00866	KEEP	baseline	Initial FP16 baseline kernel
+iter002	iter002_bv64_threads64	0.0179	KEEP	launch_bound	Increase BV 32->64, use 64 threads to reduce block count

@@ -1,18 +1,17 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-19T22:03:35Z",
+  "timestamp": "2026-04-19T22:11:34Z",
   "dsl": "croqtile",
   "shape_key": "M128_N512_K2048",
-  "iter": "iter014_rhs_dbuf",
+  "iter": "iter015_launchbounds",
   "bottleneck": "memory_bound",
-  "idea": "Double-buffer only RHS TMA sB 16KB keeping LHS cp.async sA 8KB single-buffered. Total shared 40KB vs iter007 48KB. Issue TMA for next K-tile before WGMMA of current tile to overlap memory and compute.",
-  "expected_gain": "+5-10% TFLOPS",
+  "idea": "Add __launch_bounds__(128, 3) to all 3 WGMMA kernels to hint compiler for 3 blocks per SM. Current 168 regs allows 3 blocks at 128 threads. Explicit hint helps compiler not exceed register budget.",
+  "expected_gain": "+1-3% TFLOPS",
   "levers": [
-    "rhs_double_buffer",
-    "tma_prefetch",
-    "k_loop_overlap"
+    "launch_bounds",
+    "occupancy"
   ],
   "status": "VERIFIED",
-  "verified_iter": "iter014_rhs_dbuf",
+  "verified_iter": "iter015_launchbounds",
   "drift_score": 1
 }
