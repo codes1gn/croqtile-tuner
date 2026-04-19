@@ -14,3 +14,18 @@
 {"ts":"2026-04-19T22:13:02.800Z","tool":"profile_extract","msg":"Analyzing iter002_bv64 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/gdn_f16_B2_T4_H8_K128_V128/baseline/ncu_iter002_bv64_round2.csv","level":"info"}
 {"ts":"2026-04-19T22:13:12.524Z","tool":"next_iter","msg":"Resolved iter003_bv128_128threads","level":"info"}
 {"ts":"2026-04-19T22:13:12.558Z","tool":"checkpoint_write","msg":"PLANNED iter003_bv128_128threads: Increase BV to 128 (full V dimension), use 128 threads per block, single block per NV slice","level":"info"}
+{"ts":"2026-04-19T22:14:34.812Z","tool":"co2cu","msg":"Compiling iter003_bv128_128threads.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T22:14:35.002Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter003_bv128_128threads.cu","level":"info"}
+{"ts":"2026-04-19T22:14:58.229Z","tool":"store_round","msg":"Storing iter003_bv128_128threads (KEEP 0.0326 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T22:14:58.247Z","tool":"store_round","msg":"Stored iter003_bv128_128threads: KEEP 0.0326 TFLOPS (round 3)","level":"info"}
+{"ts":"2026-04-19T22:15:05.863Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/gdn_f16_B2_T4_H8_K128_V128/baseline/iter003_bv128_128threads","level":"info"}
+{"ts":"2026-04-19T22:15:11.721Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/gdn_f16_B2_T4_H8_K128_V128/baseline/ncu_iter003_round3.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/gdn_f16_B2_T4_H8_K128_V128/baseline/ncu_iter003_round3.csv","level":"info"}
+{"ts":"2026-04-19T22:15:16.615Z","tool":"profile_extract","msg":"Analyzing iter003_bv128 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/gdn_f16_B2_T4_H8_K128_V128/baseline/ncu_iter003_round3.csv","level":"info"}
+{"ts":"2026-04-19T22:15:31.244Z","tool":"next_iter","msg":"Resolved iter004_threads256","level":"info"}
+{"ts":"2026-04-19T22:15:31.278Z","tool":"checkpoint_write","msg":"PLANNED iter004_threads256: Increase to 256 threads/block for more work per block and better warp scheduling","level":"info"}
+{"ts":"2026-04-19T22:16:41.739Z","tool":"co2cu","msg":"Compiling iter004_threads256.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T22:16:41.898Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter004_threads256.cu","level":"info"}
+{"ts":"2026-04-19T22:17:05.874Z","tool":"store_round","msg":"Storing iter004_threads256 (DISCARD 0.0019 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T22:17:05.893Z","tool":"store_round","msg":"Stored iter004_threads256: DISCARD 0.0019 TFLOPS (round 4)","level":"info"}
+{"ts":"2026-04-19T22:17:12.237Z","tool":"next_iter","msg":"Resolved iter005_doublebuf","level":"info"}
+{"ts":"2026-04-19T22:17:12.271Z","tool":"checkpoint_write","msg":"PLANNED iter005_doublebuf: Add double buffering with async copy to overlap memory loads with computation","level":"info"}

@@ -71,3 +71,7 @@
 {"ts":"2026-04-19T22:13:58.079Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter015_launchbounds (drift=1)","level":"info"}
 {"ts":"2026-04-19T22:13:58.423Z","tool":"store_round","msg":"Storing iter015_launchbounds (DISCARD 12.26 TFLOPS)","level":"info"}
 {"ts":"2026-04-19T22:13:58.441Z","tool":"store_round","msg":"Stored iter015_launchbounds: DISCARD 12.26 TFLOPS (round 15)","level":"info"}
+{"ts":"2026-04-19T22:14:32.893Z","tool":"checkpoint_write","msg":"PLANNED iter016_inline_scale: Inline scale_accumulator: remove mc_scale_frag temp array and scale+accumulate directly into mc after WGMMA wait. Saves 64 floats register pressure per K-iter. warpgroup_commit_batch+wait moved inside K-loop right after WGMMA.","level":"info"}
+{"ts":"2026-04-19T22:17:12.101Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter016_inline_scale (drift=1)","level":"info"}
+{"ts":"2026-04-19T22:17:12.443Z","tool":"store_round","msg":"Storing iter016_inline_scale (DISCARD 12.27 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T22:17:12.463Z","tool":"store_round","msg":"Stored iter016_inline_scale: DISCARD 12.27 TFLOPS (round 16)","level":"info"}

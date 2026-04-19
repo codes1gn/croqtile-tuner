@@ -2,3 +2,5 @@ round	iter	kernel	tflops	decision	bottleneck	idea_summary
 0	iter000	cublas_ref	0.0	REFERENCE	baseline	N/A - no cuBLAS reference for GDN
 1	iter001	iter001_baseline	0.00866	KEEP	baseline	Initial FP16 baseline kernel
 iter002	iter002_bv64_threads64	0.0179	KEEP	launch_bound	Increase BV 32->64, use 64 threads to reduce block count
+iter003	iter003_bv128_128threads	0.0326	KEEP	launch_bound	BV=128 (full V), 128 threads, single NV slice per block
+iter004	iter004_threads256	0.0019	DISCARD	launch_bound	256 threads with atomicAdd - too slow due to atomic contention
