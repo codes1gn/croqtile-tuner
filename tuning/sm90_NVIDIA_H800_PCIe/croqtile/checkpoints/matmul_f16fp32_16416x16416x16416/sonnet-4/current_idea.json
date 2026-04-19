@@ -1,18 +1,17 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-19T08:49:32Z",
+  "timestamp": "2026-04-19T08:56:57Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_16416x16416x16416",
-  "iter": "iter003_wn256_s3_nonpersis",
-  "bottleneck": "launch_bound",
-  "idea": "Switch from persistent 114-CTA kernel to non-persistent 16705-CTA kernel (TILE_M=64 WN=256 STAGES=3): get full GPU parallelism instead of 146 serialized tiles per CTA",
-  "expected_gain": "+80T estimate (from 209T to 290T)",
+  "iter": "iter005_early_empty_arrive",
+  "bottleneck": "memory_bound",
+  "idea": "Phase 2 optimization: move empty[stage].arrive() BEFORE warpgroup_commit_batch/wait<0> so producer can start next TMA load as soon as SMEM is consumed, reducing barrier stall ratio from 3.72 to <2",
+  "expected_gain": "+20T estimate (from 266T to 286T)",
   "levers": [
-    "persistent_vs_static",
-    "grid_size",
-    "MATMUL_STAGES"
+    "empty_barrier_placement",
+    "producer_consumer_overlap"
   ],
   "status": "VERIFIED",
-  "verified_iter": "iter003_wn256_s3_nonpersis",
+  "verified_iter": "iter005_early_empty_arrive",
   "drift_score": 1
 }

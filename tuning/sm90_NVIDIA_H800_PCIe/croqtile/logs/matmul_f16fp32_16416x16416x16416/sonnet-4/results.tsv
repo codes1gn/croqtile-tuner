@@ -3,3 +3,5 @@ iter000	iter000_cublas	409.8731	KEEP	baseline	cuBLAS reference baseline
 iter001	iter001_draft	181.49	KEEP	memory_bound	Starting persistent 1p2c FP16->FP32 kernel adapted to K=16416; established first
 iter002	iter002_wn256_1p1c_s3	208.987	KEEP	memory_bound	Switch 1p2c→1p1c WN=256 STAGES=2 TILE_M=64: reduces SMEM from 196KB to 144KB, fe
 iter003	iter003_wn256_s3_nonpersis	265.656	KEEP	launch_bound	Switch persistent 114-CTA → non-persistent 16705-CTA (TILE_M=64, WN=256, STAGES=
+iter004	iter004_wn256_s4_nonpersis	262.769	DISCARD	memory_bound	STAGES=4 with WN=256 (224KB SMEM): slightly worse than STAGES=3 (184KB SMEM) — e
+iter005	iter005_early_empty_arrive	276.88	KEEP	memory_bound	Phase 2: move empty[stage].arrive() before warpgroup_commit_batch (early arrive)

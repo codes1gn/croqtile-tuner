@@ -29,3 +29,19 @@
 {"ts":"2026-04-19T08:51:32.998Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter003_wn256_s3_nonpersis (drift=1)","level":"info"}
 {"ts":"2026-04-19T08:51:33.334Z","tool":"store_round","msg":"Storing iter003_wn256_s3_nonpersis (KEEP 265.656 TFLOPS)","level":"info"}
 {"ts":"2026-04-19T08:51:33.353Z","tool":"store_round","msg":"Stored iter003_wn256_s3_nonpersis: KEEP 265.656 TFLOPS (round 3)","level":"info"}
+{"ts":"2026-04-19T08:51:47.969Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_16416x16416x16416/sonnet-4/iter003_wn256_s3_nonpersis","level":"info"}
+{"ts":"2026-04-19T08:52:09.020Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16416x16416x16416/sonnet-4/ncu_iter003_wn256_s3_round4.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16416x16416x16416/sonnet-4/ncu_iter003_wn256_s3_round4.csv","level":"info"}
+{"ts":"2026-04-19T08:52:16.262Z","tool":"profile_extract","msg":"Analyzing iter003_wn256_s3_nonpersis from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16416x16416x16416/sonnet-4/ncu_iter003_wn256_s3_round4.csv","level":"info"}
+{"ts":"2026-04-19T08:53:13.436Z","tool":"next_iter","msg":"Resolved iter004_wn256_s4_nonpersis","level":"info"}
+{"ts":"2026-04-19T08:53:19.229Z","tool":"checkpoint_write","msg":"PLANNED iter004_wn256_s4_nonpersis: Increase STAGES 3→4 (WN=256, TILE_M=64, SMEM=224KB<228KB): more pipeline stages to hide TMA latency and balance the tied 53%DRAM/52%compute bottleneck","level":"info"}
+{"ts":"2026-04-19T08:53:32.918Z","tool":"co2cu","msg":"Compiling iter004_wn256_s4_nonpersis.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T08:53:33.023Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/sonnet-4/iter004_wn256_s4_nonpersis.cu","level":"info"}
+{"ts":"2026-04-19T08:54:39.764Z","tool":"store_round","msg":"Storing iter004_wn256_s4_nonpersis (DISCARD 262.769 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T08:54:39.782Z","tool":"store_round","msg":"Stored iter004_wn256_s4_nonpersis: DISCARD 262.769 TFLOPS (round 4)","level":"info"}
+{"ts":"2026-04-19T08:55:01.468Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_16416x16416x16416/sonnet-4/iter003_wn256_s3_nonpersis","level":"info"}
+{"ts":"2026-04-19T08:55:22.458Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16416x16416x16416/sonnet-4/ncu_iter003_wn256_s3_round5.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16416x16416x16416/sonnet-4/ncu_iter003_wn256_s3_round5.csv","level":"info"}
+{"ts":"2026-04-19T08:56:51.099Z","tool":"next_iter","msg":"Resolved iter005_early_empty_arrive","level":"info"}
+{"ts":"2026-04-19T08:56:57.787Z","tool":"checkpoint_write","msg":"PLANNED iter005_early_empty_arrive: Phase 2 optimization: move empty[stage].arrive() BEFORE warpgroup_commit_batch/wait<0> so producer can start next TMA load as soon as SMEM is consumed, reducing barrier stall ratio from 3.72 to <2","level":"info"}
+{"ts":"2026-04-19T08:58:16.740Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter005_early_empty_arrive (drift=1)","level":"info"}
+{"ts":"2026-04-19T08:58:17.077Z","tool":"store_round","msg":"Storing iter005_early_empty_arrive (KEEP 276.88 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T08:58:17.095Z","tool":"store_round","msg":"Stored iter005_early_empty_arrive: KEEP 276.88 TFLOPS (round 5)","level":"info"}
