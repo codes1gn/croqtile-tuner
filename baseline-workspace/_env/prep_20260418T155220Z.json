@@ -1,0 +1,41 @@
+{
+  "checks": [
+    {
+      "detail": "found-in-ldconfig",
+      "install_hint": "Install CUDA toolkit/runtime with cuBLAS libraries visible to loader.",
+      "metadata": {},
+      "name": "cublas",
+      "present": true
+    },
+    {
+      "detail": "import-failed: No module named 'torch'",
+      "install_hint": "python3 -m pip install --upgrade torch --index-url https://download.pytorch.org/whl/cu124",
+      "metadata": {},
+      "name": "torch-cuda",
+      "present": false
+    }
+  ],
+  "dsl": "croqtile",
+  "gpu_env": {
+    "cuda_runtime": "",
+    "driver": "590.48.01",
+    "gpu_rows": [
+      "NVIDIA H800 PCIe, 590.48.01",
+      "NVIDIA H800 PCIe, 590.48.01"
+    ],
+    "nvidia_smi": true
+  },
+  "install_attempted": false,
+  "kernel": "matmul_fp16fp32_16384x2048x2048",
+  "missing_libs": [
+    "torch-cuda"
+  ],
+  "operator": "matmul",
+  "schema": "baseline-env-prepare-v1",
+  "selected_libs": [
+    "cublas",
+    "torch-cuda"
+  ],
+  "shape_key": "matmul_fp16fp32_16384x2048x2048",
+  "timestamp": "2026-04-18T15:52:20.912233+00:00"
+}

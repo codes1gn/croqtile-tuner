@@ -257,6 +257,7 @@ class SessionHistoryResponse(BaseModel):
 class HealthResponse(BaseModel):
     status: str
     scheduler_running: bool
+    read_only_mode: bool
     active_task_id: int | None
     active_task_ids: list[int] = []
     auto_wake_enabled: bool

@@ -9,3 +9,341 @@
 {"ts":"2026-04-18T16:00:21.746Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_2048x16384x2048/gpt-5/iter001_draft","level":"info"}
 {"ts":"2026-04-18T16:00:28.458Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter001_draft_round1.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter001_draft_round1.csv","level":"info"}
 {"ts":"2026-04-18T16:00:39.246Z","tool":"profile_extract","msg":"Analyzing iter001_draft from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter001_draft_round1.csv","level":"info"}
+{"ts":"2026-04-18T16:00:52.907Z","tool":"store_round","msg":"Storing iter001_draft (KEEP 255.305 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T16:00:52.926Z","tool":"store_round","msg":"Stored iter001_draft: KEEP 255.305 TFLOPS (round 1)","level":"info"}
+{"ts":"2026-04-18T16:01:19.352Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_2048x16384x2048/gpt-5/iter001_draft","level":"info"}
+{"ts":"2026-04-18T16:01:26.148Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter001_draft_round2.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter001_draft_round2.csv","level":"info"}
+{"ts":"2026-04-18T16:01:44.255Z","tool":"profile_extract","msg":"Analyzing iter001_draft_round2 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter001_draft_round2.csv","level":"info"}
+{"ts":"2026-04-18T16:04:22.041Z","tool":"checkpoint_write","msg":"PLANNED iter002_ws1p2c_tm128: Switch the wide-N kernel from 1p1c 64x128 to a ws1p2c 128x128 warp-specialized tile so two consumer warpgroups can drive more WGMMA issue per CTA on this compute-bound shape.","level":"info"}
+{"ts":"2026-04-18T16:04:29.354Z","tool":"checkpoint_write","msg":"READ checkpoint for IMPLEMENT","level":"info"}
+{"ts":"2026-04-18T16:04:29.608Z","tool":"next_iter","msg":"Resolved iter002_ws1p2c_tm128","level":"info"}
+{"ts":"2026-04-18T16:05:21.928Z","tool":"co2cu","msg":"Compiling iter002_ws1p2c_tm128.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T16:05:22.038Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_2048x16384x2048/gpt-5/iter002_ws1p2c_tm128.cu","level":"info"}
+{"ts":"2026-04-18T16:06:08.004Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter002_ws1p2c_tm128 (drift=1)","level":"info"}
+{"ts":"2026-04-18T16:06:08.557Z","tool":"store_round","msg":"Storing iter002_ws1p2c_tm128 (DISCARD 221.098 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T16:06:08.576Z","tool":"store_round","msg":"Stored iter002_ws1p2c_tm128: DISCARD 221.098 TFLOPS (round 2)","level":"info"}
+{"ts":"2026-04-18T16:06:33.545Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_2048x16384x2048/gpt-5/iter001_draft","level":"info"}
+{"ts":"2026-04-18T16:06:40.369Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter001_draft_round3.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter001_draft_round3.csv","level":"info"}
+{"ts":"2026-04-18T16:06:54.543Z","tool":"profile_extract","msg":"Analyzing iter001_draft_round3 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter001_draft_round3.csv","level":"info"}
+{"ts":"2026-04-18T16:07:08.224Z","tool":"checkpoint_write","msg":"PLANNED iter003_wn160: Increase the 1p1c kernel WARP_N from 128 to 160 so each CTA performs more WGMMA work per producer load and better amortizes barrier and TMA overhead on this compute-bound wide-N shape.","level":"info"}
+{"ts":"2026-04-18T16:07:16.133Z","tool":"checkpoint_write","msg":"READ checkpoint for IMPLEMENT","level":"info"}
+{"ts":"2026-04-18T16:07:16.454Z","tool":"next_iter","msg":"Resolved iter003_wn160","level":"info"}
+{"ts":"2026-04-18T16:08:02.158Z","tool":"co2cu","msg":"Compiling iter003_wn160.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T16:08:02.265Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_2048x16384x2048/gpt-5/iter003_wn160.cu","level":"info"}
+{"ts":"2026-04-18T16:09:10.356Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter003_wn160 (drift=1)","level":"info"}
+{"ts":"2026-04-18T16:09:10.918Z","tool":"store_round","msg":"Storing iter003_wn160 (DISCARD 175.719 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T16:09:10.938Z","tool":"store_round","msg":"Stored iter003_wn160: DISCARD 175.719 TFLOPS (round 3)","level":"info"}
+{"ts":"2026-04-18T16:09:42.774Z","tool":"sass_compare","msg":"Extracting baseline SASS for f16fp32 2048x16384x2048","level":"info"}
+{"ts":"2026-04-18T16:09:48.268Z","tool":"sass_compare","msg":"Extracting custom SASS for iter001","level":"info"}
+{"ts":"2026-04-18T16:09:49.240Z","tool":"sass_compare","msg":"Baseline SASS extracted via ncu (1186 lines)","level":"info"}
+{"ts":"2026-04-18T16:10:06.112Z","tool":"sass_compare","msg":"Extracting custom SASS for iter001","level":"info"}
+{"ts":"2026-04-18T16:10:06.734Z","tool":"sass_compare","msg":"Custom SASS extracted for iter001 (1067 lines)","level":"info"}
+{"ts":"2026-04-18T16:10:27.348Z","tool":"sass_compare","msg":"Comparing baseline vs iter001 SASS","level":"info"}
+{"ts":"2026-04-18T16:10:27.374Z","tool":"sass_compare","msg":"SASS comparison complete for iter001 (saved to tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/sass_compare_iter001.json)","level":"info"}
+{"ts":"2026-04-18T16:10:55.856Z","tool":"checkpoint_write","msg":"PLANNED iter004_stmatrix: Enable the stmatrix Choreo flag on the proven 1p1c base so codegen uses more baseline-like shared-memory matrix staging, targeting the SASS gaps in LDS or STS usage and the much higher synchronization density.","level":"info"}
+{"ts":"2026-04-18T16:11:09.470Z","tool":"checkpoint_write","msg":"READ checkpoint for IMPLEMENT","level":"info"}
+{"ts":"2026-04-18T16:11:09.824Z","tool":"next_iter","msg":"Resolved iter004_stmatrix","level":"info"}
+{"ts":"2026-04-18T16:11:38.664Z","tool":"co2cu","msg":"Compiling iter004_stmatrix.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T16:11:38.774Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_2048x16384x2048/gpt-5/iter004_stmatrix.cu","level":"info"}
+{"ts":"2026-04-18T16:12:16.320Z","tool":"store_round","msg":"Storing iter004_stmatrix (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T16:12:16.340Z","tool":"store_round","msg":"Stored iter004_stmatrix: COMPILE_FAIL 0 TFLOPS (round 4)","level":"info"}
+{"ts":"2026-04-18T16:13:47.989Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_2048x16384x2048/gpt-5/iter001_draft","level":"info"}
+{"ts":"2026-04-18T16:13:54.747Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter001_draft_round5.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter001_draft_round5.csv","level":"info"}
+{"ts":"2026-04-18T16:14:31.931Z","tool":"profile_extract","msg":"Analyzing iter001_draft_round5 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter001_draft_round5.csv","level":"info"}
+{"ts":"2026-04-18T16:14:32.334Z","tool":"checkpoint_write","msg":"PLANNED iter005_tilek128: Increase TILE_K from 64 to 128 on the proven 1p1c base so each producer load feeds twice as many WGMMA steps, cutting barrier traffic per flop while staying within H800 shared-memory limits.","level":"info"}
+{"ts":"2026-04-18T16:14:45.936Z","tool":"checkpoint_write","msg":"READ checkpoint for IMPLEMENT","level":"info"}
+{"ts":"2026-04-18T16:14:46.335Z","tool":"next_iter","msg":"Resolved iter005_tilek128","level":"info"}
+{"ts":"2026-04-18T16:15:38.134Z","tool":"checkpoint_write","msg":"PLANNED iter005_persistent_1p1c: Convert the proven 1p1c wide-N base to persistent scheduling so each SM reuses the same warp-specialized pipeline across multiple tiles, reducing launch churn and improving producer-consumer steady state on a low-occupancy compute-bound kernel.","level":"info"}
+{"ts":"2026-04-18T16:16:42.370Z","tool":"co2cu","msg":"Compiling iter005_persistent_1p1c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T16:16:42.524Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_2048x16384x2048/gpt-5/iter005_persistent_1p1c.cu","level":"info"}
+{"ts":"2026-04-18T16:17:03.682Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter005_persistent_1p1c (drift=1)","level":"info"}
+{"ts":"2026-04-18T16:17:36.073Z","tool":"store_round","msg":"Storing iter005_persistent_1p1c (DISCARD 115.792 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T16:17:36.093Z","tool":"store_round","msg":"Stored iter005_persistent_1p1c: DISCARD 115.792 TFLOPS (round 5)","level":"info"}
+{"ts":"2026-04-18T16:18:04.551Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_2048x16384x2048/gpt-5/iter001_draft","level":"info"}
+{"ts":"2026-04-18T16:18:11.294Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter001_draft_round6.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter001_draft_round6.csv","level":"info"}
+{"ts":"2026-04-18T16:18:52.629Z","tool":"profile_extract","msg":"Analyzing iter001_draft_round6 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter001_draft_round6.csv","level":"info"}
+{"ts":"2026-04-18T16:18:52.946Z","tool":"checkpoint_write","msg":"PLANNED iter006_launchbounds: Keep the proven 1p1c 64x128 kernel unchanged at the .co level and add __launch_bounds__(256, 2) in the generated CUDA so Hopper schedules for two resident CTAs per SM more aggressively on this low-occupancy compute-bound kernel.","level":"info"}
+{"ts":"2026-04-18T16:18:53.289Z","tool":"next_iter","msg":"Resolved iter006_launchbounds","level":"info"}
+{"ts":"2026-04-18T16:19:06.368Z","tool":"checkpoint_write","msg":"READ checkpoint for IMPLEMENT","level":"info"}
+{"ts":"2026-04-18T16:19:34.018Z","tool":"co2cu","msg":"Compiling iter006_launchbounds.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T16:19:34.126Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_2048x16384x2048/gpt-5/iter006_launchbounds.cu","level":"info"}
+{"ts":"2026-04-18T16:19:54.898Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter006_launchbounds (drift=1)","level":"info"}
+{"ts":"2026-04-18T16:20:22.810Z","tool":"store_round","msg":"Storing iter006_launchbounds (KEEP 261.055 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T16:20:22.830Z","tool":"store_round","msg":"Stored iter006_launchbounds: KEEP 261.055 TFLOPS (round 6)","level":"info"}
+{"ts":"2026-04-18T16:20:57.495Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_2048x16384x2048/gpt-5/iter006_launchbounds","level":"info"}
+{"ts":"2026-04-18T16:21:04.188Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter006_launchbounds_round7.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter006_launchbounds_round7.csv","level":"info"}
+{"ts":"2026-04-18T16:28:45.237Z","tool":"profile_extract","msg":"Analyzing iter006_launchbounds_round7 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter006_launchbounds_round7.csv","level":"info"}
+{"ts":"2026-04-18T16:28:45.792Z","tool":"checkpoint_write","msg":"PLANNED iter007_fastmath: Keep the new launch_bounds(256,2) best kernel intact and add nvcc --use_fast_math so the fp16-to-fp32 warp-specialized path gets more aggressive math lowering without changing tiling or synchronization.","level":"info"}
+{"ts":"2026-04-18T16:28:46.205Z","tool":"next_iter","msg":"Resolved iter007_fastmath","level":"info"}
+{"ts":"2026-04-18T16:28:59.296Z","tool":"checkpoint_write","msg":"READ checkpoint for IMPLEMENT","level":"info"}
+{"ts":"2026-04-18T16:29:18.043Z","tool":"co2cu","msg":"Compiling iter007_fastmath.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T16:29:18.152Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_2048x16384x2048/gpt-5/iter007_fastmath.cu","level":"info"}
+{"ts":"2026-04-18T16:29:42.731Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter007_fastmath (drift=1)","level":"info"}
+{"ts":"2026-04-18T16:30:11.000Z","tool":"store_round","msg":"Storing iter007_fastmath (DISCARD 260.805 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T16:30:11.020Z","tool":"store_round","msg":"Stored iter007_fastmath: DISCARD 260.805 TFLOPS (round 7)","level":"info"}
+{"ts":"2026-04-18T16:30:18.434Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_2048x16384x2048/gpt-5/iter006_launchbounds","level":"info"}
+{"ts":"2026-04-18T16:30:25.168Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter006_launchbounds_round8.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter006_launchbounds_round8.csv","level":"info"}
+{"ts":"2026-04-18T16:30:49.815Z","tool":"profile_extract","msg":"Analyzing iter006_launchbounds_round8 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter006_launchbounds_round8.csv","level":"info"}
+{"ts":"2026-04-18T16:30:50.377Z","tool":"checkpoint_write","msg":"PLANNED iter008_unroll: Keep the launch_bounds(256,2) best kernel intact and explicitly unroll the 4-step WGMMA inner loop in generated CUDA so the compiler emits a tighter instruction schedule for the fixed TILE_K=64 microkernel.","level":"info"}
+{"ts":"2026-04-18T16:30:50.842Z","tool":"next_iter","msg":"Resolved iter008_unroll","level":"info"}
+{"ts":"2026-04-18T16:30:58.219Z","tool":"checkpoint_write","msg":"READ checkpoint for IMPLEMENT","level":"info"}
+{"ts":"2026-04-18T16:31:16.988Z","tool":"co2cu","msg":"Compiling iter008_unroll.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T16:31:17.097Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_2048x16384x2048/gpt-5/iter008_unroll.cu","level":"info"}
+{"ts":"2026-04-18T16:31:41.238Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter008_unroll (drift=1)","level":"info"}
+{"ts":"2026-04-18T16:32:17.543Z","tool":"store_round","msg":"Storing iter008_unroll (DISCARD 260.853 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T16:32:17.562Z","tool":"store_round","msg":"Stored iter008_unroll: DISCARD 260.853 TFLOPS (round 8)","level":"info"}
+{"ts":"2026-04-18T16:32:26.041Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_2048x16384x2048/gpt-5/iter006_launchbounds","level":"info"}
+{"ts":"2026-04-18T16:32:32.770Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter006_launchbounds_round9.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter006_launchbounds_round9.csv","level":"info"}
+{"ts":"2026-04-18T16:33:20.313Z","tool":"profile_extract","msg":"Analyzing iter006_launchbounds_round9 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter006_launchbounds_round9.csv","level":"info"}
+{"ts":"2026-04-18T16:33:20.831Z","tool":"checkpoint_write","msg":"PLANNED iter009_arrive_once: Keep the launch_bounds(256,2) best kernel intact but move warpgroup_arrive out of the 4-step WGMMA micro-loop so each K-stage opens the warpgroup once instead of four times, directly targeting the barrier-density gap versus baseline.","level":"info"}
+{"ts":"2026-04-18T16:33:21.268Z","tool":"next_iter","msg":"Resolved iter009_arrive_once","level":"info"}
+{"ts":"2026-04-18T16:33:28.984Z","tool":"checkpoint_write","msg":"READ checkpoint for IMPLEMENT","level":"info"}
+{"ts":"2026-04-18T16:33:47.382Z","tool":"co2cu","msg":"Compiling iter009_arrive_once.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T16:33:47.490Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_2048x16384x2048/gpt-5/iter009_arrive_once.cu","level":"info"}
+{"ts":"2026-04-18T16:34:18.629Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter009_arrive_once (drift=1)","level":"info"}
+{"ts":"2026-04-18T16:34:46.513Z","tool":"store_round","msg":"Storing iter009_arrive_once (KEEP 262.241 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T16:34:46.532Z","tool":"store_round","msg":"Stored iter009_arrive_once: KEEP 262.241 TFLOPS (round 9)","level":"info"}
+{"ts":"2026-04-18T16:34:49.954Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_2048x16384x2048/gpt-5/iter006_launchbounds","level":"info"}
+{"ts":"2026-04-18T16:34:55.193Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_2048x16384x2048/gpt-5/iter009_arrive_once","level":"info"}
+{"ts":"2026-04-18T16:34:56.800Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter006_launchbounds_round9.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter006_launchbounds_round9.csv","level":"info"}
+{"ts":"2026-04-18T16:35:01.940Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter009_arrive_once_round10.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter009_arrive_once_round10.csv","level":"info"}
+{"ts":"2026-04-18T16:36:19.367Z","tool":"profile_extract","msg":"Analyzing iter009_arrive_once_round10 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter009_arrive_once_round10.csv","level":"info"}
+{"ts":"2026-04-18T16:37:03.840Z","tool":"next_iter","msg":"Resolved iter010_arrive_unroll","level":"info"}
+{"ts":"2026-04-18T16:37:13.791Z","tool":"checkpoint_write","msg":"READ checkpoint for IMPLEMENT","level":"info"}
+{"ts":"2026-04-18T16:37:20.389Z","tool":"checkpoint_write","msg":"PLANNED iter010_arrive_unroll: Keep iter009 with once-per-stage warpgroup_arrive placement and explicitly unroll the fixed 4-step WGMMA micro-loop so the cleaner synchronization pattern also exposes a fully straight-line issue sequence.","level":"info"}
+{"ts":"2026-04-18T16:37:20.577Z","tool":"checkpoint_write","msg":"READ checkpoint for IMPLEMENT","level":"info"}
+{"ts":"2026-04-18T16:37:40.973Z","tool":"co2cu","msg":"Compiling iter010_arrive_unroll.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T16:37:41.080Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_2048x16384x2048/gpt-5/iter010_arrive_unroll.cu","level":"info"}
+{"ts":"2026-04-18T16:38:09.474Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter010_arrive_unroll (drift=1)","level":"info"}
+{"ts":"2026-04-18T16:38:31.367Z","tool":"store_round","msg":"Storing iter010_arrive_unroll (DISCARD 262.212 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T16:38:31.387Z","tool":"store_round","msg":"Stored iter010_arrive_unroll: DISCARD 262.212 TFLOPS (round 10)","level":"info"}
+{"ts":"2026-04-18T16:38:42.516Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_2048x16384x2048/gpt-5/iter009_arrive_once","level":"info"}
+{"ts":"2026-04-18T16:38:49.306Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter009_arrive_once_round11.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter009_arrive_once_round11.csv","level":"info"}
+{"ts":"2026-04-18T16:39:09.513Z","tool":"profile_extract","msg":"Analyzing iter009_arrive_once_round11 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter009_arrive_once_round11.csv","level":"info"}
+{"ts":"2026-04-18T16:39:09.866Z","tool":"checkpoint_write","msg":"PLANNED iter011_arrive_fastmath: Keep iter009 with once-per-stage warpgroup_arrive placement and add nvcc --use_fast_math so the cleaner synchronization base can test whether math contraction helps the remaining compute-side issue overhead.","level":"info"}
+{"ts":"2026-04-18T16:39:10.397Z","tool":"next_iter","msg":"Resolved iter011_arrive_fastmath","level":"info"}
+{"ts":"2026-04-18T16:39:19.211Z","tool":"checkpoint_write","msg":"READ checkpoint for IMPLEMENT","level":"info"}
+{"ts":"2026-04-18T16:40:26.362Z","tool":"co2cu","msg":"Compiling iter011_arrive_fastmath.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T16:40:26.470Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_2048x16384x2048/gpt-5/iter011_arrive_fastmath.cu","level":"info"}
+{"ts":"2026-04-18T16:40:57.092Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter011_arrive_fastmath (drift=1)","level":"info"}
+{"ts":"2026-04-18T16:41:21.276Z","tool":"store_round","msg":"Storing iter011_arrive_fastmath (KEEP 262.281 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T16:41:21.296Z","tool":"store_round","msg":"Stored iter011_arrive_fastmath: KEEP 262.281 TFLOPS (round 11)","level":"info"}
+{"ts":"2026-04-18T16:41:40.484Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_2048x16384x2048/gpt-5/iter011_arrive_fastmath","level":"info"}
+{"ts":"2026-04-18T16:41:47.275Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter011_arrive_fastmath_round12.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter011_arrive_fastmath_round12.csv","level":"info"}
+{"ts":"2026-04-18T16:42:55.295Z","tool":"profile_extract","msg":"Analyzing iter011_arrive_fastmath_round12 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter011_arrive_fastmath_round12.csv","level":"info"}
+{"ts":"2026-04-18T19:36:39.119Z","tool":"checkpoint_write","msg":"PLANNED iter012_blockswizzle: Keep iter011 with launch_bounds, once-per-stage warpgroup_arrive, and fast math, but remap CTAs through a small swizzled block schedule so TMA loads and output stores see a more locality-friendly tile order on this wide-N shape.","level":"info"}
+{"ts":"2026-04-18T19:36:39.361Z","tool":"checkpoint_write","msg":"READ checkpoint for IMPLEMENT","level":"info"}
+{"ts":"2026-04-18T19:36:40.070Z","tool":"next_iter","msg":"Resolved iter012_blockswizzle","level":"info"}
+{"ts":"2026-04-18T19:36:58.219Z","tool":"co2cu","msg":"Compiling iter012_blockswizzle.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T19:36:58.328Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_2048x16384x2048/gpt-5/iter012_blockswizzle.cu","level":"info"}
+{"ts":"2026-04-18T19:37:42.271Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter012_blockswizzle (drift=1)","level":"info"}
+{"ts":"2026-04-18T19:38:04.183Z","tool":"store_round","msg":"Storing iter012_blockswizzle (DISCARD 232.022 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T19:38:04.203Z","tool":"store_round","msg":"Stored iter012_blockswizzle: DISCARD 232.022 TFLOPS (round 12)","level":"info"}
+{"ts":"2026-04-18T19:38:21.861Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_2048x16384x2048/gpt-5/iter011_arrive_fastmath","level":"info"}
+{"ts":"2026-04-18T19:38:28.682Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter011_arrive_fastmath_round13.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter011_arrive_fastmath_round13.csv","level":"info"}
+{"ts":"2026-04-18T19:38:51.638Z","tool":"profile_extract","msg":"Analyzing iter011_arrive_fastmath_round13 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter011_arrive_fastmath_round13.csv","level":"info"}
+{"ts":"2026-04-18T19:39:36.101Z","tool":"next_iter","msg":"Resolved iter013_l2promo","level":"info"}
+{"ts":"2026-04-18T19:39:36.356Z","tool":"checkpoint_write","msg":"READ checkpoint for IMPLEMENT","level":"info"}
+{"ts":"2026-04-18T19:39:44.149Z","tool":"checkpoint_write","msg":"PLANNED iter013_l2promo: Keep iter011 with launch-bounds, arrive-once, and fast-math compute pipeline unchanged, but promote the two input TMA tensor maps to L2_256B so repeated wide-N tile fetches have a better chance to persist in cache.","level":"info"}
+{"ts":"2026-04-18T19:39:44.317Z","tool":"checkpoint_write","msg":"READ checkpoint for IMPLEMENT","level":"info"}
+{"ts":"2026-04-18T19:40:01.681Z","tool":"co2cu","msg":"Compiling iter013_l2promo.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T19:40:01.791Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_2048x16384x2048/gpt-5/iter013_l2promo.cu","level":"info"}
+{"ts":"2026-04-18T19:40:33.563Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter013_l2promo (drift=1)","level":"info"}
+{"ts":"2026-04-18T19:40:53.340Z","tool":"store_round","msg":"Storing iter013_l2promo (KEEP 263.300 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T19:40:53.359Z","tool":"store_round","msg":"Stored iter013_l2promo: KEEP 263.300 TFLOPS (round 13)","level":"info"}
+{"ts":"2026-04-18T19:41:09.329Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_2048x16384x2048/gpt-5/iter013_l2promo","level":"info"}
+{"ts":"2026-04-18T19:41:11.142Z","tool":"profile_extract","msg":"Analyzing iter011_arrive_fastmath_round13 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter011_arrive_fastmath_round13.csv","level":"info"}
+{"ts":"2026-04-18T19:41:16.142Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter013_l2promo_round14.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter013_l2promo_round14.csv","level":"info"}
+{"ts":"2026-04-18T19:41:21.724Z","tool":"sass_compare","msg":"Extracting custom SASS for iter013","level":"info"}
+{"ts":"2026-04-18T19:41:41.846Z","tool":"profile_extract","msg":"Analyzing iter013_l2promo_round14 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter013_l2promo_round14.csv","level":"info"}
+{"ts":"2026-04-18T19:43:39.759Z","tool":"checkpoint_write","msg":"PLANNED iter014_lb3: Keep iter013s arrive-once, fast-math, and input L2 promotion path unchanged, but tighten launch bounds from 256x2 to 256x3 so ptxas is forced to trade some instruction-level parallelism for higher residency on this 128-register kernel.","level":"info"}
+{"ts":"2026-04-18T19:43:40.544Z","tool":"next_iter","msg":"Resolved iter014_lb3","level":"info"}
+{"ts":"2026-04-18T19:43:59.360Z","tool":"checkpoint_write","msg":"READ checkpoint for IMPLEMENT","level":"info"}
+{"ts":"2026-04-18T19:43:59.408Z","tool":"co2cu","msg":"Compiling iter014_lb3.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T19:43:59.517Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_2048x16384x2048/gpt-5/iter014_lb3.cu","level":"info"}
+{"ts":"2026-04-18T19:44:25.095Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter014_lb3 (drift=1)","level":"info"}
+{"ts":"2026-04-18T19:45:16.823Z","tool":"store_round","msg":"Storing iter014_lb3 (COMPILE_FAIL 0.0 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T19:45:16.842Z","tool":"store_round","msg":"Stored iter014_lb3: COMPILE_FAIL 0.0 TFLOPS (round 14)","level":"info"}
+{"ts":"2026-04-18T19:45:30.741Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_2048x16384x2048/gpt-5/iter013_l2promo","level":"info"}
+{"ts":"2026-04-18T19:45:37.498Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter013_l2promo_round15.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter013_l2promo_round15.csv","level":"info"}
+{"ts":"2026-04-18T19:45:51.343Z","tool":"profile_extract","msg":"Analyzing iter013_l2promo_round15 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter013_l2promo_round15.csv","level":"info"}
+{"ts":"2026-04-18T19:46:33.425Z","tool":"checkpoint_write","msg":"PLANNED iter015_rreg120: Keep iter013 with launch-bounds 256x2, arrive-once, fast-math, and input L2 promotion unchanged, but cap ptxas at 120 registers so the kernel gives up a small amount of ILP in exchange for potentially better residency without the impossible 256x3 target.","level":"info"}
+{"ts":"2026-04-18T19:46:34.177Z","tool":"next_iter","msg":"Resolved iter015_rreg120","level":"info"}
+{"ts":"2026-04-18T19:47:36.349Z","tool":"checkpoint_write","msg":"READ checkpoint for IMPLEMENT","level":"info"}
+{"ts":"2026-04-18T19:47:36.397Z","tool":"co2cu","msg":"Compiling iter015_rreg120.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T19:47:36.507Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_2048x16384x2048/gpt-5/iter015_rreg120.cu","level":"info"}
+{"ts":"2026-04-18T19:48:04.487Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter015_rreg120 (drift=1)","level":"info"}
+{"ts":"2026-04-18T19:48:40.165Z","tool":"store_round","msg":"Storing iter015_rreg120 (DISCARD 263.127 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T19:48:40.185Z","tool":"store_round","msg":"Stored iter015_rreg120: DISCARD 263.127 TFLOPS (round 15)","level":"info"}
+{"ts":"2026-04-18T19:48:56.550Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_2048x16384x2048/gpt-5/iter013_l2promo","level":"info"}
+{"ts":"2026-04-18T19:49:03.332Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter013_l2promo_round16.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter013_l2promo_round16.csv","level":"info"}
+{"ts":"2026-04-18T19:50:30.615Z","tool":"profile_extract","msg":"Analyzing iter013_l2promo_round16 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter013_l2promo_round16.csv","level":"info"}
+{"ts":"2026-04-18T19:50:40.962Z","tool":"checkpoint_write","msg":"PLANNED iter016_hoist: Keep iter013s launch-bounds, arrive-once, fast-math, and input L2 promotion path unchanged, but enable Choreo hoist-offset and hoist-scale so address-generation work is lifted out of the hot loop and integer issue pressure drops.","level":"info"}
+{"ts":"2026-04-18T19:50:41.694Z","tool":"next_iter","msg":"Resolved iter016_hoist","level":"info"}
+{"ts":"2026-04-18T19:51:01.254Z","tool":"checkpoint_write","msg":"READ checkpoint for IMPLEMENT","level":"info"}
+{"ts":"2026-04-18T19:51:01.304Z","tool":"co2cu","msg":"Compiling iter016_hoist.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T19:51:01.414Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_2048x16384x2048/gpt-5/iter016_hoist.cu","level":"info"}
+{"ts":"2026-04-18T19:51:30.599Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter016_hoist (drift=1)","level":"info"}
+{"ts":"2026-04-18T19:51:56.600Z","tool":"store_round","msg":"Storing iter016_hoist (DISCARD 263.004 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T19:51:56.620Z","tool":"store_round","msg":"Stored iter016_hoist: DISCARD 263.004 TFLOPS (round 16)","level":"info"}
+{"ts":"2026-04-18T19:52:07.654Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_2048x16384x2048/gpt-5/iter013_l2promo","level":"info"}
+{"ts":"2026-04-18T19:52:14.465Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter013_l2promo_round17.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter013_l2promo_round17.csv","level":"info"}
+{"ts":"2026-04-18T19:52:44.265Z","tool":"profile_extract","msg":"Analyzing iter013_l2promo_round17 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter013_l2promo_round17.csv","level":"info"}
+{"ts":"2026-04-18T19:53:17.220Z","tool":"checkpoint_write","msg":"PLANNED iter017_ptxbar: Keep iter013s launch-bounds, arrive-once, fast-math, and input L2 promotion path unchanged, but enable Choreo ptx-barrier so the CTA synchronization path uses lighter PTX barriers and may reduce remaining compute-side barrier overhead.","level":"info"}
+{"ts":"2026-04-18T19:53:25.809Z","tool":"next_iter","msg":"Resolved iter017_ptxbar","level":"info"}
+{"ts":"2026-04-18T19:53:26.007Z","tool":"checkpoint_write","msg":"READ checkpoint for IMPLEMENT","level":"info"}
+{"ts":"2026-04-18T19:53:42.984Z","tool":"co2cu","msg":"Compiling iter017_ptxbar.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T19:53:43.092Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_2048x16384x2048/gpt-5/iter017_ptxbar.cu","level":"info"}
+{"ts":"2026-04-18T19:54:12.087Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter017_ptxbar (drift=1)","level":"info"}
+{"ts":"2026-04-18T19:54:36.948Z","tool":"store_round","msg":"Storing iter017_ptxbar (DISCARD 263.270 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T19:54:36.968Z","tool":"store_round","msg":"Stored iter017_ptxbar: DISCARD 263.270 TFLOPS (round 17)","level":"info"}
+{"ts":"2026-04-18T19:54:50.292Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_2048x16384x2048/gpt-5/iter013_l2promo","level":"info"}
+{"ts":"2026-04-18T19:54:57.119Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter013_l2promo_round18.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter013_l2promo_round18.csv","level":"info"}
+{"ts":"2026-04-18T19:55:58.435Z","tool":"profile_extract","msg":"Analyzing iter013_l2promo_round18 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter013_l2promo_round18.csv","level":"info"}
+{"ts":"2026-04-18T19:55:58.839Z","tool":"checkpoint_write","msg":"PLANNED iter018_wait1: Keep iter013s launch-bounds, arrive-once, fast-math, and input L2 promotion path unchanged, but move WGMMA completion waiting to warpgroup_wait<1>() inside the K-loop and leave warpgroup_wait<0>() only after the loop so TMA of tile K+1 can overlap with the tail of tile K compute.","level":"info"}
+{"ts":"2026-04-18T19:56:09.032Z","tool":"next_iter","msg":"Resolved iter018_wait1","level":"info"}
+{"ts":"2026-04-18T19:56:09.311Z","tool":"checkpoint_write","msg":"READ checkpoint for IMPLEMENT","level":"info"}
+{"ts":"2026-04-18T19:56:27.781Z","tool":"co2cu","msg":"Compiling iter018_wait1.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T19:56:27.889Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_2048x16384x2048/gpt-5/iter018_wait1.cu","level":"info"}
+{"ts":"2026-04-18T19:57:04.914Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter018_wait1 (drift=1)","level":"info"}
+{"ts":"2026-04-18T19:57:28.239Z","tool":"store_round","msg":"Storing iter018_wait1 (KEEP 264.555 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T19:57:28.259Z","tool":"store_round","msg":"Stored iter018_wait1: KEEP 264.555 TFLOPS (round 18)","level":"info"}
+{"ts":"2026-04-18T19:57:37.487Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_2048x16384x2048/gpt-5/iter018_wait1","level":"info"}
+{"ts":"2026-04-18T19:57:44.297Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter018_wait1_round19.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter018_wait1_round19.csv","level":"info"}
+{"ts":"2026-04-18T19:58:02.993Z","tool":"profile_extract","msg":"Analyzing iter018_wait1_round19 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter018_wait1_round19.csv","level":"info"}
+{"ts":"2026-04-18T19:58:04.539Z","tool":"checkpoint_write","msg":"PLANNED iter019_splitarrive: Keep iter018s wait1-overlap pipeline unchanged, but move empty[stage].arrive() before warpgroup_wait<1>() so the producer warp is released as soon as shared-memory reads are dispatched instead of waiting for the partial WGMMA drain.","level":"info"}
+{"ts":"2026-04-18T19:58:13.331Z","tool":"next_iter","msg":"Resolved iter019_splitarrive","level":"info"}
+{"ts":"2026-04-18T19:58:13.545Z","tool":"checkpoint_write","msg":"READ checkpoint for IMPLEMENT","level":"info"}
+{"ts":"2026-04-18T19:58:35.265Z","tool":"co2cu","msg":"Compiling iter019_splitarrive.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T19:58:35.373Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_2048x16384x2048/gpt-5/iter019_splitarrive.cu","level":"info"}
+{"ts":"2026-04-18T19:59:08.633Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter019_splitarrive (drift=1)","level":"info"}
+{"ts":"2026-04-18T19:59:27.031Z","tool":"store_round","msg":"Storing iter018_wait1 (KEEP 264.555 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T19:59:27.051Z","tool":"store_round","msg":"Stored iter018_wait1: KEEP 264.555 TFLOPS (round 18)","level":"info"}
+{"ts":"2026-04-18T19:59:49.137Z","tool":"store_round","msg":"Storing iter019_splitarrive (DISCARD 264.512 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T19:59:49.157Z","tool":"store_round","msg":"Stored iter019_splitarrive: DISCARD 264.512 TFLOPS (round 19)","level":"info"}
+{"ts":"2026-04-18T20:00:02.883Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_2048x16384x2048/gpt-5/iter018_wait1","level":"info"}
+{"ts":"2026-04-18T20:00:09.724Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter018_wait1_round20.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter018_wait1_round20.csv","level":"info"}
+{"ts":"2026-04-18T20:01:50.363Z","tool":"profile_extract","msg":"Analyzing iter018_wait1_round20 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter018_wait1_round20.csv","level":"info"}
+{"ts":"2026-04-18T20:02:23.317Z","tool":"checkpoint_write","msg":"PLANNED iter020_wait1_ptxbar: Keep iter018s wait1-overlap pipeline intact, but regenerate the base with --ptx-barrier so the same overlapped producer-consumer schedule uses lighter PTX-backed CTA barriers and may shave the remaining synchronization cost that plain wait1 did not remove.","level":"info"}
+{"ts":"2026-04-18T20:02:32.101Z","tool":"checkpoint_write","msg":"READ checkpoint for IMPLEMENT","level":"info"}
+{"ts":"2026-04-18T20:02:33.100Z","tool":"next_iter","msg":"Resolved iter020_wait1_ptxbar","level":"info"}
+{"ts":"2026-04-18T20:02:52.111Z","tool":"co2cu","msg":"Compiling iter020_wait1_ptxbar.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T20:02:52.219Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_2048x16384x2048/gpt-5/iter020_wait1_ptxbar.cu","level":"info"}
+{"ts":"2026-04-18T20:03:20.412Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter020_wait1_ptxbar (drift=1)","level":"info"}
+{"ts":"2026-04-18T20:03:36.260Z","tool":"store_round","msg":"Storing iter020_wait1_ptxbar (KEEP 264.98 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T20:03:36.280Z","tool":"store_round","msg":"Stored iter020_wait1_ptxbar: KEEP 264.98 TFLOPS (round 20)","level":"info"}
+{"ts":"2026-04-18T20:03:52.565Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_2048x16384x2048/gpt-5/iter020_wait1_ptxbar","level":"info"}
+{"ts":"2026-04-18T20:03:59.413Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter020_wait1_ptxbar_round21.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter020_wait1_ptxbar_round21.csv","level":"info"}
+{"ts":"2026-04-18T20:04:22.666Z","tool":"profile_extract","msg":"Analyzing iter020_wait1_ptxbar_round21 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter020_wait1_ptxbar_round21.csv","level":"info"}
+{"ts":"2026-04-18T20:04:23.060Z","tool":"sass_compare","msg":"Extracting custom SASS for iter020","level":"info"}
+{"ts":"2026-04-18T20:09:34.575Z","tool":"checkpoint_write","msg":"PLANNED iter021_split_epilogue: Keep iter020s wait1+ptxbar pipeline intact, but split the 64x128 output shared store into two 64x64 store_fragment_d calls over the same 128-stride tile so shared-store bank conflicts drop without changing the final 128-wide TMA store-to-global path.","level":"info"}
+{"ts":"2026-04-18T20:09:34.774Z","tool":"checkpoint_write","msg":"READ checkpoint for IMPLEMENT","level":"info"}
+{"ts":"2026-04-18T20:09:35.744Z","tool":"next_iter","msg":"Resolved iter021_split_epilogue","level":"info"}
+{"ts":"2026-04-18T20:09:54.579Z","tool":"co2cu","msg":"Compiling iter021_split_epilogue.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T20:09:54.688Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_2048x16384x2048/gpt-5/iter021_split_epilogue.cu","level":"info"}
+{"ts":"2026-04-18T20:10:32.325Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter021_split_epilogue (drift=1)","level":"info"}
+{"ts":"2026-04-18T20:10:46.703Z","tool":"store_round","msg":"Storing iter021_split_epilogue (KEEP 265.073 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T20:10:46.723Z","tool":"store_round","msg":"Stored iter021_split_epilogue: KEEP 265.073 TFLOPS (round 21)","level":"info"}
+{"ts":"2026-04-18T22:55:50.612Z","tool":"resume_state","msg":"Loading tuning state for croqtile/matmul_f16fp32_2048x16384x2048","level":"info"}
+{"ts":"2026-04-18T22:56:07.035Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_2048x16384x2048/gpt-5/iter021_split_epilogue","level":"info"}
+{"ts":"2026-04-18T22:56:13.995Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter021_split_epilogue_round24.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter021_split_epilogue_round24.csv","level":"info"}
+{"ts":"2026-04-18T22:56:14.155Z","tool":"profile_extract","msg":"Analyzing iter021_split_epilogue_round24 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter021_split_epilogue_round24.csv","level":"info"}
+{"ts":"2026-04-18T22:59:29.074Z","tool":"checkpoint_write","msg":"READ checkpoint for IMPLEMENT","level":"info"}
+{"ts":"2026-04-18T22:59:30.214Z","tool":"next_iter","msg":"Resolved iter022_dual_tma_epilogue","level":"info"}
+{"ts":"2026-04-18T22:59:56.563Z","tool":"checkpoint_write","msg":"PLANNED iter022_dual_tma_epilogue: Keep iter021 wait1+ptxbar intact, but replace the shared 64x128 output tile with two independent 64x64 output buffers and two 64-wide TMA shared-to-global stores so the remaining epilogue shared-store bank conflicts drop further.","level":"info"}
+{"ts":"2026-04-18T22:59:56.766Z","tool":"checkpoint_write","msg":"READ checkpoint for IMPLEMENT","level":"info"}
+{"ts":"2026-04-18T22:59:57.106Z","tool":"co2cu","msg":"Compiling iter022_dual_tma_epilogue.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T22:59:57.213Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_2048x16384x2048/gpt-5/iter022_dual_tma_epilogue.cu","level":"info"}
+{"ts":"2026-04-18T23:01:35.108Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter022_dual_tma_epilogue (drift=1)","level":"info"}
+{"ts":"2026-04-18T23:01:44.497Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_2048x16384x2048/gpt-5/iter022_dual_tma_epilogue","level":"info"}
+{"ts":"2026-04-18T23:01:51.363Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter022_dual_tma_epilogue_round25.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter022_dual_tma_epilogue_round25.csv","level":"info"}
+{"ts":"2026-04-18T23:01:51.617Z","tool":"profile_extract","msg":"Analyzing iter022_dual_tma_epilogue_round25 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter022_dual_tma_epilogue_round25.csv","level":"info"}
+{"ts":"2026-04-18T23:02:11.574Z","tool":"store_round","msg":"Storing iter022_dual_tma_epilogue (DISCARD 264.012 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T23:02:11.593Z","tool":"store_round","msg":"Stored iter022_dual_tma_epilogue: DISCARD 264.012 TFLOPS (round 25)","level":"info"}
+{"ts":"2026-04-18T23:03:02.929Z","tool":"checkpoint_write","msg":"PLANNED iter023_wait2: Keep iter021 split-epilogue as the active best, but deepen the overlapped main-loop drain from warpgroup_wait<1>() to warpgroup_wait<2>() so the three-stage pipeline exposes more producer-consumer overlap and reduces CTA-barrier-driven no-eligible cycles.","level":"info"}
+{"ts":"2026-04-18T23:03:03.912Z","tool":"next_iter","msg":"Resolved iter023_wait2","level":"info"}
+{"ts":"2026-04-18T23:03:17.902Z","tool":"co2cu","msg":"Compiling iter023_wait2.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T23:03:18.009Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_2048x16384x2048/gpt-5/iter023_wait2.cu","level":"info"}
+{"ts":"2026-04-18T23:04:04.263Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter023_wait2 (drift=1)","level":"info"}
+{"ts":"2026-04-18T23:04:20.401Z","tool":"store_round","msg":"Storing iter023_wait2 (KEEP 265.218 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T23:04:32.458Z","tool":"store_round","msg":"Storing iter023_wait2 (KEEP 265.218 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T23:04:32.480Z","tool":"store_round","msg":"Stored iter023_wait2: KEEP 265.218 TFLOPS (round 26)","level":"info"}
+{"ts":"2026-04-18T23:04:41.988Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_2048x16384x2048/gpt-5/iter023_wait2","level":"info"}
+{"ts":"2026-04-18T23:04:48.913Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter023_wait2_round27.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter023_wait2_round27.csv","level":"info"}
+{"ts":"2026-04-18T23:04:49.090Z","tool":"profile_extract","msg":"Analyzing iter023_wait2_round27 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter023_wait2_round27.csv","level":"info"}
+{"ts":"2026-04-18T23:06:02.440Z","tool":"checkpoint_write","msg":"PLANNED iter024_prearrive_wait2: Keep iter023 wait2 split-epilogue as the active best, but pre-arrive the next full barrier before its TMA completes so the next stage can close earlier while current WGMMA work is still in flight, reducing CTA-barrier-driven no-eligible cycles without changing the output path.","level":"info"}
+{"ts":"2026-04-18T23:06:03.491Z","tool":"next_iter","msg":"Resolved iter024_prearrive_wait2","level":"info"}
+{"ts":"2026-04-18T23:06:18.358Z","tool":"co2cu","msg":"Compiling iter024_prearrive_wait2.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T23:06:18.466Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_2048x16384x2048/gpt-5/iter024_prearrive_wait2.cu","level":"info"}
+{"ts":"2026-04-18T23:07:59.478Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter024_prearrive_wait2 (drift=1)","level":"info"}
+{"ts":"2026-04-18T23:08:13.743Z","tool":"store_round","msg":"Storing iter024_prearrive_wait2 (DISCARD 262.508 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T23:08:23.034Z","tool":"store_round","msg":"Storing iter024_prearrive_wait2 (DISCARD 262.508 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T23:08:23.054Z","tool":"store_round","msg":"Stored iter024_prearrive_wait2: DISCARD 262.508 TFLOPS (round 27)","level":"info"}
+{"ts":"2026-04-18T23:08:45.531Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_2048x16384x2048/gpt-5/iter023_wait2","level":"info"}
+{"ts":"2026-04-18T23:08:52.386Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter023_wait2_round28.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter023_wait2_round28.csv","level":"info"}
+{"ts":"2026-04-18T23:08:52.590Z","tool":"profile_extract","msg":"Analyzing iter023_wait2_round28 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter023_wait2_round28.csv","level":"info"}
+{"ts":"2026-04-18T23:09:04.550Z","tool":"checkpoint_write","msg":"PLANNED iter025_kunroll32_wait2: Keep iter023 wait2 split-epilogue as the active best, but explicitly unroll the 32-step outer K loop so nvcc can schedule a larger steady-state instruction window around the existing wait2 overlap without changing the synchronization or output path.","level":"info"}
+{"ts":"2026-04-18T23:09:05.660Z","tool":"next_iter","msg":"Resolved iter025_kunroll32_wait2","level":"info"}
+{"ts":"2026-04-18T23:09:05.819Z","tool":"co2cu","msg":"Compiling iter025_kunroll32_wait2.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-18T23:09:05.927Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_2048x16384x2048/gpt-5/iter025_kunroll32_wait2.cu","level":"info"}
+{"ts":"2026-04-18T23:09:55.343Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter025_kunroll32_wait2 (drift=1)","level":"info"}
+{"ts":"2026-04-18T23:10:08.796Z","tool":"store_round","msg":"Storing iter025_kunroll32_wait2 (DISCARD 262.06 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T23:10:18.503Z","tool":"store_round","msg":"Storing iter025_kunroll32_wait2 (DISCARD 262.06 TFLOPS)","level":"info"}
+{"ts":"2026-04-18T23:10:18.523Z","tool":"store_round","msg":"Stored iter025_kunroll32_wait2: DISCARD 262.06 TFLOPS (round 28)","level":"info"}
+{"ts":"2026-04-19T03:24:20.188Z","tool":"resume_state","msg":"Loading tuning state for croqtile/matmul_f16fp32_2048x16384x2048","level":"info"}
+{"ts":"2026-04-19T03:24:34.150Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_2048x16384x2048/gpt-5/iter023_wait2","level":"info"}
+{"ts":"2026-04-19T03:24:41.161Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter023_wait2_round29.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter023_wait2_round29.csv","level":"info"}
+{"ts":"2026-04-19T03:24:41.372Z","tool":"profile_extract","msg":"Analyzing iter023_wait2_round29 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter023_wait2_round29.csv","level":"info"}
+{"ts":"2026-04-19T03:25:52.630Z","tool":"sass_compare","msg":"Extracting baseline SASS for f16fp32 2048x16384x2048","level":"info"}
+{"ts":"2026-04-19T03:25:57.228Z","tool":"sass_compare","msg":"Baseline SASS extracted via ncu (1186 lines)","level":"info"}
+{"ts":"2026-04-19T03:25:57.246Z","tool":"sass_compare","msg":"Extracting custom SASS for iter023_wait2","level":"info"}
+{"ts":"2026-04-19T03:27:09.930Z","tool":"checkpoint_write","msg":"PLANNED iter026_padded_repack: Keep iter023 wait2 split-epilogue as the active best, but store the two 64x64 output fragments into padded 64x65 shared tiles and then repack them into the existing contiguous 64x128 output tile before the single TMA store, targeting the remaining 10-way shared-store bank conflicts without paying the dual-TMA overhead.","level":"info"}
+{"ts":"2026-04-19T03:27:11.090Z","tool":"next_iter","msg":"Resolved iter026_padded_repack","level":"info"}
+{"ts":"2026-04-19T03:27:11.319Z","tool":"co2cu","msg":"Compiling iter026_padded_repack.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T03:27:11.427Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_2048x16384x2048/gpt-5/iter026_padded_repack.cu","level":"info"}
+{"ts":"2026-04-19T03:28:35.388Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter026_padded_repack (drift=1)","level":"info"}
+{"ts":"2026-04-19T03:28:56.977Z","tool":"store_round","msg":"Storing iter026_padded_repack (DISCARD 243.621 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T03:28:56.997Z","tool":"store_round","msg":"Stored iter026_padded_repack: DISCARD 243.621 TFLOPS (round 29)","level":"info"}
+{"ts":"2026-04-19T03:29:11.033Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_2048x16384x2048/gpt-5/iter023_wait2","level":"info"}
+{"ts":"2026-04-19T03:29:17.966Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter023_wait2_round30.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter023_wait2_round30.csv","level":"info"}
+{"ts":"2026-04-19T03:29:17.978Z","tool":"profile_extract","msg":"Analyzing iter023_wait2_round30 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter023_wait2_round30.csv","level":"info"}
+{"ts":"2026-04-19T03:29:35.410Z","tool":"sass_compare","msg":"Extracting baseline SASS for f16fp32 2048x16384x2048","level":"info"}
+{"ts":"2026-04-19T03:29:39.998Z","tool":"sass_compare","msg":"Baseline SASS extracted via ncu (1186 lines)","level":"info"}
+{"ts":"2026-04-19T03:29:40.014Z","tool":"sass_compare","msg":"Extracting custom SASS for iter023_wait2","level":"info"}
+{"ts":"2026-04-19T03:29:40.713Z","tool":"sass_compare","msg":"Custom SASS extracted for iter023_wait2 (987 lines)","level":"info"}
+{"ts":"2026-04-19T03:29:40.727Z","tool":"sass_compare","msg":"Comparing baseline vs iter023_wait2 SASS","level":"info"}
+{"ts":"2026-04-19T03:29:40.754Z","tool":"sass_compare","msg":"SASS comparison complete for iter023_wait2 (saved to tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/sass_compare_iter023_wait2.json)","level":"info"}
+{"ts":"2026-04-19T03:31:52.204Z","tool":"checkpoint_write","msg":"PLANNED iter027_regctrl_lb1: Keep iter023 wait2 split-epilogue as the active best, but switch to launch_bounds(256,1) and trade registers explicitly with setmaxnreg so the producer runs lean while the consumer gets a larger accumulator budget, testing whether higher per-warp ILP can overcome the current high barrier density.","level":"info"}
+{"ts":"2026-04-19T03:31:53.427Z","tool":"next_iter","msg":"Resolved iter027_regctrl_lb1","level":"info"}
+{"ts":"2026-04-19T03:32:05.781Z","tool":"co2cu","msg":"Compiling iter027_regctrl_lb1.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T03:32:05.890Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_2048x16384x2048/gpt-5/iter027_regctrl_lb1.cu","level":"info"}
+{"ts":"2026-04-19T03:33:55.938Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter027_regctrl_lb1 (drift=1)","level":"info"}
+{"ts":"2026-04-19T03:37:14.756Z","tool":"store_round","msg":"Storing iter027_regctrl_lb1 (HANG 0.0 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T03:37:14.776Z","tool":"store_round","msg":"Stored iter027_regctrl_lb1: HANG 0.0 TFLOPS (round 30)","level":"info"}
+{"ts":"2026-04-19T03:37:23.147Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_2048x16384x2048/gpt-5/iter023_wait2","level":"info"}
+{"ts":"2026-04-19T03:37:30.172Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter023_wait2_round31.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter023_wait2_round31.csv","level":"info"}
+{"ts":"2026-04-19T03:37:30.184Z","tool":"profile_extract","msg":"Analyzing iter023_wait2_round31 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter023_wait2_round31.csv","level":"info"}
+{"ts":"2026-04-19T03:37:45.480Z","tool":"checkpoint_write","msg":"PLANNED iter028_lb1_only: Keep iter023 wait2 split-epilogue as the active best and change only launch_bounds from (256,2) to (256,1), testing whether a larger compiler register budget without setmaxnreg can raise consumer ILP enough to offset the lower CTA residency.","level":"info"}
+{"ts":"2026-04-19T03:37:46.693Z","tool":"next_iter","msg":"Resolved iter028_lb1_only","level":"info"}
+{"ts":"2026-04-19T03:38:18.652Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter028_lb1_only (drift=1)","level":"info"}
+{"ts":"2026-04-19T03:38:38.420Z","tool":"store_round","msg":"Storing iter028_lb1_only (DISCARD 265.205 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T03:38:38.439Z","tool":"store_round","msg":"Stored iter028_lb1_only: DISCARD 265.205 TFLOPS (round 31)","level":"info"}
+{"ts":"2026-04-19T04:35:27.761Z","tool":"resume_state","msg":"Loading tuning state for croqtile/matmul_f16fp32_2048x16384x2048","level":"info"}
+{"ts":"2026-04-19T04:35:54.656Z","tool":"checkpoint_write","msg":"PLANNED iter029_stages2_wait1: Keep iter023 split-epilogue topology and launch_bounds(256,2) but reduce pipeline depth from 3 stages to 2 and use an in-loop wait1 drain, testing whether lower barrier traffic and smaller shared staging can increase eligible warps on this barrier-limited kernel.","level":"info"}
+{"ts":"2026-04-19T04:35:55.901Z","tool":"next_iter","msg":"Resolved iter029_stages2_wait1","level":"info"}
+{"ts":"2026-04-19T04:36:05.647Z","tool":"co2cu","msg":"Compiling iter029_stages2_wait1.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T04:36:05.780Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_2048x16384x2048/gpt-5/iter029_stages2_wait1.cu","level":"info"}
+{"ts":"2026-04-19T04:36:52.556Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter029_stages2_wait1 (drift=1)","level":"info"}
+{"ts":"2026-04-19T04:37:05.315Z","tool":"store_round","msg":"Storing iter029_stages2_wait1 (DISCARD 244.323 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T04:37:05.335Z","tool":"store_round","msg":"Stored iter029_stages2_wait1: DISCARD 244.323 TFLOPS (round 32)","level":"info"}
+{"ts":"2026-04-19T04:37:23.380Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_2048x16384x2048/gpt-5/iter023_wait2","level":"info"}
+{"ts":"2026-04-19T04:37:30.000Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter023_wait2_round33.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter023_wait2_round33.csv","level":"info"}
+{"ts":"2026-04-19T04:37:30.014Z","tool":"profile_extract","msg":"Analyzing iter023_wait2_round33 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_2048x16384x2048/gpt-5/ncu_iter023_wait2_round33.csv","level":"info"}
+{"ts":"2026-04-19T04:38:03.321Z","tool":"checkpoint_write","msg":"PLANNED iter030_padded_single_tma: Keep iter023 wait2 overlap and single shared-to-global TMA path, but pad the shared output tile to 64x129 and store only the leading 64x128 view, testing whether bank conflicts can drop without the repack overhead that hurt iter026.","level":"info"}
+{"ts":"2026-04-19T04:38:04.623Z","tool":"next_iter","msg":"Resolved iter030_padded_single_tma","level":"info"}
+{"ts":"2026-04-19T04:38:04.828Z","tool":"co2cu","msg":"Compiling iter030_padded_single_tma.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T04:38:04.940Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_2048x16384x2048/gpt-5/iter030_padded_single_tma.cu","level":"info"}
+{"ts":"2026-04-19T04:38:24.391Z","tool":"store_round","msg":"Storing iter030_padded_single_tma (COMPILE_FAIL 0.0 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T04:38:24.410Z","tool":"store_round","msg":"Stored iter030_padded_single_tma: COMPILE_FAIL 0.0 TFLOPS (round 33)","level":"info"}
+{"ts":"2026-04-19T04:38:34.919Z","tool":"resume_state","msg":"Loading tuning state for croqtile/matmul_f16fp32_2048x16384x2048","level":"info"}
+{"ts":"2026-04-19T04:38:41.170Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter030_padded_single_tma (drift=1)","level":"info"}

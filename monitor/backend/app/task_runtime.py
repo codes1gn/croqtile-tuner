@@ -17,6 +17,7 @@ def apply_live_runtime(task: Task, payload: dict) -> dict:
 def read_live_fsm_state(task: Task) -> dict | None:
     """Read live iteration state from croq-tune checkpoint file."""
     from .agent import _find_artifacts
+    from .artifact_scanner import parse_checkpoint_iteration
 
     checkpoint_path, _ = _find_artifacts(task.shape_key)
 
@@ -28,8 +29,8 @@ def read_live_fsm_state(task: Task) -> dict | None:
     except (OSError, json.JSONDecodeError):
         return None
 
-    iteration = cp.get("iteration") or cp.get("current_iter")
-    if not isinstance(iteration, int):
+    iteration = parse_checkpoint_iteration(cp)
+    if iteration is None:
         return None
 
     return {

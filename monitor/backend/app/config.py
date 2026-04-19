@@ -170,6 +170,8 @@ class Settings(BaseSettings):
     
     # Heartbeat and auto-wake settings
     heartbeat_sec: int = 30
+    scheduler_enabled: bool = False  # Hard kill switch for background task dispatch
+    read_only_mode: bool = True  # Reject all user-triggered write operations
     auto_wake_enabled: bool = False  # Toggle for auto-waking opencode
     
     # opencode settings

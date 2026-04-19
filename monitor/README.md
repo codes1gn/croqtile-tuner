@@ -1,10 +1,12 @@
 # CroqTuner Monitor
 
-A persistent monitoring service for GPU kernel tuning with an optional auto-wake feature to automatically dispatch opencode agents.
+A persistent monitoring service for GPU kernel tuning. Background auto-dispatch is hard-disabled by default, and the backend runs in read-only mode unless you explicitly turn writes back on.
 
 ## Features
 
 - **Real-time Dashboard**: Monitor tuning tasks, GPU status, and iteration progress
+- **Scheduler Kill Switch**: `CROQTUNER_SCHEDULER_ENABLED=false` disables all backend auto-dispatch even if the UI toggle is changed
+- **Read-only Mode**: `CROQTUNER_READ_ONLY_MODE=true` blocks task creation, retries, resumes, deletes, and settings writes while keeping observation features online
 - **Auto-wake Toggle**: Enable/disable automatic opencode dispatching via web UI
   - **ON**: Scheduler auto-starts opencode for pending tasks (tuning mode)
   - **OFF**: Pure monitor mode - observe artifacts without starting new agents
@@ -129,5 +131,7 @@ croqtile-tuner/
 | `CROQTUNER_HOST` | `0.0.0.0` | Backend host |
 | `CROQTUNER_PORT` | `8642` | Backend port |
 | `CROQTUNER_HEARTBEAT_SEC` | `30` | Heartbeat interval |
+| `CROQTUNER_SCHEDULER_ENABLED` | `false` | Hard kill switch for all backend task dispatching |
+| `CROQTUNER_READ_ONLY_MODE` | `true` | Reject all monitor write actions and keep the UI in observe-only mode |
 | `CROQTUNER_CHOREO_HOME` | `/home/albert/workspace/croqtile` | Choreo compiler path |
 | `CROQTUNER_MOCK_MODE` | `false` | Run without opencode |

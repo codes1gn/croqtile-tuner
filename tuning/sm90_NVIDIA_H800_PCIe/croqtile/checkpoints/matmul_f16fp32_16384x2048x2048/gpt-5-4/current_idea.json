@@ -1,16 +1,17 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-18T16:02:34Z",
+  "timestamp": "2026-04-19T05:33:04Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_16384x2048x2048",
-  "iter": "iter003_mmajor",
-  "bottleneck": "memory_bound",
-  "idea": "Switch iter001 tile traversal from N-major to M-major to improve L2 reuse of lhs rows across the small-N sweep",
-  "expected_gain": "+10-25 TFLOPS via better lhs reuse and lower DRAM pressure",
+  "iter": "iter036_st5",
+  "bottleneck": "compute_bound",
+  "idea": "TILE_M=192 with STAGES=5; more pipeline depth for better latency hiding",
+  "expected_gain": "+5 TFLOPS",
   "levers": [
-    "tile_order"
+    "TILE_M 192",
+    "WARP_N 128",
+    "STAGES 5",
+    "maxreg=128"
   ],
-  "status": "VERIFIED",
-  "verified_iter": "iter003_mmajor",
-  "drift_score": 1
+  "status": "PLANNED"
 }

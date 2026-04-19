@@ -5,6 +5,7 @@ import json
 import logging
 import os
 import re
+import shlex
 import signal
 import sqlite3
 import subprocess
@@ -325,10 +326,11 @@ async def poll_artifacts(task: Task, session_factory) -> None:
 
     if checkpoint_path is not None and checkpoint_path.exists():
         try:
+            from .artifact_scanner import parse_checkpoint_iteration
             cp = json.loads(checkpoint_path.read_text())
-            cp_iter = cp.get("iteration") or cp.get("current_iter")
+            cp_iter = parse_checkpoint_iteration(cp)
             if cp_iter is not None:
-                update["current_iteration"] = int(cp_iter)
+                update["current_iteration"] = cp_iter
             cp_best = cp.get("current_best_tflops") or cp.get("best_tflops")
             if cp_best not in (None, ""):
                 update["best_tflops"] = float(cp_best)
@@ -549,9 +551,15 @@ async def run_task(task: Task, session_factory) -> int:
     # Prepend proxychains4 if use_proxy is enabled
     from .runtime_settings import get_use_proxy
     async with session_factory() as session:
-        if await get_use_proxy(session):
+        use_proxy = await get_use_proxy(session)
+        await session.commit()  # Commit to persist the default setting if newly created
+        if use_proxy:
             cmd = ["proxychains4", "-q"] + cmd
             logger.info("Proxy enabled: prepending proxychains4 to command")
+        else:
+            logger.info("Proxy disabled: launching command without proxychains4")
+
+    logger.info("Launching task %d command: %s", task.id, shlex.join(cmd))
 
     stdout_fd, stdout_name = tempfile.mkstemp(
         prefix=f"croqtune_stdout_{task.id}_", suffix=".log"

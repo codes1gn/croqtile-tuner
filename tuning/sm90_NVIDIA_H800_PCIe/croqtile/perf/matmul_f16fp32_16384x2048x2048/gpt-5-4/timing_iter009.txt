@@ -1,0 +1,5 @@
+Timing avg ms: 0.494311
+TFLOPS: 278.041
+HW efficiency: 18.3768%
+Test Passed
+

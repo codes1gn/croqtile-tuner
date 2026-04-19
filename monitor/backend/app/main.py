@@ -61,6 +61,11 @@ logging.basicConfig(
 logger = logging.getLogger("croqtuner")
 
 
+def _ensure_writable() -> None:
+    if settings.read_only_mode:
+        raise HTTPException(403, "Monitor is in read-only mode")
+
+
 def _detect_gpu_name() -> str | None:
     """Return the first GPU name from nvidia-smi, e.g. 'NVIDIA GeForce RTX 3070'."""
     try:
@@ -89,10 +94,21 @@ async def lifespan(app: FastAPI):
             logger.info("Startup: cleaned %d stale task(s) from DB", len(pruned_ids))
     async with async_session() as session:
         await scan_and_create_tasks(session)
+    # Initialize default settings (use_proxy defaults to true for proxychains4)
+    async with async_session() as session:
+        use_proxy = await get_use_proxy(session)
+        await session.commit()
+        logger.info("Proxy setting initialized: %s", use_proxy)
     _watcher.start(asyncio.get_running_loop())
-    await scheduler.start()
+    if settings.scheduler_enabled:
+        await scheduler.start()
+    else:
+        logger.warning("Scheduler disabled by CROQTUNER_SCHEDULER_ENABLED=false")
+    if settings.read_only_mode:
+        logger.warning("Monitor write APIs disabled by CROQTUNER_READ_ONLY_MODE=true")
     yield
-    await scheduler.stop()
+    if settings.scheduler_enabled:
+        await scheduler.stop()
     _watcher.stop()
 
 
@@ -125,6 +141,7 @@ async def create_task(
     body: TaskCreate,
     session: AsyncSession = Depends(get_session),
 ):
+    _ensure_writable()
     from .artifact_scanner import _normalize_dtype
     max_iter = 30
     canonical_dtype = _normalize_dtype(body.dtype)
@@ -170,6 +187,7 @@ async def update_task(
     body: TaskUpdate,
     session: AsyncSession = Depends(get_session),
 ):
+    _ensure_writable()
     task = await session.get(Task, task_id)
     if not task:
         raise HTTPException(404, "Task not found")
@@ -290,6 +308,7 @@ async def delete_task(
     clean_artifacts: bool = Query(True),
     session: AsyncSession = Depends(get_session),
 ):
+    _ensure_writable()
     """Delete a task.
 
     Design: artifacts are the single source of truth.
@@ -326,8 +345,9 @@ async def delete_task(
     await event_bus.publish("task_deleted", {"id": task_id})
 
 
-@app.post("/api/tasks/{task_id}/retry", response_model=TaskResponse, status_code=201)
+@app.post("/api/tasks/{task_id}/retry", response_model=TaskResponse, status_code=200)
 async def retry_task(task_id: int, session: AsyncSession = Depends(get_session)):
+    _ensure_writable()
     task = await session.get(Task, task_id)
     if not task:
         raise HTTPException(404, "Task not found")
@@ -336,40 +356,29 @@ async def retry_task(task_id: int, session: AsyncSession = Depends(get_session))
             400, "Can only retry pending, completed, or cancelled tasks"
         )
 
-    retry = Task(
-        shape_key=task.shape_key,
-        op_type=task.op_type,
-        dtype=task.dtype,
-        m=task.m,
-        n=task.n,
-        k=task.k,
-        dsl=task.dsl,
-        mode=task.mode,
-        model=task.model,
-        variant=task.variant,
-        agent_type=task.agent_type,
-        device=task.device,
-        request_budget=max(task.request_budget or 1, 1),
-        max_iterations=task.max_iterations,
-        status="pending",
-        current_iteration=0,
-        baseline_tflops=task.baseline_tflops,
-        best_kernel=task.best_kernel,
-    )
-    session.add(retry)
+    # Update existing task status instead of creating a new task
+    task.status = "pending"
+    task.current_iteration = 0
+    task.request_budget = max(task.request_budget or 1, 1)
+    task.error_message = None  # Clear any previous error
     await session.commit()
-    await session.refresh(retry)
+    await session.refresh(task)
 
-    await event_bus.publish("task_update", retry.to_dict())
-    return TaskResponse(**retry.to_dict())
+    # Persist the new status to disk artifact so it survives rescans
+    from .artifact_config import sync_task_to_artifact
+    await sync_task_to_artifact(session, task)
+
+    await event_bus.publish("task_update", task.to_dict())
+    return TaskResponse(**task.to_dict())
 
 
-@app.post("/api/tasks/{task_id}/resume", response_model=TaskResponse, status_code=201)
+@app.post("/api/tasks/{task_id}/resume", response_model=TaskResponse, status_code=200)
 async def resume_task(
     task_id: int,
     body: ResumeRequest,
     session: AsyncSession = Depends(get_session),
 ):
+    _ensure_writable()
     task = await session.get(Task, task_id)
     if not task:
         raise HTTPException(404, "Task not found")
@@ -378,35 +387,20 @@ async def resume_task(
 
     from_iter = min(body.from_iteration, task.current_iteration, task.max_iterations)
 
-    resumed = Task(
-        shape_key=task.shape_key,
-        op_type=task.op_type,
-        dtype=task.dtype,
-        m=task.m,
-        n=task.n,
-        k=task.k,
-        dsl=task.dsl,
-        mode=task.mode,
-        model=task.model,
-        variant=task.variant,
-        agent_type=task.agent_type,
-        device=task.device,
-        request_budget=max(task.request_budget or 1, 1),
-        max_iterations=task.max_iterations,
-        status="pending",
-        current_iteration=from_iter,
-        best_tflops=task.best_tflops,
-        baseline_tflops=task.baseline_tflops,
-        best_kernel=task.best_kernel,
-        # Carry over session so cursor-agent can --resume the original session
-        opencode_session_id=task.opencode_session_id,
-    )
-    session.add(resumed)
+    # Update existing task status instead of creating a new task
+    task.status = "pending"
+    task.current_iteration = from_iter
+    task.request_budget = max(task.request_budget or 1, 1)
+    task.error_message = None  # Clear any previous error
     await session.commit()
-    await session.refresh(resumed)
+    await session.refresh(task)
 
-    await event_bus.publish("task_update", resumed.to_dict())
-    return TaskResponse(**resumed.to_dict())
+    # Persist the new status to disk artifact so it survives rescans
+    from .artifact_config import sync_task_to_artifact
+    await sync_task_to_artifact(session, task)
+
+    await event_bus.publish("task_update", task.to_dict())
+    return TaskResponse(**task.to_dict())
 
 
 @app.get("/api/tasks/{task_id}/logs", response_model=list[IterationLogResponse])
@@ -568,6 +562,7 @@ async def update_model_settings(
     body: ModelSettingsUpdate,
     session: AsyncSession = Depends(get_session),
 ):
+    _ensure_writable()
     model, variant = await set_default_model(
         session, body.default_model, body.default_variant
     )
@@ -583,6 +578,7 @@ async def update_model_settings(
 @app.post("/api/settings/model/refresh", response_model=ModelSettingsResponse)
 async def refresh_models(session: AsyncSession = Depends(get_session)):
     """Force-refresh the cached model list from opencode and cursor-agent CLIs."""
+    _ensure_writable()
     invalidate_model_cache()
     return ModelSettingsResponse(
         default_model=await get_default_model(session),
@@ -614,6 +610,7 @@ async def update_auto_wake_settings(
     When enabled: scheduler will auto-start opencode for pending tasks.
     When disabled: pure monitor mode, no automatic task execution.
     """
+    _ensure_writable()
     enabled = await set_auto_wake_enabled(session, body.auto_wake_enabled)
     await session.commit()
     logger.info("Auto-wake setting changed to: %s", enabled)
@@ -623,7 +620,9 @@ async def update_auto_wake_settings(
 
 @app.get("/api/settings/proxy", response_model=ProxySettingsResponse)
 async def get_proxy_settings(session: AsyncSession = Depends(get_session)):
-    return ProxySettingsResponse(use_proxy=await get_use_proxy(session))
+    use_proxy = await get_use_proxy(session)
+    await session.commit()  # Commit to persist the default setting if newly created
+    return ProxySettingsResponse(use_proxy=use_proxy)
 
 
 @app.patch("/api/settings/proxy", response_model=ProxySettingsResponse)
@@ -631,6 +630,7 @@ async def update_proxy_settings(
     body: ProxySettingsUpdate,
     session: AsyncSession = Depends(get_session),
 ):
+    _ensure_writable()
     enabled = await set_use_proxy(session, body.use_proxy)
     await session.commit()
     logger.info("Proxy setting changed to: %s", enabled)
@@ -677,6 +677,7 @@ async def health(session: AsyncSession = Depends(get_session)):
     return HealthResponse(
         status="ok",
         scheduler_running=scheduler.running,
+        read_only_mode=settings.read_only_mode,
         active_task_id=scheduler.active_task_id,
         active_task_ids=scheduler.active_task_ids,
         auto_wake_enabled=await get_auto_wake_enabled(session),
@@ -693,6 +694,7 @@ async def health(session: AsyncSession = Depends(get_session)):
 @app.post("/api/scan", status_code=200)
 async def trigger_scan(session: AsyncSession = Depends(get_session)):
     """Manually trigger an artifact scan to discover/refresh tasks from disk."""
+    _ensure_writable()
     created = await scan_and_create_tasks(session)
     return {"created": created}
 

@@ -20,7 +20,11 @@ export function isBaselineEntry(l: IterationLogData): boolean {
   const d = (l.decision ?? "").toUpperCase();
   if (d === "BASELINE") return true;
   const k = (l.kernel_path ?? "").toLowerCase();
-  if (k.includes("baseline") || k.startsWith("framework/")) return true;
+  // Framework reference kernels
+  if (k.startsWith("framework/")) return true;
+  // Only iter000 kernels with baseline markers are external baselines
+  // Custom kernels like iter001_baseline_1p1c are NOT baselines
+  if (k.startsWith("iter000") && (k.includes("cublas") || k.includes("torch") || k.includes("baseline"))) return true;
   const b = (l.bottleneck ?? "").toLowerCase();
   if (b === "baseline" || b === "baseline_profile") return true;
   return false;

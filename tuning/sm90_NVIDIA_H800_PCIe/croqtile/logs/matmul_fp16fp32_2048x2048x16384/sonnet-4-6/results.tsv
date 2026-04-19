@@ -5,3 +5,8 @@ iter002	iter002_tm64_wn128_1p1c	227.796	KEEP	compute_bound	Reduce TILE_M 128->64
 iter003	iter003_persis_1p1c_nm114	201.0	DISCARD	compute_bound	Persistent 114 CTA STAGES=4 WARP_N=128: SMEM=128KB fills carveout, only 1 CTA/SM
 iter004	iter004_persis_1p1c_wn96_s3	148.3	DISCARD	compute_bound	Persistent WARP_N=96 STAGES=3: 2048 not divisible by 96 (22 tiles, last partial)
 iter005	iter005_persis_1p1c_wn128_s2	139.3	DISCARD	compute_bound	Persistent STAGES=2 WARP_N=128: SMEM=80KB, but 2-stage pipeline insufficient to 
+iter006	iter006_pingpong_wn128	189.225	DISCARD	compute_bound	1p2c ping-pong TILE_N=256: 2 consumers split N-dim, 256 CTAs. SMEM=188KB too lar
+iter007	iter007_unroll_warp_lb	179.5	DISCARD	compute_bound	Phase 2 cu fine-tune: unroll 4 + launch_bounds(256,1). Regression -48T. launch_b
+iter008	iter008_tilek128_s4	0	SEGFAULT	compute_bound	TILE_K=128 STAGES=3: CUDA failure invalid argument at runtime. TMA box shape 128
+iter009	iter009_wn256_tm64	211.29	DISCARD	compute_bound	WARP_N=256: 211T vs 228T. CTA count dropped to 256 (2.2 waves), wave quantizatio
+iter010	iter010_stages2_wn128	199.268	DISCARD	compute_bound	STAGES=2: 199T vs 228T. 2 stages insufficient to hide K=16384 memory latency, sa

@@ -13,5 +13,7 @@
     "wait2",
     "split_epilogue"
   ],
-  "status": "PLANNED"
+  "status": "VERIFIED",
+  "verified_iter": "iter030_padded_single_tma",
+  "drift_score": 1
 }

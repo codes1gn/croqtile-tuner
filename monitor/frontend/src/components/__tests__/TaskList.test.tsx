@@ -6,6 +6,7 @@ import type { TaskData } from "../../api";
 
 const mockTask: TaskData = {
   id: 1,
+  task_uid: "abc123def456",
   shape_key: "gemm_sp_f16_768x768x768",
   op_type: "gemm_sp",
   dtype: "f16",
@@ -60,7 +61,16 @@ describe("TaskList", () => {
   it("renders multiple task rows", () => {
     const tasks: TaskData[] = [
       mockTask,
-      { ...mockTask, id: 2, shape_key: "gemm_sp_e4m3_512x8192x8192_fs", op_type: "gemm_sp", status: "pending", current_iteration: 0, best_tflops: null },
+      {
+        ...mockTask,
+        id: 2,
+        task_uid: "def456abc123",
+        shape_key: "gemm_sp_e4m3_512x8192x8192_fs",
+        op_type: "gemm_sp",
+        status: "pending",
+        current_iteration: 0,
+        best_tflops: null,
+      },
     ];
     render(
       <MemoryRouter>

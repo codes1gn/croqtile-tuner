@@ -120,7 +120,7 @@ export function SystemStatusPanel({ health, onRefresh }: Props) {
             <AutoWakeToggle
               enabled={health.auto_wake_enabled}
               onToggle={handleAutoWakeToggle}
-              disabled={togglingAutoWake}
+              disabled={togglingAutoWake || health.read_only_mode}
             />
             <span className="text-sm text-gray-400">
               Auto-wake: {health.auto_wake_enabled ? (
@@ -133,6 +133,11 @@ export function SystemStatusPanel({ health, onRefresh }: Props) {
           {!health.auto_wake_enabled && (health.task_counts.pending ?? 0) > 0 && (
             <div className="mt-2 text-xs text-amber-400 bg-amber-950/30 border border-amber-800/50 rounded px-2 py-1 inline-block">
               {health.task_counts.pending} pending task{(health.task_counts.pending ?? 0) !== 1 ? "s" : ""} waiting — enable Auto-wake to start them
+            </div>
+          )}
+          {health.read_only_mode && (
+            <div className="mt-2 text-xs text-cyan-300 bg-cyan-950/30 border border-cyan-800/50 rounded px-2 py-1 inline-block">
+              Read-only mode — task changes, model changes, proxy changes, and auto-wake writes are disabled
             </div>
           )}
           <div className="mt-3 text-sm text-gray-300">
@@ -185,13 +190,17 @@ export function SystemStatusPanel({ health, onRefresh }: Props) {
               <button
                 type="button"
                 onClick={handleModelSave}
-                disabled={savingModel || (selectedModel === health?.default_model && selectedVariant === health?.default_variant)}
+                disabled={health.read_only_mode || savingModel || (selectedModel === health?.default_model && selectedVariant === health?.default_variant)}
                 className="px-3 py-1.5 rounded text-xs font-medium bg-cyan-700 hover:bg-cyan-600 text-white transition disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {savingModel ? "..." : "Save"}
               </button>
             </div>
-            <p className="mt-1.5 text-xs text-gray-500">Used when auto-wake creates new tasks. Per-task model can be set in task details.</p>
+            <p className="mt-1.5 text-xs text-gray-500">
+              {health.read_only_mode
+                ? "Read-only mode is active, so default model changes are blocked."
+                : "Used when auto-wake creates new tasks. Per-task model can be set in task details."}
+            </p>
             {error && <p className="mt-3 rounded-lg bg-red-950/40 px-3 py-2 text-sm text-red-300">{error}</p>}
           </div>
         </div>

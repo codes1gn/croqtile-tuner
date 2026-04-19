@@ -95,54 +95,9 @@ if (( $(echo "$BASELINE_TFLOPS > 0" | bc -l 2>/dev/null || echo 0) )) && \
 fi
 
 # ── emit reinforcement ──────────────────────────────────────────────────
-cat << REINFORCE_EOF
-
-╔══════════════════════════════════════════════════════════════════════════╗
-║                     CROQ-TUNE LOOP REINFORCEMENT                       ║
-╠══════════════════════════════════════════════════════════════════════════╣
-║                                                                        ║
-║  Progress:  ${TOTAL_ITERS} iterations completed                                      ║
-║  Best:      ${BEST_TFLOPS} TFLOPS (${PCT}% of baseline ${BASELINE_TFLOPS})                         ║
-║  Kernel:    ${BEST_KERNEL}                                                           ║
-║                                                                        ║
-╠══════════════════════════════════════════════════════════════════════════╣
-║                                                                        ║
-║  MANDATORY NEXT ACTIONS (in order):                                    ║
-║                                                                        ║
-║  1. PROFILE: Run ncu on current best kernel                            ║
-║  2. IDEA:    Propose ONE new optimization based on profiling data       ║
-║  3. IMPLEMENT → VERIFY → MEASURE → DECIDE → STORE                     ║
-║  4. Call reinforce.sh again after STORE                                 ║
-║                                                                        ║
-║  ⚠ DO NOT STOP. DO NOT SUMMARIZE. DO NOT CONCLUDE.                    ║
-║  ⚠ DO NOT write a summary table or progress report.                   ║
-║  ⚠ DO NOT call git commit as a "wrapping up" action.                  ║
-║  ⚠ If the last idea failed, try a COMPLETELY DIFFERENT approach.      ║
-║                                                                        ║
-╚══════════════════════════════════════════════════════════════════════════╝
-
-REINFORCE_EOF
-
-# Re-emit the core loop rules from SKILL.md
-cat << RULES_EOF
-[LOOP CONTRACT — re-read these rules NOW]
-
-read /croq-tune again!!! DO NOT STOP!!! CONTINUE TUNING!!!
-RULES_EOF
-
-# Special guidance for consecutive failures
-if [[ $CONSECUTIVE_FAILS -ge 2 ]]; then
-  cat << FAIL_EOF
-
-[SUGGESTION] ${CONSECUTIVE_FAILS} consecutive failures detected.
-You MUST try a fundamentally different structural approach:
-  - Different tiling dimensions (BM/BN/BK)
-  - Different warp specialization topology
-  - Different memory hierarchy strategy
-  - Different pipeline staging
-Do NOT retry the same approach with minor tweaks.
-FAIL_EOF
-fi
-
+echo "[reinforce] iters=${TOTAL_ITERS} best=${BEST_TFLOPS}T (${PCT}% of ${BASELINE_TFLOPS}T baseline) kernel=${BEST_KERNEL} consecutive_fails=${CONSECUTIVE_FAILS}"
 echo ""
-echo "[reinforce] Continue to PROFILE step now."
+echo "MANDATORY: Read the full tuning protocol NOW before doing anything else:"
+echo "  Read file: .claude/skills/croq-tune/SKILL.md"
+echo "Then re-read: .claude/skills/croq-dsl-${DSL}/SKILL.md"
+echo "Then continue the loop — PROFILE → IDEA → IMPLEMENT → VERIFY → MEASURE → DECIDE → STORE → reinforce."

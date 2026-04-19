@@ -47,3 +47,49 @@
 {"ts":"2026-04-18T13:39:07.452Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter002_tm64_wn128_1p1c.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter002_tm64_wn128_1p1c.csv","level":"info"}
 {"ts":"2026-04-18T13:39:16.990Z","tool":"profile_extract","msg":"Analyzing iter002_tm64_wn128_1p1c from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter002_tm64_wn128_1p1c.csv","level":"info"}
 {"ts":"2026-04-18T14:04:38.423Z","tool":"next_iter","msg":"Resolved iter006_wn256_1p1c_s3","level":"info"}
+{"ts":"2026-04-19T05:18:22.689Z","tool":"resume_state","msg":"Loading tuning state for croqtile/matmul_fp16fp32_2048x2048x16384","level":"info"}
+{"ts":"2026-04-19T05:19:13.640Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter002_tm64_wn128_1p1c","level":"info"}
+{"ts":"2026-04-19T05:19:20.865Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/ncu_iter002_tm64_wn128_1p1c_round7.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/ncu_iter002_tm64_wn128_1p1c_round7.csv","level":"info"}
+{"ts":"2026-04-19T05:19:25.649Z","tool":"profile_extract","msg":"Analyzing iter002_tm64_wn128_1p1c_round7 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/ncu_iter002_tm64_wn128_1p1c_round7.csv","level":"info"}
+{"ts":"2026-04-19T05:19:31.763Z","tool":"sass_compare","msg":"Extracting baseline SASS for fp16fp32 2048x2048x16384","level":"info"}
+{"ts":"2026-04-19T05:19:36.168Z","tool":"sass_compare","msg":"Baseline SASS extracted via ncu (1418 lines)","level":"info"}
+{"ts":"2026-04-19T05:19:38.990Z","tool":"sass_compare","msg":"Extracting custom SASS for iter002","level":"info"}
+{"ts":"2026-04-19T05:20:20.269Z","tool":"sass_compare","msg":"Extracting custom SASS for iter002","level":"info"}
+{"ts":"2026-04-19T05:20:20.895Z","tool":"sass_compare","msg":"Custom SASS extracted for iter002 (1067 lines)","level":"info"}
+{"ts":"2026-04-19T05:20:23.898Z","tool":"sass_compare","msg":"Comparing baseline vs iter002 SASS","level":"info"}
+{"ts":"2026-04-19T05:20:23.925Z","tool":"sass_compare","msg":"SASS comparison complete for iter002 (saved to tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/sass_compare_iter002.json)","level":"info"}
+{"ts":"2026-04-19T05:21:26.558Z","tool":"next_iter","msg":"Resolved iter006_pingpong_wn128","level":"info"}
+{"ts":"2026-04-19T05:21:30.163Z","tool":"checkpoint_write","msg":"PLANNED iter006_pingpong_wn128: Switch to 1p2c ping-pong: 2 consumer warpgroups alternate MMA/epilogue, reduces barrier density from 0.053 to ~0.01 (like cuBLAS 0.002). Re-add 1p2c topology with explicit ping-pong overlap between consumers.","level":"info"}
+{"ts":"2026-04-19T05:21:33.555Z","tool":"checkpoint_write","msg":"READ checkpoint for IMPLEMENT","level":"info"}
+{"ts":"2026-04-19T05:22:39.693Z","tool":"co2cu","msg":"Compiling iter006_pingpong_wn128.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T05:22:39.823Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter006_pingpong_wn128.cu","level":"info"}
+{"ts":"2026-04-19T05:24:07.846Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter006_pingpong_wn128 (drift=1)","level":"info"}
+{"ts":"2026-04-19T05:24:31.617Z","tool":"store_round","msg":"Storing iter006_pingpong_wn128 (DISCARD 189.225 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T05:24:31.636Z","tool":"store_round","msg":"Stored iter006_pingpong_wn128: DISCARD 189.225 TFLOPS (round 7)","level":"info"}
+{"ts":"2026-04-19T05:25:18.926Z","tool":"next_iter","msg":"Resolved iter007_unroll_warp_lb","level":"info"}
+{"ts":"2026-04-19T05:25:25.085Z","tool":"checkpoint_write","msg":"PLANNED iter007_unroll_warp_lb: Phase 2 .cu fine-tune: Add #pragma unroll 4 on iv_warp loop + __launch_bounds__(256,1) for register control. cuBLAS has 25% FFMA suggesting heavy unrolling. Custom only 40% instruction count vs baseline.","level":"info"}
+{"ts":"2026-04-19T05:25:32.229Z","tool":"co2cu","msg":"Compiling iter007_unroll_warp_lb.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T05:25:32.337Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter007_unroll_warp_lb.cu","level":"info"}
+{"ts":"2026-04-19T05:26:17.311Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter007_unroll_warp_lb (drift=1)","level":"info"}
+{"ts":"2026-04-19T05:26:37.185Z","tool":"store_round","msg":"Storing iter007_unroll_warp_lb (DISCARD 179.5 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T05:26:37.204Z","tool":"store_round","msg":"Stored iter007_unroll_warp_lb: DISCARD 179.5 TFLOPS (round 8)","level":"info"}
+{"ts":"2026-04-19T05:26:51.944Z","tool":"next_iter","msg":"Resolved iter008_tilek128_s4","level":"info"}
+{"ts":"2026-04-19T05:26:58.204Z","tool":"checkpoint_write","msg":"PLANNED iter008_tilek128_s4: Increase TILE_K 64->128 STAGES 3->4: Halves K-loop iterations (128 vs 256), halves sync points. More work per stage. SMEM increases but 4 stages enable overlap.","level":"info"}
+{"ts":"2026-04-19T05:27:52.608Z","tool":"co2cu","msg":"Compiling iter008_tilek128_s4.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T05:27:52.716Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter008_tilek128_s4.cu","level":"info"}
+{"ts":"2026-04-19T05:28:15.659Z","tool":"co2cu","msg":"Compiling iter008_tilek128_s4.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T05:28:15.771Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter008_tilek128_s4.cu","level":"info"}
+{"ts":"2026-04-19T05:28:57.603Z","tool":"store_round","msg":"Storing iter008_tilek128_s4 (SEGFAULT 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T05:28:57.623Z","tool":"store_round","msg":"Stored iter008_tilek128_s4: SEGFAULT 0 TFLOPS (round 9)","level":"info"}
+{"ts":"2026-04-19T05:29:24.895Z","tool":"next_iter","msg":"Resolved iter009_wn256_tm64","level":"info"}
+{"ts":"2026-04-19T05:29:31.847Z","tool":"checkpoint_write","msg":"PLANNED iter009_wn256_tm64: WARP_N=256 TILE_M=64: Double N-dim work per warpgroup. 2048/256=8 N-tiles (clean div). 32×8=256 CTAs. More compute per sync, matches cuBLAS larger N-tile strategy.","level":"info"}
+{"ts":"2026-04-19T05:30:26.110Z","tool":"co2cu","msg":"Compiling iter009_wn256_tm64.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T05:30:26.220Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter009_wn256_tm64.cu","level":"info"}
+{"ts":"2026-04-19T05:31:06.361Z","tool":"store_round","msg":"Storing iter009_wn256_tm64 (DISCARD 211.29 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T05:31:06.380Z","tool":"store_round","msg":"Stored iter009_wn256_tm64: DISCARD 211.29 TFLOPS (round 10)","level":"info"}
+{"ts":"2026-04-19T05:31:24.765Z","tool":"next_iter","msg":"Resolved iter010_stages2_wn128","level":"info"}
+{"ts":"2026-04-19T05:31:31.011Z","tool":"checkpoint_write","msg":"PLANNED iter010_stages2_wn128: STAGES=2: Reduce from 3 to 2 stages. Simplifies pipeline, reduces barrier count. SMEM drops from 72KB to 48KB. May enable higher occupancy (2+ CTAs/SM).","level":"info"}
+{"ts":"2026-04-19T05:32:24.582Z","tool":"co2cu","msg":"Compiling iter010_stages2_wn128.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T05:32:24.692Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/sonnet-4-6/iter010_stages2_wn128.cu","level":"info"}
+{"ts":"2026-04-19T05:33:00.234Z","tool":"store_round","msg":"Storing iter010_stages2_wn128 (DISCARD 199.268 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T05:33:00.255Z","tool":"store_round","msg":"Stored iter010_stages2_wn128: DISCARD 199.268 TFLOPS (round 11)","level":"info"}

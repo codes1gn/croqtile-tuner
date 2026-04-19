@@ -93,6 +93,7 @@ export interface ActivityLogEntry {
 export interface HealthData {
   status: string;
   scheduler_running: boolean;
+  read_only_mode: boolean;
   active_task_id: number | null;
   active_task_ids: number[];
   auto_wake_enabled: boolean;

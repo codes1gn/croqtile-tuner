@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   api,
+  type HealthData,
   type TaskData,
   type IterationLogData,
   type AgentLogData,
@@ -49,6 +50,7 @@ export function TaskDetail({ sseEvent }: Props) {
   const [editModel, setEditModel] = useState("");
   const [editVariant, setEditVariant] = useState("");
   const [savingModel, setSavingModel] = useState(false);
+  const [readOnlyMode, setReadOnlyMode] = useState(false);
 
   const taskId = id ? parseInt(id) : NaN;
 
@@ -73,25 +75,63 @@ export function TaskDetail({ sseEvent }: Props) {
   const loadData = useCallback(async () => {
     if (isNaN(taskId)) return;
     try {
-      const [t, il, al, sh, sessions, act, settings] = await Promise.all([
-        api.getTask(taskId),
+      // Task payload is the only critical dependency for entering detail page.
+      // Everything else is best-effort so flaky endpoints do not block navigation.
+      const t = await api.getTask(taskId);
+      setTask(t);
+      setError("");
+
+      const [
+        ilResult,
+        alResult,
+        shResult,
+        sessionsResult,
+        actResult,
+        settingsResult,
+        healthResult,
+      ] = await Promise.allSettled([
         api.getIterationLogs(taskId),
         api.getAgentLogs(taskId, 200),
         api.getSessionHistory(taskId, 400, selectedSessionId),
         api.getTaskSessions(taskId),
         api.getActivityLog(taskId, 500),
         api.getModelSettings(),
+        api.getHealth(),
       ]);
-      setTask(t);
-      setIterLogs(il);
-      setAgentLogs(al.reverse());
-      setSessionHistory(sh);
-      setTaskSessions(sessions);
-      setActivityLog(act);
-      setAvailableModels(settings.available_models ?? []);
-      setAvailableVariants(settings.available_variants ?? [""]);
-      setEditModel(t.model ?? settings.available_models?.[0] ?? "");
-      setEditVariant(t.variant ?? settings.available_variants?.[0] ?? "");
+
+      if (ilResult.status === "fulfilled") {
+        setIterLogs(ilResult.value);
+      }
+      if (alResult.status === "fulfilled") {
+        setAgentLogs(alResult.value.reverse());
+      }
+      if (shResult.status === "fulfilled") {
+        setSessionHistory(shResult.value);
+      }
+      if (sessionsResult.status === "fulfilled") {
+        setTaskSessions(sessionsResult.value);
+      }
+      if (actResult.status === "fulfilled") {
+        setActivityLog(actResult.value);
+      }
+
+      if (settingsResult.status === "fulfilled") {
+        const settings = settingsResult.value;
+        setAvailableModels(settings.available_models ?? []);
+        setAvailableVariants(settings.available_variants ?? [""]);
+        setEditModel(t.model ?? settings.available_models?.[0] ?? "");
+        setEditVariant(t.variant ?? settings.available_variants?.[0] ?? "");
+      } else {
+        // Keep detail page usable even if /api/settings/model is slow/flaky.
+        setAvailableModels((prev) => (prev.length ? prev : t.model ? [t.model] : []));
+        setAvailableVariants((prev) => (prev.length ? prev : [""]));
+        setEditModel((prev) => prev || t.model || "");
+        setEditVariant((prev) => prev || t.variant || "");
+      }
+
+      if (healthResult.status === "fulfilled") {
+        setReadOnlyMode((healthResult.value as HealthData).read_only_mode);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load task");
     }
@@ -167,6 +207,7 @@ export function TaskDetail({ sseEvent }: Props) {
 
   const handleCancel = async () => {
     if (!task) return;
+    if (readOnlyMode) return;
     try {
       await api.cancelTask(task.id);
       loadData();
@@ -177,6 +218,7 @@ export function TaskDetail({ sseEvent }: Props) {
 
   const handlePromote = async () => {
     if (!task) return;
+    if (readOnlyMode) return;
     try {
       await api.promoteTask(task.id);
       loadData();
@@ -187,6 +229,7 @@ export function TaskDetail({ sseEvent }: Props) {
 
   const handleDelete = async () => {
     if (!task) return;
+    if (readOnlyMode) return;
     if (!window.confirm(`Delete task "${task.shape_key}"?\n\nThis will permanently remove the task from the database AND delete all tuning artifacts (logs, checkpoints, source files) from disk. This cannot be undone.`)) return;
     try {
       await api.deleteTask(task.id);
@@ -198,6 +241,7 @@ export function TaskDetail({ sseEvent }: Props) {
 
   const handleResume = async () => {
     if (!task) return;
+    if (readOnlyMode) return;
     const iter = parseInt(resumeIter);
     if (isNaN(iter) || iter < 0) {
       setError("Invalid iteration number");
@@ -205,7 +249,9 @@ export function TaskDetail({ sseEvent }: Props) {
     }
     try {
       const resumed = await api.resumeTask(task.id, iter);
-      navigate(`/tasks/${resumed.id}`);
+      setTask(resumed);  // Update local state with the resumed task
+      setShowResume(false);  // Close the resume dialog
+      setError("");  // Clear any previous error
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to resume");
     }
@@ -213,6 +259,7 @@ export function TaskDetail({ sseEvent }: Props) {
 
   const handleSaveModel = async () => {
     if (!task) return;
+    if (readOnlyMode) return;
     if (!editModel.trim()) {
       setError("Model is required");
       return;
@@ -323,7 +370,8 @@ export function TaskDetail({ sseEvent }: Props) {
             <button
               type="button"
               onClick={handlePromote}
-              className="px-3 py-1 text-xs rounded bg-emerald-900/50 hover:bg-emerald-800 text-emerald-200 border border-emerald-700 transition"
+              disabled={readOnlyMode}
+              className="px-3 py-1 text-xs rounded bg-emerald-900/50 hover:bg-emerald-800 text-emerald-200 border border-emerald-700 transition disabled:opacity-50"
             >
               Promote to queue
             </button>
@@ -331,8 +379,9 @@ export function TaskDetail({ sseEvent }: Props) {
           {(task.status === "pending" || task.status === "completed" || task.status === "cancelled" || task.status === "waiting") && (
             <button
               type="button"
-              onClick={() => { setShowResume(!showResume); setResumeIter(String(task.current_iteration)); }}
-              className="px-3 py-1 text-xs rounded bg-amber-900/50 hover:bg-amber-800 text-amber-200 border border-amber-700 transition"
+              onClick={() => { if (!readOnlyMode) { setShowResume(!showResume); setResumeIter(String(task.current_iteration)); } }}
+              disabled={readOnlyMode}
+              className="px-3 py-1 text-xs rounded bg-amber-900/50 hover:bg-amber-800 text-amber-200 border border-amber-700 transition disabled:opacity-50"
             >
               Resume
             </button>
@@ -341,7 +390,8 @@ export function TaskDetail({ sseEvent }: Props) {
             <button
               type="button"
               onClick={handleCancel}
-              className="px-3 py-1 text-xs rounded bg-orange-900/50 hover:bg-orange-800 text-orange-300 border border-orange-800 transition"
+              disabled={readOnlyMode}
+              className="px-3 py-1 text-xs rounded bg-orange-900/50 hover:bg-orange-800 text-orange-300 border border-orange-800 transition disabled:opacity-50"
             >
               Pause
             </button>
@@ -350,7 +400,8 @@ export function TaskDetail({ sseEvent }: Props) {
             <button
               type="button"
               onClick={handleDelete}
-              className="px-3 py-1 text-xs rounded bg-red-900/50 hover:bg-red-800 text-red-300 border border-red-800 transition"
+              disabled={readOnlyMode}
+              className="px-3 py-1 text-xs rounded bg-red-900/50 hover:bg-red-800 text-red-300 border border-red-800 transition disabled:opacity-50"
             >
               Delete
             </button>
@@ -372,7 +423,8 @@ export function TaskDetail({ sseEvent }: Props) {
           <button
             type="button"
             onClick={handleResume}
-            className="px-3 py-1 text-xs rounded bg-amber-600 hover:bg-amber-500 text-white font-medium transition"
+            disabled={readOnlyMode}
+            className="px-3 py-1 text-xs rounded bg-amber-600 hover:bg-amber-500 text-white font-medium transition disabled:opacity-50"
           >
             Resume
           </button>
@@ -393,6 +445,12 @@ export function TaskDetail({ sseEvent }: Props) {
           <strong className="text-slate-200">pending</strong> tasks. Use <em>Promote to queue</em> when you
           want this job eligible for the next run.
         </p>
+      )}
+
+      {readOnlyMode && (
+        <div className="rounded-lg border border-cyan-800 bg-cyan-950/30 px-4 py-2 text-sm text-cyan-200">
+          This monitor is running in read-only mode. Queue changes, resume, delete, pause, and model updates are disabled.
+        </div>
       )}
 
       {task.model?.startsWith("cursor/") && task.mode !== "cursor_cli" && (
@@ -442,7 +500,7 @@ export function TaskDetail({ sseEvent }: Props) {
                 <select
                   value={editModel}
                   onChange={(e) => setEditModel(e.target.value)}
-                  disabled={!modelEditable || savingModel || sortedProviders.length === 0}
+                  disabled={readOnlyMode || !modelEditable || savingModel || sortedProviders.length === 0}
                   className="w-full rounded bg-gray-900 border border-gray-600 px-2 py-1.5 text-sm text-gray-100 disabled:opacity-60"
                 >
                   {sortedProviders.length === 0 && <option value="">No models available</option>}
@@ -460,7 +518,7 @@ export function TaskDetail({ sseEvent }: Props) {
                 <select
                   value={editVariant}
                   onChange={(e) => setEditVariant(e.target.value)}
-                  disabled={!modelEditable || savingModel || modelHasBuiltinVariant}
+                  disabled={readOnlyMode || !modelEditable || savingModel || modelHasBuiltinVariant}
                   className="w-full rounded bg-gray-900 border border-gray-600 px-2 py-1.5 text-sm text-gray-100 disabled:opacity-60"
                 >
                   {effectiveVariants.map((v) => (
@@ -472,14 +530,17 @@ export function TaskDetail({ sseEvent }: Props) {
             <button
               type="button"
               onClick={handleSaveModel}
-              disabled={!modelEditable || savingModel || !modelChanged}
+              disabled={readOnlyMode || !modelEditable || savingModel || !modelChanged}
               className="self-end px-3 py-2 rounded bg-cyan-700 hover:bg-cyan-600 disabled:opacity-50 text-white text-sm"
             >
               {savingModel ? "Saving..." : "Save model"}
             </button>
           </div>
-          {!modelEditable && (
+          {!readOnlyMode && !modelEditable && (
             <p className="mt-2 text-xs text-amber-400">Model is locked while running or after completion.</p>
+          )}
+          {readOnlyMode && (
+            <p className="mt-2 text-xs text-cyan-300">Read-only mode is active, so model changes are blocked.</p>
           )}
         </div>
 

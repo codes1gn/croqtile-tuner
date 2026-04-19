@@ -86,10 +86,10 @@ async def set_auto_wake_enabled(session: AsyncSession, enabled: bool) -> bool:
 
 
 async def get_use_proxy(session: AsyncSession) -> bool:
-    """Get the proxy toggle state. Default is False."""
+    """Get the proxy toggle state. Default is True (always use proxychains4)."""
     row = await session.get(SystemSetting, USE_PROXY_KEY)
     if row is None:
-        row = SystemSetting(key=USE_PROXY_KEY, value="false")
+        row = SystemSetting(key=USE_PROXY_KEY, value="true")
         session.add(row)
         await session.flush()
     return row.value.lower() == "true"

@@ -1,16 +1,11 @@
 ---
-description: "/croq-tune — Infinite AI-driven GPU kernel tuning loop. Triggers on: tune, tuning, optimize, perf-tune, auto-tune, ai-tune, sweep, croq-tune."
-globs: 
-alwaysApply: false
+alwaysApply: true
 ---
-
 # /croq-tune — Kernel Tuning Dispatcher
 
-When the user says "tune", "tuning", "optimize", "perf-tune", "auto-tune", "ai-tune", "sweep", or "/croq-tune":
+When the user say "/croq-tune":
 
-1. Read `.claude/skills/croq-tune/SKILL.md` — the unified tuning protocol
-2. Parse the user's `dsl`, `dtype`, and optional `shape_key` from their message
-3. Read the matching `.claude/skills/croq-dsl-<dsl>/SKILL.md` for DSL-specific commands
-4. Follow the protocol in `croq-tune/SKILL.md` exactly
-
-These are the only two files needed per session. Do not load other `croq-*` skill files — they have been consolidated into `croq-tune/SKILL.md`.
+1. Read `.cursor/skills/cursor-croq-tune/SKILL.md` — the Cursor-only tuning entrypoint
+2. Parse the user's `dsl`, `dtype`, optional `shape_key`, any `--model`, any `--task-uid`, and any stated round-budget language from their message
+3. Read the matching `.cursor/skills/cursor-croq-dsl-<dsl>/SKILL.md` for the Cursor-side DSL entrypoint
+4. Follow the protocol in `.cursor/skills/cursor-croq-tune/SKILL.md` exactly

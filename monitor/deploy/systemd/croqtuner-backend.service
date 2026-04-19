@@ -10,6 +10,8 @@ EnvironmentFile=-/home/albert/workspace/croqtile-tuner/monitor/.env
 Environment=CROQTUNER_PROJECT_DIR=/home/albert/workspace/croqtile-tuner
 Environment=CROQTUNER_TUNING_DIR=/home/albert/workspace/croqtile-tuner/tuning
 Environment=CROQTUNER_SKILLS_DIR=/home/albert/workspace/croqtile-tuner/.claude/skills
+Environment=CROQTUNER_SCHEDULER_ENABLED=false
+Environment=CROQTUNER_READ_ONLY_MODE=true
 ExecStart=/home/albert/workspace/croqtile-tuner/monitor/backend/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8642
 Restart=always
 RestartSec=3

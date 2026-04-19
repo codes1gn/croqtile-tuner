@@ -35,14 +35,23 @@ logger = logging.getLogger("croqtuner.artifact_scanner")
 
 
 def _is_baseline_row(kernel: str | None, bottleneck: str | None) -> bool:
-    """Detect whether a results.tsv row is the external baseline (cuBLAS/torch)."""
+    """Detect whether a results.tsv row is the external baseline (cuBLAS/torch).
+    
+    Only iter000 rows with explicit baseline markers should qualify. Custom kernels
+    with "baseline" in their name (e.g. iter001_baseline_1p1c) are NOT baselines.
+    """
     bn = (bottleneck or "").lower()
     k = (kernel or "").lower()
-    return (
-        bn in ("baseline", "baseline_profile")
-        or "baseline" in k
-        or k.startswith("framework/")
-    )
+    # Check bottleneck column for explicit baseline marker
+    if bn in ("baseline", "baseline_profile"):
+        return True
+    # Check for framework reference kernels (not custom iter-named kernels)
+    if k.startswith("framework/"):
+        return True
+    # iter000_cublas or iter000_torch style baseline kernels
+    if k.startswith("iter000") and any(x in k for x in ("cublas", "torch", "baseline")):
+        return True
+    return False
 
 
 _SHAPE_KEY_RE = re.compile(
@@ -110,6 +119,31 @@ def _compound_key(gpu: str, dsl: str, shape_key: str, model: str | None) -> str:
     if model:
         return f"{gpu}/{dsl}/{shape_key}/{model}"
     return f"{gpu}/{dsl}/{shape_key}"
+
+
+_RECENT_ACTIVITY_THRESHOLD_SEC = 300  # 5 minutes
+
+
+def _has_recent_activity(info: dict, threshold_sec: float = _RECENT_ACTIVITY_THRESHOLD_SEC) -> bool:
+    """Check whether a task's disk artifacts were modified recently.
+
+    Looks at activity.jsonl, results.tsv, and checkpoint mtime.  If any was
+    modified within *threshold_sec* of now, the task is considered actively
+    running (even if no local agent process can be detected, e.g. Cursor cloud
+    agents).
+    """
+    import time
+    now = time.time()
+    for key in ("activity_log", "results_tsv", "checkpoint"):
+        p = info.get(key)
+        if p is None:
+            continue
+        try:
+            if now - p.stat().st_mtime < threshold_sec:
+                return True
+        except OSError:
+            continue
+    return False
 
 
 def discover_shape_keys() -> dict[str, dict]:
@@ -197,6 +231,21 @@ def discover_shape_keys() -> dict[str, dict]:
                             entry = found.setdefault(compound, {"dsl": dsl, "device": device, "shape_key": key_dir.name, "model": model})
                             entry["has_srcs"] = True
 
+            memory_dir = dsl_dir / "memory"
+            if memory_dir.exists():
+                for key_dir in memory_dir.iterdir():
+                    if not key_dir.is_dir():
+                        continue
+                    for model_dir in key_dir.iterdir():
+                        if not model_dir.is_dir():
+                            continue
+                        activity_file = model_dir / "activity.jsonl"
+                        if activity_file.exists():
+                            model = _normalize_model(model_dir.name)
+                            compound = _compound_key(gpu_dir.name, dsl, key_dir.name, model)
+                            entry = found.setdefault(compound, {"dsl": dsl, "device": device, "shape_key": key_dir.name, "model": model})
+                            entry["activity_log"] = activity_file
+
             baseline_dir = dsl_dir / "baseline"
             if baseline_dir.exists():
                 for key_dir in baseline_dir.iterdir():
@@ -247,13 +296,39 @@ def _parse_shape_identity(shape_key: str) -> tuple[str, str]:
     return (parsed["op_type"], f"{parsed['m']}x{parsed['n']}x{parsed['k']}")
 
 
+_ITER_NUMBER_RE = re.compile(r"iter(\d{3,})")
+
+
+def parse_checkpoint_iteration(cp: dict) -> int | None:
+    """Extract iteration number from a croq-checkpoint-v1 dict.
+
+    Handles both legacy fields (``iteration``, ``current_iter`` as int) and
+    the current ``iter`` field which is a tag string like ``"iter014_tk32_swiz64"``.
+    """
+    for key in ("iteration", "current_iter"):
+        val = cp.get(key)
+        if val is not None:
+            try:
+                return int(val)
+            except (TypeError, ValueError):
+                pass
+
+    iter_tag = cp.get("iter")
+    if isinstance(iter_tag, str):
+        m = _ITER_NUMBER_RE.search(iter_tag)
+        if m:
+            return int(m.group(1))
+
+    return None
+
+
 def _read_checkpoint_metrics(cp_path: Path) -> dict:
     metrics: dict = {}
     try:
         cp = json.loads(cp_path.read_text())
-        it = cp.get("iteration") or cp.get("current_iter")
+        it = parse_checkpoint_iteration(cp)
         if it is not None:
-            metrics["current_iteration"] = int(it)
+            metrics["current_iteration"] = it
         best = cp.get("current_best_tflops") or cp.get("best_tflops")
         if best not in (None, ""):
             metrics["best_tflops"] = float(best)
@@ -471,11 +546,6 @@ async def scan_and_create_tasks(session: AsyncSession) -> int:
         disk_mode = info.get("mode")
         disk_status = info.get("status")
 
-        # Skip cancelled artifacts — don't create new tasks from dead entries
-        if disk_status == "cancelled":
-            logger.debug("Skipping cancelled artifact: %s", compound_key)
-            continue
-
         # Match: first by task_id, then by task_uid, then by compound key, then by bare shape+dsl
         task: Task | None = None
         disk_task_id = info.get("task_id")
@@ -522,9 +592,22 @@ async def scan_and_create_tasks(session: AsyncSession) -> int:
 
         if task is not None:
             from .artifact_config import sync_artifact_to_task
-            if await sync_artifact_to_task(session, task):
+            recently_active = _has_recent_activity(info)
+            if await sync_artifact_to_task(session, task, skip_status=recently_active):
                 await session.flush()
+            # Override stale config status when disk artifacts show recent activity.
+            # Handles Cursor cloud agents and other non-local agent processes that
+            # can't be detected via ps.
             updated = False
+            if task.status in ("waiting", "cancelled", "pending") and recently_active:
+                logger.info(
+                    "Recent disk activity detected for %s — overriding status %s → running",
+                    compound_key, task.status,
+                )
+                task.status = "running"
+                task.started_at = task.started_at or datetime.now(timezone.utc)
+                updated = True
+                changed = True
             new_iter = metrics.get("current_iteration", 0)
             old_iter = task.current_iteration or 0
 
@@ -646,8 +729,9 @@ async def scan_and_create_tasks(session: AsyncSession) -> int:
 async def _sync_agent_status(session: AsyncSession) -> None:
     """Match detected agents to tasks and update status/agent_type/model.
 
-    Also detects tasks stuck in 'running' when no agent is alive for them,
-    transitioning them to 'completed' or 'pending' as appropriate.
+    - When an agent is detected for a 'pending' task, transitions to 'running'.
+    - When a 'running' task has no live agent and is not in the scheduler, transitions to 'waiting'.
+    - 'waiting', 'completed', and 'cancelled' tasks are NOT auto-woken — they require explicit user action.
     """
     from .scheduler import scheduler
 
@@ -700,7 +784,10 @@ async def _sync_agent_status(session: AsyncSession) -> None:
             task.mode = mode
             updated = True
 
-        if task.status in ("pending", "cancelled", "completed"):
+        # Only transition pending tasks to running when an agent is detected.
+        # "waiting" tasks are paused and should NOT automatically resume.
+        # "completed" and "cancelled" tasks require explicit user action (resume/retry).
+        if task.status == "pending":
             task.status = "running"
             task.started_at = task.started_at or datetime.now(timezone.utc)
             updated = True
@@ -712,6 +799,9 @@ async def _sync_agent_status(session: AsyncSession) -> None:
 
     # Transition tasks stuck in "running" when no agent is alive for them
     # and the scheduler doesn't have an active worker for them.
+    # But keep them running if their disk artifacts show recent activity
+    # (e.g. Cursor cloud agents that have no local process).
+    discovered = discover_shape_keys()
     for task in tasks:
         if task.status != "running":
             continue
@@ -720,18 +810,17 @@ async def _sync_agent_status(session: AsyncSession) -> None:
         if task.id in scheduler.active_task_ids:
             continue
 
+        disk_info = discovered.get(task.shape_key, {})
+        if _has_recent_activity(disk_info):
+            continue
+
         old_status = task.status
-        if task.current_iteration >= task.max_iterations:
-            task.status = "completed"
-            task.completed_at = task.completed_at or datetime.now(timezone.utc)
-        else:
-            task.status = "completed"
-            task.completed_at = task.completed_at or datetime.now(timezone.utc)
+        task.status = "waiting"
 
         task.updated_at = datetime.now(timezone.utc)
         logger.info(
-            "Agent sync: %s %s → %s (no agent detected, not in scheduler)",
-            task.shape_key, old_status, task.status,
+            "Agent sync: %s %s → waiting (no agent detected, no recent disk activity, not in scheduler)",
+            task.shape_key, old_status,
         )
         await event_bus.publish("task_update", task.to_dict())
         from .artifact_config import sync_task_to_artifact

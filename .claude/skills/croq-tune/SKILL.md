@@ -10,11 +10,35 @@ argument-hint: <dsl: croqtile|cuda|cute|triton|tilelang|helion|cutile> <dtype: f
 
 ## Main Loop
 
-1. Parse `dsl`, `dtype`, optional `shape_key`, `--model`, `--task-uid`
+1. Parse `dsl`, `dtype`, optional `shape_key`, `--model`, `--task-uid`, and any user-stated invocation round budget
 2. Startup/resume decision (see "Resume Contract" below)
 3. Load `croq-dsl-<dsl>` for DSL-specific commands (BUILD, RUN, PROFILE, IDEA menu)
 4. Run `PREPARATION_ONCE` for this `(dsl, operator, dtype, shape_key)`
 5. Repeat round loop until a valid stop condition is met
+
+## Invocation Run Budget
+
+Treat each tuning launch as a long-running execution lease, not a single-answer task.
+
+- Default target: `50` completed STORE rounds per invocation.
+- If the user explicitly asks for a larger round count, use that larger value.
+- If the user asks to run continuously or indefinitely, treat `50` as the minimum floor before completion is eligible.
+- A round counts only after the full pipeline completes and `store_round.sh` succeeds.
+- Baseline setup, discovery, one KEEP, one DISCARD, one commit, one reinforce, or one profiling pass does not mean the invocation is done.
+
+Track the launch-local budget as follows:
+
+- Fresh start: `start_round = 0`
+- Resume: `start_round = last_round` from `resume_state.sh` before new work
+- `completed_this_invocation = current_stored_round - start_round`
+
+Do not conclude the invocation until `completed_this_invocation >= target_completed_rounds`, unless a valid non-local-minimum stop condition fires.
+
+To avoid premature local-minimum exits, escalate before the DISCARD ceiling:
+
+- At 7 consecutive DISCARDs on the same active base: force baseline/custom SASS diff plus fresh baseline reprofiling.
+- At 8-9 consecutive DISCARDs: force a structural reset or switch to the other active base; do not spend those rounds on minor macro sweeps.
+- Do not drift into the local-minimum stop condition accidentally because of weak iteration planning.
 
 **CRITICAL: Use the `shape_key` EXACTLY as given in the prompt.**
 If the prompt says `tune cuda f16fp32 matmul_fp16fp32_16384x16384x512`, the shape_key is
@@ -36,6 +60,7 @@ database. Without it, the monitor may create phantom duplicate tasks.
 5. STORE executes on both KEEP and DISCARD
 6. **NO LIBRARY CALLS IN TUNING ITERATIONS** — see "Pure Implementation Rule"
 7. **NEVER ASK THE HUMAN QUESTIONS** — Make all decisions autonomously. If you encounter ambiguity, choose the most reasonable default and proceed. Never use `AskQuestion`, `question`, or any interactive prompt tool during tuning execution.
+8. Do not treat one successful round, one commit, or one profiling pass as completion; continue until the invocation run budget is satisfied.
 
 ---
 
@@ -693,12 +718,14 @@ For framework-specific payload templates (Cursor TodoWrite, OpenCode, Copilot), 
 
 Once the experiment loop has begun, do NOT pause to ask the human. Do NOT ask "should I keep going?". The human might be asleep. You are autonomous. If you run out of ideas, think harder — read papers, re-read kernel code, try combining near-misses, try radical changes. The loop runs until interrupted.
 
+Unless the user explicitly requested a smaller run, a single launch should normally complete at least `50` STORE-finished rounds before stopping for success/completion.
+
 ## Valid Stop Conditions Only
 
 1. User explicitly interrupts
 2. All scheduled shapes are done
 3. Systemic GPU failure blocks progress after remediation attempts
-4. 10 consecutive discarded ideas (stuck in local minimum — report to user)
+4. 10 consecutive discarded ideas after the invocation has already completed at least `target_completed_rounds`, or after the mandatory 7/8/9 DISCARD escalation path has already been exhausted without opening a new viable direction (stuck in local minimum — report to user)
 
 ---
 

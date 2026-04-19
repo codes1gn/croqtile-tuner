@@ -6,7 +6,7 @@ interface Props {
   availableVariants: string[];
   defaultModel: string;
   defaultVariant: string;
-  useProxy: boolean;
+  useProxy?: boolean;
   onCreated: () => void;
   onCancel: () => void;
   onRefreshModels?: () => Promise<string[]>;
@@ -57,7 +57,7 @@ const OUTPUT_DTYPES = [
   { value: "bf16", label: "BF16" },
 ];
 
-export function AddTaskForm({ availableModels, availableVariants, defaultModel, defaultVariant, useProxy, onCreated, onCancel, onRefreshModels, onToggleProxy }: Props) {
+export function AddTaskForm({ availableModels, availableVariants, defaultModel, defaultVariant, useProxy = false, onCreated, onCancel, onRefreshModels, onToggleProxy }: Props) {
   const [opType, setOpType] = useState("gemm_sp");
   const [customOp, setCustomOp] = useState("");
   const [inputDtype, setInputDtype] = useState("e4m3");

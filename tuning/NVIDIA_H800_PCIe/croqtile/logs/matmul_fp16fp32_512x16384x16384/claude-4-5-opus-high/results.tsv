@@ -1,0 +1,11 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter131	iter131_wn128_s3_fastmath	284.54	KEEP	compute_bound	Add --use_fast_math nvcc flag + choreo --native-f16 on iter129 base
+iter132	iter132_persistent_ws	119.56	DISCARD	compute_bound	STRUCTURAL: Persistent kernel with atomic work-stealing loop. Barrier re-init be
+iter133	iter133_wn128_s3_reg96	178.50	DISCARD	compute_bound	STRUCTURAL: WARP_N=64 STAGES=4 launch_bounds(256,2). Smaller tile, 2x more grid 
+iter134	iter134_wn128_s3_l2promo	284.06	DISCARD	compute_bound	MACRO: L2 promotion (L2_128B) for input TMA loads on iter131 base. No improvemen
+iter135	iter135_pingpong_1p2c	283.83	DISCARD	compute_bound	MACRO: setmaxnreg.dec 40 for producer on iter131 base. Ignored by ptxas with lau
+iter136	iter136_wn128_tk32_s2_3cta	0.0	DISCARD	compute_bound	STRUCTURAL: WARP_N=128 TILE_K=32 STAGES=2 launch_bounds(256,3). BUILD FAIL: 64x1
+iter137	iter137_wn128_s3_relaxwait	259.06	DISCARD	compute_bound	MACRO: Relaxed warpgroup_wait<1> with deferred empty signal. Potential SMEM race
+iter138	iter138_wn128_tk32_s3_2cta	186.93	DISCARD	compute_bound	STRUCTURAL: WARP_N=128 TILE_K=32 STAGES=3 launch_bounds(256,2). Halved K-tile do
+iter139	iter139_wn128_s3_tileswiz	223.71	DISCARD	compute_bound	MACRO: 1D grid with swizzled tile mapping (group=8) for L2 reuse. Worsened local
+iter140	iter140_true_1p2c_n64	195.70	DISCARD	compute_bound	STRUCTURAL: True 1p2c with 3 warp groups (384 threads). 2 consumers each with WA

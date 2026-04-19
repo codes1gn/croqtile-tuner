@@ -110,10 +110,13 @@ async def sync_task_to_artifact(session: AsyncSession, task: Task) -> bool:
     return write_artifact_config(task.shape_key, config)
 
 
-async def sync_artifact_to_task(session: AsyncSession, task: Task) -> bool:
+async def sync_artifact_to_task(session: AsyncSession, task: Task, *, skip_status: bool = False) -> bool:
     """Read artifact config and update DB task + sessions if the artifact has data the DB lacks.
 
     Called during startup seed or scanner when a task exists in artifacts but DB is fresh.
+    When *skip_status* is True, the status field is not restored from the config file
+    (used when the caller has detected recent disk activity indicating the task is
+    actively running and should not inherit a stale status).
     Returns True if any DB changes were made.
     """
     config = read_artifact_config(task.shape_key)
@@ -143,8 +146,10 @@ async def sync_artifact_to_task(session: AsyncSession, task: Task) -> bool:
     # Restore status/budget from artifact so tasks survive DB resets.
     # "running" is NOT restored -- the agent process died with the backend.
     # It reverts to "pending" so the scheduler can re-dispatch if budget > 0.
+    # When skip_status is True, don't restore status — the caller knows the task
+    # is actively running from recent disk activity.
     cfg_status = config.get("status")
-    if cfg_status and task.status == "pending" and cfg_status != "running":
+    if not skip_status and cfg_status and task.status == "pending" and cfg_status != "running":
         task.status = cfg_status
         changed = True
     if config.get("request_budget") is not None:

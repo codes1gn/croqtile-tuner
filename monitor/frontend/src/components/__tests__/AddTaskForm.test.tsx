@@ -40,7 +40,7 @@ describe("AddTaskForm", () => {
   it("renders DSL and platform dropdowns with defaults", () => {
     render(<AddTaskForm {...defaultProps} />);
     expect(screen.getByDisplayValue("Croqtile")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("OpenCode")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("OpenCode (auto-dispatched via opencode CLI)")).toBeInTheDocument();
   });
 
   it("shows validation error for M < 128", async () => {

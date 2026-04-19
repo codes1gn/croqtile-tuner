@@ -11,22 +11,28 @@ import { AgentMonitorPanel } from "./components/AgentMonitorPanel";
 export default function App() {
   const [tasks, setTasks] = useState<TaskData[]>([]);
   const [health, setHealth] = useState<HealthData | null>(null);
+  const [tasksError, setTasksError] = useState<string | null>(null);
+  const [healthError, setHealthError] = useState<string | null>(null);
   const [showAdd, setShowAdd] = useState(false);
   const [lastEvent, setLastEvent] = useState<SSEEvent | null>(null);
 
   const loadTasks = useCallback(async () => {
     try {
       setTasks(await api.listTasks());
-    } catch {
-      // silently retry on next interval
+      setTasksError(null);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Failed to load task list";
+      setTasksError(msg);
     }
   }, []);
 
   const loadHealth = useCallback(async () => {
     try {
       setHealth(await api.getHealth());
-    } catch {
-      // silently retry on next interval
+      setHealthError(null);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Failed to load system status";
+      setHealthError(msg);
     }
   }, []);
 
@@ -74,14 +80,22 @@ export default function App() {
           </div>
           <button
             onClick={() => setShowAdd(true)}
-            className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium transition"
+            disabled={health?.read_only_mode}
+            className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-40"
           >
-            + Add Task
+            {health?.read_only_mode ? "Read-only" : "+ Add Task"}
           </button>
         </div>
       </header>
 
       <main className="max-w-screen-2xl mx-auto px-6 py-6">
+        {(tasksError || healthError) && (
+          <div className="mb-4 rounded-lg border border-amber-700 bg-amber-950/30 px-4 py-3 text-sm text-amber-200">
+            <div className="font-semibold">Monitor data is partially unavailable</div>
+            {tasksError && <div className="mt-1">Tasks: {tasksError}</div>}
+            {healthError && <div className="mt-1">Health: {healthError}</div>}
+          </div>
+        )}
         <div className="mb-6">
           <SystemStatusPanel health={health} onRefresh={loadHealth} />
         </div>
@@ -94,7 +108,7 @@ export default function App() {
         </Routes>
       </main>
 
-      {showAdd && (
+      {showAdd && !health?.read_only_mode && (
         <AddTaskForm
           availableModels={health?.available_models ?? []}
           availableVariants={health?.available_variants ?? [""]}

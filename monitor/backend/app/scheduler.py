@@ -43,6 +43,10 @@ class Scheduler:
         return list(self._active_workers.keys())
 
     async def start(self) -> None:
+        if not settings.scheduler_enabled:
+            self.running = False
+            logger.warning("Scheduler start skipped because CROQTUNER_SCHEDULER_ENABLED=false")
+            return
         self.running = True
         await self._recover_stale_tasks()
         self._task = asyncio.create_task(self._loop())
@@ -156,6 +160,8 @@ class Scheduler:
             logger.exception("Artifact scan error")
 
     async def _try_dispatch(self) -> None:
+        if not settings.scheduler_enabled:
+            return
         async with async_session() as session:
             auto_wake = await get_auto_wake_enabled(session)
 
@@ -334,10 +340,8 @@ class Scheduler:
 
             if db_task.status == "cancelled":
                 pass
-            elif db_task.current_iteration >= db_task.max_iterations:
-                db_task.status = "completed"
-                db_task.completed_at = datetime.now(timezone.utc)
-                logger.info("Task %d completed (%d/%d)", task_id, db_task.current_iteration, db_task.max_iterations)
+            # NOTE: Do NOT auto-complete based on max_iterations - tuning should continue indefinitely
+            # until user explicitly stops. max_iterations is just a UI hint, not a hard limit.
             elif exit_code == -2:
                 db_task.status = "waiting"
                 db_task.error_message = (

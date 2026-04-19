@@ -1,0 +1,538 @@
+// REQUIRES: TARGET-SM_90
+// RUN: choreo -gs -t cute -arch=sm_90a %s -o %s.cute.result && CHOREO_DISABLE_TIMING=1 CUDA_VISIBLE_DEVICES=1 bash %s.cute.result --execute | FileCheck --match-full-lines %s && rm -f %s.cute.result
+
+#include <algorithm>
+#include <cmath>
+#include <cstdint>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
+#include <vector>
+
+#define FUSED_MOE_DEFAULT_M 128
+#define FUSED_MOE_DEFAULT_N 512
+#define FUSED_MOE_DEFAULT_K 128
+#define FUSED_MOE_DEFAULT_NUM_EXPERTS 64
+#define FUSED_MOE_TOPK 2
+#define FUSED_MOE_RENORMALIZE true
+#define FUSED_MOE_SOFTCAP 2.5f
+
+#define FUSED_MOE_TILE_N 128
+#define FUSED_MOE_TILE_K 64
+#define FUSED_MOE_ROUTE_THREADS 32
+#define FUSED_MOE_ROUTE_VPT 2
+
+#if FUSED_MOE_DEFAULT_N % FUSED_MOE_TILE_N != 0
+#error "FUSED_MOE_DEFAULT_N must be divisible by FUSED_MOE_TILE_N"
+#endif
+
+#if FUSED_MOE_DEFAULT_K % FUSED_MOE_TILE_K != 0
+#error "FUSED_MOE_DEFAULT_K must be divisible by FUSED_MOE_TILE_K"
+#endif
+
+#if FUSED_MOE_DEFAULT_NUM_EXPERTS % FUSED_MOE_ROUTE_THREADS != 0
+#error "FUSED_MOE_DEFAULT_NUM_EXPERTS must be divisible by FUSED_MOE_ROUTE_THREADS"
+#endif
+
+#if FUSED_MOE_DEFAULT_NUM_EXPERTS != FUSED_MOE_ROUTE_THREADS * FUSED_MOE_ROUTE_VPT
+#error "Route decomposition must cover all experts"
+#endif
+
+template <typename T>
+__device__ __forceinline__ T SHFL_XOR(T var, int lane_mask, int width) {
+  return __shfl_xor_sync(uint32_t(-1), var, lane_mask, width);
+}
+
+struct TopkSoftmaxResult {
+  std::vector<float> weights;
+  std::vector<int32_t> indices;
+};
+
+static TopkSoftmaxResult topkSoftmaxCpuReference(const float* gating_output,
+                                                 int num_tokens,
+                                                 int num_experts, int topk,
+                                                 bool renormalize,
+                                                 float moe_softcapping,
+                                                 const float* correction_bias) {
+  TopkSoftmaxResult result;
+  result.weights.resize(static_cast<size_t>(num_tokens) * topk);
+  result.indices.resize(static_cast<size_t>(num_tokens) * topk);
+
+  std::vector<float> probs(static_cast<size_t>(num_experts));
+  for (int token = 0; token < num_tokens; ++token) {
+    float row_max = 0.0f;
+    for (int expert = 0; expert < num_experts; ++expert) {
+      float value = gating_output[token * num_experts + expert];
+      if (moe_softcapping != 0.0f) {
+        value = std::tanh(value / moe_softcapping) * moe_softcapping;
+      }
+      if (correction_bias != nullptr) {
+        value += correction_bias[expert];
+      }
+      probs[expert] = value;
+      if (expert == 0 || value > row_max) row_max = value;
+    }
+
+    float row_sum = 0.0f;
+    for (int expert = 0; expert < num_experts; ++expert) {
+      probs[expert] = std::exp(probs[expert] - row_max);
+      row_sum += probs[expert];
+    }
+
+    const float inv_sum = row_sum > 0.0f ? 1.0f / row_sum : 0.0f;
+    for (int expert = 0; expert < num_experts; ++expert) {
+      probs[expert] *= inv_sum;
+    }
+
+    float selected_sum = 0.0f;
+    for (int selected = 0; selected < topk; ++selected) {
+      int best_idx = 0;
+      float best_val = probs[0];
+      for (int expert = 1; expert < num_experts; ++expert) {
+        const float val = probs[expert];
+        if (val > best_val || (val == best_val && expert < best_idx)) {
+          best_val = val;
+          best_idx = expert;
+        }
+      }
+      result.weights[token * topk + selected] = best_val;
+      result.indices[token * topk + selected] = best_idx;
+      selected_sum += best_val;
+      if (selected + 1 < topk) {
+        probs[best_idx] = -1.0f;
+      }
+    }
+
+    if (renormalize && selected_sum > 0.0f) {
+      const float inv_selected_sum = 1.0f / selected_sum;
+      for (int selected = 0; selected < topk; ++selected) {
+        result.weights[token * topk + selected] *= inv_selected_sum;
+      }
+    }
+  }
+
+  return result;
+}
+
+static void fusedMoeCpuReference(const float* input, const float* gating_output,
+                                 const float* expert_weights,
+                                 const float* correction_bias, int num_tokens,
+                                 int n_dim, int k_dim, int num_experts,
+                                 int topk, bool renormalize,
+                                 float moe_softcapping,
+                                 int32_t* ref_topk_indices,
+                                 float* ref_topk_weights,
+                                 float* ref_output) {
+  TopkSoftmaxResult routing =
+      topkSoftmaxCpuReference(gating_output, num_tokens, num_experts, topk,
+                              renormalize, moe_softcapping, correction_bias);
+
+  for (int token = 0; token < num_tokens; ++token) {
+    for (int selected = 0; selected < topk; ++selected) {
+      ref_topk_indices[token * topk + selected] =
+          routing.indices[token * topk + selected];
+      ref_topk_weights[token * topk + selected] =
+          routing.weights[token * topk + selected];
+    }
+  }
+
+  for (int token = 0; token < num_tokens; ++token) {
+    for (int out_col = 0; out_col < n_dim; ++out_col) {
+      float acc = 0.0f;
+      for (int selected = 0; selected < topk; ++selected) {
+        const int expert = routing.indices[token * topk + selected];
+        const float route_weight = routing.weights[token * topk + selected];
+        float dot = 0.0f;
+        for (int kk = 0; kk < k_dim; ++kk) {
+          const size_t w_offset =
+              (static_cast<size_t>(expert) * n_dim + out_col) * k_dim + kk;
+          dot += input[token * k_dim + kk] * expert_weights[w_offset];
+        }
+        acc += route_weight * dot;
+      }
+      ref_output[token * n_dim + out_col] = acc;
+    }
+  }
+}
+
+static bool nearlyEqual(float lhs, float rhs, float atol = 1e-5f,
+                        float rtol = 1e-5f) {
+  const float diff = std::abs(lhs - rhs);
+  const float scale = std::max(std::abs(lhs), std::abs(rhs));
+  return diff <= atol + rtol * scale;
+}
+
+__co__ void fused_moe_route(global f32 [M, NUM_EXPERTS] gating_output,
+                            global f32 [NUM_EXPERTS] correction_bias,
+                            global s32 [M, FUSED_MOE_TOPK] topk_ids,
+                            global f32 [M, FUSED_MOE_TOPK] topk_weights) {
+  parallel token by M : block {
+    parallel tid by FUSED_MOE_ROUTE_THREADS : thread {
+      probs_chunk = dma.copy gating_output.subspan(1, FUSED_MOE_ROUTE_VPT).at(token, tid) => local;
+      f32 thread_max = probs_chunk.data.at(0, 0);
+      foreach v in [FUSED_MOE_ROUTE_VPT] {
+        f32 logit = probs_chunk.data.at(0, v);
+        if (FUSED_MOE_SOFTCAP != 0.0f) {
+          logit = __tanh(logit / FUSED_MOE_SOFTCAP) * FUSED_MOE_SOFTCAP;
+        }
+        logit = logit + correction_bias.at(tid # v);
+        probs_chunk.data.at(0, v) = logit;
+        if (v == 0 || logit > thread_max) thread_max = logit;
+      }
+
+      mutable mask = FUSED_MOE_ROUTE_THREADS >> 1;
+      foreach idx in 10 {
+        f32 other_tmax = call SHFL_XOR(thread_max, mask, FUSED_MOE_ROUTE_THREADS);
+        if (other_tmax > thread_max) thread_max = other_tmax;
+        mask = mask >> 1;
+        if (mask == 0) break;
+      }
+
+      f32 row_sum = 0.0f;
+      foreach v in [FUSED_MOE_ROUTE_VPT] {
+        f32 prob = __exp(probs_chunk.data.at(0, v) - thread_max);
+        probs_chunk.data.at(0, v) = prob;
+        row_sum += prob;
+      }
+
+      mask = FUSED_MOE_ROUTE_THREADS >> 1;
+      foreach idx in 10 {
+        f32 temp = call SHFL_XOR(row_sum, mask, FUSED_MOE_ROUTE_THREADS);
+        row_sum += temp;
+        mask = mask >> 1;
+        if (mask == 0) break;
+      }
+
+      f32 inv_sum = 0.0f;
+      if (row_sum > 0.0f) inv_sum = 1.0f / row_sum;
+      foreach v in [FUSED_MOE_ROUTE_VPT]
+        probs_chunk.data.at(0, v) = probs_chunk.data.at(0, v) * inv_sum;
+
+      mutable f32 selected_sum = 0.0f;
+      foreach selected in [FUSED_MOE_TOPK] {
+        f32 max_val = probs_chunk.data.at(0, 0);
+        mutable s32 expert = tid * FUSED_MOE_ROUTE_VPT;
+        foreach v in [FUSED_MOE_ROUTE_VPT] {
+          f32 val = probs_chunk.data.at(0, v);
+          s32 expert_idx = tid # v;
+          if (val > max_val || (val == max_val && expert_idx < expert)) {
+            max_val = val;
+            expert = expert_idx;
+          }
+        }
+
+        mask = FUSED_MOE_ROUTE_THREADS >> 1;
+        foreach idx in 10 {
+          f32 other_max = call SHFL_XOR(max_val, mask, FUSED_MOE_ROUTE_THREADS);
+          s32 other_expert = call SHFL_XOR(expert, mask, FUSED_MOE_ROUTE_THREADS);
+          if (other_max > max_val ||
+              (other_max == max_val && other_expert < expert)) {
+            max_val = other_max;
+            expert = other_expert;
+          }
+          mask = mask >> 1;
+          if (mask == 0) break;
+        }
+
+        inthreads (tid == 0) {
+          topk_ids.at(token, selected) = expert;
+          topk_weights.at(token, selected) = max_val;
+          selected_sum += max_val;
+        }
+
+        if (selected + 1 < FUSED_MOE_TOPK) {
+          if (expert / FUSED_MOE_ROUTE_VPT == tid) {
+            probs_chunk.data.at(0, expert % FUSED_MOE_ROUTE_VPT) = -1.0f;
+          }
+        }
+      }
+
+      if (FUSED_MOE_RENORMALIZE) {
+        inthreads (tid == 0) {
+          if (selected_sum > 0.0f) {
+            f32 inv_selected_sum = 1.0f / selected_sum;
+            foreach selected in [FUSED_MOE_TOPK]
+              topk_weights.at(token, selected) =
+                  topk_weights.at(token, selected) * inv_selected_sum;
+          }
+        }
+      }
+    }
+  }
+}
+
+__co__ void fused_moe_gemm_blocked(global f32 [M, K] input,
+                                   global f32 [NUM_EXPERTS, N, K]
+                                       expert_weights,
+                                   global s32 [M, FUSED_MOE_TOPK] topk_ids,
+                                   global f32 [M, FUSED_MOE_TOPK] topk_weights,
+                                   global f32 [M, N] output) {
+  parallel {token, block_n} by [M, cdiv(N, FUSED_MOE_TILE_N)] : block {
+    parallel out_lane by FUSED_MOE_TILE_N : thread {
+      local s32 [1] expert_idx{0};
+      local f32 [1] route_weight{0.0f};
+      f32 acc = 0.0f;
+      foreach selected in [FUSED_MOE_TOPK] {
+        expert_idx.at(0) = topk_ids.at(token, selected);
+        route_weight.at(0) = topk_weights.at(token, selected);
+        foreach iv_k in [cdiv(K, FUSED_MOE_TILE_K)] {
+          input_tile =
+              dma.copy input.subspan(1, FUSED_MOE_TILE_K).at(token, iv_k) =>
+              local;
+          weight_tile = dma.copy expert_weights
+                            .subspan(1, 1, FUSED_MOE_TILE_K)
+                            .at(expert_idx.at(0), block_n # out_lane, iv_k) =>
+                        local;
+          foreach kk in [FUSED_MOE_TILE_K]
+            acc = acc + route_weight.at(0) * input_tile.data.at(0, kk) *
+                            weight_tile.data.at(0, 0, kk);
+        }
+      }
+      output.at(token, block_n # out_lane) = acc;
+    }
+  }
+}
+
+int main(int argc, char** argv) {
+  bool enable_timing = true;
+  auto is_disable_timing_arg = [](const char* s) {
+    const char* t = "--disable-timing";
+    int i = 0;
+    while (t[i] != '\0' && s[i] == t[i]) ++i;
+    return t[i] == '\0' && s[i] == '\0';
+  };
+  for (int i = 1; i < argc; ++i) {
+    if (is_disable_timing_arg(argv[i])) {
+      enable_timing = false;
+      break;
+    }
+  }
+
+  const char* timing_env = std::getenv("CHOREO_DISABLE_TIMING");
+  if (timing_env && timing_env[0] == '1' && timing_env[1] == '\0') {
+    enable_timing = false;
+  }
+
+  size_t M = FUSED_MOE_DEFAULT_M;
+  size_t N = FUSED_MOE_DEFAULT_N;
+  size_t K = FUSED_MOE_DEFAULT_K;
+  size_t num_experts = FUSED_MOE_DEFAULT_NUM_EXPERTS;
+
+  choreo::choreo_assert((N % FUSED_MOE_TILE_N) == 0,
+                        "N must be divisible by FUSED_MOE_TILE_N.");
+  choreo::choreo_assert((K % FUSED_MOE_TILE_K) == 0,
+                        "K must be divisible by FUSED_MOE_TILE_K.");
+
+  auto input_h = choreo::make_spandata<choreo::f32>(M, K);
+  auto gating_h = choreo::make_spandata<choreo::f32>(M, num_experts);
+  auto expert_weights_h =
+      choreo::make_spandata<choreo::f32>(num_experts, N, K);
+  auto correction_bias_h = choreo::make_spandata<choreo::f32>(num_experts);
+  auto topk_ids_h = choreo::make_spandata<choreo::s32>(M, FUSED_MOE_TOPK);
+  auto topk_weights_h = choreo::make_spandata<choreo::f32>(M, FUSED_MOE_TOPK);
+  auto output_h = choreo::make_spandata<choreo::f32>(M, N);
+
+  for (size_t token = 0; token < M; ++token) {
+    for (size_t kk = 0; kk < K; ++kk) {
+      float pattern =
+          static_cast<float>(((token + 1) * 17 + (kk + 3) * 11) % 41) - 20.0f;
+      input_h[token][kk] = 0.0625f * pattern;
+    }
+  }
+
+  for (size_t token = 0; token < M; ++token) {
+    for (size_t expert = 0; expert < num_experts; ++expert) {
+      float pattern =
+          static_cast<float>(((token + 3) * 19 + (expert + 5) * 7) % 43) -
+          21.0f;
+      gating_h[token][expert] = 0.125f * pattern;
+    }
+  }
+
+  for (size_t expert = 0; expert < num_experts; ++expert) {
+    float pattern = static_cast<float>(((expert + 1) * 5) % 17) - 8.0f;
+    correction_bias_h[expert] = 0.03125f * pattern;
+  }
+
+  for (size_t expert = 0; expert < num_experts; ++expert) {
+    for (size_t out_col = 0; out_col < N; ++out_col) {
+      for (size_t kk = 0; kk < K; ++kk) {
+        float pattern =
+            static_cast<float>(((expert + 1) * 13 + (out_col + 1) * 7 +
+                                (kk + 1) * 5) % 23) -
+            11.0f;
+        expert_weights_h[expert][out_col][kk] = 0.0625f * pattern;
+      }
+    }
+  }
+
+  for (size_t token = 0; token < M; ++token) {
+    for (size_t selected = 0; selected < FUSED_MOE_TOPK; ++selected) {
+      topk_ids_h[token][selected] = -1;
+      topk_weights_h[token][selected] = 0.0f;
+    }
+    for (size_t out_col = 0; out_col < N; ++out_col) {
+      output_h[token][out_col] = 0.0f;
+    }
+  }
+
+  float* input_d = nullptr;
+  float* gating_d = nullptr;
+  float* expert_weights_d = nullptr;
+  float* correction_bias_d = nullptr;
+  int32_t* topk_ids_d = nullptr;
+  float* topk_weights_d = nullptr;
+  float* output_d = nullptr;
+
+  choreo::abend_true(cudaMalloc(&input_d, M * K * sizeof(float)));
+  choreo::abend_true(cudaMalloc(&gating_d, M * num_experts * sizeof(float)));
+  choreo::abend_true(
+      cudaMalloc(&expert_weights_d, num_experts * N * K * sizeof(float)));
+  choreo::abend_true(cudaMalloc(&correction_bias_d, num_experts * sizeof(float)));
+  choreo::abend_true(
+      cudaMalloc(&topk_ids_d, M * FUSED_MOE_TOPK * sizeof(int32_t)));
+  choreo::abend_true(
+      cudaMalloc(&topk_weights_d, M * FUSED_MOE_TOPK * sizeof(float)));
+  choreo::abend_true(cudaMalloc(&output_d, M * N * sizeof(float)));
+
+  choreo::abend_true(cudaMemcpy(input_d, input_h.data(), M * K * sizeof(float),
+                                cudaMemcpyHostToDevice));
+  choreo::abend_true(cudaMemcpy(gating_d, gating_h.data(),
+                                M * num_experts * sizeof(float),
+                                cudaMemcpyHostToDevice));
+  choreo::abend_true(cudaMemcpy(expert_weights_d, expert_weights_h.data(),
+                                num_experts * N * K * sizeof(float),
+                                cudaMemcpyHostToDevice));
+  choreo::abend_true(cudaMemcpy(correction_bias_d, correction_bias_h.data(),
+                                num_experts * sizeof(float),
+                                cudaMemcpyHostToDevice));
+  choreo::abend_true(cudaMemcpy(topk_ids_d, topk_ids_h.data(),
+                                M * FUSED_MOE_TOPK * sizeof(int32_t),
+                                cudaMemcpyHostToDevice));
+  choreo::abend_true(cudaMemcpy(topk_weights_d, topk_weights_h.data(),
+                                M * FUSED_MOE_TOPK * sizeof(float),
+                                cudaMemcpyHostToDevice));
+  choreo::abend_true(cudaMemcpy(output_d, output_h.data(), M * N * sizeof(float),
+                                cudaMemcpyHostToDevice));
+  choreo::abend_true(cudaDeviceSynchronize());
+
+  auto input_d_view = choreo::make_spanview<choreo::f32, 2>(input_d, {M, K});
+  auto gating_d_view =
+      choreo::make_spanview<choreo::f32, 2>(gating_d, {M, num_experts});
+  auto expert_weights_d_view =
+      choreo::make_spanview<choreo::f32, 3>(expert_weights_d,
+                                            {num_experts, N, K});
+  auto correction_bias_d_view =
+      choreo::make_spanview<choreo::f32, 1>(correction_bias_d, {num_experts});
+  auto topk_ids_d_view =
+      choreo::make_spanview<choreo::s32, 2>(topk_ids_d, {M, FUSED_MOE_TOPK});
+  auto topk_weights_d_view =
+      choreo::make_spanview<choreo::f32, 2>(topk_weights_d, {M, FUSED_MOE_TOPK});
+  auto output_d_view = choreo::make_spanview<choreo::f32, 2>(output_d, {M, N});
+
+  auto launch = [&]() {
+    fused_moe_route(gating_d_view, correction_bias_d_view, topk_ids_d_view,
+                    topk_weights_d_view);
+    fused_moe_gemm_blocked(input_d_view, expert_weights_d_view, topk_ids_d_view,
+                           topk_weights_d_view, output_d_view);
+  };
+
+  if (enable_timing) {
+    int warmup = 5;
+    int repeat = 20;
+    const char* warmup_env = std::getenv("CHOREO_TIMING_WARMUP");
+    const char* repeat_env = std::getenv("CHOREO_TIMING_REPEAT");
+    if (warmup_env) {
+      int value = std::atoi(warmup_env);
+      if (value >= 0) warmup = value;
+    }
+    if (repeat_env) {
+      int value = std::atoi(repeat_env);
+      if (value > 0) repeat = value;
+    }
+    choreo::TimerOption topt;
+    topt.warmup = warmup;
+    topt.repeat = repeat;
+    auto avg_ms = choreo::timing(
+        [&]() {
+          launch();
+          cudaDeviceSynchronize();
+        },
+        topt);
+    std::cout << "Timing avg ms: " << avg_ms << "\n";
+  } else {
+    launch();
+    choreo::abend_true(cudaDeviceSynchronize());
+  }
+
+  choreo::abend_true(cudaMemcpy(topk_ids_h.data(), topk_ids_d,
+                                M * FUSED_MOE_TOPK * sizeof(int32_t),
+                                cudaMemcpyDeviceToHost));
+  choreo::abend_true(cudaMemcpy(topk_weights_h.data(), topk_weights_d,
+                                M * FUSED_MOE_TOPK * sizeof(float),
+                                cudaMemcpyDeviceToHost));
+  choreo::abend_true(cudaMemcpy(output_h.data(), output_d, M * N * sizeof(float),
+                                cudaMemcpyDeviceToHost));
+  choreo::abend_true(cudaDeviceSynchronize());
+
+  std::vector<int32_t> ref_topk_ids(M * FUSED_MOE_TOPK);
+  std::vector<float> ref_topk_weights(M * FUSED_MOE_TOPK);
+  std::vector<float> ref_output(M * N);
+
+  fusedMoeCpuReference(input_h.data(), gating_h.data(), expert_weights_h.data(),
+                       correction_bias_h.data(), static_cast<int>(M),
+                       static_cast<int>(N), static_cast<int>(K),
+                       static_cast<int>(num_experts), FUSED_MOE_TOPK,
+                       FUSED_MOE_RENORMALIZE, FUSED_MOE_SOFTCAP,
+                       ref_topk_ids.data(), ref_topk_weights.data(),
+                       ref_output.data());
+
+  for (size_t token = 0; token < M; ++token) {
+    for (size_t selected = 0; selected < FUSED_MOE_TOPK; ++selected) {
+      int32_t got_idx = topk_ids_h[token][selected];
+      int32_t ref_idx = ref_topk_ids[token * FUSED_MOE_TOPK + selected];
+      if (got_idx != ref_idx) {
+        std::cout << "Top-k index mismatch at [" << token << ", " << selected
+                  << "]: got " << got_idx << ", ref " << ref_idx << "\n";
+      }
+      choreo::choreo_assert(got_idx == ref_idx,
+                            "top-k indices are not equal.");
+
+      float got_weight = topk_weights_h[token][selected];
+      float ref_weight = ref_topk_weights[token * FUSED_MOE_TOPK + selected];
+      if (!nearlyEqual(got_weight, ref_weight, 2e-5f, 2e-5f)) {
+        std::cout << "Top-k weight mismatch at [" << token << ", " << selected
+                  << "]: got " << got_weight << ", ref " << ref_weight
+                  << "\n";
+      }
+      choreo::choreo_assert(nearlyEqual(got_weight, ref_weight, 2e-5f, 2e-5f),
+                            "top-k weights are not equal.");
+    }
+  }
+
+  for (size_t token = 0; token < M; ++token) {
+    for (size_t out_col = 0; out_col < N; ++out_col) {
+      float got = output_h[token][out_col];
+      float ref = ref_output[token * N + out_col];
+      if (!nearlyEqual(got, ref, 1e-4f, 1e-4f)) {
+        std::cout << "Output mismatch at [" << token << ", " << out_col
+                  << "]: got " << got << ", ref " << ref << "\n";
+      }
+      choreo::choreo_assert(nearlyEqual(got, ref, 1e-4f, 1e-4f),
+                            "fused moe outputs are not equal.");
+    }
+  }
+
+  choreo::abend_true(cudaFree(input_d));
+  choreo::abend_true(cudaFree(gating_d));
+  choreo::abend_true(cudaFree(expert_weights_d));
+  choreo::abend_true(cudaFree(correction_bias_d));
+  choreo::abend_true(cudaFree(topk_ids_d));
+  choreo::abend_true(cudaFree(topk_weights_d));
+  choreo::abend_true(cudaFree(output_d));
+
+  std::cout << "Test Passed\n" << std::endl;
+  return 0;
+}
+
+// CHECK: Test Passed
