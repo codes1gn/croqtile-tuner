@@ -1,0 +1,2 @@
+{"round": 0, "iter": "iter000", "kernel": "cublas_ref", "tflops": 0.0, "decision": "REFERENCE", "bottleneck": "baseline", "idea": "N/A - no cuBLAS reference for GDN operator", "category": "baseline"}
+{"round": 1, "iter": "iter001", "kernel": "iter001_baseline", "tflops": 0.00866, "decision": "KEEP", "bottleneck": "memory_bound", "idea": "Initial FP16 baseline kernel adapted from bf16 reference", "category": "baseline"}

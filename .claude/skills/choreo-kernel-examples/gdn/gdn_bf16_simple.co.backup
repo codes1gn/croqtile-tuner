@@ -1,0 +1,370 @@
+#ifndef ENABLE_DEBUG
+#define ENABLE_DEBUG 1
+#endif
+
+__cok__ {
+  template <typename T>
+  __device__ __forceinline__ T SHFL_XOR(T var, int lane_mask, int width) {
+    return __shfl_xor_sync(uint32_t(-1), var, lane_mask, width);
+  }
+  template <int BK, int BV, bool USE_QK_L2NORM_IN_KERNEL, bool IS_KDA>
+  __device__ void computation(
+      const choreo::bf16 a_bf16, const choreo::bf16 b_bf16,
+      const choreo::bf16 dt_bias_bf16, const choreo::f32 a_log_f32,
+      const choreo::f32 softplus_beta, const choreo::f32 softplus_threshold,
+      const choreo::f32 scale, choreo::bf16 *__restrict__ q_bf16,
+      choreo::bf16 *__restrict__ k_bf16, choreo::bf16 *__restrict__ v_bf16,
+      choreo::bf16 *__restrict__ o_bf16, choreo::f32 *__restrict__ h) {
+    int tid = threadIdx.x;
+
+    const float a = __bfloat162float(a_bf16);
+    const float b = __bfloat162float(b_bf16);
+    const float dt_bias = __bfloat162float(dt_bias_bf16);
+    const float a_log = a_log_f32;
+    float q[BK];
+    float k[BK];
+
+#pragma unroll
+    for (int i = tid; i < BK; i += 32) {
+      q[i] = __bfloat162float(q_bf16[i]);
+      k[i] = __bfloat162float(k_bf16[i]);
+    }
+    // Each thread holds exactly one v element (BV == warp size == 32)
+    float v_local = __bfloat162float(v_bf16[tid]);
+
+    // Compute g = -exp(A_log) * softplus(a + dt_bias)
+    float x = a + dt_bias;
+    float beta_x = softplus_beta * x;
+    float softplus_x = beta_x < softplus_threshold
+                           ? (1.0 / softplus_beta) * logf(1.0 + expf(beta_x))
+                           : x;
+    float g = -expf(a_log) * softplus_x;
+    float beta = 1.0 / (1.0 + expf(-b));
+
+    if constexpr (USE_QK_L2NORM_IN_KERNEL) {
+      float q_sum = 0.0, k_sum = 0.0;
+#pragma unroll
+      for (int i = tid; i < BK; i += 32) {
+        q_sum = fmaf(q[i], q[i], q_sum);
+        k_sum = fmaf(k[i], k[i], k_sum);
+      }
+#pragma unroll
+      for (int offset = 32 / 2; offset > 0; offset /= 2) {
+        q_sum += SHFL_XOR(q_sum, offset, 32);
+        k_sum += SHFL_XOR(k_sum, offset, 32);
+      }
+      float q_div = rsqrtf(q_sum + 1e-6);
+      float k_div = rsqrtf(k_sum + 1e-6);
+#pragma unroll
+      for (int i = tid; i < BK; i += 32) {
+        q[i] = q[i] * q_div;
+        k[i] = k[i] * k_div;
+      }
+    }
+#pragma unroll
+    for (int i = tid; i < BK; i += 32) {
+      q[i] = q[i] * scale;
+    }
+
+    // Apply gating to hidden state: h *= exp(g)
+    float h_scale = expf(g);
+#pragma unroll
+    for (int i = tid; i < BK; i += 32) {
+#pragma unroll
+      for (int j = 0; j < BV; ++j) {
+        h[i * BV + j] = h[i * BV + j] * h_scale;
+      }
+    }
+
+    // Delta rule: v[j] -= sum_k(h[k,j] * k[k])
+    // Only thread j updates its own v_local for column j
+#pragma unroll
+    for (int j = 0; j < BV; ++j) {
+      float v_sum = 0.0;
+#pragma unroll
+      for (int i = tid; i < BK; i += 32) {
+        v_sum = fmaf(h[i * BV + j], k[i], v_sum);
+      }
+#pragma unroll
+      for (int offset = 32 / 2; offset > 0; offset /= 2) {
+        v_sum += SHFL_XOR(v_sum, offset, 32);
+      }
+      if (j == tid) v_local -= v_sum;
+    }
+
+    // Apply beta gating
+    v_local *= beta;
+
+    // Update hidden state: h[i,j] += k[i] * v[j]
+    // Broadcast v[j] from thread j to all threads via shuffle
+#pragma unroll
+    for (int j = 0; j < BV; ++j) {
+      float vj = __shfl_sync(uint32_t(-1), v_local, j, 32);
+#pragma unroll
+      for (int i = tid; i < BK; i += 32) {
+        h[i * BV + j] += k[i] * vj;
+      }
+    }
+
+    // Compute output: o[j] = sum_k(h[k,j] * q[k])
+#pragma unroll
+    for (int j = 0; j < BV; ++j) {
+      float o_sum = 0.0;
+#pragma unroll
+      for (int i = tid; i < BK; i += 32) {
+        o_sum = fmaf(h[i * BV + j], q[i], o_sum);
+      }
+#pragma unroll
+      for (int offset = 32 / 2; offset > 0; offset /= 2) {
+        o_sum += SHFL_XOR(o_sum, offset, 32);
+      }
+      o_bf16[j] = __float2bfloat16(o_sum);
+    }
+  }
+}
+/*
+ * [###BALDLEE###]cu_seqlens is None: False
+ * [###BALDLEE###]is_kda: False
+ * [###BALDLEE###]q.type torch.bfloat16
+ * [###BALDLEE###]k.type torch.bfloat16
+ * [###BALDLEE###]v.type torch.bfloat16
+ * [###BALDLEE###]a.type torch.bfloat16
+ * [###BALDLEE###]b.type torch.bfloat16
+ * [###BALDLEE###]A_log.type torch.bfloat16
+ * [###BALDLEE###]dt_bias.type torch.bfloat16
+ * [###BALDLEE###]initial_state_indices.type torch.int32
+ * [###BALDLEE###]initial_state_indices.shape torch.Size([1])
+ * [###BALDLEE###]initial_state_source.type torch.float32
+ * [###BALDLEE###]cu_seqlens.type torch.int32
+ * [###BALDLEE###]use_qk_l2norm_in_kernel: True
+ * [###BALDLEE###]initial_state_source is None: False
+ * [###BALDLEE###]B = 1, T = 1
+ * [###BALDLEE###]BK = 128, BV = 32
+ * [###BALDLEE###]cu_seqlens is None: False
+ * [###BALDLEE###]is_kda: False
+ * [###BALDLEE###]o.shape: torch.Size([1, 1, 1, 48, 128]) first dim is NK and it
+ * is elimited here
+ * [###BALDLEE###]o.dtype: torch.bfloat16
+ */
+// clang-format off
+__co__ void fused_sigmoid_gating_delta_rule_update_kernel_bf16_BK128_BV32_UseInitalState_UseQkL2normInKernel(
+  f32 [HV] A_log,
+  bf16 [B, T, HV] a,
+  bf16 [HV] dt_bias,
+  bf16 [B, T, H, K] q,
+  bf16 [B, T, H, K] k,
+  bf16 [B, T, HV, V] v,
+  bf16 [B, T, HV] b,
+  bf16 [B, T, HV, V] & o,
+  f32 [B, HV, K, V] initial_state_source,
+  s32 [B] initial_state_indices,
+  s32 [N] cu_seqlens,
+  f32 scale,
+  f32 softplus_beta,
+  f32 softplus_threshold
+) {
+  bool IS_KDA = false;
+  bool IS_VARLEN = false;
+  bool USE_QK_L2NORM_IN_KERNEL = true;
+  bool USE_INITAL_STATE = true;
+  BK = 128;
+  BV = 32;
+  int NK = cdiv(K, BK);
+  int NV = cdiv(V, BV);
+#if ENABLE_DEBUG
+  assert(N == B && !IS_VARLEN, "N should equal to B when IS_VARLEN is not true.");
+  assert(BK >= K, "BK should be next_power_of_2(K)");
+  assert(BV >= V || BV == 32, "BV should be min(next_power_of_2(V), 32)");
+  assert(NK == 1, "NK > 1 is not supported yet");
+#endif
+  parallel {i_v, i_n, i_hv} by [NV, N, HV] : block,
+           t by 32 : thread {
+    i_h = i_hv / (HV / H);
+    s32 bos = i_n * T;
+    s32 eos = i_n * T + T;
+    s32 LEN = T;
+    if (IS_VARLEN) {
+      bos = cu_seqlens.at(i_n);
+      eos = cu_seqlens.at(i_n + 1);
+      LEN = eos - bos;
+    }
+    f32 a_log_l = A_log.at(i_hv);
+    bf16 dt_bias_l = dt_bias.at(i_hv);
+    shared f32 [BK, BV] hidden_s{0};
+    idx = initial_state_indices.at(i_n);
+    if (idx >= 0) {
+      dma.copy initial_state_source.view(_, _, _, _).from(idx, 0, 0, 0)
+                                    .chunkat(_, i_hv, _, i_v)
+                                    .span_as([BK, BV]) => hidden_s;
+    }
+
+    with i_l in LEN {
+      foreach i_l {
+        a_s = dma.copy.async a.span_as([B * T, HV])
+                              .view(1, 1).from(bos + i_l, i_hv) => shared;
+        b_s = dma.copy.async b.span_as([B * T, HV])
+                              .view(1, 1).from(bos + i_l, i_hv) => shared;
+        q_s = dma.copy.async q.span_as([B * T, H, K])
+                              .view(1, 1, _).from(bos + i_l, i_h, 0) => shared;
+        k_s = dma.copy.async k.span_as([B * T, H, K])
+                              .view(1, 1, _).from(bos + i_l, i_h, 0) => shared;
+        v_s = dma.copy.async v.span_as([B * T, HV, V])
+                              .view(1, 1, _).from(bos + i_l, i_hv, 0)
+                              .chunkat(_, _, i_v) => shared;
+        wait a_s, b_s, q_s, k_s, v_s;
+
+        local bf16 [BV] o_l;
+        call computation<BK, BV, USE_QK_L2NORM_IN_KERNEL, IS_KDA>
+          (a_s.data.at(0, 0), b_s.data.at(0, 0), dt_bias_l,
+           a_log_l, softplus_beta, softplus_threshold, scale,
+           q_s.data, k_s.data, v_s.data,
+           o_l, hidden_s);
+
+        dma.copy o_l => o.span_as([B * T, HV, V])
+                         .view(1, 1, _).from(bos + i_l, i_hv, 0)
+                         .chunkat(_, _, i_v)
+                         .span_as([BV]);
+      }
+    }
+    if (USE_INITAL_STATE) {
+      idx = initial_state_indices.at(i_n);
+      if (idx >= 0) {
+        dma.copy hidden_s => initial_state_source.view(_, _, _, _)
+                                                 .from(idx, 0, 0, 0)
+                                                 .chunkat(_, i_hv, _, i_v)
+                                                 .span_as([BK, BV]);
+      }
+    }
+  }
+}
+// clang-format on
+
+template <typename T>
+void read_bin(const std::string &path, std::vector<T> &data) {
+  std::ifstream file(path, std::ios::binary);
+  file.seekg(0, std::ios::end);
+  size_t size = file.tellg();
+  file.seekg(0, std::ios::beg);
+  size_t count = size / sizeof(T);
+  data.resize(count);
+  file.read(reinterpret_cast<char *>(data.data()), size);
+  file.close();
+}
+
+int main() {
+  const int B = 2;
+  const int T = 4;
+  const int H = 8;
+  const int K = 128;
+  const int V = 128;
+  const int HV = H * K / 64;
+  const int N = B;
+
+  const int BK = K;
+  const int BV = std::min(32, V);
+
+  const size_t o_count = B * T * HV * V;
+
+  const choreo::f32 softplus_beta = 1.0f;
+  const choreo::f32 softplus_threshold = 20.0f;
+  const choreo::f32 scale = 1.0f / std::sqrt(static_cast<choreo::f32>(K));
+  const bool USE_INITAL_STATE = true;
+  const bool USE_QK_L2NORM_IN_KERNEL = true;
+  const bool IS_VARLEN = false;
+  const bool IS_KDA = false;
+
+  std::string ref_dir = "/home/baldlee/workspace/choreo-attn/gdn/reference/";
+
+  std::vector<uint32_t> A_log_bits(HV);
+  std::vector<uint16_t> a_bits(B * T * HV);
+  std::vector<uint16_t> dt_bias_bits(HV);
+  std::vector<uint16_t> q_bits(B * T * H * K);
+  std::vector<uint16_t> k_bits(B * T * H * K);
+  std::vector<uint16_t> v_bits(B * T * HV * V);
+  std::vector<uint16_t> b_bits(B * T * HV);
+  std::vector<int32_t> indices_bits(B);
+  std::vector<uint16_t> o_expected(o_count);
+  std::vector<uint32_t> initial_state_bits(B * HV * K * V);
+
+  read_bin(ref_dir + "A_log.bin", A_log_bits);
+  read_bin(ref_dir + "a.bin", a_bits);
+  read_bin(ref_dir + "dt_bias.bin", dt_bias_bits);
+  read_bin(ref_dir + "q.bin", q_bits);
+  read_bin(ref_dir + "k.bin", k_bits);
+  read_bin(ref_dir + "v.bin", v_bits);
+  read_bin(ref_dir + "b.bin", b_bits);
+  read_bin(ref_dir + "initial_state_indices.bin", indices_bits);
+  read_bin(ref_dir + "o_expected.bin", o_expected);
+  read_bin(ref_dir + "initial_state_source_in.bin", initial_state_bits);
+
+  auto A_log = choreo::make_spanview<1, choreo::f32>(
+      reinterpret_cast<choreo::f32 *>(A_log_bits.data()),
+      {static_cast<size_t>(HV)});
+  auto a = choreo::make_spanview<3, choreo::bf16>(
+      reinterpret_cast<choreo::bf16 *>(a_bits.data()),
+      {static_cast<size_t>(B), static_cast<size_t>(T),
+       static_cast<size_t>(HV)});
+  auto dt_bias = choreo::make_spanview<1, choreo::bf16>(
+      reinterpret_cast<choreo::bf16 *>(dt_bias_bits.data()),
+      {static_cast<size_t>(HV)});
+  auto q = choreo::make_spanview<4, choreo::bf16>(
+      reinterpret_cast<choreo::bf16 *>(q_bits.data()),
+      {static_cast<size_t>(B), static_cast<size_t>(T), static_cast<size_t>(H),
+       static_cast<size_t>(K)});
+  auto k = choreo::make_spanview<4, choreo::bf16>(
+      reinterpret_cast<choreo::bf16 *>(k_bits.data()),
+      {static_cast<size_t>(B), static_cast<size_t>(T), static_cast<size_t>(H),
+       static_cast<size_t>(K)});
+  auto v = choreo::make_spanview<4, choreo::bf16>(
+      reinterpret_cast<choreo::bf16 *>(v_bits.data()),
+      {static_cast<size_t>(B), static_cast<size_t>(T), static_cast<size_t>(HV),
+       static_cast<size_t>(V)});
+  auto b = choreo::make_spanview<3, choreo::bf16>(
+      reinterpret_cast<choreo::bf16 *>(b_bits.data()),
+      {static_cast<size_t>(B), static_cast<size_t>(T),
+       static_cast<size_t>(HV)});
+  auto indices = choreo::make_spanview<1, choreo::s32>(
+      indices_bits.data(), {static_cast<size_t>(B)});
+  std::vector<choreo::s32> cu_seqlens_dummy(N, 0);
+  auto cu_seqlens = choreo::make_spanview<1, choreo::s32>(
+      cu_seqlens_dummy.data(), {static_cast<size_t>(N)});
+
+  auto initial_state_source = choreo::make_spandata<choreo::f32>(B, HV, K, V);
+  std::memcpy(initial_state_source.data(),
+              reinterpret_cast<choreo::f32 *>(initial_state_bits.data()),
+              B * HV * K * V * sizeof(choreo::f32));
+
+  auto o = choreo::make_spandata<choreo::bf16>(B, T, HV, V);
+  fused_sigmoid_gating_delta_rule_update_kernel_bf16_BK128_BV32_UseInitalState_UseQkL2normInKernel(
+      A_log, a, dt_bias, q, k, v, b, o.view(), initial_state_source.view(),
+      indices, cu_seqlens, scale, softplus_beta, softplus_threshold);
+
+  auto o_ptr = reinterpret_cast<uint16_t *>(o.data());
+  size_t o_exact_mismatch = 0;
+  size_t o_ulp1_mismatch = 0;
+  for (size_t i = 0; i < o_count; ++i) {
+    if (o_ptr[i] != o_expected[i]) {
+      int diff = std::abs(static_cast<int>(o_ptr[i]) - static_cast<int>(o_expected[i]));
+      if (diff <= 1) {
+        o_ulp1_mismatch++;
+      } else {
+        o_exact_mismatch++;
+        if (o_exact_mismatch <= 10) {
+          std::cout << "o[" << i << "]: 0x" << std::hex << o_ptr[i] << " vs 0x"
+                    << o_expected[i] << std::dec << " (diff=" << diff << ")" << std::endl;
+        }
+      }
+    }
+  }
+
+  std::cout << "o exact mismatches: " << o_exact_mismatch << " / " << o_count << std::endl;
+  std::cout << "o 1-ULP mismatches: " << o_ulp1_mismatch << " / " << o_count << std::endl;
+
+  if (o_exact_mismatch == 0) {
+    std::cout << "TEST PASSED" << std::endl;
+  } else {
+    std::cout << "TEST FAILED" << std::endl;
+  }
+
+  return 0;
+}

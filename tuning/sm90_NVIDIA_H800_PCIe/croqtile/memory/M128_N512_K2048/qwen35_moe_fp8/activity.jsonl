@@ -32,3 +32,38 @@
 {"ts":"2026-04-19T16:10:57.531Z","tool":"checkpoint_write","msg":"PLANNED iter004_async_launch: Remove cudaDeviceSynchronize from all host launch functions so kernels execute asynchronously without CPU-GPU sync between them. The compiler ignores parallel.async, so we manually remove the syncs from generated .cu.","level":"info"}
 {"ts":"2026-04-19T16:16:30.786Z","tool":"store_round","msg":"Storing iter004_async_launch (KEEP 12.07 TFLOPS)","level":"info"}
 {"ts":"2026-04-19T16:16:30.805Z","tool":"store_round","msg":"Stored iter004_async_launch: KEEP 12.07 TFLOPS (round 4)","level":"info"}
+{"ts":"2026-04-19T16:17:28.415Z","tool":"profile_extract","msg":"Analyzing iter004_wgmma from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/M128_N512_K2048/qwen35_moe_fp8/ncu_iter004_wgmma_round4.csv","level":"info"}
+{"ts":"2026-04-19T16:21:05.029Z","tool":"checkpoint_write","msg":"PLANNED iter005_restrict: Add __restrict__ to all kernel pointer parameters and --use_fast_math nvcc flag. Tutorial claims +0.21% from restrict. Combined with fast_math for cheaper FP32 math in scale paths.","level":"info"}
+{"ts":"2026-04-19T16:21:05.370Z","tool":"store_round","msg":"Storing iter005_restrict (KEEP 12.23 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T16:21:05.389Z","tool":"store_round","msg":"Stored iter005_restrict: KEEP 12.23 TFLOPS (round 5)","level":"info"}
+{"ts":"2026-04-19T16:22:03.607Z","tool":"store_round","msg":"Storing iter006_noreg_cap (DISCARD 12.10 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T16:22:03.626Z","tool":"store_round","msg":"Stored iter006_noreg_cap: DISCARD 12.10 TFLOPS (round 6)","level":"info"}
+{"ts":"2026-04-19T16:29:56.872Z","tool":"store_round","msg":"Storing iter007_k_pipeline (DISCARD 11.35 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T16:29:56.891Z","tool":"store_round","msg":"Stored iter007_k_pipeline: DISCARD 11.35 TFLOPS (round 7)","level":"info"}
+{"ts":"2026-04-19T16:30:12.210Z","tool":"ncu_profile","msg":"Capturing profile: CHOREO_SKIP_VERIFY=1 tuning/sm90_NVIDIA_H800_PCIe/croqtile/bins/M128_N512_K2048/qwen35_moe_fp8/iter005_restrict --skip-verify --enable-timing","level":"info"}
+{"ts":"2026-04-19T16:30:17.910Z","tool":"ncu_profile","msg":"Capturing profile: /home/albert/workspace/croqtile-tuner/tuning/sm90_NVIDIA_H800_PCIe/croqtile/bins/M128_N512_K2048/qwen35_moe_fp8/iter005_restrict --skip-verify --enable-timing","level":"info"}
+{"ts":"2026-04-19T16:30:37.845Z","tool":"ncu_profile","msg":"Capturing profile: /home/albert/workspace/croqtile-tuner/tuning/sm90_NVIDIA_H800_PCIe/croqtile/bins/M128_N512_K2048/qwen35_moe_fp8/iter005_restrict --skip-verify --enable-timing","level":"info"}
+{"ts":"2026-04-19T16:31:11.806Z","tool":"ncu_profile","msg":"Capturing profile: /home/albert/workspace/croqtile-tuner/tuning/sm90_NVIDIA_H800_PCIe/croqtile/bins/M128_N512_K2048/qwen35_moe_fp8/iter005_restrict --skip-verify --enable-timing","level":"info"}
+{"ts":"2026-04-19T16:31:18.598Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/logs/M128_N512_K2048/qwen35_moe_fp8/iter005_ncu.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/logs/M128_N512_K2048/qwen35_moe_fp8/iter005_ncu.csv","level":"info"}
+{"ts":"2026-04-19T16:31:30.965Z","tool":"ncu_profile","msg":"Capturing profile: /home/albert/workspace/croqtile-tuner/tuning/sm90_NVIDIA_H800_PCIe/croqtile/bins/M128_N512_K2048/qwen35_moe_fp8/iter005_restrict --skip-verify --enable-timing","level":"info"}
+{"ts":"2026-04-19T16:32:19.293Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/logs/M128_N512_K2048/qwen35_moe_fp8/iter005_ncu_all.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/logs/M128_N512_K2048/qwen35_moe_fp8/iter005_ncu_all.csv","level":"info"}
+{"ts":"2026-04-19T16:32:29.645Z","tool":"profile_extract","msg":"Analyzing iter005_restrict from tuning/sm90_NVIDIA_H800_PCIe/croqtile/logs/M128_N512_K2048/qwen35_moe_fp8/iter005_ncu_all.csv","level":"info"}
+{"ts":"2026-04-19T16:35:27.730Z","tool":"store_round","msg":"Storing iter008_unroll (DISCARD 12.23 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T16:35:27.749Z","tool":"store_round","msg":"Stored iter008_unroll: DISCARD 12.23 TFLOPS (round 8)","level":"info"}
+{"ts":"2026-04-19T16:36:28.977Z","tool":"store_round","msg":"Storing iter009_lowreg (DISCARD 10.50 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T16:36:28.996Z","tool":"store_round","msg":"Stored iter009_lowreg: DISCARD 10.50 TFLOPS (round 9)","level":"info"}
+{"ts":"2026-04-19T16:37:48.901Z","tool":"store_round","msg":"Storing iter010_cacheglobal (KEEP 12.27 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T16:37:48.920Z","tool":"store_round","msg":"Stored iter010_cacheglobal: KEEP 12.27 TFLOPS (round 10)","level":"info"}
+{"ts":"2026-04-19T16:39:12.734Z","tool":"store_round","msg":"Storing iter011_l2scatter (DISCARD 11.0 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T16:39:12.753Z","tool":"store_round","msg":"Stored iter011_l2scatter: DISCARD 11.0 TFLOPS (round 11)","level":"info"}
+{"ts":"2026-04-19T16:42:25.781Z","tool":"store_round","msg":"Storing iter012_scatter_opt (DISCARD 9.3 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T16:42:25.800Z","tool":"store_round","msg":"Stored iter012_scatter_opt: DISCARD 9.3 TFLOPS (round 12)","level":"info"}
+{"ts":"2026-04-19T16:44:56.382Z","tool":"store_round","msg":"Storing iter013_dlcm (DISCARD 12.25 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T16:44:56.402Z","tool":"store_round","msg":"Stored iter013_dlcm: DISCARD 12.25 TFLOPS (round 13)","level":"info"}
+{"ts":"2026-04-19T21:58:34.261Z","tool":"resume_state","msg":"Loading tuning state for croqtile/M128_N512_K2048","level":"info"}
+{"ts":"2026-04-19T22:00:20.033Z","tool":"profile_extract","msg":"Analyzing iter010_cacheglobal from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/M128_N512_K2048/qwen35_moe_fp8/ncu_iter010_cacheglobal_round14.csv","level":"info"}
+{"ts":"2026-04-19T22:03:25.376Z","tool":"next_iter","msg":"Resolved iter014_rhs_dbuf","level":"info"}
+{"ts":"2026-04-19T22:03:35.947Z","tool":"checkpoint_write","msg":"PLANNED iter014_rhs_dbuf: Double-buffer only RHS TMA sB 16KB keeping LHS cp.async sA 8KB single-buffered. Total shared 40KB vs iter007 48KB. Issue TMA for next K-tile before WGMMA of current tile to overlap memory and compute.","level":"info"}
+{"ts":"2026-04-19T22:10:24.094Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter014_rhs_dbuf (drift=1)","level":"info"}
+{"ts":"2026-04-19T22:10:31.455Z","tool":"store_round","msg":"Storing iter014_rhs_dbuf (DISCARD 11.85 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T22:10:31.474Z","tool":"store_round","msg":"Stored iter014_rhs_dbuf: DISCARD 11.85 TFLOPS (round 14)","level":"info"}

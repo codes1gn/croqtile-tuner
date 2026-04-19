@@ -61,3 +61,13 @@ iter055	iter055_wn256_depth2	381.748	DISCARD	register_pressure	WGMMA depth-2 pip
 iter056	iter056_wn256_tk32_s4	340.537	DISCARD	compute_bound	TILE_K=32 STAGES=4 to get deeper pipeline depth with same SMEM; smaller K-tile i
 iter057	iter057_wn256_swz8	400.281	DISCARD	compute_bound	SWIZZLE=8 grid ordering to improve L2 locality for 114 SM layout; slightly worse
 iter058	iter058_wn256_swz32	396.044	DISCARD	compute_bound	SWIZZLE=32 grid ordering; worse than SWIZZLE=16 for this matrix size
+iter059	iter059_wn128_tk32_s2	55.3	DISCARD	register_pressure	1P1C WN=128 for 2 blocks/SM occupancy; WGMMA serialized due to 128 fp32 accumula
+iter060	iter060_wn256_unroll4	407.804	KEEP	compute_bound	Manual unroll of iv_warp=0..3 loop in both consumers; removes loop overhead and 
+iter061	iter061_wn256_kunroll2	422.996	KEEP	compute_bound	pragma unroll 2 on K-loop + manual iv_warp unroll; halves K-loop branch overhead
+iter062	iter062_wn256_kunroll64	438.113	KEEP	compute_bound	pragma unroll 64 on K-loop; optimal unroll factor for 256 K-tiles; reduces loop 
+iter063	iter063_kunroll64_l2pin	437.8	DISCARD	compute_bound	L2 persistence for rhs B-matrix; overhead of setup outweighs benefit since B is 
+iter066	iter066_wait1_kunroll64	460.157	KEEP	compute_bound	warpgroup_wait<1> depth-1 WGMMA pipeline + K-loop unroll=64; hides full[stage].w
+iter067	iter067_wait2_kunroll64	478.641	KEEP	compute_bound	warpgroup_wait<2> depth-2 WGMMA pipeline + K-loop unroll=64; 2 WGMMA groups in-f
+iter069	iter069_w1_1arrive_ku64	486.183	KEEP	compute_bound	wait<1> + single warpgroup_arrive per K-tile + unroll=64; fusing 4 WGMMA into si
+iter070	iter070_early_empty	481.097	DISCARD	compute_bound	front-loaded warpgroup_wait before full.wait; worse than iter069 486T
+iter071	iter071_precomp_desc	483.875	DISCARD	compute_bound	precomputed SMEM descriptors for stage 0 and 1 to avoid recomputation in K-loop;

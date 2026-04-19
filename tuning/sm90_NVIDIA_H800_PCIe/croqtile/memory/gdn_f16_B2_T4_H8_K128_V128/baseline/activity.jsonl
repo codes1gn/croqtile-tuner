@@ -1,0 +1,5 @@
+{"ts":"2026-04-19T22:09:14.042Z","tool":"co2cu","msg":"Compiling iter001_baseline.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T22:09:14.237Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter001_baseline.cu","level":"info"}
+{"ts":"2026-04-19T22:10:15.258Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/gdn_f16_B2_T4_H8_K128_V128/baseline/iter001_baseline","level":"info"}
+{"ts":"2026-04-19T22:10:20.611Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/gdn_f16_B2_T4_H8_K128_V128/baseline/ncu_iter001_baseline_round1.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/gdn_f16_B2_T4_H8_K128_V128/baseline/ncu_iter001_baseline_round1.csv","level":"info"}
+{"ts":"2026-04-19T22:10:25.312Z","tool":"profile_extract","msg":"Analyzing iter001_baseline from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/gdn_f16_B2_T4_H8_K128_V128/baseline/ncu_iter001_baseline_round1.csv","level":"info"}

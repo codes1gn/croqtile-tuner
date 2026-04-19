@@ -1,14 +1,18 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-19T16:10:57Z",
+  "timestamp": "2026-04-19T22:03:35Z",
   "dsl": "croqtile",
   "shape_key": "M128_N512_K2048",
-  "iter": "iter004_async_launch",
-  "bottleneck": "latency_bound",
-  "idea": "Remove cudaDeviceSynchronize from all host launch functions so kernels execute asynchronously without CPU-GPU sync between them. The compiler ignores parallel.async, so we manually remove the syncs from generated .cu.",
-  "expected_gain": "+10x from 0.47 to ~4+ TFLOPS",
+  "iter": "iter014_rhs_dbuf",
+  "bottleneck": "memory_bound",
+  "idea": "Double-buffer only RHS TMA sB 16KB keeping LHS cp.async sA 8KB single-buffered. Total shared 40KB vs iter007 48KB. Issue TMA for next K-tile before WGMMA of current tile to overlap memory and compute.",
+  "expected_gain": "+5-10% TFLOPS",
   "levers": [
-    "cudaDeviceSynchronize_removal"
+    "rhs_double_buffer",
+    "tma_prefetch",
+    "k_loop_overlap"
   ],
-  "status": "PLANNED"
+  "status": "VERIFIED",
+  "verified_iter": "iter014_rhs_dbuf",
+  "drift_score": 1
 }

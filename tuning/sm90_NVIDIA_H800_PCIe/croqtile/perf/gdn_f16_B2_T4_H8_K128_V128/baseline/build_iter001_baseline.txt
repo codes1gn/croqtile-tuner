@@ -1,0 +1,27 @@
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter001_baseline.co:180.9: warning: unable to find a device function 'computation'.
+          call computation<BK, BV, USE_QK_L2NORM_IN_KERNEL, IS_KDA>
+          ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter001_baseline.co:170.41: warning: 'span_as' may be applied to non-contiguous spanned data ([::gdn_f16_BK128_BV32::B, 1, ::gdn_f16_BK128_BV32::K, (::gdn_f16_BK128_BV32::V / ((::gdn_f16_BK128_BV32::V + 31) / 32))] {(::gdn_f16_BK128_BV32::HV * (::gdn_f16_BK128_BV32::K * ::gdn_f16_BK128_BV32::V)), (::gdn_f16_BK128_BV32::K * ::gdn_f16_BK128_BV32::V), ::gdn_f16_BK128_BV32::V, 1}).
+                                          .span_as([1, BV]) => hidden_l.view(1, _).from(r, 0);
+                                          ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter001_baseline.co:180.9: warning: The 3rd template argument of type 'bool` can not be evaluated at choreo compile time.
+          call computation<BK, BV, USE_QK_L2NORM_IN_KERNEL, IS_KDA>
+          ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter001_baseline.co:180.9: warning: The 4th template argument of type 'bool` can not be evaluated at choreo compile time.
+          call computation<BK, BV, USE_QK_L2NORM_IN_KERNEL, IS_KDA>
+          ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter001_baseline.co:192.26: warning: 'span_as' may be applied to non-contiguous spanned data ([1, 1, (::gdn_f16_BK128_BV32::V / ((::gdn_f16_BK128_BV32::V + 31) / 32))] {(::gdn_f16_BK128_BV32::HV * ::gdn_f16_BK128_BV32::V), ::gdn_f16_BK128_BV32::V, 1}).
+                           .span_as([BV]);
+                           ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter001_baseline.co:204.54: warning: 'span_as' may be applied to non-contiguous spanned data ([::gdn_f16_BK128_BV32::B, 1, ::gdn_f16_BK128_BV32::K, (::gdn_f16_BK128_BV32::V / ((::gdn_f16_BK128_BV32::V + 31) / 32))] {(::gdn_f16_BK128_BV32::HV * (::gdn_f16_BK128_BV32::K * ::gdn_f16_BK128_BV32::V)), (::gdn_f16_BK128_BV32::K * ::gdn_f16_BK128_BV32::V), ::gdn_f16_BK128_BV32::V, 1}).
+                                                       .span_as([1, BV]);
+                                                       ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter001_baseline.co:168.11: info: DMA is lowered to low-performance opt_copy API.
+            dma.copy initial_state_source.view(_, _, _, _).from(idx, 0, r#t, 0)
+            ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter001_baseline.co:189.9: info: DMA is lowered to low-performance opt_copy API.
+          dma.copy o_l => o.span_as([B * T, HV, V])
+          ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter001_baseline.co:200.13: info: DMA is lowered to low-performance opt_copy API.
+              dma.copy hidden_l.view(1, _).from(r, 0)
+              ^

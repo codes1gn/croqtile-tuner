@@ -1,0 +1,211 @@
+#ifndef ENABLE_DEBUG
+#define ENABLE_DEBUG 1
+#endif
+
+__cok__ {
+  template <typename T>
+  __device__ __forceinline__ T SHFL_XOR(T var, int lane_mask, int width) {
+    return __shfl_xor_sync(uint32_t(-1), var, lane_mask, width);
+  }
+  template <int BK, int BV, bool USE_QK_L2NORM_IN_KERNEL, bool IS_KDA>
+  __device__ void computation(
+      const choreo::bf16 a_bf16, const choreo::bf16 b_bf16,
+      const choreo::bf16 dt_bias_bf16, const choreo::f32 a_log_f32,
+      const choreo::f32 softplus_beta, const choreo::f32 softplus_threshold,
+      const choreo::f32 scale, choreo::bf16 *__restrict__ q_bf16,
+      choreo::bf16 *__restrict__ k_bf16, choreo::bf16 *__restrict__ v_bf16,
+      choreo::bf16 *__restrict__ o_bf16, choreo::f32 *__restrict__ h) {
+    int tid = threadIdx.x;
+    constexpr int ROWS = BK / 32;
+    const float a = __bfloat162float(a_bf16);
+    const float b = __bfloat162float(b_bf16);
+    const float dt_bias = __bfloat162float(dt_bias_bf16);
+    const float a_log = a_log_f32;
+    float q[ROWS];
+    float k[ROWS];
+#pragma unroll
+    for (int ii = 0; ii < ROWS; ++ii) {
+      q[ii] = __bfloat162float(q_bf16[tid + ii * 32]);
+      k[ii] = __bfloat162float(k_bf16[tid + ii * 32]);
+    }
+    float v_local = __bfloat162float(v_bf16[tid]);
+    float x = a + dt_bias;
+    float beta_x = softplus_beta * x;
+    float softplus_x = beta_x < softplus_threshold
+                           ? (1.0 / softplus_beta) * logf(1.0 + expf(beta_x))
+                           : x;
+    float g = -expf(a_log) * softplus_x;
+    float beta = 1.0 / (1.0 + expf(-b));
+    if constexpr (USE_QK_L2NORM_IN_KERNEL) {
+      float q_sum = 0.0, k_sum = 0.0;
+#pragma unroll
+      for (int ii = 0; ii < ROWS; ++ii) {
+        q_sum = fmaf(q[ii], q[ii], q_sum);
+        k_sum = fmaf(k[ii], k[ii], k_sum);
+      }
+#pragma unroll
+      for (int offset = 32 / 2; offset > 0; offset /= 2) {
+        q_sum += SHFL_XOR(q_sum, offset, 32);
+        k_sum += SHFL_XOR(k_sum, offset, 32);
+      }
+      float q_div = rsqrtf(q_sum + 1e-6);
+      float k_div = rsqrtf(k_sum + 1e-6);
+#pragma unroll
+      for (int ii = 0; ii < ROWS; ++ii) {
+        q[ii] = q[ii] * q_div;
+        k[ii] = k[ii] * k_div;
+      }
+    }
+#pragma unroll
+    for (int ii = 0; ii < ROWS; ++ii) {
+      q[ii] = q[ii] * scale;
+    }
+    float h_scale = expf(g);
+#pragma unroll
+    for (int ii = 0; ii < ROWS; ++ii) {
+#pragma unroll
+      for (int j = 0; j < BV; ++j) {
+        h[ii * BV + j] = h[ii * BV + j] * h_scale;
+      }
+    }
+    float vp[BV];
+#pragma unroll
+    for (int j = 0; j < BV; ++j) {
+      vp[j] = 0.0f;
+#pragma unroll
+      for (int ii = 0; ii < ROWS; ++ii)
+        vp[j] = fmaf(h[ii * BV + j], k[ii], vp[j]);
+    }
+#pragma unroll
+    for (int offset = 32 / 2; offset > 0; offset /= 2) {
+#pragma unroll
+      for (int j = 0; j < BV; ++j)
+        vp[j] += SHFL_XOR(vp[j], offset, 32);
+    }
+    v_local -= vp[tid];
+    v_local *= beta;
+
+    float vb[BV];
+#pragma unroll
+    for (int j = 0; j < BV; ++j)
+      vb[j] = __shfl_sync(uint32_t(-1), v_local, j, 32);
+#pragma unroll
+    for (int j = 0; j < BV; ++j) {
+#pragma unroll
+      for (int ii = 0; ii < ROWS; ++ii)
+        h[ii * BV + j] += k[ii] * vb[j];
+    }
+
+    float op[BV];
+#pragma unroll
+    for (int j = 0; j < BV; ++j) {
+      op[j] = 0.0f;
+#pragma unroll
+      for (int ii = 0; ii < ROWS; ++ii)
+        op[j] = fmaf(h[ii * BV + j], q[ii], op[j]);
+    }
+#pragma unroll
+    for (int offset = 32 / 2; offset > 0; offset /= 2) {
+#pragma unroll
+      for (int j = 0; j < BV; ++j)
+        op[j] += SHFL_XOR(op[j], offset, 32);
+    }
+#pragma unroll
+    for (int j = 0; j < BV; ++j)
+      o_bf16[j] = __float2bfloat16(op[j]);
+  }
+}
+// clang-format off
+__co__ void fused_sigmoid_gating_delta_rule_update_kernel_bf16_BK128_BV32_UseInitalState_UseQkL2normInKernel(
+  f32 [HV] A_log,
+  bf16 [B, T, HV] a,
+  bf16 [HV] dt_bias,
+  bf16 [B, T, H, K] q,
+  bf16 [B, T, H, K] k,
+  bf16 [B, T, HV, V] v,
+  bf16 [B, T, HV] b,
+  bf16 [B, T, HV, V] & o,
+  f32 [B, HV, K, V] initial_state_source,
+  s32 [B] initial_state_indices,
+  s32 [N] cu_seqlens,
+  f32 scale,
+  f32 softplus_beta,
+  f32 softplus_threshold
+) {
+  bool IS_KDA = false;
+  bool IS_VARLEN = false;
+  bool USE_QK_L2NORM_IN_KERNEL = true;
+  bool USE_INITAL_STATE = true;
+  BK = 128;
+  BV = 32;
+  ROWS = BK / 32;
+  int NK = cdiv(K, BK);
+  int NV = cdiv(V, BV);
+#if ENABLE_DEBUG
+  assert(N == B && !IS_VARLEN, "N should equal to B when IS_VARLEN is not true.");
+  assert(BK >= K, "BK should be next_power_of_2(K)");
+  assert(BV >= V || BV == 32, "BV should be min(next_power_of_2(V), 32)");
+  assert(NK == 1, "NK > 1 is not supported yet");
+#endif
+  parallel {i_v, i_n, i_hv} by [NV, N, HV] : block,
+           t by 32 : thread {
+    i_h = i_hv / (HV / H);
+    s32 bos = i_n * T;
+    s32 eos = i_n * T + T;
+    s32 LEN = T;
+    if (IS_VARLEN) {
+      bos = cu_seqlens.at(i_n);
+      eos = cu_seqlens.at(i_n + 1);
+      LEN = eos - bos;
+    }
+    f32 a_log_l = A_log.at(i_hv);
+    bf16 dt_bias_l = dt_bias.at(i_hv);
+    local f32 [ROWS, BV] hidden_l{0};
+    idx = initial_state_indices.at(i_n);
+    if (idx >= 0) {
+      with r in [ROWS] {
+        foreach r {
+          dma.copy initial_state_source.view(_, _, _, _).from(idx, 0, r#t, 0)
+                                        .chunkat(_, i_hv, _, i_v)
+                                        .span_as([1, BV]) => hidden_l.view(1, _).from(r, 0);
+        }
+      }
+    }
+
+    with i_l in LEN {
+      foreach i_l {
+        bf16 a_val = a.at(i_n, i_l, i_hv);
+        bf16 b_val = b.at(i_n, i_l, i_hv);
+        local bf16 [BV] o_l;
+        call computation<BK, BV, USE_QK_L2NORM_IN_KERNEL, IS_KDA>
+          (a_val, b_val, dt_bias_l,
+           a_log_l, softplus_beta, softplus_threshold, scale,
+           q.span_as([B * T, H, K]).view(1, 1, _).from(bos + i_l, i_h, 0),
+           k.span_as([B * T, H, K]).view(1, 1, _).from(bos + i_l, i_h, 0),
+           v.span_as([B * T, HV, V]).view(1, 1, _).from(bos + i_l, i_hv, 0)
+                                    .chunkat(_, _, i_v),
+           o_l, hidden_l);
+
+        dma.copy o_l => o.span_as([B * T, HV, V])
+                         .view(1, 1, _).from(bos + i_l, i_hv, 0)
+                         .chunkat(_, _, i_v)
+                         .span_as([BV]);
+      }
+    }
+    if (USE_INITAL_STATE) {
+      idx = initial_state_indices.at(i_n);
+      if (idx >= 0) {
+        with r in [ROWS] {
+          foreach r {
+            dma.copy hidden_l.view(1, _).from(r, 0)
+                              .span_as([1, BV])
+                              => initial_state_source.view(_, _, _, _).from(idx, 0, r#t, 0)
+                                                     .chunkat(_, i_hv, _, i_v)
+                                                     .span_as([1, BV]);
+          }
+        }
+      }
+    }
+  }
+}
+// clang-format on

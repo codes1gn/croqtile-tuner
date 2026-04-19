@@ -420,12 +420,14 @@ void matmul(const choreo::spanned_view<choreo::f16, 2> & lhs, const choreo::span
   dim3 __matmul_gdims0(total_ctas, 1, 1);
   dim3 __matmul_bdims0(256, 1, 1);   // 1P1C: 256 threads (2 warpgroups)
   // SMEM: 98304B = rhs(16384) + lhs(16384) + out_top(32768) + out_bot(32768)
-  cudaError_t attr_err = cudaFuncSetAttribute(__choreo_device_matmul, cudaFuncAttributeMaxDynamicSharedMemorySize, 98304 + (1024 - 1));
+  // +8191 for 8KB alignment overhead from aligned_up_ptr<8192>
+  const int smem_size = 98304 + (1024 * 8 - 1);
+  cudaError_t attr_err = cudaFuncSetAttribute(__choreo_device_matmul, cudaFuncAttributeMaxDynamicSharedMemorySize, smem_size);
   if (attr_err != cudaSuccess) {
     std::fprintf(stderr, "[iter059] cudaFuncSetAttribute failed: %s\n", cudaGetErrorString(attr_err));
     std::exit(EXIT_FAILURE);
   }
-  __choreo_device_matmul<<<__matmul_gdims0, __matmul_bdims0, 98304 + (1024 - 1)>>>(
+  __choreo_device_matmul<<<__matmul_gdims0, __matmul_bdims0, smem_size>>>(
       lhs.data(), rhs.data(), output.data(), K, M, N,
       __choreo_tma_0_tensor_map, __choreo_tma_1_tensor_map,
       __choreo_tma_2_tensor_map, __choreo_tma_3_tensor_map);
