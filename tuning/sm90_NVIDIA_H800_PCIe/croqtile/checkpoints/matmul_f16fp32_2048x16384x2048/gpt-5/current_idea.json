@@ -1,18 +1,19 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-19T03:37:45Z",
+  "timestamp": "2026-04-19T04:35:54Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_2048x16384x2048",
-  "iter": "iter028_lb1_only",
+  "iter": "iter029_stages2_wait1",
   "bottleneck": "compute_bound",
-  "idea": "Keep iter023 wait2 split-epilogue as the active best and change only launch_bounds from (256,2) to (256,1), testing whether a larger compiler register budget without setmaxnreg can raise consumer ILP enough to offset the lower CTA residency.",
+  "idea": "Keep iter023 split-epilogue topology and launch_bounds(256,2) but reduce pipeline depth from 3 stages to 2 and use an in-loop wait1 drain, testing whether lower barrier traffic and smaller shared staging can increase eligible warps on this barrier-limited kernel.",
   "expected_gain": "+0.1 to +2 TFLOPS",
   "levers": [
-    "launch_bounds_256_1",
-    "wait2",
+    "stages2",
+    "wait1",
+    "launch_bounds_256_2",
     "split_epilogue"
   ],
   "status": "VERIFIED",
-  "verified_iter": "iter028_lb1_only",
+  "verified_iter": "iter029_stages2_wait1",
   "drift_score": 1
 }
