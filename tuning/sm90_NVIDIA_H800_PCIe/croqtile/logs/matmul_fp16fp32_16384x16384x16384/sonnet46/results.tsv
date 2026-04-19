@@ -24,3 +24,40 @@ iter016	iter016_wn256_s4_l2p_maxreg256	147.554	DISCARD	compute_bound	maxrregcoun
 iter017	iter017_wn256_s4_l2p_cluster2	311.787	KEEP	compute_bound	2x K-loop unroll: process 2 K-tiles per iteration, issue both WGMMA batches befo
 iter017	iter017_wn256_s4_l2p_cluster2	311.787	KEEP	compute_bound	2x K-unroll: 311.8T. Next: try depth-2 WGMMA pipeline with warpgroup_wait<1>.
 iter018	iter018_wn256_s4_kunroll4	171.916	DISCARD	compute_bound	4x K-unroll: waits for 4 stages before computing, causing 4x initial stall. 172T
+iter019	iter019_wn256_s4_wgmma_depth2	321.806	KEEP	compute_bound	Depth-2 WGMMA pipeline: prime WGMMA[0], then each iter waits full[k] while WGMMA
+iter020	iter020_wn256_s4_wgmma_depth2_wait1	274.4	DISCARD	compute_bound	depth2 WGMMA pipeline with wait<1>: issue WGMMA[k] before WGMMA[k-1] drains, use
+iter021	iter021_wn192_s5_wgmma_depth2	266.1	DISCARD	compute_bound	WARP_N=192, STAGES=5: smaller N-tile to allow 5 pipeline stages, applying iter01
+iter022	iter022_wn256_tk128_s2	0	COMPILE_FAIL	compute_bound	TILE_K=128 STAGES=2: larger K-tile to reduce TMA transactions and barrier overhe
+iter023	iter023_splitout	0	COMPILE_FAIL	compute_bound	1p2c FP32 TILE_M=128 WARP_N=128 STAGES=3: two consumer WGs share B-tile to reduc
+iter024	iter024_refbase	178.9	DISCARD	memory_bound	1p2c reference FP32 adaptation (wn160, no depth-1 pipeline) — barrier stalls 3.9
+iter025	iter025_twoc_depth1_s3	0	COMPILE_FAIL	memory_bound	1p2c+depth1+STAGES=3: extend stage count from 2 to 3 for more pipeline depth. Fa
+iter026	iter026_twoc_depth1_s2	207.5	DISCARD	memory_bound	1p2c+depth1+STAGES=2: depth-1 WGMMA pipeline in both 1p2c consumers. 207.5T vs 1
+iter027	iter027_twoc_wn256_s2	0	COMPILE_FAIL	memory_bound	1p2c WARP_N=256 STAGES=2: producer loads 128x64 A + 256x64 B; two consumers shar
+iter029	iter029_wn256_mreg192	320.0	DISCARD	memory_bound	Iter019 with maxrregcount=192: 320T vs 321.8T at mreg=160. Extra registers did n
+iter030	iter030_wn256_ptxas_o3	325.3	KEEP	memory_bound	Iter019 with -Xptxas -O3: PTXAS optimizer level 3 generates better instruction s
+iter034	iter034_wn256_s4_swizzle16	362.8	KEEP	memory_bound	Grid swizzle SWIZZLE=16: 16 M-tiles per super-tile for better B-matrix L2 reuse,
+iter035	iter035_wn256_s4_swizzle32	358.9	DISCARD	memory_bound	Grid swizzle SWIZZLE=32: 32 M-tiles per super-tile. Slightly worse than SWIZZLE=
+iter036	iter036_wn256_s4_swizzle64	349.2	DISCARD	memory_bound	Grid swizzle SWIZZLE=64: full M-column super-tiles. Worse than SWIZZLE=16 (362.8
+iter037	iter037_wn256_s4_swz16_l2persist	362.0	DISCARD	memory_bound	SWIZZLE=16 + L2 cudaStreamAttributeAccessPolicyWindow on B-matrix (persisting). 
+iter038	iter038_swz16_mreg192	362.5	KEEP	memory_bound	SWIZZLE=16 + maxrregcount=192 (vs 160 in iter034). Higher register limit allows 
+iter038	iter038_swz16_mreg192	362.5	KEEP	memory_bound	SWIZZLE=16 + maxrregcount=192 vs 160 in iter034. Higher register limit, consiste
+iter039	iter039_swz16_noreg	358.4	DISCARD	memory_bound	SWIZZLE=16 no maxrregcount limit. More registers per warp reduces occupancy, wor
+iter040	iter040_swz16_mreg224	268.0	DISCARD	memory_bound	SWIZZLE=16 maxrregcount=224: too many regs per warp, kills occupancy, 268T vs 36
+iter041	iter041_swz16_wgmma_depth2	342.6	DISCARD	memory_bound	SWIZZLE=16 + WGMMA depth-2 pipeline (wait<1>, 2 WGMMAs in-flight). More register
+iter042	iter042_swizzle_two_dim	357.1	DISCARD	memory_bound	2D swizzle SWIZZLE_M=16 SWIZZLE_N=4: 64-CTA super-tiles for both A and B reuse. 
+iter043	iter043_swz16_warpspec	359.5	DISCARD	memory_bound	SWIZZLE=16 with --use-warpspec compiler flag. No improvement over iter034 (362.8
+iter044	iter044_swz16_kunroll2	334.7	DISCARD	memory_bound	SWIZZLE=16 K-unroll=2: process 2 K-tiles per iteration. More barrier overhead, w
+iter045	iter045_swz16_stages3	348.5	DISCARD	memory_bound	SWIZZLE=16 STAGES=3: smaller SMEM 184KB allows 2CTAs/SM. But insufficient prefet
+iter046	iter046_swz16_serpentine	360.2	DISCARD	memory_bound	SWIZZLE=16 serpentine: odd super-tiles reverse N order. Marginal benefit over it
+iter047	iter047_swz16_nmajor	325.3	DISCARD	memory_bound	Pure N-major (column-major) order, no super-tiles. Too many concurrent M-tiles s
+iter048	iter048_swz16_ptxbarrier	360.4	DISCARD	memory_bound	SWIZZLE=16 same source as iter034. No change, baseline confirmation at 360T.
+iter049	iter049_wn192_s5_swz16	294.3	DISCARD	memory_bound	WARP_N=192 STAGES=5 SWIZZLE=16. Lower arithmetic intensity per CTA than WARP_N=2
+iter050	iter050_swz16_nodebug	360.2	DISCARD	memory_bound	SWIZZLE=16 without DMA_DIAGNOSIS flag. Same performance as iter034 - debug flags
+iter051	iter051_cluster2_mcast	0	SEGFAULT	memory_bound	2-CTA cluster TMA multicast for B-matrix. Kernel crashes with CUDA error 719 (la
+iter052	iter052_swz16_dlcm_cg	360.0	DISCARD	memory_bound	SWIZZLE=16 with -Xptxas -dlcm=cg (global load cache mode). No improvement, TMA b
+iter053	iter053_one_p_two_c_tm128	0	SEGFAULT	memory_bound	1p2c TILE_M=128 3WG: CUDA 719 - barrier count mismatch. Complex 1p2c barrier log
+iter054	iter054_one_p_two_c_wn256_fp32_swz16	405.8	KEEP	compute_bound	1P2C warp specialization: 2 consumers (top/bottom 64-row halves of 128-row M-til
+iter055	iter055_wn256_depth2	381.748	DISCARD	register_pressure	WGMMA depth-2 pipeline to hide latency; dual accumulator sets increase register 
+iter056	iter056_wn256_tk32_s4	340.537	DISCARD	compute_bound	TILE_K=32 STAGES=4 to get deeper pipeline depth with same SMEM; smaller K-tile i
+iter057	iter057_wn256_swz8	400.281	DISCARD	compute_bound	SWIZZLE=8 grid ordering to improve L2 locality for 114 SM layout; slightly worse
+iter058	iter058_wn256_swz32	396.044	DISCARD	compute_bound	SWIZZLE=32 grid ordering; worse than SWIZZLE=16 for this matrix size

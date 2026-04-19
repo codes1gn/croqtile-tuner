@@ -1,0 +1,77 @@
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/M128_N512_K2048/qwen35_moe_fp8/iter001_baseline.co:310.27: warning: unable to find a device function 'SHFL_XOR'.
+          f32 other_tmax = call SHFL_XOR(thread_max, mask, QWEN35_ROUTE_THREADS);
+                            ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/M128_N512_K2048/qwen35_moe_fp8/iter001_baseline.co:310.14: warning: can not infer the type of `other_tmax' from the initialization expression '
+`- Call: SHFL_XOR
+  `- with arguments: thread_max, mask, 32'.
+          f32 other_tmax = call SHFL_XOR(thread_max, mask, QWEN35_ROUTE_THREADS);
+               ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/M128_N512_K2048/qwen35_moe_fp8/iter001_baseline.co:325.21: warning: unable to find a device function 'SHFL_XOR'.
+          f32 temp = call SHFL_XOR(row_sum, mask, QWEN35_ROUTE_THREADS);
+                      ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/M128_N512_K2048/qwen35_moe_fp8/iter001_baseline.co:325.14: warning: can not infer the type of `temp' from the initialization expression '
+`- Call: SHFL_XOR
+  `- with arguments: row_sum, mask, 32'.
+          f32 temp = call SHFL_XOR(row_sum, mask, QWEN35_ROUTE_THREADS);
+               ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/M128_N512_K2048/qwen35_moe_fp8/iter001_baseline.co:352.28: warning: unable to find a device function 'SHFL_XOR'.
+            f32 other_max = call SHFL_XOR(max_val, mask, QWEN35_ROUTE_THREADS);
+                             ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/M128_N512_K2048/qwen35_moe_fp8/iter001_baseline.co:352.16: warning: can not infer the type of `other_max' from the initialization expression '
+`- Call: SHFL_XOR
+  `- with arguments: max_val, mask, 32'.
+            f32 other_max = call SHFL_XOR(max_val, mask, QWEN35_ROUTE_THREADS);
+                 ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/M128_N512_K2048/qwen35_moe_fp8/iter001_baseline.co:353.31: warning: unable to find a device function 'SHFL_XOR'.
+            s32 other_expert = call SHFL_XOR(expert, mask, QWEN35_ROUTE_THREADS);
+                                ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/M128_N512_K2048/qwen35_moe_fp8/iter001_baseline.co:353.16: warning: can not infer the type of `other_expert' from the initialization expression '
+`- Call: SHFL_XOR
+  `- with arguments: expert, mask, 32'.
+            s32 other_expert = call SHFL_XOR(expert, mask, QWEN35_ROUTE_THREADS);
+                 ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/M128_N512_K2048/qwen35_moe_fp8/iter001_baseline.co:397.7: warning: unable to find a device function 'ATOMIC_ADD'.
+        call ATOMIC_ADD(&expert_counts.at(expert), 1);
+        ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/M128_N512_K2048/qwen35_moe_fp8/iter001_baseline.co:431.34: warning: unable to find a device function 'ABS_F32'.
+          mutable f32 local_max = call ABS_F32(value);
+                                   ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/M128_N512_K2048/qwen35_moe_fp8/iter001_baseline.co:431.22: warning: can not infer the type of `local_max' from the initialization expression '
+`- Call: ABS_F32
+  `- with arguments: value'.
+          mutable f32 local_max = call ABS_F32(value);
+                       ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/M128_N512_K2048/qwen35_moe_fp8/iter001_baseline.co:435.24: warning: unable to find a device function 'SHFL_XOR'.
+            f32 other = call SHFL_XOR(local_max, mask, 32);
+                         ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/M128_N512_K2048/qwen35_moe_fp8/iter001_baseline.co:435.16: warning: can not infer the type of `other' from the initialization expression '
+`- Call: SHFL_XOR
+  `- with arguments: local_max, mask, 32'.
+            f32 other = call SHFL_XOR(local_max, mask, 32);
+                 ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/M128_N512_K2048/qwen35_moe_fp8/iter001_baseline.co:481.23: warning: unable to find a device function 'ATOMIC_ADD'.
+            s32 slot = call ATOMIC_ADD(&expert_write_offsets.at(expert), 1);
+                        ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/M128_N512_K2048/qwen35_moe_fp8/iter001_baseline.co:481.16: warning: can not infer the type of `slot' from the initialization expression '
+`- Call: ATOMIC_ADD
+  `- with arguments:  (addrof expert_write_offsets[expert]) , 1'.
+            s32 slot = call ATOMIC_ADD(&expert_write_offsets.at(expert), 1);
+                 ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/M128_N512_K2048/qwen35_moe_fp8/iter001_baseline.co:523.34: info: new declaration shadows outer variable 'ROWS_M' (not an assignment).
+        if (remaining < 64) ROWS_M = remaining;
+                                   ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/M128_N512_K2048/qwen35_moe_fp8/iter001_baseline.co:570.13: warning: unable to find a device function 'ATOMIC_ADD'.
+              call ATOMIC_ADD(&output.at(token, out_col), val);
+              ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/M128_N512_K2048/qwen35_moe_fp8/iter001_baseline.co:459.35: warning: The implicit type conversion may lose precision: 'f32' to 'f8_e4m3'
+            input_q.at(token, kk) = value * inv_scale;
+                                    ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/M128_N512_K2048/qwen35_moe_fp8/iter001_baseline.co:527.13: info: alignment is not satisfied, unable to utilize vectorized load inst. Fallback to UniversalCopy.
+              lhs.view(ROWS_M, QWEN35_TILE_K).from(
+              ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/M128_N512_K2048/qwen35_moe_fp8/iter001_baseline.co:526.9: info: DMA is lowered to low-performance opt_copy API.
+          dma.copy.swiz<QWEN35_SWIZZLE>.zfill
+          ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/M128_N512_K2048/qwen35_moe_fp8/iter001_baseline.co:569.19: warning: The implicit type conversion may lose precision: 'f32' to 'bf16'
+              val = rep_out.at(sorted_row, out_col) * weight;
+                    ^

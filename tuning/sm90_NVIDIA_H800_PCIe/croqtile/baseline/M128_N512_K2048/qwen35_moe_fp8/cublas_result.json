@@ -1,0 +1,15 @@
+{
+  "tflops": 225.3185,
+  "dtype": "f8_e4m3",
+  "m": 1024,
+  "n": 512,
+  "k": 2048,
+  "warmup": 10,
+  "iters": 50,
+  "avg_ms": 0.0095,
+  "status": "ok",
+  "gpu": "sm90_NVIDIA_H800_PCIe",
+  "dsl": "croqtile",
+  "shape_key": "M128_N512_K2048",
+  "model": "qwen35_moe_fp8"
+}

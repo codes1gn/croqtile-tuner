@@ -96,3 +96,18 @@
 {"ts":"2026-04-19T10:04:24.124Z","tool":"store_round","msg":"Storing iter012_persistent_astat (DISCARD 98.35 TFLOPS)","level":"info"}
 {"ts":"2026-04-19T10:04:24.143Z","tool":"store_round","msg":"Stored iter012_persistent_astat: DISCARD 98.35 TFLOPS (round 12)","level":"info"}
 {"ts":"2026-04-19T10:08:39.981Z","tool":"next_iter","msg":"Resolved iter013_astat_grid","level":"info"}
+{"ts":"2026-04-19T10:18:39.115Z","tool":"next_iter","msg":"Resolved iter014_persist_overlap","level":"info"}
+{"ts":"2026-04-19T10:24:41.641Z","tool":"store_round","msg":"Storing iter013_astat_grid (DISCARD 97.97 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T10:24:41.661Z","tool":"store_round","msg":"Stored iter013_astat_grid: DISCARD 97.97 TFLOPS (round 13)","level":"info"}
+{"ts":"2026-04-19T10:25:26.186Z","tool":"store_round","msg":"Storing iter014_persist_overlap (DISCARD 98.37 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T10:25:33.769Z","tool":"store_round","msg":"Storing iter014_persist_overlap (DISCARD 98.37 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T10:25:33.789Z","tool":"store_round","msg":"Stored iter014_persist_overlap: DISCARD 98.37 TFLOPS (round 14)","level":"info"}
+{"ts":"2026-04-19T10:27:12.851Z","tool":"next_iter","msg":"Resolved iter015_l2promo_a","level":"info"}
+{"ts":"2026-04-19T10:31:28.714Z","tool":"checkpoint_write","msg":"PLANNED iter015_l2promo_a: L2 promotion for A TMA (L2_PROMOTION_128B): causes L2 pollution and bank conflicts. 252T vs 277T - regression. TMA data should not be forced into L2 when working set exceeds L2 capacity.","level":"info"}
+{"ts":"2026-04-19T10:31:38.604Z","tool":"store_round","msg":"Storing iter015_l2promo_a (DISCARD 252.4 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T10:31:38.624Z","tool":"store_round","msg":"Stored iter015_l2promo_a: DISCARD 252.4 TFLOPS (round 15)","level":"info"}
+{"ts":"2026-04-19T10:31:57.259Z","tool":"next_iter","msg":"Resolved iter016_s4_early","level":"info"}
+{"ts":"2026-04-19T10:41:20.453Z","tool":"checkpoint_write","msg":"PLANNED iter016_s4_early: STAGES=4 + early empty arrive: barrier stalls reduce to 37.5% from 41.9%, but 255T vs 277T. More SMEM (224KB vs 184KB) means less L1 cache (32KB vs 72KB), hurting other accesses. STAGES=3 is SMEM/L1 sweet spot.","level":"info"}
+{"ts":"2026-04-19T10:41:27.119Z","tool":"store_round","msg":"Storing iter016_s4_early (DISCARD 255.59 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T10:41:27.138Z","tool":"store_round","msg":"Stored iter016_s4_early: DISCARD 255.59 TFLOPS (round 16)","level":"info"}
+{"ts":"2026-04-19T10:46:45.542Z","tool":"next_iter","msg":"Resolved iter017_wgwait1_lookahead","level":"info"}

@@ -1,0 +1,15 @@
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/sonnet-4/iter025_tm128_s2.cu(152): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) cuda::barrier<cuda::thread_scope_block> choreo_copy_atom_t_0_barrier;
+                                                                    ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/sonnet-4/iter025_tm128_s2.cu(161): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) cuda::barrier<cuda::thread_scope_block> full[2];
+                                                                    ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/sonnet-4/iter025_tm128_s2.cu(168): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) cuda::barrier<cuda::thread_scope_block> empty[2];
+                                                                    ^
+
+ptxas info    : (C7511) Potential Performance Loss: wgmma.mma_async instructions are serialized due to insufficient register resources for the wgmma pipeline in the function '_Z22__choreo_device_matmulP6__halfS0_Pfjjj14CUtensorMap_stS2_S2_'

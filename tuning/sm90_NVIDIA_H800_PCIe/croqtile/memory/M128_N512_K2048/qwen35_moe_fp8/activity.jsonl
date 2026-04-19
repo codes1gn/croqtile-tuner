@@ -1,0 +1,34 @@
+{"ts":"2026-04-19T15:30:08.875Z","tool":"store_baseline","msg":"Measuring cuBLAS baseline for f8_e4m3 1024x512x2048","level":"info"}
+{"ts":"2026-04-19T15:30:10.940Z","tool":"store_baseline","msg":"cuBLAS baseline: 225.3185 TFLOPS (saved to tuning/sm90_NVIDIA_H800_PCIe/croqtile/baseline/M128_N512_K2048/qwen35_moe_fp8/cublas_result.json)","level":"info"}
+{"ts":"2026-04-19T15:30:11.264Z","tool":"store_round","msg":"Storing iter000_cublas (KEEP 225.3185 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T15:30:11.283Z","tool":"store_round","msg":"Stored iter000_cublas: KEEP 225.3185 TFLOPS (round 0)","level":"info"}
+{"ts":"2026-04-19T15:30:11.294Z","tool":"store_baseline","msg":"Stored iter000_cublas: 225.3185 TFLOPS (baseline)","level":"info"}
+{"ts":"2026-04-19T15:30:26.856Z","tool":"co2cu","msg":"Compiling iter001_baseline.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T15:31:34.933Z","tool":"co2cu","msg":"Compiling iter001_baseline.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T15:31:35.359Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/M128_N512_K2048/qwen35_moe_fp8/iter001_baseline.cu","level":"info"}
+{"ts":"2026-04-19T15:33:35.574Z","tool":"co2cu","msg":"Compiling iter001_baseline.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T15:33:48.726Z","tool":"co2cu","msg":"Compiling iter001_baseline.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T15:34:08.079Z","tool":"co2cu","msg":"Compiling iter001_baseline.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T15:34:08.491Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/M128_N512_K2048/qwen35_moe_fp8/iter001_baseline.cu","level":"info"}
+{"ts":"2026-04-19T15:50:58.700Z","tool":"store_round","msg":"Storing iter001_baseline (KEEP 0.262 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T15:50:58.719Z","tool":"store_round","msg":"Stored iter001_baseline: KEEP 0.262 TFLOPS (round 1)","level":"info"}
+{"ts":"2026-04-19T15:51:21.566Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/M128_N512_K2048/qwen35_moe_fp8/iter001_baseline --skip-verify","level":"info"}
+{"ts":"2026-04-19T15:51:27.229Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/M128_N512_K2048/qwen35_moe_fp8/iter001_baseline","level":"info"}
+{"ts":"2026-04-19T15:53:06.568Z","tool":"profile_extract","msg":"Analyzing iter001_baseline from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/M128_N512_K2048/qwen35_moe_fp8/ncu_iter001_baseline_round1.csv","level":"info"}
+{"ts":"2026-04-19T15:53:31.791Z","tool":"checkpoint_write","msg":"PLANNED iter002_all_fusions: Fuse all kernels: scatter into WGMMA, count+build, quant+sort+gather. Add parallel.async to remove cudaDeviceSynchronize. Following tutorial 03_all_fusions optimization path.","level":"info"}
+{"ts":"2026-04-19T15:54:24.418Z","tool":"co2cu","msg":"Compiling iter002_all_fusions.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T15:54:24.950Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/M128_N512_K2048/qwen35_moe_fp8/iter002_all_fusions.cu","level":"info"}
+{"ts":"2026-04-19T15:55:33.681Z","tool":"store_round","msg":"Storing iter002_all_fusions (KEEP 0.431 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T15:55:33.700Z","tool":"store_round","msg":"Stored iter002_all_fusions: KEEP 0.431 TFLOPS (round 2)","level":"info"}
+{"ts":"2026-04-19T15:55:55.021Z","tool":"checkpoint_write","msg":"PLANNED iter003_full_optimized: Apply all tutorial optimizations: parallel.async, grid swap, L2 persistence, QSG pipelining, Hillis-Steele scan, pipelined loads, fused memset, register-direct scatter. This is the 05_cuda_optimized.co from tutorial (13.18 TFLOPS target).","level":"info"}
+{"ts":"2026-04-19T15:58:33.346Z","tool":"co2cu","msg":"Compiling iter003_full_optimized.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T15:58:38.646Z","tool":"co2cu","msg":"Compiling iter003_full_optimized.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-19T15:58:39.378Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/M128_N512_K2048/qwen35_moe_fp8/iter003_full_optimized.cu","level":"info"}
+{"ts":"2026-04-19T16:04:11.131Z","tool":"store_round","msg":"Storing iter003_full_optimized (KEEP 0.470 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T16:04:11.150Z","tool":"store_round","msg":"Stored iter003_full_optimized: KEEP 0.470 TFLOPS (round 3)","level":"info"}
+{"ts":"2026-04-19T16:04:26.655Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/M128_N512_K2048/qwen35_moe_fp8/iter003_full_optimized","level":"info"}
+{"ts":"2026-04-19T16:04:33.472Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/M128_N512_K2048/qwen35_moe_fp8/ncu_iter003_full_optimized_round3.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/M128_N512_K2048/qwen35_moe_fp8/ncu_iter003_full_optimized_round3.csv","level":"info"}
+{"ts":"2026-04-19T16:05:28.651Z","tool":"profile_extract","msg":"Analyzing iter003_wgmma from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/M128_N512_K2048/qwen35_moe_fp8/ncu_iter003_wgmma_round3.csv","level":"info"}
+{"ts":"2026-04-19T16:10:57.531Z","tool":"checkpoint_write","msg":"PLANNED iter004_async_launch: Remove cudaDeviceSynchronize from all host launch functions so kernels execute asynchronously without CPU-GPU sync between them. The compiler ignores parallel.async, so we manually remove the syncs from generated .cu.","level":"info"}
+{"ts":"2026-04-19T16:16:30.786Z","tool":"store_round","msg":"Storing iter004_async_launch (KEEP 12.07 TFLOPS)","level":"info"}
+{"ts":"2026-04-19T16:16:30.805Z","tool":"store_round","msg":"Stored iter004_async_launch: KEEP 12.07 TFLOPS (round 4)","level":"info"}

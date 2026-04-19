@@ -1,16 +1,15 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-19T10:04:17Z",
+  "timestamp": "2026-04-19T10:41:20Z",
   "dsl": "croqtile",
   "shape_key": "matmul_f16fp32_16416x16416x16416",
-  "iter": "iter012_persistent_astat",
+  "iter": "iter016_s4_early",
   "bottleneck": "compute_bound",
-  "idea": "Persistent A-stationary kernel: 114 CTAs, atomic tile counter, row-major tile scheduling (A-reuse). Per-tile barrier reinit via init(). Result: 98 TFLOPS \u2014 major regression due to (1) serial tile processing with __syncthreads() overhead, (2) cp_async_bulk_wait_group per tile serializing output TMA, (3) atomic tile counter contention. Tensor active dropped to 20% vs iter005 56%.",
-  "expected_gain": "regression \u2014 DISCARD",
+  "idea": "STAGES=4 + early empty arrive: barrier stalls reduce to 37.5% from 41.9%, but 255T vs 277T. More SMEM (224KB vs 184KB) means less L1 cache (32KB vs 72KB), hurting other accesses. STAGES=3 is SMEM/L1 sweet spot.",
+  "expected_gain": "DISCARD - 255T",
   "levers": [
-    "grid_dims",
-    "tile_scheduling",
-    "barrier_design"
+    "stages",
+    "smem_l1_tradeoff"
   ],
   "status": "PLANNED"
 }

@@ -12,3 +12,7 @@ iter009	iter009_single_wgarrive	275.718	DISCARD	compute_bound	Move warpgroup_arr
 iter010	iter010_tk32_s5	230.691	DISCARD	compute_bound	TILE_K=32 STAGES=5 with B64 swizzle: B64 vs B128 swizzle causes WGMMA inefficien
 iter011	iter011_asym_barrier	272.315	DISCARD	latency_bound	Asymmetric full barrier init(1): consumer PTX poll via mbarrier.test_wait.parity
 iter012	iter012_persistent_astat	98.35	DISCARD	compute_bound	Persistent 114-CTA A-stationary kernel with atomic tile counter: per-tile barrie
+iter013	iter013_astat_grid	97.97	DISCARD	compute_bound	Swapped grid to (tiles_n=65, tiles_m=257) for A-stationary: consecutive CTAs sha
+iter014	iter014_persist_overlap	98.37	DISCARD	compute_bound	Persistent 114-CTA with overlapped output TMA: same 142GB DRAM as iter012, tenso
+iter015	iter015_l2promo_a	252.4	DISCARD	memory_bound	L2 promotion L2_128B for A TMA: pollutes L2, evicts B cache, 252T vs 277T. PROMO
+iter016	iter016_s4_early	255.59	DISCARD	compute_bound	STAGES=4+early arrive: barrier stalls drop to 37.5%, but 255T vs 277T. More SMEM

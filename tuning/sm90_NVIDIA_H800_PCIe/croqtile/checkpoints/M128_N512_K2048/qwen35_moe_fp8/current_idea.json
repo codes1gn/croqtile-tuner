@@ -1,0 +1,14 @@
+{
+  "schema": "croq-checkpoint-v1",
+  "timestamp": "2026-04-19T16:10:57Z",
+  "dsl": "croqtile",
+  "shape_key": "M128_N512_K2048",
+  "iter": "iter004_async_launch",
+  "bottleneck": "latency_bound",
+  "idea": "Remove cudaDeviceSynchronize from all host launch functions so kernels execute asynchronously without CPU-GPU sync between them. The compiler ignores parallel.async, so we manually remove the syncs from generated .cu.",
+  "expected_gain": "+10x from 0.47 to ~4+ TFLOPS",
+  "levers": [
+    "cudaDeviceSynchronize_removal"
+  ],
+  "status": "PLANNED"
+}

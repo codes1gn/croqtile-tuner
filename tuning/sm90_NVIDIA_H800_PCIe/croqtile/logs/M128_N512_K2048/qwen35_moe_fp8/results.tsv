@@ -1,0 +1,6 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_cublas	225.3185	KEEP	baseline	cuBLAS reference baseline
+iter001	iter001_baseline	0.262	KEEP	mixed	Baseline 7-kernel fused MoE pipeline from tutorial (00_baseline.co)
+iter002	iter002_all_fusions	0.431	KEEP	launch_bound	Fuse scatter into WGMMA, count+build, quant+sort+gather to reduce 7 kernels to 4
+iter003	iter003_full_optimized	0.470	KEEP	launch_bound	Apply all tutorial optimizations: parallel.async, grid swap, L2 persistence, QSG
+iter004	iter004_async_launch	12.07	KEEP	latency_bound	Replace opt_copy (scalar 32-bit loads) with cp.async tiled_copy using SM80_CP_AS

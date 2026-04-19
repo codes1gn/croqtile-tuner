@@ -1,0 +1,7 @@
+{
+  "task_uid": "fused_moe_fp8_qwen35",
+  "dsl": "croqtile",
+  "model": "qwen35_moe_fp8",
+  "device": "sm90_NVIDIA_H800_PCIe",
+  "status": "running"
+}
