@@ -1,0 +1,6 @@
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/opus-4/iter009_persis_1p3c.co:28.12: info: In the current kernel `__choreo_device_matmul_fp16fp32_persis_1p3c`, cudaFuncAttributeMaxDynamicSharedMemorySize is set to `180224` bytes, cause shared memory usage has exceeded the default limit 48KB.
+    parallel block_id by NUM_SMS : block {
+             ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/opus-4/iter009_persis_1p3c.co:51.32: warning: The implicit type conversion may lose precision: 'f64' to 'f32'
+              mc = mma.fill.f32 0.0;
+                                 ^

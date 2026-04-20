@@ -1,0 +1,22 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_cublas	476.7218	KEEP	baseline	cuBLAS reference baseline
+iter001	iter001_ws1p2c_base	270.237	KEEP	memory_bound	1p2c warp-specialized baseline from prior tuning
+iter002	iter002_wn128_s3	275.565	KEEP	memory_bound	Increase WARP_N 64->128 for better compute/mem ratio
+iter003	iter003_wn128_s4	292.611	KEEP	memory_bound	Increase pipeline stages 3->4 to hide memory latency
+iter004	iter004_ws1p1c	249.727	DISCARD	compute_bound	1p1c topology hurt K-heavy shape - need 2 consumers
+iter005	iter005_wn192_s4	329.233	KEEP	compute_bound	WARP_N=192 with 3 stages for larger tiles
+iter006	iter006_wn256_s2	258.258	DISCARD	memory_bound	WARP_N=256 with 2 stages - not enough pipeline depth
+iter007	iter007_persis_wn192	343.229	KEEP	compute_bound	Persistent kernel WARP_N=192, 3 stages - new best
+iter008	iter008_persis_wn128_s4	233.956	DISCARD	memory_bound	Persistent WARP_N=128 4 stages - smaller tiles hurt
+iter009	iter009_persis_1p3c	0.0	COMPILE_FAIL	compute_bound	Persistent 1p3c with TILE_M=192 - barrier sync bug causes verification failure
+iter010	iter010_transp_store	0.0	COMPILE_FAIL	compute_bound	mma.store.transp for bank-conflict-free epilogue - layout mismatch with TMA
+iter011	iter011_swiz64	0.0	COMPILE_FAIL	compute_bound	SWIZ=64 - TMA invalid argument error
+iter012	iter012_np_1p3c	302.68	DISCARD	compute_bound	Non-persistent 1p3c with TILE_M=192 and WARP_N=128 - slower than persistent 1p2c
+iter013	iter013_persis_1p1c_wn192	267.27	DISCARD	compute_bound	Persistent 1p1c TILE_M=64 WARP_N=192 - K-heavy shape needs more consumers
+iter014	iter014_launch_bounds	344.52	KEEP	compute_bound	Phase 2: __launch_bounds__(384,1) on iter007 - improved occupancy
+iter015	iter015_unroll_warp	341.13	DISCARD	compute_bound	Phase 2: #pragma unroll on iv_warp loop - increased register pressure
+iter016	iter016_persis_wn160_s4	358.87	KEEP	compute_bound	Persistent WARP_N=160 4 stages with launch_bounds - deeper pipeline helps K-heav
+iter017	iter017_persis_wn164_s4	0.0	COMPILE_FAIL	compute_bound	WARP_N=164 - MMA shape not supported by SM90
+iter018	iter018_persis_tm64_wn192_s4	267.34	DISCARD	compute_bound	TILE_M=64 1p1c - too small tile, K-heavy shape needs more consumers
+iter019	iter019_persis_wn192_lb2	0.0	COMPILE_FAIL	compute_bound	launch_bounds(384,2) - kernel needs 122+ regs, insufficient for minBlocks=2
+iter020	iter020_np_wn160_s4	368.96	KEEP	compute_bound	Non-persistent WARP_N=160, 4 stages, launch_bounds - beats persistent iter016

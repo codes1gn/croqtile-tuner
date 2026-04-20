@@ -1,16 +1,7 @@
 {
-  "task_id": 10,
-  "task_uid": "6528a7a656ac",
-  "model": "sonnet-4-6",
-  "variant": "",
-  "agent_type": null,
-  "device": "NVIDIA H800 PCIe",
-  "mode": "opencode",
-  "status": "running",
-  "request_budget": 1,
-  "request_number": 0,
-  "max_iterations": 30,
-  "respawn_count": 0,
-  "opencode_session_id": null,
-  "sessions": []
+  "task_uid": "croqtune-fp16fp32-2048x2048x16384-20260420222853",
+  "dsl": "croqtile",
+  "model": "opus-4",
+  "device": "sm90_NVIDIA_H800_PCIe",
+  "status": "running"
 }

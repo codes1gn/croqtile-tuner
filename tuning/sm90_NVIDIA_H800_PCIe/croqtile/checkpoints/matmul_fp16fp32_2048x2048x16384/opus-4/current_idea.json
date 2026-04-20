@@ -1,0 +1,17 @@
+{
+  "schema": "croq-checkpoint-v1",
+  "timestamp": "2026-04-20T15:11:30Z",
+  "dsl": "croqtile",
+  "shape_key": "matmul_fp16fp32_2048x2048x16384",
+  "iter": "iter020_np_wn160_s4",
+  "bottleneck": "compute_bound",
+  "idea": "Non-persistent WARP_N=160, 4 stages with launch_bounds - compare to persistent iter016",
+  "expected_gain": "+5 TFLOPS from less persistent overhead",
+  "levers": [
+    "non-persistent",
+    "WARP_N=160",
+    "STAGES=4",
+    "__launch_bounds__"
+  ],
+  "status": "PLANNED"
+}
