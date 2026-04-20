@@ -1,0 +1,117 @@
+{"ts":"2026-04-20T04:08:55.689Z","tool":"resume_state","msg":"Loading tuning state for croqtile/matmul_e4m3fp16fp32_8192x8192x8192","level":"info"}
+{"ts":"2026-04-20T04:08:55.691Z","tool":"resume_state","msg":"No tuning artifacts found for croqtile/matmul_e4m3fp16fp32_8192x8192x8192","level":"error"}
+{"ts":"2026-04-20T04:09:07.358Z","tool":"store_baseline","msg":"Measuring cuBLAS baseline for e4m3 8192x8192x8192","level":"info"}
+{"ts":"2026-04-20T04:09:09.294Z","tool":"store_baseline","msg":"cuBLAS baseline measurement failed","level":"error"}
+{"ts":"2026-04-20T04:09:53.561Z","tool":"store_baseline","msg":"Measuring cuBLAS baseline for f16fp32 8192x8192x8192","level":"info"}
+{"ts":"2026-04-20T04:09:55.886Z","tool":"store_baseline","msg":"cuBLAS baseline: 456.9654 TFLOPS (saved to tuning/sm90_NVIDIA_H800_PCIe/croqtile/baseline/matmul_e4m3fp16fp32_8192x8192x8192/opus-4/cublas_result.json)","level":"info"}
+{"ts":"2026-04-20T04:09:56.207Z","tool":"store_round","msg":"Storing iter000_cublas (KEEP 456.9654 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:09:56.226Z","tool":"store_round","msg":"Stored iter000_cublas: KEEP 456.9654 TFLOPS (round 0)","level":"info"}
+{"ts":"2026-04-20T04:09:56.237Z","tool":"store_baseline","msg":"Stored iter000_cublas: 456.9654 TFLOPS (baseline)","level":"info"}
+{"ts":"2026-04-20T04:11:25.863Z","tool":"co2cu","msg":"Compiling iter001_warpspec_1p1c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T04:11:25.970Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_e4m3fp16fp32_8192x8192x8192/opus-4/iter001_warpspec_1p1c.cu","level":"info"}
+{"ts":"2026-04-20T04:14:08.582Z","tool":"co2cu","msg":"Compiling iter001_warpspec_1p1c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T04:14:08.689Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_e4m3fp16fp32_8192x8192x8192/opus-4/iter001_warpspec_1p1c.cu","level":"info"}
+{"ts":"2026-04-20T04:15:48.653Z","tool":"co2cu","msg":"Compiling iter001_warpspec_1p1c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T04:15:48.760Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_e4m3fp16fp32_8192x8192x8192/opus-4/iter001_warpspec_1p1c.cu","level":"info"}
+{"ts":"2026-04-20T04:16:27.301Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_e4m3fp16fp32_8192x8192x8192/opus-4/iter001_warpspec_1p1c --skip-verify","level":"info"}
+{"ts":"2026-04-20T04:16:36.996Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_e4m3fp16fp32_8192x8192x8192/opus-4/iter001_warpspec_1p1c -- --skip-verify","level":"info"}
+{"ts":"2026-04-20T04:16:45.420Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_e4m3fp16fp32_8192x8192x8192/opus-4/ncu_iter001_warpspec_1p1c_round1.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_e4m3fp16fp32_8192x8192x8192/opus-4/ncu_iter001_warpspec_1p1c_round1.csv","level":"info"}
+{"ts":"2026-04-20T04:16:54.091Z","tool":"profile_extract","msg":"Analyzing iter001_warpspec_1p1c from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_e4m3fp16fp32_8192x8192x8192/opus-4/ncu_iter001_warpspec_1p1c_round1.csv","level":"info"}
+{"ts":"2026-04-20T04:17:06.185Z","tool":"store_round","msg":"Storing iter001_warpspec_1p1c (KEEP 398.73 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:17:06.204Z","tool":"store_round","msg":"Stored iter001_warpspec_1p1c: KEEP 398.73 TFLOPS (round 1)","level":"info"}
+{"ts":"2026-04-20T04:18:06.952Z","tool":"next_iter","msg":"Resolved iter002_wn256","level":"info"}
+{"ts":"2026-04-20T04:18:15.382Z","tool":"checkpoint_write","msg":"PLANNED iter002_wn256: Increase WARP_N from 128 to 256 to improve compute density and reduce memory pressure per TFLOP","level":"info"}
+{"ts":"2026-04-20T04:19:00.201Z","tool":"co2cu","msg":"Compiling iter002_wn256.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T04:19:00.308Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_e4m3fp16fp32_8192x8192x8192/opus-4/iter002_wn256.cu","level":"info"}
+{"ts":"2026-04-20T04:20:02.890Z","tool":"store_round","msg":"Storing iter002_wn256 (DISCARD 274.14 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:20:02.909Z","tool":"store_round","msg":"Stored iter002_wn256: DISCARD 274.14 TFLOPS (round 2)","level":"info"}
+{"ts":"2026-04-20T04:20:32.283Z","tool":"next_iter","msg":"Resolved iter003_wspec1p2c_s3","level":"info"}
+{"ts":"2026-04-20T04:20:32.318Z","tool":"checkpoint_write","msg":"PLANNED iter003_wspec1p2c_s3: Switch to 1p2c warp specialization with 3 stages - more consumer warpgroups improve compute overlap, fewer stages reduce SMEM","level":"info"}
+{"ts":"2026-04-20T04:21:49.797Z","tool":"co2cu","msg":"Compiling iter003_wspec1p2c_s3.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T04:21:49.912Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_e4m3fp16fp32_8192x8192x8192/opus-4/iter003_wspec1p2c_s3.cu","level":"info"}
+{"ts":"2026-04-20T04:23:08.497Z","tool":"store_round","msg":"Storing iter003_wspec1p2c_s3 (KEEP 576.06 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:23:08.515Z","tool":"store_round","msg":"Stored iter003_wspec1p2c_s3: KEEP 576.06 TFLOPS (round 3)","level":"info"}
+{"ts":"2026-04-20T04:23:29.829Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_e4m3fp16fp32_8192x8192x8192/opus-4/iter003_wspec1p2c_s3 -- --skip-verify","level":"info"}
+{"ts":"2026-04-20T04:23:38.567Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_e4m3fp16fp32_8192x8192x8192/opus-4/ncu_iter003_wspec1p2c_s3_round4.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_e4m3fp16fp32_8192x8192x8192/opus-4/ncu_iter003_wspec1p2c_s3_round4.csv","level":"info"}
+{"ts":"2026-04-20T04:23:47.541Z","tool":"profile_extract","msg":"Analyzing iter003_wspec1p2c_s3 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_e4m3fp16fp32_8192x8192x8192/opus-4/ncu_iter003_wspec1p2c_s3_round4.csv","level":"info"}
+{"ts":"2026-04-20T04:23:59.968Z","tool":"next_iter","msg":"Resolved iter004_wspec1p3c_s4","level":"info"}
+{"ts":"2026-04-20T04:24:00.001Z","tool":"checkpoint_write","msg":"PLANNED iter004_wspec1p3c_s4: Try 1p3c warp specialization with 4 stages - 3 consumers for more compute parallelism, 4 stages for deeper pipelining","level":"info"}
+{"ts":"2026-04-20T04:25:16.060Z","tool":"co2cu","msg":"Compiling iter004_wspec1p3c_s4.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T04:25:16.175Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_e4m3fp16fp32_8192x8192x8192/opus-4/iter004_wspec1p3c_s4.cu","level":"info"}
+{"ts":"2026-04-20T04:25:53.332Z","tool":"store_round","msg":"Storing iter004_wspec1p3c_s4 (KEEP 674.08 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:25:53.350Z","tool":"store_round","msg":"Stored iter004_wspec1p3c_s4: KEEP 674.08 TFLOPS (round 4)","level":"info"}
+{"ts":"2026-04-20T04:26:08.954Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_e4m3fp16fp32_8192x8192x8192/opus-4/iter004_wspec1p3c_s4 -- --skip-verify","level":"info"}
+{"ts":"2026-04-20T04:26:17.697Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_e4m3fp16fp32_8192x8192x8192/opus-4/ncu_iter004_wspec1p3c_s4_round5.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_e4m3fp16fp32_8192x8192x8192/opus-4/ncu_iter004_wspec1p3c_s4_round5.csv","level":"info"}
+{"ts":"2026-04-20T04:26:27.259Z","tool":"profile_extract","msg":"Analyzing iter004_wspec1p3c_s4 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_e4m3fp16fp32_8192x8192x8192/opus-4/ncu_iter004_wspec1p3c_s4_round5.csv","level":"info"}
+{"ts":"2026-04-20T04:27:01.882Z","tool":"next_iter","msg":"Resolved iter005_wn64_1p3c_s4","level":"info"}
+{"ts":"2026-04-20T04:27:01.917Z","tool":"checkpoint_write","msg":"PLANNED iter005_wn64_1p3c_s4: Try smaller WARP_N=64 with 1p3c to increase block count and SM utilization","level":"info"}
+{"ts":"2026-04-20T04:27:30.083Z","tool":"co2cu","msg":"Compiling iter005_wn64_1p3c_s4.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T04:27:30.197Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_e4m3fp16fp32_8192x8192x8192/opus-4/iter005_wn64_1p3c_s4.cu","level":"info"}
+{"ts":"2026-04-20T04:28:21.002Z","tool":"store_round","msg":"Storing iter005_wn64_1p3c_s4 (DISCARD 154.90 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:28:21.021Z","tool":"store_round","msg":"Stored iter005_wn64_1p3c_s4: DISCARD 154.90 TFLOPS (round 5)","level":"info"}
+{"ts":"2026-04-20T04:28:40.266Z","tool":"next_iter","msg":"Resolved iter006_wn192_1p3c_s3","level":"info"}
+{"ts":"2026-04-20T04:28:40.299Z","tool":"checkpoint_write","msg":"PLANNED iter006_wn192_1p3c_s3: Try WARP_N=192 with 3 stages - larger tiles for compute efficiency, fewer stages for reduced SMEM","level":"info"}
+{"ts":"2026-04-20T04:28:55.867Z","tool":"co2cu","msg":"Compiling iter006_wn192_1p3c_s3.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T04:28:55.982Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_e4m3fp16fp32_8192x8192x8192/opus-4/iter006_wn192_1p3c_s3.cu","level":"info"}
+{"ts":"2026-04-20T04:32:07.148Z","tool":"store_round","msg":"Storing iter006_wn192_1p3c_s3 (HANG 0.0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:32:07.166Z","tool":"store_round","msg":"Stored iter006_wn192_1p3c_s3: HANG 0.0 TFLOPS (round 6)","level":"info"}
+{"ts":"2026-04-20T04:32:19.120Z","tool":"next_iter","msg":"Resolved iter007_persis_sta_1p3c","level":"info"}
+{"ts":"2026-04-20T04:32:19.156Z","tool":"checkpoint_write","msg":"PLANNED iter007_persis_sta_1p3c: Persistent kernel with static tile assignment and 1p3c warpspec - reduce launch overhead by keeping CTAs resident","level":"info"}
+{"ts":"2026-04-20T04:33:46.578Z","tool":"co2cu","msg":"Compiling iter007_persis_sta_1p3c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T04:33:46.775Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_e4m3fp16fp32_8192x8192x8192/opus-4/iter007_persis_sta_1p3c.cu","level":"info"}
+{"ts":"2026-04-20T04:34:23.481Z","tool":"store_round","msg":"Storing iter007_persis_sta_1p3c (DISCARD 458.42 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:34:23.499Z","tool":"store_round","msg":"Stored iter007_persis_sta_1p3c: DISCARD 458.42 TFLOPS (round 7)","level":"info"}
+{"ts":"2026-04-20T04:34:42.803Z","tool":"next_iter","msg":"Resolved iter008_s5_1p3c","level":"info"}
+{"ts":"2026-04-20T04:34:42.848Z","tool":"checkpoint_write","msg":"PLANNED iter008_s5_1p3c: Try 5 pipeline stages for deeper latency hiding","level":"info"}
+{"ts":"2026-04-20T04:37:50.353Z","tool":"next_iter","msg":"Resolved iter009_tk64_s5_1p3c","level":"info"}
+{"ts":"2026-04-20T04:37:50.397Z","tool":"checkpoint_write","msg":"PLANNED iter009_tk64_s5_1p3c: TILE_K=64 with 5 stages to fit SMEM while maintaining pipeline depth","level":"info"}
+{"ts":"2026-04-20T04:39:22.578Z","tool":"next_iter","msg":"Resolved iter010_wspec1p4c_s5","level":"info"}
+{"ts":"2026-04-20T04:39:22.612Z","tool":"checkpoint_write","msg":"PLANNED iter010_wspec1p4c_s5: 1p4c warp specialization with 5 stages, TILE_K=64 to fit SMEM, more consumer parallelism","level":"info"}
+{"ts":"2026-04-20T04:40:48.176Z","tool":"next_iter","msg":"Resolved iter011_wn96_1p3c_s4","level":"info"}
+{"ts":"2026-04-20T04:40:48.223Z","tool":"checkpoint_write","msg":"PLANNED iter011_wn96_1p3c_s4: WARP_N=96 for finer block granularity with 1p3c and 4 stages","level":"info"}
+{"ts":"2026-04-20T04:45:03.671Z","tool":"store_round","msg":"Storing iter011_wn96_1p3c_s4 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:45:03.690Z","tool":"store_round","msg":"Stored iter011_wn96_1p3c_s4: DISCARD 0 TFLOPS (round 8)","level":"info"}
+{"ts":"2026-04-20T04:45:18.407Z","tool":"next_iter","msg":"Resolved iter012_nocommit_1p3c","level":"info"}
+{"ts":"2026-04-20T04:45:18.452Z","tool":"checkpoint_write","msg":"PLANNED iter012_nocommit_1p3c: Remove explicit mma.commit to let compiler optimize placement","level":"info"}
+{"ts":"2026-04-20T04:46:28.274Z","tool":"store_round","msg":"Storing iter012_nocommit_1p3c (KEEP 689.20 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:46:28.293Z","tool":"store_round","msg":"Stored iter012_nocommit_1p3c: KEEP 689.20 TFLOPS (round 9)","level":"info"}
+{"ts":"2026-04-20T04:46:43.024Z","tool":"next_iter","msg":"Resolved iter013_s5_nocommit","level":"info"}
+{"ts":"2026-04-20T04:46:43.069Z","tool":"checkpoint_write","msg":"PLANNED iter013_s5_nocommit: 5 pipeline stages with no mma.commit to increase latency hiding","level":"info"}
+{"ts":"2026-04-20T04:47:04.822Z","tool":"next_iter","msg":"Resolved iter014_s3_nocommit","level":"info"}
+{"ts":"2026-04-20T04:47:04.867Z","tool":"checkpoint_write","msg":"PLANNED iter014_s3_nocommit: 3 pipeline stages with no mma.commit - reduced SMEM, test if 3 vs 4 matters","level":"info"}
+{"ts":"2026-04-20T04:48:15.550Z","tool":"store_round","msg":"Storing iter014_s3_nocommit (DISCARD 665.91 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:48:15.568Z","tool":"store_round","msg":"Stored iter014_s3_nocommit: DISCARD 665.91 TFLOPS (round 10)","level":"info"}
+{"ts":"2026-04-20T04:48:44.232Z","tool":"next_iter","msg":"Resolved iter016_ws1p2c_nocommit","level":"info"}
+{"ts":"2026-04-20T04:48:44.265Z","tool":"checkpoint_write","msg":"PLANNED iter016_ws1p2c_nocommit: 1p2c warp specialization with no mma.commit - test 2 vs 3 consumers","level":"info"}
+{"ts":"2026-04-20T04:49:48.270Z","tool":"store_round","msg":"Storing iter016_ws1p2c_nocommit (DISCARD 610.88 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:49:48.288Z","tool":"store_round","msg":"Stored iter016_ws1p2c_nocommit: DISCARD 610.88 TFLOPS (round 11)","level":"info"}
+{"ts":"2026-04-20T04:50:04.154Z","tool":"next_iter","msg":"Resolved iter017_stmatrix_nocommit","level":"info"}
+{"ts":"2026-04-20T04:50:04.249Z","tool":"checkpoint_write","msg":"PLANNED iter017_stmatrix_nocommit: Use --stmatrix PTX for more efficient accumulator store to SMEM","level":"info"}
+{"ts":"2026-04-20T04:51:01.499Z","tool":"store_round","msg":"Storing iter017_stmatrix_nocommit (DISCARD 680.01 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:51:01.518Z","tool":"store_round","msg":"Stored iter017_stmatrix_nocommit: DISCARD 680.01 TFLOPS (round 12)","level":"info"}
+{"ts":"2026-04-20T04:51:16.305Z","tool":"next_iter","msg":"Resolved iter018_hoistofs_nocommit","level":"info"}
+{"ts":"2026-04-20T04:51:16.401Z","tool":"checkpoint_write","msg":"PLANNED iter018_hoistofs_nocommit: Use --hoist-offset to hoist loop-invariant address calculations","level":"info"}
+{"ts":"2026-04-20T04:52:14.704Z","tool":"store_round","msg":"Storing iter018_hoistofs_nocommit (DISCARD 671.13 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:52:14.724Z","tool":"store_round","msg":"Stored iter018_hoistofs_nocommit: DISCARD 671.13 TFLOPS (round 13)","level":"info"}
+{"ts":"2026-04-20T04:52:38.829Z","tool":"next_iter","msg":"Resolved iter019_wn256_nocommit","level":"info"}
+{"ts":"2026-04-20T04:52:38.874Z","tool":"checkpoint_write","msg":"PLANNED iter019_wn256_nocommit: WARP_N=256 with no mma.commit - larger tiles but iter002 with commit was slower","level":"info"}
+{"ts":"2026-04-20T04:53:24.727Z","tool":"next_iter","msg":"Resolved iter020_ws1p4c_s2_nocommit","level":"info"}
+{"ts":"2026-04-20T04:53:24.772Z","tool":"checkpoint_write","msg":"PLANNED iter020_ws1p4c_s2_nocommit: 1p4c with 2 stages - more consumer parallelism, reduced stages to fit SMEM","level":"info"}
+{"ts":"2026-04-20T04:54:47.067Z","tool":"store_round","msg":"Storing iter020_ws1p4c_s2_nocommit (KEEP 733.99 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:54:47.085Z","tool":"store_round","msg":"Stored iter020_ws1p4c_s2_nocommit: KEEP 733.99 TFLOPS (round 14)","level":"info"}
+{"ts":"2026-04-20T04:55:02.872Z","tool":"next_iter","msg":"Resolved iter021_ws1p4c_s3_nocommit","level":"info"}
+{"ts":"2026-04-20T04:55:02.917Z","tool":"checkpoint_write","msg":"PLANNED iter021_ws1p4c_s3_nocommit: 1p4c with 3 stages - try more pipeline depth","level":"info"}
+{"ts":"2026-04-20T04:56:07.648Z","tool":"store_round","msg":"Storing iter021_ws1p4c_s3_nocommit (KEEP 765.81 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:56:07.667Z","tool":"store_round","msg":"Stored iter021_ws1p4c_s3_nocommit: KEEP 765.81 TFLOPS (round 15)","level":"info"}
+{"ts":"2026-04-20T04:56:35.319Z","tool":"next_iter","msg":"Resolved iter022_ws1p5c_s2_nocommit","level":"info"}
+{"ts":"2026-04-20T04:56:35.364Z","tool":"checkpoint_write","msg":"PLANNED iter022_ws1p5c_s2_nocommit: 1p5c with 2 stages - even more consumers","level":"info"}
+{"ts":"2026-04-20T04:57:36.218Z","tool":"store_round","msg":"Storing iter022_ws1p5c_s2_nocommit (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:57:36.237Z","tool":"store_round","msg":"Stored iter022_ws1p5c_s2_nocommit: DISCARD 0 TFLOPS (round 16)","level":"info"}
+{"ts":"2026-04-20T04:57:58.689Z","tool":"next_iter","msg":"Resolved iter023_ws1p4c_s3_stmatrix","level":"info"}
+{"ts":"2026-04-20T04:57:58.724Z","tool":"checkpoint_write","msg":"PLANNED iter023_ws1p4c_s3_stmatrix: 1p4c 3 stages with --stmatrix flag","level":"info"}
+{"ts":"2026-04-20T04:58:36.798Z","tool":"store_round","msg":"Storing iter023_ws1p4c_s3_stmatrix (DISCARD 743.44 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:58:36.817Z","tool":"store_round","msg":"Stored iter023_ws1p4c_s3_stmatrix: DISCARD 743.44 TFLOPS (round 17)","level":"info"}
+{"ts":"2026-04-20T04:59:07.774Z","tool":"next_iter","msg":"Resolved iter024_ws1p4c_s4_nocommit","level":"info"}
+{"ts":"2026-04-20T04:59:07.818Z","tool":"checkpoint_write","msg":"PLANNED iter024_ws1p4c_s4_nocommit: 1p4c with 4 stages - higher pipeline depth","level":"info"}
+{"ts":"2026-04-20T04:59:18.286Z","tool":"store_round","msg":"Storing iter024_ws1p4c_s4_nocommit (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:59:18.305Z","tool":"store_round","msg":"Stored iter024_ws1p4c_s4_nocommit: DISCARD 0 TFLOPS (round 18)","level":"info"}
