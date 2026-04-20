@@ -14,3 +14,10 @@ round	iter	kernel	tflops	decision	bottleneck	idea_summary
 12	iter013	iter013_1p5c_m192_n256_stg2	0	COMPILE_FAIL	N/A	M192 tile - 8192 not divisible by 192
 13	iter014	iter014_1p3c_m128_n384_stg2	0	COMPILE_FAIL	N/A	M128xN384 - 8192 not divisible by 384
 14	iter015	iter015_1p4c_m64_n512_stg2	0	COMPILE_FAIL	N/A	M64xN512 - 8192 not divisible by 512
+15	iter016	iter016_1p4c_m128_n256_stg2_fixed	0	VERIFY_FAIL	N/A	4-consumer fix - zeros
+16	iter017	iter017_1p1c_n128_stg4_correct	355.7	KEEP	compute	1p1c N128 correct
+17	iter018	iter018_1p2c_n256_stg4_correct	537.9	KEEP	compute	1p2c N256 correct
+18	iter019	iter019_1p4c_m128_n256_stg3_correct	683.7	KEEP	compute	1p4c M128xN256 3-stg BEST
+19	iter020	iter020_1p4c_m128_n256_stg2_correct	666.4	DISCARD	pipeline	1p4c M128xN256 2-stg
+20	iter021	iter021_1p4c_m128_n256_stg4_correct	0	COMPILE_FAIL	N/A	4-stg SMEM exceeded
+21	iter022	iter022_1p4c_m64_n512_stg2_correct	0	LAUNCH_FAIL	N/A	N512 CUDA err
