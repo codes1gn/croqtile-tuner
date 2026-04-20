@@ -1,0 +1,7 @@
+{
+  "task_uid": "1776658147-e4m3-8192",
+  "dsl": "croqtile",
+  "model": "opus-4",
+  "device": "sm90_NVIDIA_H800_PCIe",
+  "status": "running"
+}
