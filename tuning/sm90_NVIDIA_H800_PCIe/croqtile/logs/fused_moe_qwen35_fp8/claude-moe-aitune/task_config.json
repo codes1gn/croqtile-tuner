@@ -9,9 +9,9 @@
   "operator": "fused_moe",
   "dtype": "fp8",
   "baseline_tflops": 7.11,
-  "best_tflops": 9.67,
-  "best_kernel": "iter012_reduce_sync",
-  "total_iterations": 44,
+  "best_tflops": 13.80,
+  "best_kernel": "iter099_fusememset",
+  "total_iterations": 100,
   "migration_date": "2026-04-20",
-  "notes": "Qwen3.5 35B A3B FP8 end-to-end fused MoE. Optimizations: dense prefix scatter, scatter fusion, CPU prefix sum, fuse quant/sort, transpose scales, reduce sync. +36% over baseline."
+  "notes": "Qwen3.5 35B A3B FP8 end-to-end fused MoE. 100 iterations. Key optimizations: dense prefix scatter, scatter fusion, CPU prefix sum, fuse quant/sort, transpose scales, QSG512, fusememset. +94% over baseline."
 }
