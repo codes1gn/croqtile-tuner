@@ -61,7 +61,7 @@ __co__ void blockscale_gemm(global f8_e4m3 [M, K] lhs,
       }
 
       inthreads.async (p1 == 1) {
-        mc = mma.fill.f16 0.0f;
+        mc = mma.fill.f32 0.0f;
         foreach {s} in [MATMUL_STAGES] {
           trigger empty[s];
         }
