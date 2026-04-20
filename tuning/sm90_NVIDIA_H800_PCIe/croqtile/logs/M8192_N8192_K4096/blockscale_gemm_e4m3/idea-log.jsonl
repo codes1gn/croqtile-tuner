@@ -23,3 +23,5 @@
 {"round": 22, "iter": "iter023", "kernel": "iter023_1p2c_m128_n128_stg3_correct", "tflops": 539.9, "decision": "DISCARD", "bottleneck": "tiling", "idea": "1p2c M128xN128 - smaller tile worse", "category": "tiling"}
 {"round": 23, "iter": "iter024", "kernel": "iter024_1p8c_m256_n256_stg2_correct", "tflops": 0, "decision": "COMPILE_FAIL", "bottleneck": "N/A", "idea": "1p8c M256xN256 - SMEM exceeded", "category": "tiling"}
 {"round": 24, "iter": "iter025", "kernel": "iter025_persis_1p4c_m128_n256_stg3", "tflops": 0, "decision": "COMPILE_FAIL", "bottleneck": "N/A", "idea": "Persistent 1p4c - syntax error", "category": "structure"}
+{"round": 25, "iter": "iter026", "kernel": "iter026_1p4c_m128_n256_k64_stg5", "tflops": 595.6, "decision": "DISCARD", "bottleneck": "tiling", "idea": "K64 5-stage - reduced K-tile worse", "category": "tiling"}
+{"round": 26, "iter": "iter027", "kernel": "iter027_1p4c_m128_n256_swiz64_stg3", "tflops": 468.2, "decision": "DISCARD", "bottleneck": "memory", "idea": "Swizzle 64 K64 - significantly worse", "category": "memory"}
