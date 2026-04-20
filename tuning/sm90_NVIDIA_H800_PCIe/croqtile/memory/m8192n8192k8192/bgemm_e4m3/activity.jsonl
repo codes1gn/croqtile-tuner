@@ -86,3 +86,25 @@
 {"ts":"2026-04-20T05:07:34.947Z","tool":"checkpoint_write","msg":"PLANNED iter020_rhs_first_stg2: RHS-first with 2 stages instead of 3. Testing if shallower pipeline works better with RHS-first.","level":"info"}
 {"ts":"2026-04-20T05:08:58.473Z","tool":"store_round","msg":"Storing iter020_rhs_first_stg2 (DISCARD 567.919 TFLOPS)","level":"info"}
 {"ts":"2026-04-20T05:08:58.491Z","tool":"store_round","msg":"Stored iter020_rhs_first_stg2: DISCARD 567.919 TFLOPS (round 20)","level":"info"}
+{"ts":"2026-04-20T05:09:21.503Z","tool":"next_iter","msg":"Resolved iter021_scale_after_loop","level":"info"}
+{"ts":"2026-04-20T05:09:21.537Z","tool":"checkpoint_write","msg":"PLANNED iter021_scale_after_loop: Move mma.scale to after K-loop. Accumulate unscaled then apply scale once at end.","level":"info"}
+{"ts":"2026-04-20T05:10:28.460Z","tool":"checkpoint_write","msg":"PLANNED iter021_transp_store: Use mma.store.transp for transposed output storage pattern to reduce bank conflicts.","level":"info"}
+{"ts":"2026-04-20T05:11:00.330Z","tool":"store_round","msg":"Storing iter021_transp_store (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T05:11:00.349Z","tool":"store_round","msg":"Stored iter021_transp_store: COMPILE_FAIL 0 TFLOPS (round 21)","level":"info"}
+{"ts":"2026-04-20T05:11:01.046Z","tool":"next_iter","msg":"Resolved iter022_warpk16_rhs_first","level":"info"}
+{"ts":"2026-04-20T05:11:01.080Z","tool":"checkpoint_write","msg":"PLANNED iter022_warpk16_rhs_first: Use WARP_K=16 with RHS-first. Smaller K-step may improve instruction-level parallelism.","level":"info"}
+{"ts":"2026-04-20T05:12:06.246Z","tool":"checkpoint_write","msg":"PLANNED iter022_rhs_first_stg5: RHS-first with 5 stages for deeper pipeline, testing extreme latency hiding.","level":"info"}
+{"ts":"2026-04-20T05:12:17.790Z","tool":"store_round","msg":"Storing iter022_rhs_first_stg5 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T05:12:17.810Z","tool":"store_round","msg":"Stored iter022_rhs_first_stg5: COMPILE_FAIL 0 TFLOPS (round 22)","level":"info"}
+{"ts":"2026-04-20T05:12:18.524Z","tool":"next_iter","msg":"Resolved iter023_tm256_stg2_rhs","level":"info"}
+{"ts":"2026-04-20T05:12:18.559Z","tool":"checkpoint_write","msg":"PLANNED iter023_tm256_stg2_rhs: TILE_M=256 with 1p4c and 2 stages. Larger M tile for better reuse, compensate with fewer stages.","level":"info"}
+{"ts":"2026-04-20T05:13:47.066Z","tool":"store_round","msg":"Storing iter023_tm256_stg2_rhs (KEEP 656.442 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T05:13:47.085Z","tool":"store_round","msg":"Stored iter023_tm256_stg2_rhs: KEEP 656.442 TFLOPS (round 23)","level":"info"}
+{"ts":"2026-04-20T05:13:56.794Z","tool":"next_iter","msg":"Resolved iter024_tm256_stg3_rhs","level":"info"}
+{"ts":"2026-04-20T05:13:56.828Z","tool":"checkpoint_write","msg":"PLANNED iter024_tm256_stg3_rhs: TILE_M=256 with 1p4c and 3 stages. Testing if 3 stages improves on TILE_M=256.","level":"info"}
+{"ts":"2026-04-20T05:15:29.076Z","tool":"store_round","msg":"Storing iter024_tm256_stg3_rhs (DISCARD 622.933 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T05:15:29.095Z","tool":"store_round","msg":"Stored iter024_tm256_stg3_rhs: DISCARD 622.933 TFLOPS (round 24)","level":"info"}
+{"ts":"2026-04-20T05:15:29.871Z","tool":"next_iter","msg":"Resolved iter025_tm256_wn256_stg1","level":"info"}
+{"ts":"2026-04-20T05:15:29.906Z","tool":"checkpoint_write","msg":"PLANNED iter025_tm256_wn256_stg1: TILE_M=256, WARP_N=256 with 1p4c and 1 stage. Maximum tile size with minimal stages.","level":"info"}
+{"ts":"2026-04-20T05:17:08.861Z","tool":"store_round","msg":"Storing iter025_tm256_wn256_stg1 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T05:17:08.880Z","tool":"store_round","msg":"Stored iter025_tm256_wn256_stg1: COMPILE_FAIL 0 TFLOPS (round 25)","level":"info"}

@@ -20,3 +20,8 @@ iter017	iter017_rhs_first_stg4	564.744	DISCARD	memory_bound	4 stages with RHS-fi
 iter018	iter018_rhs_first_wn256	0	COMPILE_FAIL	memory_bound	WARP_N=256 with 1p3c exceeds shared memory limit (270KB > 233KB)
 iter019	iter019_rhs_first_tm128	514.625	DISCARD	memory_bound	TILE_M=128 with 1p2c worse. 1p3c with TILE_M=192 is better utilization.
 iter020	iter020_rhs_first_stg2	567.919	DISCARD	memory_bound	2 stages with RHS-first worse than 3 stages. 3 stages remains optimal.
+iter021	iter021_transp_store	0	COMPILE_FAIL	memory_bound	Transposed store syntax not supported in Choreo DSL
+iter022	iter022_rhs_first_stg5	0	COMPILE_FAIL	memory_bound	5 stages exceeds shared memory limit (254KB > 233KB)
+iter023	iter023_tm256_stg2_rhs	656.442	KEEP	memory_bound	TILE_M=256 with 1p4c and 2 stages. Larger M tile improves data reuse significant
+iter024	iter024_tm256_stg3_rhs	622.933	DISCARD	memory_bound	3 stages with TILE_M=256 worse than 2 stages. 2 stages is optimal for this confi
+iter025	iter025_tm256_wn256_stg1	0	COMPILE_FAIL	memory_bound	WARP_N=256 with 1 stage fails verification. Index math incompatible.

@@ -1,13 +1,14 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-20T05:07:34Z",
+  "timestamp": "2026-04-20T05:15:29Z",
   "dsl": "croqtile",
   "shape_key": "m8192n8192k8192",
-  "iter": "iter020_rhs_first_stg2",
+  "iter": "iter025_tm256_wn256_stg1",
   "bottleneck": "memory_bound",
-  "idea": "RHS-first with 2 stages instead of 3. Testing if shallower pipeline works better with RHS-first.",
-  "expected_gain": "+5-20 TFLOPS",
+  "idea": "TILE_M=256, WARP_N=256 with 1p4c and 1 stage. Maximum tile size with minimal stages.",
+  "expected_gain": "+10-50 TFLOPS",
   "levers": [
+    "MATMUL_WARP_N",
     "MATMUL_STAGES"
   ],
   "status": "PLANNED"
