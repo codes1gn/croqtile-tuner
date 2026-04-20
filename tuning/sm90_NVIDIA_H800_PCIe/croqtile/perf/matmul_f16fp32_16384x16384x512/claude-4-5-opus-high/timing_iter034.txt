@@ -1,1 +1,0 @@
-CUDA failure: 1 (invalid argument)

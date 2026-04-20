@@ -3,7 +3,7 @@
   "dsl": "croqtile",
   "model": "claude-blockscale-aitune",
   "device": "NVIDIA H800 PCIe",
-  "status": "completed",
+  "status": "waiting",
   "source_branch": "origin/ai-tune/fused-moe (blockscale_gemm_v2 winners)",
   "shape_key": "blockscale_gemm_e4m3_4096x4096x4096",
   "operator": "blockscale_gemm",
@@ -16,5 +16,15 @@
   "best_kernel": "iter066_blockscale",
   "total_iterations": 4,
   "migration_date": "2026-04-20",
-  "notes": "Winners from ai-tune/2026-03-22/blockscale_gemm_v2. iter066: N256 + L2 promo + prefetch scale_a. +56.1% over baseline."
+  "notes": "Winners from ai-tune/2026-03-22/blockscale_gemm_v2. iter066: N256 + L2 promo + prefetch scale_a. +56.1% over baseline.",
+  "task_id": 14,
+  "variant": "",
+  "agent_type": null,
+  "mode": "opencode",
+  "request_budget": 1,
+  "request_number": 0,
+  "max_iterations": 30,
+  "respawn_count": 0,
+  "opencode_session_id": null,
+  "sessions": []
 }

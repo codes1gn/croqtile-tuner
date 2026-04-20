@@ -100,3 +100,4 @@ iter097	iter097_run97	0.0326691	DISCARD	launch_bound	Benchmark run 97
 iter098	iter098_run98	0.0326313	DISCARD	launch_bound	Benchmark run 98
 iter099	iter099_run99	0.0327389	DISCARD	launch_bound	Benchmark run 99
 iter100	iter100_run100	0.0326817	DISCARD	launch_bound	Benchmark run 100
+iter001	iter001_baseline	0	RUNTIME_FAIL	unknown	Runtime failure - kernel bug

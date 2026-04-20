@@ -1,8 +1,0 @@
-{"ts":"2026-04-18T15:48:40.537Z","tool":"store_baseline","msg":"Measuring cuBLAS baseline for fp16fp32 16384x2048x2048","level":"info"}
-{"ts":"2026-04-18T15:48:42.803Z","tool":"store_baseline","msg":"cuBLAS baseline: 482.7227 TFLOPS (saved to tuning/sm90_NVIDIA_H800_PCIe/croqtile/baseline/matmul_fp16fp32_16384x2048x2048/gpt-5.3-codex/cublas_result.json)","level":"info"}
-{"ts":"2026-04-18T15:48:43.124Z","tool":"store_round","msg":"Storing iter000_cublas (KEEP 482.7227 TFLOPS)","level":"info"}
-{"ts":"2026-04-18T15:48:43.143Z","tool":"store_round","msg":"Stored iter000_cublas: KEEP 482.7227 TFLOPS (round 0)","level":"info"}
-{"ts":"2026-04-18T15:48:43.154Z","tool":"store_baseline","msg":"Stored iter000_cublas: 482.7227 TFLOPS (baseline)","level":"info"}
-{"ts":"2026-04-18T15:55:13.433Z","tool":"resume_state","msg":"Loading tuning state for croqtile/matmul_fp16fp32_16384x2048x2048","level":"info"}
-{"ts":"2026-04-18T15:56:05.022Z","tool":"store_baseline","msg":"Measuring cuBLAS baseline for fp16fp32 16384x2048x2048","level":"info"}
-{"ts":"2026-04-18T15:56:09.352Z","tool":"resume_state","msg":"Loading tuning state for croqtile/matmul_fp16fp32_16384x2048x2048","level":"info"}

@@ -1,27 +1,30 @@
 {
   "task_uid": "sonnet46_tune_001",
   "dsl": "croqtile",
-  "model": "sonnet46",
+  "model": "opencode/claude-sonnet-4.6",
   "device": "NVIDIA H800 PCIe",
-  "status": "waiting",
-  "task_id": 9,
+  "status": "completed",
+  "task_id": 7,
   "variant": "high",
   "agent_type": "opencode",
   "mode": "opencode",
-  "request_budget": 2,
+  "request_budget": 0,
   "request_number": 3,
-  "max_iterations": 30,
+  "max_iterations": 72,
   "respawn_count": 0,
+  "best_tflops": 486.183,
+  "baseline_tflops": 421.6146,
+  "best_kernel": "iter069_w1_1arrive_ku64",
   "opencode_session_id": "ses_25eb5c906ffeijkLC3JQ4cOAqT",
   "sessions": [
     {
-      "id": 30,
-      "task_id": 9,
+      "id": 15,
+      "task_id": 7,
       "session_id": "ses_25ec6a47affe8lmx7ntKX6v62R",
       "agent_type": "opencode",
       "model": "github-copilot/gpt-5.3-codex",
       "request_number": 1,
-      "started_at": "2026-04-20T02:26:43.949389",
+      "started_at": "2026-04-20T10:09:20.544024",
       "ended_at": null
     }
   ]

@@ -264,6 +264,15 @@ def discover_shape_keys() -> dict[str, dict]:
     return found
 
 
+_GDN_SHAPE_RE = re.compile(
+    r"^gdn_([A-Za-z0-9]+)_B(\d+)_T(\d+)_H(\d+)_K(\d+)_V(\d+)$"
+)
+
+_M_N_K_SHAPE_RE = re.compile(
+    r"^M(\d+)_N(\d+)_K(\d+)$"
+)
+
+
 def _parse_shape_key(shape_key: str) -> dict | None:
     """Parse just the bare shape key (without gpu/dsl prefix).
 
@@ -271,18 +280,46 @@ def _parse_shape_key(shape_key: str) -> dict | None:
       gemm_sp_fp16fp32_16384x16384x16384  → op_type=gemm_sp, dtype=fp16fp32
       matmul_fp16_4096x4096x4096          → op_type=matmul,  dtype=fp16
       gemm_e4m3f32_8192x8192x8192         → op_type=gemm,    dtype=e4m3f32
+      gdn_f16_B2_T4_H8_K128_V128          → op_type=gdn, dtype=f16, m=B*T, n=H, k=K*V
+      M128_N512_K2048                     → op_type=fused_moe, dtype=fp8, m=128, n=512, k=2048
     """
+    # Standard format: op_type_dtype_MxNxK
     m = _SHAPE_KEY_RE.match(shape_key)
-    if not m:
-        return None
-    op_type, dtype, m_raw, n_raw, k_raw = m.groups()
-    return {
-        "op_type": op_type,
-        "dtype": _normalize_dtype(dtype),
-        "m": int(m_raw),
-        "n": int(n_raw),
-        "k": int(k_raw),
-    }
+    if m:
+        op_type, dtype, m_raw, n_raw, k_raw = m.groups()
+        return {
+            "op_type": op_type,
+            "dtype": _normalize_dtype(dtype),
+            "m": int(m_raw),
+            "n": int(n_raw),
+            "k": int(k_raw),
+        }
+
+    # GDN format: gdn_dtype_B{b}_T{t}_H{h}_K{k}_V{v}
+    m = _GDN_SHAPE_RE.match(shape_key)
+    if m:
+        dtype, b, t, h, k, v = m.groups()
+        return {
+            "op_type": "gdn",
+            "dtype": _normalize_dtype(dtype),
+            "m": int(b) * int(t),  # batch * tokens
+            "n": int(h),           # heads
+            "k": int(k) * int(v),  # key_dim * value_dim
+        }
+
+    # M_N_K format: M{m}_N{n}_K{k} (fused MoE)
+    m = _M_N_K_SHAPE_RE.match(shape_key)
+    if m:
+        m_raw, n_raw, k_raw = m.groups()
+        return {
+            "op_type": "fused_moe",
+            "dtype": "e4m3fp32",  # Default for MoE FP8
+            "m": int(m_raw),
+            "n": int(n_raw),
+            "k": int(k_raw),
+        }
+
+    return None
 
 
 def _parse_shape_identity(shape_key: str) -> tuple[str, str]:

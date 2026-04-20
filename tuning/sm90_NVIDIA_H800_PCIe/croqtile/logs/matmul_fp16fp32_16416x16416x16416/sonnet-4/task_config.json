@@ -1,0 +1,20 @@
+{
+  "task_uid": "cffef0ca445d411c",
+  "dsl": "croqtile",
+  "model": "sonnet-4",
+  "device": "NVIDIA H800 PCIe",
+  "status": "waiting",
+  "task_id": 6,
+  "variant": "",
+  "agent_type": "cursor",
+  "mode": "opencode",
+  "request_budget": 0,
+  "request_number": 0,
+  "max_iterations": 30,
+  "respawn_count": 0,
+  "opencode_session_id": null,
+  "sessions": [],
+  "best_tflops": 276.88,
+  "baseline_tflops": 409.8731,
+  "best_kernel": "iter005_early_empty_arrive"
+}

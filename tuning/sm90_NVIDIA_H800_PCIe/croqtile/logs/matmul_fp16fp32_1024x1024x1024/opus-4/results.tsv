@@ -43,3 +43,7 @@ iter044	iter044_wn96_p1c3	68.46	DISCARD	memory_bound	64x96 WGMMA with 1p3c - int
 iter071	iter071_wg_arrive_batch	77.1958	DISCARD	compute_bound	Hoisted warpgroup_arrive out of the inner WGMMA loop to reduce per-MMA synchroni
 iter072	iter072_split_epilogue	75.4032	DISCARD	compute_bound	Split the FP32 epilogue into three consumer-private 64x64 output buffers with in
 iter073	iter073_p1c2_lb_wait1	70.4925	DISCARD	compute_bound	Added __launch_bounds__(384,2) and warpgroup_wait<1> on the 1p2c base, but it me
+iter023	iter023_wn128_tm128	105.96	DISCARD	compute_bound	Re-run: WARP_N=128 TILE_M=128 configuration
+iter045	iter045_wn128_hack	108.457	DISCARD	compute_bound	Re-run: WARP_N=128 hack variant
+iter011	iter011_wn32_tm128	0	RUNTIME_FAIL	unknown	CUDA failure: invalid argument
+iter013	iter013_p1c3_swiz64	0	RUNTIME_FAIL	unknown	CUDA failure: invalid argument

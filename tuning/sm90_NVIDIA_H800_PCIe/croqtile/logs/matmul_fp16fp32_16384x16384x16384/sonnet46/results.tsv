@@ -71,3 +71,7 @@ iter067	iter067_wait2_kunroll64	478.641	KEEP	compute_bound	warpgroup_wait<2> dep
 iter069	iter069_w1_1arrive_ku64	486.183	KEEP	compute_bound	wait<1> + single warpgroup_arrive per K-tile + unroll=64; fusing 4 WGMMA into si
 iter070	iter070_early_empty	481.097	DISCARD	compute_bound	front-loaded warpgroup_wait before full.wait; worse than iter069 486T
 iter071	iter071_precomp_desc	483.875	DISCARD	compute_bound	precomputed SMEM descriptors for stage 0 and 1 to avoid recomputation in K-loop;
+iter031	iter031_wn256_ptxo3_dlp	321.395	TESTED	compute_bound	Re-run to collect missing results
+iter032	iter032_wn192_s5_ptxo3	270.044	TESTED	compute_bound	Re-run to collect missing results
+iter033	iter033_wn256_s4_swizzle	343.797	TESTED	compute_bound	Re-run to collect missing results
+iter028	iter028_1p2c_wn256_off8192	0	RUNTIME_FAIL	unknown	Choreo assertion failed

@@ -33,3 +33,5 @@ iter030	iter030_acc5_tm320	7.87	DISCARD	compute_bound	4-acc TILE_M=256 2-stage: 
 iter032	iter032_tm128_1p2c	206.18	DISCARD	compute_bound	1p2c TILE_M=128: Each consumer handles 64 rows. Works but 3 warp-groups increase
 iter033	iter033_stg2_occ	155.38	DISCARD	occupancy_limited	2 stages to reduce SMEM 106KB->82KB: Insufficient pipeline depth for K=16384. TM
 iter034	iter034_cublas_struct	191.96	DISCARD	compute_bound	cuBLAS structure: 384 threads 1p2c, TILE_M=256, 2 stages, 168 regs. Works but 2 
+iter031	iter031_acc2_tm128	28.2593	DISCARD	compute_bound	Re-run: ACC=2 TILE_M=128; poor performance
+iter035	iter035_opt_wgmma	263.257	DISCARD	compute_bound	Re-run: Optimized WGMMA variant

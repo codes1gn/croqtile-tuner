@@ -1,5 +1,5 @@
 {
-  "task_id": 13,
+  "task_id": 9,
   "task_uid": "6528a7a656ac",
   "model": "sonnet-4-6",
   "variant": "",
@@ -12,5 +12,9 @@
   "max_iterations": 30,
   "respawn_count": 0,
   "opencode_session_id": null,
-  "sessions": []
+  "sessions": [],
+  "dsl": "croqtile",
+  "best_tflops": 232.98,
+  "baseline_tflops": 418.4252,
+  "best_kernel": "iter018_launch_bounds"
 }
