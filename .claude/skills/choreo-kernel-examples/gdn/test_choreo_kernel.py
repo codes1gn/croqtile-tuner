@@ -31,9 +31,9 @@ from fused_sigmoid_gating_recurrent import fused_sigmoid_gating_delta_rule_updat
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CHOREO_RUNTIME = os.path.join(SCRIPT_DIR, "..", "choreo", "runtime")
-CUTLASS_INCLUDE = "/home/baldlee/source/cutlass/include"
+CUTLASS_INCLUDE = os.environ.get("CUTLASS_INCLUDE", "/home/albert/workspace/croqtile/extern/cutlass/include")
 RMSNORM_INCLUDE = os.path.join(SCRIPT_DIR, "..", "rmsnorm")
-CUDA_HOME = "/usr/local/cuda-13.0"
+CUDA_HOME = os.environ.get("CUDA_HOME", "/usr/local/cuda")
 NVCC = os.path.join(CUDA_HOME, "bin", "nvcc")
 
 H, K, V = 8, 128, 128

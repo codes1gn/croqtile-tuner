@@ -13,7 +13,8 @@ use_qk_l2norm_in_kernel = True
 is_kda = False
 
 import sys
-sys.path.insert(0, '/home/baldlee/workspace/choreo-attn/gdn/reference')
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from fused_sigmoid_gating_recurrent import fused_sigmoid_gating_delta_rule_update
 
 for T in [4, 128, 512]:
