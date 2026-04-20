@@ -5,15 +5,20 @@
   "device": "NVIDIA H800 PCIe",
   "status": "completed",
   "source_branch": "origin/ai-tune/fused-moe",
-  "shape_key": "fused_moe_qwen35_fp8",
+  "shape_key": "fused_moe_fp8_128x512x2048_e256k8",
   "operator": "fused_moe",
   "dtype": "fp8",
   "baseline_tflops": 7.29,
   "baseline_source": "vLLM fused_moe (bench_vllm_fused_moe.py)",
   "choreo_baseline_tflops": 7.11,
-  "best_tflops": 13.80,
+  "best_tflops": 13.8,
   "best_kernel": "iter099_fusememset",
   "total_iterations": 100,
   "migration_date": "2026-04-20",
-  "notes": "Qwen3.5 35B A3B FP8 end-to-end fused MoE. 100 iterations. Key optimizations: dense prefix scatter, scatter fusion, CPU prefix sum, fuse quant/sort, transpose scales, QSG512, fusememset. +94% over baseline."
+  "notes": "Qwen3.5 35B A3B FP8 end-to-end fused MoE. 100 iterations. Key optimizations: dense prefix scatter, scatter fusion, CPU prefix sum, fuse quant/sort, transpose scales, QSG512, fusememset. +94% over baseline.",
+  "m": 128,
+  "n": 512,
+  "k": 2048,
+  "num_experts": 256,
+  "topk": 8
 }
