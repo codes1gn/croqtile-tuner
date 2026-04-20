@@ -108,3 +108,15 @@
 {"ts":"2026-04-20T05:15:29.906Z","tool":"checkpoint_write","msg":"PLANNED iter025_tm256_wn256_stg1: TILE_M=256, WARP_N=256 with 1p4c and 1 stage. Maximum tile size with minimal stages.","level":"info"}
 {"ts":"2026-04-20T05:17:08.861Z","tool":"store_round","msg":"Storing iter025_tm256_wn256_stg1 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
 {"ts":"2026-04-20T05:17:08.880Z","tool":"store_round","msg":"Stored iter025_tm256_wn256_stg1: COMPILE_FAIL 0 TFLOPS (round 25)","level":"info"}
+{"ts":"2026-04-20T05:17:31.978Z","tool":"next_iter","msg":"Resolved iter026_tm256_wn64_stg2","level":"info"}
+{"ts":"2026-04-20T05:17:32.012Z","tool":"checkpoint_write","msg":"PLANNED iter026_tm256_wn64_stg2: TILE_M=256 with WARP_N=64 and 2 stages. More CTAs with smaller N tile.","level":"info"}
+{"ts":"2026-04-20T05:19:01.180Z","tool":"store_round","msg":"Storing iter026_tm256_wn64_stg2 (DISCARD 415.22 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T05:19:01.199Z","tool":"store_round","msg":"Stored iter026_tm256_wn64_stg2: DISCARD 415.22 TFLOPS (round 26)","level":"info"}
+{"ts":"2026-04-20T05:19:02.022Z","tool":"next_iter","msg":"Resolved iter027_tm320_stg2_rhs","level":"info"}
+{"ts":"2026-04-20T05:19:02.056Z","tool":"checkpoint_write","msg":"PLANNED iter027_tm320_stg2_rhs: TILE_M=320 with 1p5c and 2 stages. Even larger M tile for more compute per CTA.","level":"info"}
+{"ts":"2026-04-20T05:20:32.084Z","tool":"store_round","msg":"Storing iter027_tm320_stg2_rhs (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T05:20:32.103Z","tool":"store_round","msg":"Stored iter027_tm320_stg2_rhs: COMPILE_FAIL 0 TFLOPS (round 27)","level":"info"}
+{"ts":"2026-04-20T05:20:32.957Z","tool":"next_iter","msg":"Resolved iter028_tm512_stg1_rhs","level":"info"}
+{"ts":"2026-04-20T05:20:32.990Z","tool":"checkpoint_write","msg":"PLANNED iter028_tm512_stg1_rhs: TILE_M=512 with 1p8c and 1 stage. Very large M tile (8 consumer warpgroups).","level":"info"}
+{"ts":"2026-04-20T05:22:04.308Z","tool":"store_round","msg":"Storing iter028_tm512_stg1_rhs (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T05:22:04.327Z","tool":"store_round","msg":"Stored iter028_tm512_stg1_rhs: COMPILE_FAIL 0 TFLOPS (round 28)","level":"info"}

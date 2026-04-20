@@ -25,3 +25,6 @@ iter022	iter022_rhs_first_stg5	0	COMPILE_FAIL	memory_bound	5 stages exceeds shar
 iter023	iter023_tm256_stg2_rhs	656.442	KEEP	memory_bound	TILE_M=256 with 1p4c and 2 stages. Larger M tile improves data reuse significant
 iter024	iter024_tm256_stg3_rhs	622.933	DISCARD	memory_bound	3 stages with TILE_M=256 worse than 2 stages. 2 stages is optimal for this confi
 iter025	iter025_tm256_wn256_stg1	0	COMPILE_FAIL	memory_bound	WARP_N=256 with 1 stage fails verification. Index math incompatible.
+iter026	iter026_tm256_wn64_stg2	415.22	DISCARD	memory_bound	WARP_N=64 with TILE_M=256 is too small. WARP_N=128 is optimal.
+iter027	iter027_tm320_stg2_rhs	0	COMPILE_FAIL	memory_bound	TILE_M=320 fails - 8192 not divisible by 320. Need divisible tile size.
+iter028	iter028_tm512_stg1_rhs	0	COMPILE_FAIL	memory_bound	TILE_M=512 with 1p8c fails - too many warpgroups or output buffer too large

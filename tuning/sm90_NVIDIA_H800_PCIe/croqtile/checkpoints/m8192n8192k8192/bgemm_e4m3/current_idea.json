@@ -1,14 +1,14 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-20T05:15:29Z",
+  "timestamp": "2026-04-20T05:20:32Z",
   "dsl": "croqtile",
   "shape_key": "m8192n8192k8192",
-  "iter": "iter025_tm256_wn256_stg1",
+  "iter": "iter028_tm512_stg1_rhs",
   "bottleneck": "memory_bound",
-  "idea": "TILE_M=256, WARP_N=256 with 1p4c and 1 stage. Maximum tile size with minimal stages.",
+  "idea": "TILE_M=512 with 1p8c and 1 stage. Very large M tile (8 consumer warpgroups).",
   "expected_gain": "+10-50 TFLOPS",
   "levers": [
-    "MATMUL_WARP_N",
+    "MATMUL_TILE_M",
     "MATMUL_STAGES"
   ],
   "status": "PLANNED"
