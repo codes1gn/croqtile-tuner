@@ -1,0 +1,146 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_cublas	412.2937	KEEP	baseline	cuBLAS reference baseline
+iter001	iter001_p2c_wn128_s3	93.519	KEEP	memory_bound	1p2c warpspec TM128 WN128 S3 baseline from prior iter007 pattern
+iter002	iter002_wn192_s4_1p1c	236.45	KEEP	memory_bound	1p1c WN=192 S4 reduces barrier density vs 1p2c WN=128 S3
+iter003	iter003_wn192_s3_1p2c	218.906	DISCARD	memory_bound	1p2c WN=192 S3: higher barrier overhead than 1p1c despite B-tile reuse
+iter004	iter004_wn256_s2_1p1c	185.054	DISCARD	memory_bound	1p1c WN=256 S2: larger tile but insufficient pipeline depth hurts TMA latency hi
+iter005	iter005_wn256_s3_1p1c	260.757	KEEP	memory_bound	1p1c WN=256 S3: optimal balance of tile size and pipeline depth
+iter006	iter006_wn240_s4_1p1c	252.262	DISCARD	memory_bound	1p1c WN=240 S4: extra stage does not compensate for smaller tile
+iter007	iter007_wn256_s3_lb256	265.948	KEEP	memory_bound	Phase 2: launch_bounds(256,1) for better register allocation
+iter008	iter008_wn256_s3_ptxaso3	265.738	DISCARD	memory_bound	Phase 2: ptxas -O3 gives no improvement over iter007
+iter009	iter009_wn256_s3_mreg192	130.755	DISCARD	memory_bound	maxrregcount=192 to constrain register usage
+iter010	iter010_wn256_s3_swz16	156.815	DISCARD	memory_bound	Grid swizzle SWIZZLE=16 for better L2 B-matrix locality
+iter011	iter011_wn256_s3_swz8	153.485	DISCARD	memory_bound	Grid swizzle SWIZZLE=8 (lower than SWIZZLE=16)
+iter012	iter012_wn256_s3_swz32	152.584	DISCARD	memory_bound	Grid swizzle SWIZZLE=32 (too coarse, worse than 16)
+iter013	iter013_wn128_s4_1p1c	89.521	DISCARD	memory_bound	WN=128 STAGES=4 - smaller tile with more pipeline depth
+iter014	iter014_wn224_s3_1p1c	116.933	DISCARD	memory_bound	WN=224 extended MMA shape - non-standard tile size
+iter015	iter015_wn320_s3_1p1c	0	COMPILE_FAIL	unknown	WN=320 not a supported WGMMA shape (valid: 64,128,192,256)
+iter016	iter016_tm128_wn256_s2_1p1c	131.865	DISCARD	memory_bound	TILE_M=128 WN=256 STAGES=2 1p2c - larger M tile with B-tile sharing
+iter017	iter017_wn256_s3_swz16_lb	154.925	DISCARD	memory_bound	Grid swizzle SWIZZLE=16 + launch_bounds(256,1)
+iter018	iter018_wn256_s3_swz8_lb	199.052	DISCARD	memory_bound	Grid swizzle SWIZZLE=8 + launch_bounds - better than SWIZZLE=16
+iter019	iter019_wn256_s3_swz4_lb	124.731	DISCARD	memory_bound	Grid swizzle SWIZZLE=4 - too fine grained
+iter020	iter020_wn256_s3_swz6_lb	137.364	DISCARD	memory_bound	Grid swizzle SWIZZLE=6 - between 4 and 8
+iter021	iter021_wn256_s3_swz10_lb	92.899	DISCARD	memory_bound	Grid swizzle SWIZZLE=10 - too coarse
+iter022	iter022_wn192_s4_swz8	247.292	DISCARD	memory_bound	WN=192 STAGES=4 SWIZZLE=8 - more pipeline depth with swizzle
+iter023	iter023_wn256_s4_swz8	262.143	DISCARD	memory_bound	WN256 STAGES4 SWIZZLE8 extra pipeline depth
+iter024	iter024_wn256_s3_wgwait1	255.137	DISCARD	memory_bound	warpgroup_wait 1 instead of 0 for pipeline overlap
+iter025	iter025_wn256_s3_l2promo	278.089	KEEP	memory_bound	TMA L2 promotion L2_256B for better L2 cache utilization
+iter026	iter026_wn256_s3_l2promo_swz8	287.085	KEEP	memory_bound	L2 promotion + grid swizzle SWIZZLE=8
+iter027	iter027_wn256_s3_l2promo_swz4	238.781	DISCARD	memory_bound	L2 promotion + SWIZZLE=4 - too fine
+iter028	iter028_wn256_s3_l2promo_swz16	294.204	KEEP	memory_bound	L2 promotion + SWIZZLE=16 - new best
+iter029	iter029_wn256_s3_l2promo_swz32	285.858	DISCARD	memory_bound	L2 promotion + SWIZZLE=32 - too coarse
+iter030	iter030_wn256_s3_l2promo_swz12	297.882	KEEP	memory_bound	L2 promotion + SWIZZLE=12 - new best
+iter031	iter031_wn256_s3_l2promo_swz14	294.39	DISCARD	memory_bound	L2 promotion + SWIZZLE=14
+iter032	iter032_wn256_s3_l2promo_swz15	287.69	DISCARD	memory_bound	L2 promotion + SWIZZLE=15
+iter033	iter033_wn256_s3_l2promo_swz13	281.93	DISCARD	memory_bound	L2 promotion + SWIZZLE=13
+iter034	iter034_wn256_s3_l2promo_swz12_opt	296.74	DISCARD	memory_bound	L2 promo + SWIZZLE=12 + Xptxas O3
+iter035	iter035_wn256_s3_l2promo_swz14_opt	296.45	DISCARD	memory_bound	L2 promo + SWIZZLE=14 + Xptxas O3
+iter036	iter036_wn192_s4_l2promo	188.989	DISCARD	compute_bound	WN=192 STAGES=4 + L2 promo - smaller WN hurts
+iter037	iter037_wn256_s3_l2promo_swz11	150.10	DISCARD	contention	L2 promo + SWIZZLE=11 - GPU contention
+iter038	iter038_wn256_s3_l2promo_swz10	249.53	DISCARD	contention	L2 promo + SWIZZLE=10 - GPU contention
+iter039	iter039_wn256_s3_l2promo_noswz	86.83	DISCARD	contention	L2 promo no swizzle - confirms swizzle benefit
+iter040	iter040_wn256_s3_l2promo_mswz12	60.179	DISCARD	contention	M-major swizzle worse than N-major
+iter041	iter041_wn256_s3_l2promo_swz8	278.81	DISCARD	memory_bound	L2 promo + SWIZZLE=8
+iter042	iter042_wn256_s3_l2promo_swz9	277.16	DISCARD	memory_bound	L2 promo + SWIZZLE=9
+iter043	iter043_wn256_s3_l2promo_swz10	278.22	DISCARD	memory_bound	L2 promo + SWIZZLE=10
+iter044	iter044_wn256_s3_l2promo_swz11	276.63	DISCARD	memory_bound	L2 promo + SWIZZLE=11
+iter045	iter045_wn256_s3_l2promo_swz12	289.93	DISCARD	memory_bound	L2 promo + SWIZZLE=12
+iter046	iter046_wn256_s3_l2promo_swz13	277.98	DISCARD	memory_bound	L2 promo + SWIZZLE=13
+iter047	iter047_wn256_s3_l2promo_swz14	287.99	DISCARD	memory_bound	L2 promo + SWIZZLE=14
+iter048	iter048_wn256_s3_l2promo_swz15	282.72	DISCARD	memory_bound	L2 promo + SWIZZLE=15
+iter049	iter049_wn256_s3_l2promo_swz16	287.27	DISCARD	memory_bound	L2 promo + SWIZZLE=16
+iter050	iter050_wn256_s3_l2promo_swz17	279.81	DISCARD	memory_bound	L2 promo + SWIZZLE=17
+iter051	iter051_wn256_s3_nol2_swz12	297.814	KEEP	memory_bound	No L2 promo + SWIZZLE=12 - swizzle provides sufficient locality
+iter052	iter052_wn256_s3_nol2_swz8	28.4373	DISCARD	memory_bound	No L2 promo + SWIZZLE=8
+iter053	iter053_wn256_s3_nol2_swz10	28.1824	DISCARD	memory_bound	No L2 promo + SWIZZLE=10
+iter055	iter055_wn256_s3_nol2_swz14	28.1445	DISCARD	memory_bound	No L2 promo + SWIZZLE=14
+iter056	iter056_wn256_s3_nol2_swz16	28.3367	DISCARD	memory_bound	No L2 promo + SWIZZLE=16
+iter058	iter058_wn256_s3_nol2_swz20	28.1532	DISCARD	memory_bound	No L2 promo + SWIZZLE=20
+iter060	iter060_wn256_s3_nol2_swz24	287.939	DISCARD	memory_bound	No L2 promo + SWIZZLE=24
+iter062	iter062_wn256_s3_nol2_swz28	288.288	DISCARD	memory_bound	No L2 promo + SWIZZLE=28
+iter064	iter064_wn256_s3_nol2_swz32	286.044	DISCARD	memory_bound	No L2 promo + SWIZZLE=32
+iter065	iter065_wn256_s3_nol2_swz18	19.45	DISCARD	contention	No L2 promo + SWIZZLE=18 - heavy contention
+iter066	iter066_wn256_s3_nol2_swz19	19.43	DISCARD	contention	No L2 promo + SWIZZLE=19 - heavy contention
+iter067	iter067_wn256_s3_nol2_swz20	157.18	DISCARD	contention	No L2 promo + SWIZZLE=20 - heavy contention
+iter068	iter068_wn256_s3_nol2_swz21	215.09	DISCARD	contention	No L2 promo + SWIZZLE=21 - heavy contention
+iter069	iter069_wn256_s3_nol2_swz22	152.97	DISCARD	contention	No L2 promo + SWIZZLE=22 - heavy contention
+iter070	iter070_wn256_s3_nol2_swz23	149.71	DISCARD	contention	No L2 promo + SWIZZLE=23 - heavy contention
+iter071	iter071_wn256_s3_nol2_swz24	135.46	DISCARD	contention	No L2 promo + SWIZZLE=24 - heavy contention
+iter072	iter072_wn256_s3_nol2_swz25	149.05	DISCARD	contention	No L2 promo + SWIZZLE=25 - heavy contention
+iter073	iter073_wn256_s3_nol2_swz26	148.48	DISCARD	contention	No L2 promo + SWIZZLE=26 - heavy contention
+iter074	iter074_wn256_s3_nol2_swz27	156.58	DISCARD	contention	No L2 promo + SWIZZLE=27 - heavy contention
+iter075	iter075_wn256_s3_nol2_swz28	185.23	DISCARD	contention	No L2 promo + SWIZZLE=28 - heavy contention
+iter076	iter076_wn256_s3_nol2_swz12_opt	292.811	DISCARD	memory_bound	Swizzle search variant
+iter077	iter077_wn256_s3_nol2_swz13_opt	276.4	DISCARD	memory_bound	Swizzle search variant
+iter078	iter078_wn256_s3_nol2_swz14_opt	287.374	DISCARD	memory_bound	Swizzle search variant
+iter079	iter079_wn256_s3_nol2_swz15_opt	283.285	DISCARD	memory_bound	Swizzle search variant
+iter080	iter080_wn256_s3_nol2_swz16_opt	290.284	DISCARD	memory_bound	Swizzle search variant
+iter081	iter081_wn256_s3_nol2_swz17_opt	281.081	DISCARD	memory_bound	Swizzle search variant
+iter082	iter082_wn256_s3_nol2_swz18_opt	292.989	DISCARD	memory_bound	Swizzle search variant
+iter083	iter083_wn256_s3_nol2_swz19_opt	287.93	DISCARD	memory_bound	Swizzle search variant
+iter084	iter084_wn256_s3_nol2_swz20_opt	287.418	DISCARD	memory_bound	Swizzle search variant
+iter085	iter085_wn256_s3_nol2_swz21_opt	290.554	DISCARD	memory_bound	Swizzle search variant
+iter086	iter086_wn256_s3_nol2_swz12_v2	290.88	DISCARD	memory_bound	Swizzle search variant
+iter087	iter087_wn256_s3_nol2_swz13_v2	278.262	DISCARD	memory_bound	Swizzle search variant
+iter088	iter088_wn256_s3_nol2_swz14_v2	293.935	DISCARD	memory_bound	Swizzle search variant
+iter089	iter089_wn256_s3_nol2_swz15_v2	284.819	DISCARD	memory_bound	Swizzle search variant
+iter090	iter090_wn256_s3_nol2_swz16_v2	289.114	DISCARD	memory_bound	Swizzle search variant
+iter091	iter091_wn256_s3_nol2_swz17_v2	282.326	DISCARD	memory_bound	Swizzle search variant
+iter092	iter092_wn256_s3_nol2_swz18_v2	292.398	DISCARD	memory_bound	Swizzle search variant
+iter093	iter093_wn256_s3_nol2_swz19_v2	289.282	DISCARD	memory_bound	Swizzle search variant
+iter094	iter094_wn256_s3_nol2_swz20_v2	288.446	DISCARD	memory_bound	Swizzle search variant
+iter095	iter095_wn256_s3_nol2_swz21_v2	289.49	DISCARD	memory_bound	Swizzle search variant
+iter096	iter096_wn256_s3_nol2_swz12_v3	297.045	DISCARD	memory_bound	Final swizzle search
+iter097	iter097_wn256_s3_nol2_swz13_v3	276.285	DISCARD	memory_bound	Final swizzle search
+iter098	iter098_wn256_s3_nol2_swz14_v3	293.351	DISCARD	memory_bound	Final swizzle search
+iter099	iter099_wn256_s3_nol2_swz15_v3	291.149	DISCARD	memory_bound	Final swizzle search
+iter100	iter100_wn256_s3_nol2_swz12_v3	297.106	DISCARD	memory_bound	Final swizzle search
+iter101	iter101_wn256_s3_nol2_swz13_v3	278.377	DISCARD	memory_bound	Final swizzle search
+iter102	iter102_wn256_s3_nol2_swz14_v3	300.078	DISCARD	memory_bound	Final swizzle search
+iter103	iter103_wn256_s3_nol2_swz15_v3	27.8978	DISCARD	memory_bound	Final swizzle search
+iter104	iter104_wn256_s3_nol2_swz16_v3	27.8512	DISCARD	memory_bound	Final swizzle search
+iter105	iter105_wn256_s3_nol2_swz17_v3	27.6832	DISCARD	memory_bound	Final swizzle search
+iter106	iter106_wn96_s5_1p1c	206.141	DISCARD	memory_bound	WN=96 STAGES=5 perfect tiling but lower arithmetic intensity
+iter107	iter107_wn144_s4_1p1c	247.686	DISCARD	memory_bound	WN=144 STAGES=4 perfect tiling - lower arithmetic intensity
+iter108	iter108_wn256_s3_nol2_swz8_final	284.79	DISCARD	memory_bound	WN=256 S3 no-L2 SWIZZLE=8
+iter110	iter110_wn256_s3_nol2_swz10_final	284.31	DISCARD	memory_bound	WN=256 S3 no-L2 SWIZZLE=10
+iter111	iter111_wn256_s3_nol2_swz11_final	281.08	DISCARD	memory_bound	WN=256 S3 no-L2 SWIZZLE=11
+iter112	iter112_wn256_s3_nol2_swz12_final	295.64	DISCARD	memory_bound	WN=256 S3 no-L2 SWIZZLE=12
+iter113	iter113_wn256_s3_nol2_swz13_final	277.46	DISCARD	memory_bound	WN=256 S3 no-L2 SWIZZLE=13
+iter114	iter114_wn256_s3_nol2_swz14_final	276.34	DISCARD	memory_bound	WN=256 S3 no-L2 SWIZZLE=14
+iter115	iter115_wn256_s3_nol2_swz9	259.09	DISCARD	memory_bound	WN=256 S3 no-L2 SWIZZLE=9
+iter116	iter116_wn256_s3_nol2_swz15	286.74	DISCARD	memory_bound	WN=256 S3 no-L2 SWIZZLE=15
+iter117	iter117_wn256_s3_nol2_swz16	291.73	DISCARD	memory_bound	WN=256 S3 no-L2 SWIZZLE=16
+iter118	iter118_wn256_s3_nol2_swz17	282.48	DISCARD	memory_bound	WN=256 S3 no-L2 SWIZZLE=17
+iter119	iter119_wn256_s3_nol2_swz18	292.03	DISCARD	memory_bound	WN=256 S3 no-L2 SWIZZLE=18
+iter120	iter120_wn256_s3_nol2_swz20	286.58	DISCARD	memory_bound	WN=256 S3 no-L2 SWIZZLE=20
+iter121	iter121_wn256_s3_nol2_swz24	276.29	DISCARD	memory_bound	WN=256 S3 no-L2 SWIZZLE=24
+iter122	iter122_wn256_s3_nol2_swz4	245.39	DISCARD	memory_bound	WN=256 S3 no-L2 SWIZZLE=4
+iter123	iter123_wn256_s3_nol2_swz5	252.30	DISCARD	memory_bound	WN=256 S3 no-L2 SWIZZLE=5
+iter124	iter124_wn256_s3_nol2_swz6	288.15	DISCARD	memory_bound	WN=256 S3 no-L2 SWIZZLE=6
+iter125	iter125_wn256_s3_nol2_swz7	262.31	DISCARD	memory_bound	WN=256 S3 no-L2 SWIZZLE=7
+iter126	iter126_wn256_s3_l2promo_swz12_ptx	295.94	DISCARD	memory_bound	L2 promo + SWIZZLE=12 + Xptxas O3
+iter127	iter127_wn256_s3_l2promo_swz13_ptx	266.55	DISCARD	memory_bound	L2 promo + SWIZZLE=13 + Xptxas O3
+iter128	iter128_wn256_s3_l2promo_swz14_ptx	291.85	DISCARD	memory_bound	L2 promo + SWIZZLE=14 + Xptxas O3
+iter129	iter129_wn256_s3_l2promo_swz15_ptx	287.30	DISCARD	memory_bound	L2 promo + SWIZZLE=15 + Xptxas O3
+iter130	iter130_wn256_s3_l2promo_swz16_ptx	247.63	DISCARD	memory_bound	L2 promo + SWIZZLE=16 + Xptxas O3
+iter131	iter131_wn256_s3_l2promo_swz17_ptx	265.44	DISCARD	memory_bound	L2 promo + SWIZZLE=17 + Xptxas O3
+iter132	iter132_wn256_s3_l2promo_swz18_ptx	272.82	DISCARD	memory_bound	L2 promo + SWIZZLE=18 + Xptxas O3
+iter133	iter133_wn256_s3_l2promo_swz19_ptx	283.41	DISCARD	memory_bound	L2 promo + SWIZZLE=19 + Xptxas O3
+iter134	iter134_wn256_s3_l2promo_swz20_ptx	282.33	DISCARD	memory_bound	L2 promo + SWIZZLE=20 + Xptxas O3
+iter135	iter135_wn256_s3_l2promo_swz21_ptx	287.72	DISCARD	memory_bound	L2 promo + SWIZZLE=21 + Xptxas O3
+iter136	iter136_wn256_s3_l2promo_swz8	287.51	DISCARD	memory_bound	L2 promo + SWIZZLE=8
+iter137	iter137_wn256_s3_l2promo_swz9	285.74	DISCARD	memory_bound	L2 promo + SWIZZLE=9
+iter138	iter138_wn256_s3_l2promo_swz10	287.79	DISCARD	memory_bound	L2 promo + SWIZZLE=10
+iter139	iter139_wn256_s3_l2promo_swz11	281.28	DISCARD	memory_bound	L2 promo + SWIZZLE=11
+iter140	iter140_wn256_s3_l2promo_swz22	286.38	DISCARD	memory_bound	L2 promo + SWIZZLE=22
+iter141	iter141_wn256_s3_l2promo_swz23	273.64	DISCARD	memory_bound	L2 promo + SWIZZLE=23
+iter142	iter142_wn256_s3_l2promo_swz24	286.33	DISCARD	memory_bound	L2 promo + SWIZZLE=24
+iter143	iter143_wn256_s3_l2promo_swz25	280.97	DISCARD	memory_bound	L2 promo + SWIZZLE=25
+iter144	iter144_wn256_s3_l2promo_swz26	283.46	DISCARD	memory_bound	L2 promo + SWIZZLE=26
+iter145	iter145_wn256_s3_l2promo_swz27	283.73	DISCARD	memory_bound	L2 promo + SWIZZLE=27
+iter146	iter146_wn256_s3_l2promo_swz28	280.37	DISCARD	memory_bound	L2 promo + SWIZZLE=28
+iter147	iter147_wn256_s3_l2promo_swz30	285.74	DISCARD	memory_bound	L2 promo + SWIZZLE=30
+iter148	iter148_wn256_s3_l2promo_swz32	282.79	DISCARD	memory_bound	L2 promo + SWIZZLE=32
+iter149	iter149_wn256_s3_l2promo_swz36	279.23	DISCARD	memory_bound	L2 promo + SWIZZLE=36
+iter150	iter150_wn256_s3_l2promo_swz40	277.0	DISCARD	memory_bound	L2 promo + SWIZZLE=40

@@ -1,0 +1,7 @@
+{
+  "task_uid": "croqtune-matmul-f16fp32-16416x16416x16416-opus4",
+  "dsl": "croqtile",
+  "model": "opus-4",
+  "device": "sm90_NVIDIA_H800_PCIe",
+  "status": "running"
+}

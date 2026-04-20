@@ -1,0 +1,14 @@
+{
+  "schema": "croq-checkpoint-v1",
+  "timestamp": "2026-04-20T11:27:22Z",
+  "dsl": "croqtile",
+  "shape_key": "matmul_f16fp32_16416x16416x16416",
+  "iter": "iter009_wn256_s3_swz16",
+  "bottleneck": "memory_bound",
+  "idea": "Add grid swizzle SWIZZLE=16 for better L2 B-matrix locality",
+  "expected_gain": "+50 TFLOPS via L2 cache utilization",
+  "levers": [
+    "grid_swizzle"
+  ],
+  "status": "PLANNED"
+}

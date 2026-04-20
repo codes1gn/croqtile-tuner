@@ -1,0 +1,358 @@
+{"ts":"2026-04-20T11:05:13.844Z","tool":"store_baseline","msg":"Measuring cuBLAS baseline for f16fp32 16416x16416x16416","level":"info"}
+{"ts":"2026-04-20T11:05:17.463Z","tool":"store_baseline","msg":"cuBLAS baseline: 412.2937 TFLOPS (saved to tuning/sm90_NVIDIA_H800_PCIe/croqtile/baseline/matmul_f16fp32_16416x16416x16416/opus-4/cublas_result.json)","level":"info"}
+{"ts":"2026-04-20T11:05:17.846Z","tool":"store_round","msg":"Storing iter000_cublas (KEEP 412.2937 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T11:05:17.865Z","tool":"store_round","msg":"Stored iter000_cublas: KEEP 412.2937 TFLOPS (round 0)","level":"info"}
+{"ts":"2026-04-20T11:05:17.876Z","tool":"store_baseline","msg":"Stored iter000_cublas: 412.2937 TFLOPS (baseline)","level":"info"}
+{"ts":"2026-04-20T11:07:12.297Z","tool":"co2cu","msg":"Compiling iter001_1p2c_w1_ku64.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T11:07:35.344Z","tool":"co2cu","msg":"Compiling iter001_1p2c_w1_ku64.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T11:08:35.402Z","tool":"co2cu","msg":"Compiling iter001_1p2c_w1_ku64.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T11:09:35.654Z","tool":"co2cu","msg":"Compiling iter001_1p2c_w1_ku64.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T11:09:35.778Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/opus-4/iter001_1p2c_w1_ku64.cu","level":"info"}
+{"ts":"2026-04-20T11:11:17.698Z","tool":"store_round","msg":"Storing iter001_p2c_wn128_s3 (KEEP 93.519 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T11:11:17.717Z","tool":"store_round","msg":"Stored iter001_p2c_wn128_s3: KEEP 93.519 TFLOPS (round 1)","level":"info"}
+{"ts":"2026-04-20T11:11:41.504Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_16416x16416x16416/opus-4/iter001_1p2c_w1_ku64 --skip-verify","level":"info"}
+{"ts":"2026-04-20T11:11:48.140Z","tool":"ncu_profile","msg":"Capturing profile: /home/albert/workspace/croqtile-tuner-btune/tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_16416x16416x16416/opus-4/iter001_1p2c_w1_ku64","level":"info"}
+{"ts":"2026-04-20T11:12:17.485Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16416x16416x16416/opus-4/ncu_iter001_round2.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16416x16416x16416/opus-4/ncu_iter001_round2.csv","level":"info"}
+{"ts":"2026-04-20T11:12:27.410Z","tool":"profile_extract","msg":"Analyzing iter001_p2c_wn128_s3 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16416x16416x16416/opus-4/ncu_iter001_round2.csv","level":"info"}
+{"ts":"2026-04-20T11:12:35.404Z","tool":"sass_compare","msg":"Extracting baseline SASS for f16fp32 16416x16416x16416","level":"info"}
+{"ts":"2026-04-20T11:12:41.554Z","tool":"sass_compare","msg":"Baseline SASS extracted via ncu (1290 lines)","level":"info"}
+{"ts":"2026-04-20T11:12:46.597Z","tool":"sass_compare","msg":"Extracting custom SASS for iter001_1p2c_w1_ku64","level":"info"}
+{"ts":"2026-04-20T11:12:51.239Z","tool":"sass_compare","msg":"Extracting custom SASS for iter001_1p2c_w1_ku64","level":"info"}
+{"ts":"2026-04-20T11:12:51.897Z","tool":"sass_compare","msg":"Custom SASS extracted for iter001_1p2c_w1_ku64 (1675 lines)","level":"info"}
+{"ts":"2026-04-20T11:12:56.560Z","tool":"sass_compare","msg":"Comparing baseline vs iter001_1p2c_w1_ku64 SASS","level":"info"}
+{"ts":"2026-04-20T11:12:56.589Z","tool":"sass_compare","msg":"SASS comparison complete for iter001_1p2c_w1_ku64 (saved to tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16416x16416x16416/opus-4/sass_compare_iter001_1p2c_w1_ku64.json)","level":"info"}
+{"ts":"2026-04-20T11:13:35.681Z","tool":"checkpoint_write","msg":"PLANNED iter002_wn192_s4_1p1c: 1p1c with larger WN=192 STAGES=4 to reduce barrier density vs 1p2c","level":"info"}
+{"ts":"2026-04-20T11:14:30.267Z","tool":"co2cu","msg":"Compiling iter002_wn192_s4_1p1c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T11:14:30.372Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/opus-4/iter002_wn192_s4_1p1c.cu","level":"info"}
+{"ts":"2026-04-20T11:15:34.840Z","tool":"store_round","msg":"Storing iter002_wn192_s4_1p1c (KEEP 236.45 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T11:15:34.860Z","tool":"store_round","msg":"Stored iter002_wn192_s4_1p1c: KEEP 236.45 TFLOPS (round 2)","level":"info"}
+{"ts":"2026-04-20T11:15:48.662Z","tool":"ncu_profile","msg":"Capturing profile: /home/albert/workspace/croqtile-tuner-btune/tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_16416x16416x16416/opus-4/iter002_wn192_s4_1p1c","level":"info"}
+{"ts":"2026-04-20T11:16:09.350Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16416x16416x16416/opus-4/ncu_iter002_round3.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16416x16416x16416/opus-4/ncu_iter002_round3.csv","level":"info"}
+{"ts":"2026-04-20T11:16:15.067Z","tool":"profile_extract","msg":"Analyzing iter002_wn192_s4_1p1c from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16416x16416x16416/opus-4/ncu_iter002_round3.csv","level":"info"}
+{"ts":"2026-04-20T11:16:25.373Z","tool":"checkpoint_write","msg":"PLANNED iter003_wn256_s4_1p2c: 1p2c WN=256 S4 for higher arithmetic intensity (cuBLAS-like 192x192)","level":"info"}
+{"ts":"2026-04-20T11:17:25.087Z","tool":"co2cu","msg":"Compiling iter003_wn192_s3_1p2c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T11:17:25.215Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/opus-4/iter003_wn192_s3_1p2c.cu","level":"info"}
+{"ts":"2026-04-20T11:18:31.949Z","tool":"store_round","msg":"Storing iter003_wn192_s3_1p2c (DISCARD 218.906 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T11:18:31.969Z","tool":"store_round","msg":"Stored iter003_wn192_s3_1p2c: DISCARD 218.906 TFLOPS (round 3)","level":"info"}
+{"ts":"2026-04-20T11:18:45.903Z","tool":"checkpoint_write","msg":"PLANNED iter004_wn256_s2_1p1c: 1p1c WN=256 S2: larger N-tile for higher arithmetic intensity at cost of pipeline depth","level":"info"}
+{"ts":"2026-04-20T11:19:42.841Z","tool":"co2cu","msg":"Compiling iter004_wn256_s2_1p1c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T11:19:42.947Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/opus-4/iter004_wn256_s2_1p1c.cu","level":"info"}
+{"ts":"2026-04-20T11:20:22.178Z","tool":"store_round","msg":"Storing iter004_wn256_s2_1p1c (DISCARD 185.054 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T11:20:22.197Z","tool":"store_round","msg":"Stored iter004_wn256_s2_1p1c: DISCARD 185.054 TFLOPS (round 4)","level":"info"}
+{"ts":"2026-04-20T11:20:36.600Z","tool":"checkpoint_write","msg":"PLANNED iter005_wn256_s3_1p1c: 1p1c WN=256 S3: sweet spot between tile size and pipeline depth","level":"info"}
+{"ts":"2026-04-20T11:21:32.519Z","tool":"co2cu","msg":"Compiling iter005_wn256_s3_1p1c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T11:21:32.627Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/opus-4/iter005_wn256_s3_1p1c.cu","level":"info"}
+{"ts":"2026-04-20T11:22:08.841Z","tool":"store_round","msg":"Storing iter005_wn256_s3_1p1c (KEEP 260.757 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T11:22:08.861Z","tool":"store_round","msg":"Stored iter005_wn256_s3_1p1c: KEEP 260.757 TFLOPS (round 5)","level":"info"}
+{"ts":"2026-04-20T11:22:21.217Z","tool":"checkpoint_write","msg":"PLANNED iter006_wn256_s4_1p1c: 1p1c WN=256 S4: add one more pipeline stage for deeper prefetch","level":"info"}
+{"ts":"2026-04-20T11:23:29.453Z","tool":"co2cu","msg":"Compiling iter006_wn240_s4_1p1c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T11:23:29.561Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/opus-4/iter006_wn240_s4_1p1c.cu","level":"info"}
+{"ts":"2026-04-20T11:24:22.748Z","tool":"store_round","msg":"Storing iter006_wn240_s4_1p1c (DISCARD 252.262 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T11:24:29.507Z","tool":"store_round","msg":"Storing iter006_wn240_s4_1p1c (DISCARD 252.262 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T11:24:29.526Z","tool":"store_round","msg":"Stored iter006_wn240_s4_1p1c: DISCARD 252.262 TFLOPS (round 6)","level":"info"}
+{"ts":"2026-04-20T11:24:43.189Z","tool":"checkpoint_write","msg":"PLANNED iter007_wn256_s3_lb256: Phase 2: add launch_bounds(256,1) to iter005 for better register allocation","level":"info"}
+{"ts":"2026-04-20T11:25:57.254Z","tool":"store_round","msg":"Storing iter007_wn256_s3_lb256 (KEEP 265.948 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T11:25:57.274Z","tool":"store_round","msg":"Stored iter007_wn256_s3_lb256: KEEP 265.948 TFLOPS (round 7)","level":"info"}
+{"ts":"2026-04-20T11:26:08.000Z","tool":"checkpoint_write","msg":"PLANNED iter008_wn256_s3_ptxaso3: Phase 2: add -Xptxas -O3 to iter007 for aggressive PTX optimization","level":"info"}
+{"ts":"2026-04-20T11:27:01.265Z","tool":"store_round","msg":"Storing iter008_wn256_s3_ptxaso3 (DISCARD 265.738 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T11:27:01.284Z","tool":"store_round","msg":"Stored iter008_wn256_s3_ptxaso3: DISCARD 265.738 TFLOPS (round 8)","level":"info"}
+{"ts":"2026-04-20T11:27:22.689Z","tool":"checkpoint_write","msg":"PLANNED iter009_wn256_s3_swz16: Add grid swizzle SWIZZLE=16 for better L2 B-matrix locality","level":"info"}
+{"ts":"2026-04-20T11:29:14.267Z","tool":"store_round","msg":"Storing iter009_wn256_s3_mreg192 (DISCARD 130.755 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T11:29:14.288Z","tool":"store_round","msg":"Stored iter009_wn256_s3_mreg192: DISCARD 130.755 TFLOPS (round 9)","level":"info"}
+{"ts":"2026-04-20T11:29:29.186Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_16416x16416x16416/opus-4/iter007_wn256_s3_lb256 16416 16416 16416 1 1","level":"info"}
+{"ts":"2026-04-20T11:29:34.679Z","tool":"ncu_profile","msg":"Capturing profile: /home/albert/workspace/croqtile-tuner-btune/tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_16416x16416x16416/opus-4/iter007_wn256_s3_lb256 16416 16416 16416 1 1","level":"info"}
+{"ts":"2026-04-20T11:30:11.583Z","tool":"profile_extract","msg":"Analyzing iter007_wn256_s3_lb256_r10 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16416x16416x16416/opus-4/ncu_iter007_wn256_s3_lb256_r10.csv","level":"info"}
+{"ts":"2026-04-20T11:33:39.375Z","tool":"store_round","msg":"Storing iter010_wn256_s3_swz16 (DISCARD 156.815 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T11:33:39.395Z","tool":"store_round","msg":"Stored iter010_wn256_s3_swz16: DISCARD 156.815 TFLOPS (round 10)","level":"info"}
+{"ts":"2026-04-20T11:37:03.252Z","tool":"store_round","msg":"Storing iter011_wn256_s3_swz8 (DISCARD 153.485 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T11:37:03.273Z","tool":"store_round","msg":"Stored iter011_wn256_s3_swz8: DISCARD 153.485 TFLOPS (round 11)","level":"info"}
+{"ts":"2026-04-20T11:37:09.048Z","tool":"store_round","msg":"Storing iter012_wn256_s3_swz32 (DISCARD 152.584 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T11:37:09.068Z","tool":"store_round","msg":"Stored iter012_wn256_s3_swz32: DISCARD 152.584 TFLOPS (round 12)","level":"info"}
+{"ts":"2026-04-20T11:38:07.478Z","tool":"co2cu","msg":"Compiling iter013_wn192_s4_1p2c_v2.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T11:38:39.368Z","tool":"co2cu","msg":"Compiling iter013_wn128_s4_1p1c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T11:38:39.474Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/opus-4/iter013_wn128_s4_1p1c.cu","level":"info"}
+{"ts":"2026-04-20T11:40:40.408Z","tool":"store_round","msg":"Storing iter013_wn128_s4_1p1c (DISCARD 89.521 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T11:40:40.429Z","tool":"store_round","msg":"Stored iter013_wn128_s4_1p1c: DISCARD 89.521 TFLOPS (round 13)","level":"info"}
+{"ts":"2026-04-20T11:41:25.990Z","tool":"co2cu","msg":"Compiling iter014_wn224_s3_1p1c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T11:41:26.096Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/opus-4/iter014_wn224_s3_1p1c.cu","level":"info"}
+{"ts":"2026-04-20T11:43:00.941Z","tool":"co2cu","msg":"Compiling iter015_wn320_s3_1p1c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T11:43:10.975Z","tool":"store_round","msg":"Storing iter014_wn224_s3_1p1c (DISCARD 116.933 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T11:43:10.996Z","tool":"store_round","msg":"Stored iter014_wn224_s3_1p1c: DISCARD 116.933 TFLOPS (round 14)","level":"info"}
+{"ts":"2026-04-20T11:43:18.218Z","tool":"store_round","msg":"Storing iter015_wn320_s3_1p1c (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T11:43:18.237Z","tool":"store_round","msg":"Stored iter015_wn320_s3_1p1c: COMPILE_FAIL 0 TFLOPS (round 15)","level":"info"}
+{"ts":"2026-04-20T11:44:15.151Z","tool":"co2cu","msg":"Compiling iter016_tm128_wn256_s2_1p1c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T11:44:15.278Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/opus-4/iter016_tm128_wn256_s2_1p1c.cu","level":"info"}
+{"ts":"2026-04-20T11:45:26.281Z","tool":"store_round","msg":"Storing iter016_tm128_wn256_s2_1p1c (DISCARD 131.865 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T11:45:26.301Z","tool":"store_round","msg":"Stored iter016_tm128_wn256_s2_1p1c: DISCARD 131.865 TFLOPS (round 16)","level":"info"}
+{"ts":"2026-04-20T11:47:42.441Z","tool":"store_round","msg":"Storing iter017_wn256_s3_swz16_lb (DISCARD 154.925 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T11:47:42.460Z","tool":"store_round","msg":"Stored iter017_wn256_s3_swz16_lb: DISCARD 154.925 TFLOPS (round 17)","level":"info"}
+{"ts":"2026-04-20T11:47:49.020Z","tool":"store_round","msg":"Storing iter018_wn256_s3_swz8_lb (DISCARD 199.052 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T11:47:49.039Z","tool":"store_round","msg":"Stored iter018_wn256_s3_swz8_lb: DISCARD 199.052 TFLOPS (round 18)","level":"info"}
+{"ts":"2026-04-20T11:49:28.339Z","tool":"store_round","msg":"Storing iter019_wn256_s3_swz4_lb (DISCARD 124.731 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T11:49:28.358Z","tool":"store_round","msg":"Stored iter019_wn256_s3_swz4_lb: DISCARD 124.731 TFLOPS (round 19)","level":"info"}
+{"ts":"2026-04-20T11:51:07.013Z","tool":"store_round","msg":"Storing iter020_wn256_s3_swz6_lb (DISCARD 137.364 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T11:51:07.034Z","tool":"store_round","msg":"Stored iter020_wn256_s3_swz6_lb: DISCARD 137.364 TFLOPS (round 20)","level":"info"}
+{"ts":"2026-04-20T11:51:07.463Z","tool":"store_round","msg":"Storing iter021_wn256_s3_swz10_lb (DISCARD 92.899 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T11:51:07.483Z","tool":"store_round","msg":"Stored iter021_wn256_s3_swz10_lb: DISCARD 92.899 TFLOPS (round 21)","level":"info"}
+{"ts":"2026-04-20T11:51:47.559Z","tool":"co2cu","msg":"Compiling iter022_wn192_s4_swz8.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T11:51:47.665Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/opus-4/iter022_wn192_s4_swz8.cu","level":"info"}
+{"ts":"2026-04-20T11:52:36.731Z","tool":"co2cu","msg":"Compiling iter022_wn192_s4_swz8.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T11:52:36.837Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/opus-4/iter022_wn192_s4_swz8.cu","level":"info"}
+{"ts":"2026-04-20T11:55:05.809Z","tool":"store_round","msg":"Storing iter022_wn192_s4_swz8 (DISCARD 247.292 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T11:55:05.828Z","tool":"store_round","msg":"Stored iter022_wn192_s4_swz8: DISCARD 247.292 TFLOPS (round 22)","level":"info"}
+{"ts":"2026-04-20T11:55:52.954Z","tool":"co2cu","msg":"Compiling iter023_wn256_s4_swz8.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T11:55:53.059Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/opus-4/iter023_wn256_s4_swz8.cu","level":"info"}
+{"ts":"2026-04-20T11:56:44.115Z","tool":"co2cu","msg":"Compiling iter023_wn256_s4_swz8.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T11:56:44.220Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/opus-4/iter023_wn256_s4_swz8.cu","level":"info"}
+{"ts":"2026-04-20T11:59:17.147Z","tool":"store_round","msg":"Storing iter023_wn256_s4_swz8 (DISCARD 262.143 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T11:59:24.151Z","tool":"store_round","msg":"Storing iter023_wn256_s4_swz8 (DISCARD 262.143 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T11:59:24.172Z","tool":"store_round","msg":"Stored iter023_wn256_s4_swz8: DISCARD 262.143 TFLOPS (round 23)","level":"info"}
+{"ts":"2026-04-20T12:00:58.855Z","tool":"store_round","msg":"Storing iter024_wn256_s3_wgwait1 (DISCARD 255.137 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:00:58.874Z","tool":"store_round","msg":"Stored iter024_wn256_s3_wgwait1: DISCARD 255.137 TFLOPS (round 24)","level":"info"}
+{"ts":"2026-04-20T12:02:48.729Z","tool":"store_round","msg":"Storing iter025_wn256_s3_l2promo (KEEP 278.089 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:02:48.749Z","tool":"store_round","msg":"Stored iter025_wn256_s3_l2promo: KEEP 278.089 TFLOPS (round 25)","level":"info"}
+{"ts":"2026-04-20T12:05:14.725Z","tool":"store_round","msg":"Storing iter026_wn256_s3_l2promo_swz8 (KEEP 287.085 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:05:14.744Z","tool":"store_round","msg":"Stored iter026_wn256_s3_l2promo_swz8: KEEP 287.085 TFLOPS (round 26)","level":"info"}
+{"ts":"2026-04-20T12:07:03.608Z","tool":"store_round","msg":"Storing iter027_wn256_s3_l2promo_swz4 (DISCARD 238.781 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:07:03.627Z","tool":"store_round","msg":"Stored iter027_wn256_s3_l2promo_swz4: DISCARD 238.781 TFLOPS (round 27)","level":"info"}
+{"ts":"2026-04-20T12:07:04.033Z","tool":"store_round","msg":"Storing iter028_wn256_s3_l2promo_swz16 (KEEP 294.204 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:07:04.053Z","tool":"store_round","msg":"Stored iter028_wn256_s3_l2promo_swz16: KEEP 294.204 TFLOPS (round 28)","level":"info"}
+{"ts":"2026-04-20T12:09:11.109Z","tool":"store_round","msg":"Storing iter029_wn256_s3_l2promo_swz32 (DISCARD 285.858 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:09:11.128Z","tool":"store_round","msg":"Stored iter029_wn256_s3_l2promo_swz32: DISCARD 285.858 TFLOPS (round 29)","level":"info"}
+{"ts":"2026-04-20T12:09:11.497Z","tool":"store_round","msg":"Storing iter030_wn256_s3_l2promo_swz12 (KEEP 297.882 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:09:11.516Z","tool":"store_round","msg":"Stored iter030_wn256_s3_l2promo_swz12: KEEP 297.882 TFLOPS (round 30)","level":"info"}
+{"ts":"2026-04-20T12:12:03.275Z","tool":"store_round","msg":"Storing iter031_wn256_s3_l2promo_swz14 (DISCARD 294.39 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:12:03.294Z","tool":"store_round","msg":"Stored iter031_wn256_s3_l2promo_swz14: DISCARD 294.39 TFLOPS (round 31)","level":"info"}
+{"ts":"2026-04-20T12:12:03.654Z","tool":"store_round","msg":"Storing iter032_wn256_s3_l2promo_swz15 (DISCARD 287.69 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:12:03.673Z","tool":"store_round","msg":"Stored iter032_wn256_s3_l2promo_swz15: DISCARD 287.69 TFLOPS (round 32)","level":"info"}
+{"ts":"2026-04-20T12:12:04.247Z","tool":"store_round","msg":"Storing iter033_wn256_s3_l2promo_swz13 (DISCARD 281.93 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:12:04.266Z","tool":"store_round","msg":"Stored iter033_wn256_s3_l2promo_swz13: DISCARD 281.93 TFLOPS (round 33)","level":"info"}
+{"ts":"2026-04-20T12:12:17.037Z","tool":"ncu_profile","msg":"Capturing profile: /home/albert/workspace/croqtile-tuner-btune/tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_16416x16416x16416/opus-4/iter030_wn256_s3_l2promo_swz12 16416 16416 16416 1 2","level":"info"}
+{"ts":"2026-04-20T12:15:15.110Z","tool":"store_round","msg":"Storing iter034_wn256_s3_l2promo_swz12_opt (DISCARD 296.74 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:15:15.130Z","tool":"store_round","msg":"Stored iter034_wn256_s3_l2promo_swz12_opt: DISCARD 296.74 TFLOPS (round 34)","level":"info"}
+{"ts":"2026-04-20T12:15:15.489Z","tool":"store_round","msg":"Storing iter035_wn256_s3_l2promo_swz14_opt (DISCARD 296.45 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:15:15.508Z","tool":"store_round","msg":"Stored iter035_wn256_s3_l2promo_swz14_opt: DISCARD 296.45 TFLOPS (round 35)","level":"info"}
+{"ts":"2026-04-20T12:16:19.955Z","tool":"co2cu","msg":"Compiling iter036_wn192_s4_l2promo.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T12:16:20.056Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/opus-4/iter036_wn192_s4_l2promo.cu","level":"info"}
+{"ts":"2026-04-20T12:18:43.453Z","tool":"store_round","msg":"Storing iter036_wn192_s4_l2promo (DISCARD 188.989 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:18:43.473Z","tool":"store_round","msg":"Stored iter036_wn192_s4_l2promo: DISCARD 188.989 TFLOPS (round 36)","level":"info"}
+{"ts":"2026-04-20T12:20:23.439Z","tool":"store_round","msg":"Storing iter037_wn256_s3_l2promo_swz11 (DISCARD 150.10 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:20:23.458Z","tool":"store_round","msg":"Stored iter037_wn256_s3_l2promo_swz11: DISCARD 150.10 TFLOPS (round 37)","level":"info"}
+{"ts":"2026-04-20T12:20:23.869Z","tool":"store_round","msg":"Storing iter038_wn256_s3_l2promo_swz10 (DISCARD 249.53 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:20:23.889Z","tool":"store_round","msg":"Stored iter038_wn256_s3_l2promo_swz10: DISCARD 249.53 TFLOPS (round 38)","level":"info"}
+{"ts":"2026-04-20T12:22:12.269Z","tool":"store_round","msg":"Storing iter039_wn256_s3_l2promo_noswz (DISCARD 86.83 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:22:12.288Z","tool":"store_round","msg":"Stored iter039_wn256_s3_l2promo_noswz: DISCARD 86.83 TFLOPS (round 39)","level":"info"}
+{"ts":"2026-04-20T12:23:22.701Z","tool":"store_round","msg":"Storing iter040_wn256_s3_l2promo_mswz12 (DISCARD 60.179 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:23:22.721Z","tool":"store_round","msg":"Stored iter040_wn256_s3_l2promo_mswz12: DISCARD 60.179 TFLOPS (round 40)","level":"info"}
+{"ts":"2026-04-20T12:27:14.801Z","tool":"store_round","msg":"Storing iter041_wn256_s3_l2promo_swz8 (DISCARD 278.81 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:27:14.821Z","tool":"store_round","msg":"Stored iter041_wn256_s3_l2promo_swz8: DISCARD 278.81 TFLOPS (round 41)","level":"info"}
+{"ts":"2026-04-20T12:27:15.451Z","tool":"store_round","msg":"Storing iter042_wn256_s3_l2promo_swz9 (DISCARD 277.16 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:27:15.471Z","tool":"store_round","msg":"Stored iter042_wn256_s3_l2promo_swz9: DISCARD 277.16 TFLOPS (round 42)","level":"info"}
+{"ts":"2026-04-20T12:27:15.869Z","tool":"store_round","msg":"Storing iter043_wn256_s3_l2promo_swz10 (DISCARD 278.22 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:27:15.889Z","tool":"store_round","msg":"Stored iter043_wn256_s3_l2promo_swz10: DISCARD 278.22 TFLOPS (round 43)","level":"info"}
+{"ts":"2026-04-20T12:27:16.457Z","tool":"store_round","msg":"Storing iter044_wn256_s3_l2promo_swz11 (DISCARD 276.63 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:27:16.477Z","tool":"store_round","msg":"Stored iter044_wn256_s3_l2promo_swz11: DISCARD 276.63 TFLOPS (round 44)","level":"info"}
+{"ts":"2026-04-20T12:27:16.886Z","tool":"store_round","msg":"Storing iter045_wn256_s3_l2promo_swz12 (DISCARD 289.93 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:27:16.906Z","tool":"store_round","msg":"Stored iter045_wn256_s3_l2promo_swz12: DISCARD 289.93 TFLOPS (round 45)","level":"info"}
+{"ts":"2026-04-20T12:27:17.311Z","tool":"store_round","msg":"Storing iter046_wn256_s3_l2promo_swz13 (DISCARD 277.98 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:27:17.330Z","tool":"store_round","msg":"Stored iter046_wn256_s3_l2promo_swz13: DISCARD 277.98 TFLOPS (round 46)","level":"info"}
+{"ts":"2026-04-20T12:27:17.837Z","tool":"store_round","msg":"Storing iter047_wn256_s3_l2promo_swz14 (DISCARD 287.99 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:27:17.856Z","tool":"store_round","msg":"Stored iter047_wn256_s3_l2promo_swz14: DISCARD 287.99 TFLOPS (round 47)","level":"info"}
+{"ts":"2026-04-20T12:27:18.254Z","tool":"store_round","msg":"Storing iter048_wn256_s3_l2promo_swz15 (DISCARD 282.72 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:27:18.273Z","tool":"store_round","msg":"Stored iter048_wn256_s3_l2promo_swz15: DISCARD 282.72 TFLOPS (round 48)","level":"info"}
+{"ts":"2026-04-20T12:27:18.830Z","tool":"store_round","msg":"Storing iter049_wn256_s3_l2promo_swz16 (DISCARD 287.27 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:27:18.850Z","tool":"store_round","msg":"Stored iter049_wn256_s3_l2promo_swz16: DISCARD 287.27 TFLOPS (round 49)","level":"info"}
+{"ts":"2026-04-20T12:27:19.263Z","tool":"store_round","msg":"Storing iter050_wn256_s3_l2promo_swz17 (DISCARD 279.81 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:27:19.283Z","tool":"store_round","msg":"Stored iter050_wn256_s3_l2promo_swz17: DISCARD 279.81 TFLOPS (round 50)","level":"info"}
+{"ts":"2026-04-20T12:30:07.086Z","tool":"store_round","msg":"Storing iter051_wn256_s3_nol2_swz12 (KEEP 297.814 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:30:07.105Z","tool":"store_round","msg":"Stored iter051_wn256_s3_nol2_swz12: KEEP 297.814 TFLOPS (round 51)","level":"info"}
+{"ts":"2026-04-20T12:34:54.803Z","tool":"store_round","msg":"Storing iter052_wn256_s3_nol2_swz8 (DISCARD 28.4373 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:34:54.823Z","tool":"store_round","msg":"Stored iter052_wn256_s3_nol2_swz8: DISCARD 28.4373 TFLOPS (round 52)","level":"info"}
+{"ts":"2026-04-20T12:35:27.348Z","tool":"store_round","msg":"Storing iter053_wn256_s3_nol2_swz10 (DISCARD 28.1824 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:35:27.366Z","tool":"store_round","msg":"Stored iter053_wn256_s3_nol2_swz10: DISCARD 28.1824 TFLOPS (round 53)","level":"info"}
+{"ts":"2026-04-20T12:36:00.332Z","tool":"store_round","msg":"Storing iter055_wn256_s3_nol2_swz14 (DISCARD 28.1445 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:36:00.350Z","tool":"store_round","msg":"Stored iter055_wn256_s3_nol2_swz14: DISCARD 28.1445 TFLOPS (round 55)","level":"info"}
+{"ts":"2026-04-20T12:36:33.662Z","tool":"store_round","msg":"Storing iter056_wn256_s3_nol2_swz16 (DISCARD 28.3367 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:36:33.682Z","tool":"store_round","msg":"Stored iter056_wn256_s3_nol2_swz16: DISCARD 28.3367 TFLOPS (round 56)","level":"info"}
+{"ts":"2026-04-20T12:37:21.561Z","tool":"store_round","msg":"Storing iter058_wn256_s3_nol2_swz20 (DISCARD 28.1532 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:37:21.581Z","tool":"store_round","msg":"Stored iter058_wn256_s3_nol2_swz20: DISCARD 28.1532 TFLOPS (round 58)","level":"info"}
+{"ts":"2026-04-20T12:37:33.951Z","tool":"store_round","msg":"Storing iter060_wn256_s3_nol2_swz24 (DISCARD 287.939 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:37:33.971Z","tool":"store_round","msg":"Stored iter060_wn256_s3_nol2_swz24: DISCARD 287.939 TFLOPS (round 60)","level":"info"}
+{"ts":"2026-04-20T12:37:53.833Z","tool":"store_round","msg":"Storing iter062_wn256_s3_nol2_swz28 (DISCARD 288.288 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:37:53.853Z","tool":"store_round","msg":"Stored iter062_wn256_s3_nol2_swz28: DISCARD 288.288 TFLOPS (round 62)","level":"info"}
+{"ts":"2026-04-20T12:38:06.293Z","tool":"store_round","msg":"Storing iter064_wn256_s3_nol2_swz32 (DISCARD 286.044 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:38:06.312Z","tool":"store_round","msg":"Stored iter064_wn256_s3_nol2_swz32: DISCARD 286.044 TFLOPS (round 64)","level":"info"}
+{"ts":"2026-04-20T12:44:55.943Z","tool":"store_round","msg":"Storing iter065_wn256_s3_nol2_swz18 (DISCARD 19.45 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:44:55.961Z","tool":"store_round","msg":"Stored iter065_wn256_s3_nol2_swz18: DISCARD 19.45 TFLOPS (round 65)","level":"info"}
+{"ts":"2026-04-20T12:44:56.370Z","tool":"store_round","msg":"Storing iter066_wn256_s3_nol2_swz19 (DISCARD 19.43 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:44:56.389Z","tool":"store_round","msg":"Stored iter066_wn256_s3_nol2_swz19: DISCARD 19.43 TFLOPS (round 66)","level":"info"}
+{"ts":"2026-04-20T12:44:56.795Z","tool":"store_round","msg":"Storing iter067_wn256_s3_nol2_swz20 (DISCARD 157.18 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:44:56.814Z","tool":"store_round","msg":"Stored iter067_wn256_s3_nol2_swz20: DISCARD 157.18 TFLOPS (round 67)","level":"info"}
+{"ts":"2026-04-20T12:44:57.297Z","tool":"store_round","msg":"Storing iter068_wn256_s3_nol2_swz21 (DISCARD 215.09 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:44:57.316Z","tool":"store_round","msg":"Stored iter068_wn256_s3_nol2_swz21: DISCARD 215.09 TFLOPS (round 68)","level":"info"}
+{"ts":"2026-04-20T12:44:57.713Z","tool":"store_round","msg":"Storing iter069_wn256_s3_nol2_swz22 (DISCARD 152.97 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:44:57.732Z","tool":"store_round","msg":"Stored iter069_wn256_s3_nol2_swz22: DISCARD 152.97 TFLOPS (round 69)","level":"info"}
+{"ts":"2026-04-20T12:44:58.124Z","tool":"store_round","msg":"Storing iter070_wn256_s3_nol2_swz23 (DISCARD 149.71 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:44:58.143Z","tool":"store_round","msg":"Stored iter070_wn256_s3_nol2_swz23: DISCARD 149.71 TFLOPS (round 70)","level":"info"}
+{"ts":"2026-04-20T12:44:58.549Z","tool":"store_round","msg":"Storing iter071_wn256_s3_nol2_swz24 (DISCARD 135.46 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:44:58.568Z","tool":"store_round","msg":"Stored iter071_wn256_s3_nol2_swz24: DISCARD 135.46 TFLOPS (round 71)","level":"info"}
+{"ts":"2026-04-20T12:44:58.980Z","tool":"store_round","msg":"Storing iter072_wn256_s3_nol2_swz25 (DISCARD 149.05 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:44:58.998Z","tool":"store_round","msg":"Stored iter072_wn256_s3_nol2_swz25: DISCARD 149.05 TFLOPS (round 72)","level":"info"}
+{"ts":"2026-04-20T12:44:59.573Z","tool":"store_round","msg":"Storing iter073_wn256_s3_nol2_swz26 (DISCARD 148.48 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:44:59.592Z","tool":"store_round","msg":"Stored iter073_wn256_s3_nol2_swz26: DISCARD 148.48 TFLOPS (round 73)","level":"info"}
+{"ts":"2026-04-20T12:45:00.009Z","tool":"store_round","msg":"Storing iter074_wn256_s3_nol2_swz27 (DISCARD 156.58 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:45:00.028Z","tool":"store_round","msg":"Stored iter074_wn256_s3_nol2_swz27: DISCARD 156.58 TFLOPS (round 74)","level":"info"}
+{"ts":"2026-04-20T12:45:00.450Z","tool":"store_round","msg":"Storing iter075_wn256_s3_nol2_swz28 (DISCARD 185.23 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:45:00.469Z","tool":"store_round","msg":"Stored iter075_wn256_s3_nol2_swz28: DISCARD 185.23 TFLOPS (round 75)","level":"info"}
+{"ts":"2026-04-20T12:48:35.088Z","tool":"store_round","msg":"Storing iter076_wn256_s3_nol2_swz12_opt (DISCARD 292.811 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:48:35.108Z","tool":"store_round","msg":"Stored iter076_wn256_s3_nol2_swz12_opt: DISCARD 292.811 TFLOPS (round 76)","level":"info"}
+{"ts":"2026-04-20T12:48:47.403Z","tool":"store_round","msg":"Storing iter077_wn256_s3_nol2_swz13_opt (DISCARD 276.4 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:48:47.422Z","tool":"store_round","msg":"Stored iter077_wn256_s3_nol2_swz13_opt: DISCARD 276.4 TFLOPS (round 77)","level":"info"}
+{"ts":"2026-04-20T12:48:59.888Z","tool":"store_round","msg":"Storing iter078_wn256_s3_nol2_swz14_opt (DISCARD 287.374 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:48:59.908Z","tool":"store_round","msg":"Stored iter078_wn256_s3_nol2_swz14_opt: DISCARD 287.374 TFLOPS (round 78)","level":"info"}
+{"ts":"2026-04-20T12:49:12.074Z","tool":"store_round","msg":"Storing iter079_wn256_s3_nol2_swz15_opt (DISCARD 283.285 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:49:12.093Z","tool":"store_round","msg":"Stored iter079_wn256_s3_nol2_swz15_opt: DISCARD 283.285 TFLOPS (round 79)","level":"info"}
+{"ts":"2026-04-20T12:49:24.347Z","tool":"store_round","msg":"Storing iter080_wn256_s3_nol2_swz16_opt (DISCARD 290.284 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:49:24.367Z","tool":"store_round","msg":"Stored iter080_wn256_s3_nol2_swz16_opt: DISCARD 290.284 TFLOPS (round 80)","level":"info"}
+{"ts":"2026-04-20T12:49:37.178Z","tool":"store_round","msg":"Storing iter081_wn256_s3_nol2_swz17_opt (DISCARD 281.081 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:49:37.197Z","tool":"store_round","msg":"Stored iter081_wn256_s3_nol2_swz17_opt: DISCARD 281.081 TFLOPS (round 81)","level":"info"}
+{"ts":"2026-04-20T12:49:49.357Z","tool":"store_round","msg":"Storing iter082_wn256_s3_nol2_swz18_opt (DISCARD 292.989 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:49:49.377Z","tool":"store_round","msg":"Stored iter082_wn256_s3_nol2_swz18_opt: DISCARD 292.989 TFLOPS (round 82)","level":"info"}
+{"ts":"2026-04-20T12:50:01.660Z","tool":"store_round","msg":"Storing iter083_wn256_s3_nol2_swz19_opt (DISCARD 287.93 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:50:01.679Z","tool":"store_round","msg":"Stored iter083_wn256_s3_nol2_swz19_opt: DISCARD 287.93 TFLOPS (round 83)","level":"info"}
+{"ts":"2026-04-20T12:50:14.090Z","tool":"store_round","msg":"Storing iter084_wn256_s3_nol2_swz20_opt (DISCARD 287.418 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:50:14.110Z","tool":"store_round","msg":"Stored iter084_wn256_s3_nol2_swz20_opt: DISCARD 287.418 TFLOPS (round 84)","level":"info"}
+{"ts":"2026-04-20T12:50:26.336Z","tool":"store_round","msg":"Storing iter085_wn256_s3_nol2_swz21_opt (DISCARD 290.554 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:50:26.355Z","tool":"store_round","msg":"Stored iter085_wn256_s3_nol2_swz21_opt: DISCARD 290.554 TFLOPS (round 85)","level":"info"}
+{"ts":"2026-04-20T12:50:38.772Z","tool":"store_round","msg":"Storing iter086_wn256_s3_nol2_swz12_v2 (DISCARD 290.88 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:50:38.791Z","tool":"store_round","msg":"Stored iter086_wn256_s3_nol2_swz12_v2: DISCARD 290.88 TFLOPS (round 86)","level":"info"}
+{"ts":"2026-04-20T12:50:51.052Z","tool":"store_round","msg":"Storing iter087_wn256_s3_nol2_swz13_v2 (DISCARD 278.262 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:50:51.073Z","tool":"store_round","msg":"Stored iter087_wn256_s3_nol2_swz13_v2: DISCARD 278.262 TFLOPS (round 87)","level":"info"}
+{"ts":"2026-04-20T12:51:03.801Z","tool":"store_round","msg":"Storing iter088_wn256_s3_nol2_swz14_v2 (DISCARD 293.935 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:51:03.820Z","tool":"store_round","msg":"Stored iter088_wn256_s3_nol2_swz14_v2: DISCARD 293.935 TFLOPS (round 88)","level":"info"}
+{"ts":"2026-04-20T12:51:15.949Z","tool":"store_round","msg":"Storing iter089_wn256_s3_nol2_swz15_v2 (DISCARD 284.819 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:51:15.968Z","tool":"store_round","msg":"Stored iter089_wn256_s3_nol2_swz15_v2: DISCARD 284.819 TFLOPS (round 89)","level":"info"}
+{"ts":"2026-04-20T12:51:28.106Z","tool":"store_round","msg":"Storing iter090_wn256_s3_nol2_swz16_v2 (DISCARD 289.114 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:51:28.125Z","tool":"store_round","msg":"Stored iter090_wn256_s3_nol2_swz16_v2: DISCARD 289.114 TFLOPS (round 90)","level":"info"}
+{"ts":"2026-04-20T12:52:11.096Z","tool":"store_round","msg":"Storing iter091_wn256_s3_nol2_swz17_v2 (DISCARD 282.326 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:52:11.114Z","tool":"store_round","msg":"Stored iter091_wn256_s3_nol2_swz17_v2: DISCARD 282.326 TFLOPS (round 91)","level":"info"}
+{"ts":"2026-04-20T12:52:23.417Z","tool":"store_round","msg":"Storing iter092_wn256_s3_nol2_swz18_v2 (DISCARD 292.398 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:52:23.435Z","tool":"store_round","msg":"Stored iter092_wn256_s3_nol2_swz18_v2: DISCARD 292.398 TFLOPS (round 92)","level":"info"}
+{"ts":"2026-04-20T12:52:35.576Z","tool":"store_round","msg":"Storing iter093_wn256_s3_nol2_swz19_v2 (DISCARD 289.282 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:52:35.596Z","tool":"store_round","msg":"Stored iter093_wn256_s3_nol2_swz19_v2: DISCARD 289.282 TFLOPS (round 93)","level":"info"}
+{"ts":"2026-04-20T12:52:48.199Z","tool":"store_round","msg":"Storing iter094_wn256_s3_nol2_swz20_v2 (DISCARD 288.446 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:52:48.218Z","tool":"store_round","msg":"Stored iter094_wn256_s3_nol2_swz20_v2: DISCARD 288.446 TFLOPS (round 94)","level":"info"}
+{"ts":"2026-04-20T12:53:00.338Z","tool":"store_round","msg":"Storing iter095_wn256_s3_nol2_swz21_v2 (DISCARD 289.49 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:53:00.357Z","tool":"store_round","msg":"Stored iter095_wn256_s3_nol2_swz21_v2: DISCARD 289.49 TFLOPS (round 95)","level":"info"}
+{"ts":"2026-04-20T12:54:48.121Z","tool":"store_round","msg":"Storing iter096_wn256_s3_nol2_swz12_v3 (DISCARD 297.045 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:54:48.139Z","tool":"store_round","msg":"Stored iter096_wn256_s3_nol2_swz12_v3: DISCARD 297.045 TFLOPS (round 96)","level":"info"}
+{"ts":"2026-04-20T12:55:00.567Z","tool":"store_round","msg":"Storing iter097_wn256_s3_nol2_swz13_v3 (DISCARD 276.285 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:55:00.586Z","tool":"store_round","msg":"Stored iter097_wn256_s3_nol2_swz13_v3: DISCARD 276.285 TFLOPS (round 97)","level":"info"}
+{"ts":"2026-04-20T12:55:12.957Z","tool":"store_round","msg":"Storing iter098_wn256_s3_nol2_swz14_v3 (DISCARD 293.351 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:55:12.977Z","tool":"store_round","msg":"Stored iter098_wn256_s3_nol2_swz14_v3: DISCARD 293.351 TFLOPS (round 98)","level":"info"}
+{"ts":"2026-04-20T12:55:25.188Z","tool":"store_round","msg":"Storing iter099_wn256_s3_nol2_swz15_v3 (DISCARD 291.149 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:55:25.207Z","tool":"store_round","msg":"Stored iter099_wn256_s3_nol2_swz15_v3: DISCARD 291.149 TFLOPS (round 99)","level":"info"}
+{"ts":"2026-04-20T12:55:37.395Z","tool":"store_round","msg":"Storing iter100_wn256_s3_nol2_swz12_v3 (DISCARD 297.106 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:55:37.414Z","tool":"store_round","msg":"Stored iter100_wn256_s3_nol2_swz12_v3: DISCARD 297.106 TFLOPS (round 100)","level":"info"}
+{"ts":"2026-04-20T12:55:49.744Z","tool":"store_round","msg":"Storing iter101_wn256_s3_nol2_swz13_v3 (DISCARD 278.377 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:55:49.762Z","tool":"store_round","msg":"Stored iter101_wn256_s3_nol2_swz13_v3: DISCARD 278.377 TFLOPS (round 101)","level":"info"}
+{"ts":"2026-04-20T12:56:01.999Z","tool":"store_round","msg":"Storing iter102_wn256_s3_nol2_swz14_v3 (DISCARD 300.078 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:56:02.019Z","tool":"store_round","msg":"Stored iter102_wn256_s3_nol2_swz14_v3: DISCARD 300.078 TFLOPS (round 102)","level":"info"}
+{"ts":"2026-04-20T12:56:37.608Z","tool":"store_round","msg":"Storing iter103_wn256_s3_nol2_swz15_v3 (DISCARD 27.8978 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:56:37.628Z","tool":"store_round","msg":"Stored iter103_wn256_s3_nol2_swz15_v3: DISCARD 27.8978 TFLOPS (round 103)","level":"info"}
+{"ts":"2026-04-20T12:57:10.874Z","tool":"store_round","msg":"Storing iter104_wn256_s3_nol2_swz16_v3 (DISCARD 27.8512 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:57:10.893Z","tool":"store_round","msg":"Stored iter104_wn256_s3_nol2_swz16_v3: DISCARD 27.8512 TFLOPS (round 104)","level":"info"}
+{"ts":"2026-04-20T12:57:44.206Z","tool":"store_round","msg":"Storing iter105_wn256_s3_nol2_swz17_v3 (DISCARD 27.6832 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T12:57:44.224Z","tool":"store_round","msg":"Stored iter105_wn256_s3_nol2_swz17_v3: DISCARD 27.6832 TFLOPS (round 105)","level":"info"}
+{"ts":"2026-04-20T13:43:51.246Z","tool":"co2cu","msg":"Compiling iter106_wn96_s5_1p1c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T13:43:51.348Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/opus-4/iter106_wn96_s5_1p1c.cu","level":"info"}
+{"ts":"2026-04-20T13:46:24.555Z","tool":"store_round","msg":"Storing iter106_wn96_s5_1p1c (DISCARD 206.141 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T13:46:24.574Z","tool":"store_round","msg":"Stored iter106_wn96_s5_1p1c: DISCARD 206.141 TFLOPS (round 106)","level":"info"}
+{"ts":"2026-04-20T13:47:11.273Z","tool":"co2cu","msg":"Compiling iter107_wn144_s4_1p1c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T13:47:11.377Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/opus-4/iter107_wn144_s4_1p1c.cu","level":"info"}
+{"ts":"2026-04-20T13:49:45.580Z","tool":"store_round","msg":"Storing iter107_wn144_s4_1p1c (DISCARD 247.686 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T13:49:45.598Z","tool":"store_round","msg":"Stored iter107_wn144_s4_1p1c: DISCARD 247.686 TFLOPS (round 107)","level":"info"}
+{"ts":"2026-04-20T13:52:27.395Z","tool":"store_round","msg":"Storing iter108_wn256_s3_nol2_swz8_final (DISCARD 284.79 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T13:52:27.415Z","tool":"store_round","msg":"Stored iter108_wn256_s3_nol2_swz8_final: DISCARD 284.79 TFLOPS (round 108)","level":"info"}
+{"ts":"2026-04-20T13:52:27.961Z","tool":"store_round","msg":"Storing iter110_wn256_s3_nol2_swz10_final (DISCARD 284.31 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T13:52:27.979Z","tool":"store_round","msg":"Stored iter110_wn256_s3_nol2_swz10_final: DISCARD 284.31 TFLOPS (round 110)","level":"info"}
+{"ts":"2026-04-20T13:52:28.547Z","tool":"store_round","msg":"Storing iter111_wn256_s3_nol2_swz11_final (DISCARD 281.08 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T13:52:28.566Z","tool":"store_round","msg":"Stored iter111_wn256_s3_nol2_swz11_final: DISCARD 281.08 TFLOPS (round 111)","level":"info"}
+{"ts":"2026-04-20T13:52:29.041Z","tool":"store_round","msg":"Storing iter112_wn256_s3_nol2_swz12_final (DISCARD 295.64 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T13:52:29.060Z","tool":"store_round","msg":"Stored iter112_wn256_s3_nol2_swz12_final: DISCARD 295.64 TFLOPS (round 112)","level":"info"}
+{"ts":"2026-04-20T13:52:29.590Z","tool":"store_round","msg":"Storing iter113_wn256_s3_nol2_swz13_final (DISCARD 277.46 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T13:52:29.609Z","tool":"store_round","msg":"Stored iter113_wn256_s3_nol2_swz13_final: DISCARD 277.46 TFLOPS (round 113)","level":"info"}
+{"ts":"2026-04-20T13:52:29.994Z","tool":"store_round","msg":"Storing iter114_wn256_s3_nol2_swz14_final (DISCARD 276.34 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T13:52:30.014Z","tool":"store_round","msg":"Stored iter114_wn256_s3_nol2_swz14_final: DISCARD 276.34 TFLOPS (round 114)","level":"info"}
+{"ts":"2026-04-20T13:56:54.204Z","tool":"store_round","msg":"Storing iter115_wn256_s3_nol2_swz9 (DISCARD 259.09 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T13:56:54.223Z","tool":"store_round","msg":"Stored iter115_wn256_s3_nol2_swz9: DISCARD 259.09 TFLOPS (round 115)","level":"info"}
+{"ts":"2026-04-20T13:56:54.625Z","tool":"store_round","msg":"Storing iter116_wn256_s3_nol2_swz15 (DISCARD 286.74 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T13:56:54.644Z","tool":"store_round","msg":"Stored iter116_wn256_s3_nol2_swz15: DISCARD 286.74 TFLOPS (round 116)","level":"info"}
+{"ts":"2026-04-20T13:56:55.206Z","tool":"store_round","msg":"Storing iter117_wn256_s3_nol2_swz16 (DISCARD 291.73 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T13:56:55.226Z","tool":"store_round","msg":"Stored iter117_wn256_s3_nol2_swz16: DISCARD 291.73 TFLOPS (round 117)","level":"info"}
+{"ts":"2026-04-20T13:56:55.629Z","tool":"store_round","msg":"Storing iter118_wn256_s3_nol2_swz17 (DISCARD 282.48 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T13:56:55.649Z","tool":"store_round","msg":"Stored iter118_wn256_s3_nol2_swz17: DISCARD 282.48 TFLOPS (round 118)","level":"info"}
+{"ts":"2026-04-20T13:56:56.042Z","tool":"store_round","msg":"Storing iter119_wn256_s3_nol2_swz18 (DISCARD 292.03 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T13:56:56.062Z","tool":"store_round","msg":"Stored iter119_wn256_s3_nol2_swz18: DISCARD 292.03 TFLOPS (round 119)","level":"info"}
+{"ts":"2026-04-20T13:56:56.616Z","tool":"store_round","msg":"Storing iter120_wn256_s3_nol2_swz20 (DISCARD 286.58 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T13:56:56.636Z","tool":"store_round","msg":"Stored iter120_wn256_s3_nol2_swz20: DISCARD 286.58 TFLOPS (round 120)","level":"info"}
+{"ts":"2026-04-20T13:56:57.042Z","tool":"store_round","msg":"Storing iter121_wn256_s3_nol2_swz24 (DISCARD 276.29 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T13:56:57.062Z","tool":"store_round","msg":"Stored iter121_wn256_s3_nol2_swz24: DISCARD 276.29 TFLOPS (round 121)","level":"info"}
+{"ts":"2026-04-20T13:56:57.610Z","tool":"store_round","msg":"Storing iter122_wn256_s3_nol2_swz4 (DISCARD 245.39 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T13:56:57.629Z","tool":"store_round","msg":"Stored iter122_wn256_s3_nol2_swz4: DISCARD 245.39 TFLOPS (round 122)","level":"info"}
+{"ts":"2026-04-20T13:56:58.036Z","tool":"store_round","msg":"Storing iter123_wn256_s3_nol2_swz5 (DISCARD 252.30 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T13:56:58.056Z","tool":"store_round","msg":"Stored iter123_wn256_s3_nol2_swz5: DISCARD 252.30 TFLOPS (round 123)","level":"info"}
+{"ts":"2026-04-20T13:56:58.464Z","tool":"store_round","msg":"Storing iter124_wn256_s3_nol2_swz6 (DISCARD 288.15 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T13:56:58.483Z","tool":"store_round","msg":"Stored iter124_wn256_s3_nol2_swz6: DISCARD 288.15 TFLOPS (round 124)","level":"info"}
+{"ts":"2026-04-20T13:56:59.054Z","tool":"store_round","msg":"Storing iter125_wn256_s3_nol2_swz7 (DISCARD 262.31 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T13:56:59.074Z","tool":"store_round","msg":"Stored iter125_wn256_s3_nol2_swz7: DISCARD 262.31 TFLOPS (round 125)","level":"info"}
+{"ts":"2026-04-20T14:01:51.206Z","tool":"store_round","msg":"Storing iter126_wn256_s3_l2promo_swz12_ptx (DISCARD 295.94 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:01:51.227Z","tool":"store_round","msg":"Stored iter126_wn256_s3_l2promo_swz12_ptx: DISCARD 295.94 TFLOPS (round 126)","level":"info"}
+{"ts":"2026-04-20T14:01:51.644Z","tool":"store_round","msg":"Storing iter127_wn256_s3_l2promo_swz13_ptx (DISCARD 266.55 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:01:51.666Z","tool":"store_round","msg":"Stored iter127_wn256_s3_l2promo_swz13_ptx: DISCARD 266.55 TFLOPS (round 127)","level":"info"}
+{"ts":"2026-04-20T14:01:52.087Z","tool":"store_round","msg":"Storing iter128_wn256_s3_l2promo_swz14_ptx (DISCARD 291.85 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:01:52.107Z","tool":"store_round","msg":"Stored iter128_wn256_s3_l2promo_swz14_ptx: DISCARD 291.85 TFLOPS (round 128)","level":"info"}
+{"ts":"2026-04-20T14:01:52.513Z","tool":"store_round","msg":"Storing iter129_wn256_s3_l2promo_swz15_ptx (DISCARD 287.30 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:01:52.533Z","tool":"store_round","msg":"Stored iter129_wn256_s3_l2promo_swz15_ptx: DISCARD 287.30 TFLOPS (round 129)","level":"info"}
+{"ts":"2026-04-20T14:01:52.965Z","tool":"store_round","msg":"Storing iter130_wn256_s3_l2promo_swz16_ptx (DISCARD 247.63 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:01:52.986Z","tool":"store_round","msg":"Stored iter130_wn256_s3_l2promo_swz16_ptx: DISCARD 247.63 TFLOPS (round 130)","level":"info"}
+{"ts":"2026-04-20T14:01:53.418Z","tool":"store_round","msg":"Storing iter131_wn256_s3_l2promo_swz17_ptx (DISCARD 265.44 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:01:53.439Z","tool":"store_round","msg":"Stored iter131_wn256_s3_l2promo_swz17_ptx: DISCARD 265.44 TFLOPS (round 131)","level":"info"}
+{"ts":"2026-04-20T14:01:53.883Z","tool":"store_round","msg":"Storing iter132_wn256_s3_l2promo_swz18_ptx (DISCARD 272.82 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:01:53.902Z","tool":"store_round","msg":"Stored iter132_wn256_s3_l2promo_swz18_ptx: DISCARD 272.82 TFLOPS (round 132)","level":"info"}
+{"ts":"2026-04-20T14:01:54.343Z","tool":"store_round","msg":"Storing iter133_wn256_s3_l2promo_swz19_ptx (DISCARD 283.41 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:01:54.364Z","tool":"store_round","msg":"Stored iter133_wn256_s3_l2promo_swz19_ptx: DISCARD 283.41 TFLOPS (round 133)","level":"info"}
+{"ts":"2026-04-20T14:01:54.808Z","tool":"store_round","msg":"Storing iter134_wn256_s3_l2promo_swz20_ptx (DISCARD 282.33 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:01:54.829Z","tool":"store_round","msg":"Stored iter134_wn256_s3_l2promo_swz20_ptx: DISCARD 282.33 TFLOPS (round 134)","level":"info"}
+{"ts":"2026-04-20T14:01:55.266Z","tool":"store_round","msg":"Storing iter135_wn256_s3_l2promo_swz21_ptx (DISCARD 287.72 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:01:55.285Z","tool":"store_round","msg":"Stored iter135_wn256_s3_l2promo_swz21_ptx: DISCARD 287.72 TFLOPS (round 135)","level":"info"}
+{"ts":"2026-04-20T14:07:58.907Z","tool":"store_round","msg":"Storing iter136_wn256_s3_l2promo_swz8 (DISCARD 287.51 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:07:58.927Z","tool":"store_round","msg":"Stored iter136_wn256_s3_l2promo_swz8: DISCARD 287.51 TFLOPS (round 136)","level":"info"}
+{"ts":"2026-04-20T14:07:59.283Z","tool":"store_round","msg":"Storing iter137_wn256_s3_l2promo_swz9 (DISCARD 285.74 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:07:59.302Z","tool":"store_round","msg":"Stored iter137_wn256_s3_l2promo_swz9: DISCARD 285.74 TFLOPS (round 137)","level":"info"}
+{"ts":"2026-04-20T14:07:59.659Z","tool":"store_round","msg":"Storing iter138_wn256_s3_l2promo_swz10 (DISCARD 287.79 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:07:59.678Z","tool":"store_round","msg":"Stored iter138_wn256_s3_l2promo_swz10: DISCARD 287.79 TFLOPS (round 138)","level":"info"}
+{"ts":"2026-04-20T14:08:00.034Z","tool":"store_round","msg":"Storing iter139_wn256_s3_l2promo_swz11 (DISCARD 281.28 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:08:00.053Z","tool":"store_round","msg":"Stored iter139_wn256_s3_l2promo_swz11: DISCARD 281.28 TFLOPS (round 139)","level":"info"}
+{"ts":"2026-04-20T14:08:00.427Z","tool":"store_round","msg":"Storing iter140_wn256_s3_l2promo_swz22 (DISCARD 286.38 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:08:00.446Z","tool":"store_round","msg":"Stored iter140_wn256_s3_l2promo_swz22: DISCARD 286.38 TFLOPS (round 140)","level":"info"}
+{"ts":"2026-04-20T14:08:00.807Z","tool":"store_round","msg":"Storing iter141_wn256_s3_l2promo_swz23 (DISCARD 273.64 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:08:00.826Z","tool":"store_round","msg":"Stored iter141_wn256_s3_l2promo_swz23: DISCARD 273.64 TFLOPS (round 141)","level":"info"}
+{"ts":"2026-04-20T14:08:01.181Z","tool":"store_round","msg":"Storing iter142_wn256_s3_l2promo_swz24 (DISCARD 286.33 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:08:01.201Z","tool":"store_round","msg":"Stored iter142_wn256_s3_l2promo_swz24: DISCARD 286.33 TFLOPS (round 142)","level":"info"}
+{"ts":"2026-04-20T14:08:01.587Z","tool":"store_round","msg":"Storing iter143_wn256_s3_l2promo_swz25 (DISCARD 280.97 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:08:01.606Z","tool":"store_round","msg":"Stored iter143_wn256_s3_l2promo_swz25: DISCARD 280.97 TFLOPS (round 143)","level":"info"}
+{"ts":"2026-04-20T14:08:01.971Z","tool":"store_round","msg":"Storing iter144_wn256_s3_l2promo_swz26 (DISCARD 283.46 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:08:01.990Z","tool":"store_round","msg":"Stored iter144_wn256_s3_l2promo_swz26: DISCARD 283.46 TFLOPS (round 144)","level":"info"}
+{"ts":"2026-04-20T14:08:02.346Z","tool":"store_round","msg":"Storing iter145_wn256_s3_l2promo_swz27 (DISCARD 283.73 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:08:02.366Z","tool":"store_round","msg":"Stored iter145_wn256_s3_l2promo_swz27: DISCARD 283.73 TFLOPS (round 145)","level":"info"}
+{"ts":"2026-04-20T14:08:02.743Z","tool":"store_round","msg":"Storing iter146_wn256_s3_l2promo_swz28 (DISCARD 280.37 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:08:02.762Z","tool":"store_round","msg":"Stored iter146_wn256_s3_l2promo_swz28: DISCARD 280.37 TFLOPS (round 146)","level":"info"}
+{"ts":"2026-04-20T14:08:03.121Z","tool":"store_round","msg":"Storing iter147_wn256_s3_l2promo_swz30 (DISCARD 285.74 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:08:03.140Z","tool":"store_round","msg":"Stored iter147_wn256_s3_l2promo_swz30: DISCARD 285.74 TFLOPS (round 147)","level":"info"}
+{"ts":"2026-04-20T14:08:03.497Z","tool":"store_round","msg":"Storing iter148_wn256_s3_l2promo_swz32 (DISCARD 282.79 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:08:03.516Z","tool":"store_round","msg":"Stored iter148_wn256_s3_l2promo_swz32: DISCARD 282.79 TFLOPS (round 148)","level":"info"}
+{"ts":"2026-04-20T14:08:03.872Z","tool":"store_round","msg":"Storing iter149_wn256_s3_l2promo_swz36 (DISCARD 279.23 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:08:03.891Z","tool":"store_round","msg":"Stored iter149_wn256_s3_l2promo_swz36: DISCARD 279.23 TFLOPS (round 149)","level":"info"}
+{"ts":"2026-04-20T14:08:04.248Z","tool":"store_round","msg":"Storing iter150_wn256_s3_l2promo_swz40 (DISCARD 277.0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:08:04.267Z","tool":"store_round","msg":"Stored iter150_wn256_s3_l2promo_swz40: DISCARD 277.0 TFLOPS (round 150)","level":"info"}

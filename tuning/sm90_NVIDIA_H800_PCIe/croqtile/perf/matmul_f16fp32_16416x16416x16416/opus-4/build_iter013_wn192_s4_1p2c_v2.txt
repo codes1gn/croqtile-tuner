@@ -1,0 +1,13 @@
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/opus-4/iter013_wn192_s4_1p2c_v2.co:57.86: error: in operation "ubound": expect a bounded type but got `s32'.
+              ma = mma.load.swiz<MATMUL_SWIZ> lhs_load_s.subspan(MATMUL_TILE_M, MATMUL_TILE_K).at(stage, 0).chunkat(0, iv_warp);
+                                                                                       ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/opus-4/iter013_wn192_s4_1p2c_v2.co:57.86: error: expect ' (ubound 0) ` be a type with only integers (but got unknown).
+              ma = mma.load.swiz<MATMUL_SWIZ> lhs_load_s.subspan(MATMUL_TILE_M, MATMUL_TILE_K).at(stage, 0).chunkat(0, iv_warp);
+                                                                                       ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/opus-4/iter013_wn192_s4_1p2c_v2.co:77.86: error: in operation "ubound": expect a bounded type but got `s32'.
+              ma = mma.load.swiz<MATMUL_SWIZ> lhs_load_s.subspan(MATMUL_TILE_M, MATMUL_TILE_K).at(stage, 0).chunkat(1, iv_warp);
+                                                                                       ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/opus-4/iter013_wn192_s4_1p2c_v2.co:77.86: error: expect ' (ubound 1) ` be a type with only integers (but got unknown).
+              ma = mma.load.swiz<MATMUL_SWIZ> lhs_load_s.subspan(MATMUL_TILE_M, MATMUL_TILE_K).at(stage, 0).chunkat(1, iv_warp);
+                                                                                       ^
+Totally 4 errors have been detected.
