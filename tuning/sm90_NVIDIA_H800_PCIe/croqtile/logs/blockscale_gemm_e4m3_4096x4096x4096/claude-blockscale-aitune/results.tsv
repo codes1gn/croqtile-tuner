@@ -1,0 +1,6 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_baseline	397.9	KEEP	baseline	Blockscale GEMM E4M3 baseline @4096^3 (M64N128K32)
+iter049	iter049_blockscale	380.0	KEEP	memory_bound	TMA overlap: issue next TMA after WGMMA wait, before scale_accumulator (+21% @2k)
+iter051	iter051_blockscale	602.0	KEEP	compute_bound	N256 WGMMA: M64N256K32 doubles compute per tile @4096^3
+iter053	iter053_blockscale	610.0	KEEP	compute_bound	N256 + L2 256B promotion on RHS TMA tensor @4096^3
+iter066	iter066_blockscale	621.0	KEEP	compute_bound	N256 + L2 + prefetch scale_a before WGMMA (BEST @4096^3, +56.1% over baseline)

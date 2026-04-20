@@ -1,0 +1,17 @@
+{
+  "task_uid": "migrated-fused-moe-qwen35-aitune",
+  "dsl": "croqtile",
+  "model": "claude-moe-aitune",
+  "device": "NVIDIA H800 PCIe",
+  "status": "completed",
+  "source_branch": "origin/ai-tune/fused-moe",
+  "shape_key": "fused_moe_qwen35_fp8",
+  "operator": "fused_moe",
+  "dtype": "fp8",
+  "baseline_tflops": 7.11,
+  "best_tflops": 9.67,
+  "best_kernel": "iter012_reduce_sync",
+  "total_iterations": 44,
+  "migration_date": "2026-04-20",
+  "notes": "Qwen3.5 35B A3B FP8 end-to-end fused MoE. Optimizations: dense prefix scatter, scatter fusion, CPU prefix sum, fuse quant/sort, transpose scales, reduce sync. +36% over baseline."
+}
