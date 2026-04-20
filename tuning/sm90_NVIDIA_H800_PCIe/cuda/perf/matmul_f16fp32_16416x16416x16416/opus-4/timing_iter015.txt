@@ -1,0 +1,3 @@
+time_ms: 98.7023
+TFLOPS: 89.6406
+VERIFY: PASS max_rel_err=0.000000

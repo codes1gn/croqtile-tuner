@@ -46,3 +46,75 @@
 {"ts":"2026-04-20T16:17:33.800Z","tool":"checkpoint_write","msg":"PLANNED iter010_launch_bounds: Add __launch_bounds__(256, 2) to target 2 blocks per SM for better latency hiding. Reduce smem padding from +8 to +4.","level":"info"}
 {"ts":"2026-04-20T16:19:56.591Z","tool":"store_round","msg":"Storing iter010_launch_bounds (DISCARD 94.6233 TFLOPS)","level":"info"}
 {"ts":"2026-04-20T16:19:56.611Z","tool":"store_round","msg":"Stored iter010_launch_bounds: DISCARD 94.6233 TFLOPS (round 10)","level":"info"}
+{"ts":"2026-04-20T16:20:23.364Z","tool":"next_iter","msg":"Resolved iter011_small_tiles","level":"info"}
+{"ts":"2026-04-20T16:20:23.399Z","tool":"checkpoint_write","msg":"PLANNED iter011_small_tiles: Try smaller BM64 BN64 tiles with 2x2 warp layout for higher occupancy due to less smem per block. Keep BK64 and vectorized loads.","level":"info"}
+{"ts":"2026-04-20T16:21:50.225Z","tool":"store_round","msg":"Storing iter011_small_tiles (DISCARD 67.3731 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T16:21:50.244Z","tool":"store_round","msg":"Stored iter011_small_tiles: DISCARD 67.3731 TFLOPS (round 11)","level":"info"}
+{"ts":"2026-04-20T16:22:03.032Z","tool":"next_iter","msg":"Resolved iter012_unroll_k","level":"info"}
+{"ts":"2026-04-20T16:22:03.066Z","tool":"checkpoint_write","msg":"PLANNED iter012_unroll_k: Unroll K-loop by 2x with manual prefetch hint. Load next tile while computing current. Based on iter004.","level":"info"}
+{"ts":"2026-04-20T16:23:49.868Z","tool":"store_round","msg":"Storing iter012_unroll_k (DISCARD 18.0688 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T16:23:49.887Z","tool":"store_round","msg":"Stored iter012_unroll_k: DISCARD 18.0688 TFLOPS (round 12)","level":"info"}
+{"ts":"2026-04-20T16:24:04.902Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/cuda/bin/matmul_f16fp32_16416x16416x16416/opus-4/iter004_vectorized_load --skip-verify","level":"info"}
+{"ts":"2026-04-20T16:24:35.430Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/cuda/perf/matmul_f16fp32_16416x16416x16416/opus-4/ncu_iter004_round13.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/cuda/perf/matmul_f16fp32_16416x16416x16416/opus-4/ncu_iter004_round13.csv","level":"info"}
+{"ts":"2026-04-20T16:24:40.157Z","tool":"profile_extract","msg":"Analyzing iter004_vectorized_load from tuning/sm90_NVIDIA_H800_PCIe/cuda/perf/matmul_f16fp32_16416x16416x16416/opus-4/ncu_iter004_round13.csv","level":"info"}
+{"ts":"2026-04-20T16:25:14.776Z","tool":"next_iter","msg":"Resolved iter013_double_buffer_async","level":"info"}
+{"ts":"2026-04-20T16:25:19.064Z","tool":"checkpoint_write","msg":"PLANNED iter013_double_buffer_async: Double-buffer with cp.async - load next while computing current, no helper functions","level":"info"}
+{"ts":"2026-04-20T16:27:00.928Z","tool":"store_round","msg":"Storing iter013_double_buffer_async (KEEP 153.8794 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T16:27:00.947Z","tool":"store_round","msg":"Stored iter013_double_buffer_async: KEEP 153.8794 TFLOPS (round 13)","level":"info"}
+{"ts":"2026-04-20T16:27:15.900Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/cuda/bin/matmul_f16fp32_16416x16416x16416/opus-4/iter013_double_buffer_async --skip-verify","level":"info"}
+{"ts":"2026-04-20T16:27:46.919Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/cuda/perf/matmul_f16fp32_16416x16416x16416/opus-4/ncu_iter013_round14.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/cuda/perf/matmul_f16fp32_16416x16416x16416/opus-4/ncu_iter013_round14.csv","level":"info"}
+{"ts":"2026-04-20T16:27:51.664Z","tool":"profile_extract","msg":"Analyzing iter013_double_buffer_async from tuning/sm90_NVIDIA_H800_PCIe/cuda/perf/matmul_f16fp32_16416x16416x16416/opus-4/ncu_iter013_round14.csv","level":"info"}
+{"ts":"2026-04-20T16:28:07.348Z","tool":"next_iter","msg":"Resolved iter014_swizzle_smem","level":"info"}
+{"ts":"2026-04-20T16:28:12.941Z","tool":"checkpoint_write","msg":"PLANNED iter014_swizzle_smem: XOR swizzle pattern for shared memory to eliminate 5-way bank conflicts","level":"info"}
+{"ts":"2026-04-20T16:30:13.303Z","tool":"store_round","msg":"Storing iter014_swizzle_smem (DISCARD 15.8278 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T16:30:13.322Z","tool":"store_round","msg":"Stored iter014_swizzle_smem: DISCARD 15.8278 TFLOPS (round 14)","level":"info"}
+{"ts":"2026-04-20T16:30:30.546Z","tool":"next_iter","msg":"Resolved iter015_larger_bm_256","level":"info"}
+{"ts":"2026-04-20T16:30:36.720Z","tool":"checkpoint_write","msg":"PLANNED iter015_larger_bm_256: BM=256 BN=64 BK=32 with 8x1 warps - larger M tile for better A matrix reuse","level":"info"}
+{"ts":"2026-04-20T16:34:19.017Z","tool":"store_round","msg":"Storing iter015_larger_bm_256 (DISCARD 89.6406 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T16:34:19.037Z","tool":"store_round","msg":"Stored iter015_larger_bm_256: DISCARD 89.6406 TFLOPS (round 15)","level":"info"}
+{"ts":"2026-04-20T16:34:34.704Z","tool":"next_iter","msg":"Resolved iter016_three_stage_bk48","level":"info"}
+{"ts":"2026-04-20T16:34:40.624Z","tool":"checkpoint_write","msg":"PLANNED iter016_three_stage_bk48: 3-stage pipeline with BK=48 - deeper pipeline for more latency hiding","level":"info"}
+{"ts":"2026-04-20T16:36:28.978Z","tool":"store_round","msg":"Storing iter016_three_stage_bk48 (DISCARD 57.6743 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T16:36:28.997Z","tool":"store_round","msg":"Stored iter016_three_stage_bk48: DISCARD 57.6743 TFLOPS (round 16)","level":"info"}
+{"ts":"2026-04-20T16:36:45.824Z","tool":"next_iter","msg":"Resolved iter017_wider_padding","level":"info"}
+{"ts":"2026-04-20T16:36:52.239Z","tool":"checkpoint_write","msg":"PLANNED iter017_wider_padding: Increase shared memory padding to +16 to reduce bank conflicts","level":"info"}
+{"ts":"2026-04-20T16:38:03.159Z","tool":"store_round","msg":"Storing iter017_wider_padding (DISCARD 143.7432 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T16:38:03.178Z","tool":"store_round","msg":"Stored iter017_wider_padding: DISCARD 143.7432 TFLOPS (round 17)","level":"info"}
+{"ts":"2026-04-20T16:38:18.393Z","tool":"next_iter","msg":"Resolved iter018_more_wmma_tiles","level":"info"}
+{"ts":"2026-04-20T16:38:24.545Z","tool":"checkpoint_write","msg":"PLANNED iter018_more_wmma_tiles: Increase per-warp WMMA tiles from 2x4 to 4x4 for higher compute intensity","level":"info"}
+{"ts":"2026-04-20T16:41:16.856Z","tool":"store_round","msg":"Storing iter018_more_wmma_tiles (DISCARD 41.4252 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T16:41:16.875Z","tool":"store_round","msg":"Stored iter018_more_wmma_tiles: DISCARD 41.4252 TFLOPS (round 18)","level":"info"}
+{"ts":"2026-04-20T16:41:33.142Z","tool":"next_iter","msg":"Resolved iter019_b_col_major","level":"info"}
+{"ts":"2026-04-20T16:41:40.191Z","tool":"checkpoint_write","msg":"PLANNED iter019_b_col_major: Use col_major layout for B in shared memory for better WMMA access pattern","level":"info"}
+{"ts":"2026-04-20T16:43:32.364Z","tool":"store_round","msg":"Storing iter019_b_col_major (DISCARD 42.1023 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T16:43:32.384Z","tool":"store_round","msg":"Stored iter019_b_col_major: DISCARD 42.1023 TFLOPS (round 19)","level":"info"}
+{"ts":"2026-04-20T16:43:48.239Z","tool":"next_iter","msg":"Resolved iter020_extended_smem","level":"info"}
+{"ts":"2026-04-20T16:43:54.697Z","tool":"checkpoint_write","msg":"PLANNED iter020_extended_smem: Use 100KB extended shared memory with BK=64 for more compute per sync","level":"info"}
+{"ts":"2026-04-20T16:45:28.186Z","tool":"store_round","msg":"Storing iter020_extended_smem (DISCARD 19.1927 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T16:45:28.205Z","tool":"store_round","msg":"Stored iter020_extended_smem: DISCARD 19.1927 TFLOPS (round 20)","level":"info"}
+{"ts":"2026-04-20T16:45:44.980Z","tool":"sass_compare","msg":"Extracting baseline SASS for f16fp32 16416x16416x16416","level":"info"}
+{"ts":"2026-04-20T16:45:53.701Z","tool":"sass_compare","msg":"Baseline SASS extracted via ncu (1290 lines)","level":"info"}
+{"ts":"2026-04-20T16:45:58.482Z","tool":"sass_compare","msg":"Extracting custom SASS for iter013_double_buffer_async","level":"info"}
+{"ts":"2026-04-20T16:45:59.097Z","tool":"sass_compare","msg":"Custom SASS extracted for iter013_double_buffer_async (1952 lines)","level":"info"}
+{"ts":"2026-04-20T16:46:03.815Z","tool":"sass_compare","msg":"Comparing baseline vs iter013_double_buffer_async SASS","level":"info"}
+{"ts":"2026-04-20T16:46:03.846Z","tool":"sass_compare","msg":"SASS comparison complete for iter013_double_buffer_async (saved to tuning/sm90_NVIDIA_H800_PCIe/cuda/perf/matmul_f16fp32_16416x16416x16416/opus-4/sass_compare_iter013_double_buffer_async.json)","level":"info"}
+{"ts":"2026-04-20T16:46:18.866Z","tool":"next_iter","msg":"Resolved iter021_fewer_syncs","level":"info"}
+{"ts":"2026-04-20T16:46:25.208Z","tool":"checkpoint_write","msg":"PLANNED iter021_fewer_syncs: Reduce barrier density by removing extra __syncthreads, SASS shows 12x more syncs than baseline","level":"info"}
+{"ts":"2026-04-20T16:48:39.577Z","tool":"store_round","msg":"Storing iter021_fewer_syncs (DISCARD 95.6218 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T16:48:39.597Z","tool":"store_round","msg":"Stored iter021_fewer_syncs: DISCARD 95.6218 TFLOPS (round 21)","level":"info"}
+{"ts":"2026-04-20T16:48:59.421Z","tool":"next_iter","msg":"Resolved iter022_double_buf_bk48","level":"info"}
+{"ts":"2026-04-20T16:49:06.064Z","tool":"checkpoint_write","msg":"PLANNED iter022_double_buf_bk48: Double buffer with BK=48 - balance between compute and memory footprint","level":"info"}
+{"ts":"2026-04-20T16:50:04.407Z","tool":"store_round","msg":"Storing iter022_double_buf_bk48 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T16:50:04.427Z","tool":"store_round","msg":"Stored iter022_double_buf_bk48: COMPILE_FAIL 0 TFLOPS (round 22)","level":"info"}
+{"ts":"2026-04-20T16:50:20.384Z","tool":"next_iter","msg":"Resolved iter023_persistent_cta","level":"info"}
+{"ts":"2026-04-20T16:50:26.844Z","tool":"checkpoint_write","msg":"PLANNED iter023_persistent_cta: Persistent CTA: each block processes multiple output tiles sequentially","level":"info"}
+{"ts":"2026-04-20T16:52:03.095Z","tool":"store_round","msg":"Storing iter023_persistent_cta (DISCARD 152.6928 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T16:52:03.114Z","tool":"store_round","msg":"Stored iter023_persistent_cta: DISCARD 152.6928 TFLOPS (round 23)","level":"info"}
+{"ts":"2026-04-20T16:52:21.485Z","tool":"next_iter","msg":"Resolved iter024_register_blocking","level":"info"}
+{"ts":"2026-04-20T16:52:28.532Z","tool":"checkpoint_write","msg":"PLANNED iter024_register_blocking: Single buffer with BK=64, load A once and reuse for all B fragments to reduce smem access","level":"info"}
+{"ts":"2026-04-20T16:53:19.525Z","tool":"store_round","msg":"Storing iter024_register_blocking (DISCARD 95.8200 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T16:53:19.545Z","tool":"store_round","msg":"Stored iter024_register_blocking: DISCARD 95.8200 TFLOPS (round 24)","level":"info"}
+{"ts":"2026-04-20T16:53:40.217Z","tool":"next_iter","msg":"Resolved iter025_smaller_tiles_occ","level":"info"}
+{"ts":"2026-04-20T16:53:46.720Z","tool":"checkpoint_write","msg":"PLANNED iter025_smaller_tiles_occ: BM=64 BN=128 to increase occupancy from 25% toward 50%","level":"info"}
+{"ts":"2026-04-20T16:54:31.795Z","tool":"store_round","msg":"Storing iter025_smaller_tiles_occ (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T16:54:31.814Z","tool":"store_round","msg":"Stored iter025_smaller_tiles_occ: DISCARD 0 TFLOPS (round 25)","level":"info"}

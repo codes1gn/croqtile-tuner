@@ -10,3 +10,18 @@ iter007	iter007_ptx_mma	48.8401	DISCARD	latency_bound	PTX ldmatrix addressing in
 iter008	iter008_bk128	50.1776	DISCARD	latency_bound	Larger BK=80 increased smem and register pressure - 48% slower than iter004
 iter009	iter009_warp_1x8	81.6274	DISCARD	latency_bound	1x8 warp topology with BM64 BN256 - 15% slower than iter004
 iter010	iter010_launch_bounds	94.6233	DISCARD	latency_bound	__launch_bounds__(256,2) slightly worse than iter004 - compiler hints not effect
+iter011	iter011_small_tiles	67.3731	DISCARD	latency_bound	Smaller BM64 BN64 with 128 threads - 30% slower due to lower compute density
+iter012	iter012_unroll_k	18.0688	DISCARD	latency_bound	K-loop helper functions with manual prefetch - massive overhead regression
+iter013	iter013_double_buffer_async	153.8794	KEEP	latency_bound	Double-buffer with cp.async BK=32 - 60% improvement over iter004
+iter014	iter014_swizzle_smem	15.8278	DISCARD	memory_bound	XOR swizzle corrupted WMMA data layout - verification fail
+iter015	iter015_larger_bm_256	89.6406	DISCARD	memory_bound	BM64 BN64 BK32 with 2x2 warps - smaller tiles reduced data reuse
+iter016	iter016_three_stage_bk48	57.6743	DISCARD	memory_bound	3-stage pipeline BK=32 - overhead exceeds latency hiding benefit
+iter017	iter017_wider_padding	143.7432	DISCARD	memory_bound	Wider padding +16 increased smem pressure without benefit
+iter018	iter018_more_wmma_tiles	41.4252	DISCARD	memory_bound	2x2 warps 4x4 tiles - verification failed, incorrect loading with fewer threads
+iter019	iter019_b_col_major	42.1023	DISCARD	memory_bound	B col_major transpose overhead exceeded access pattern benefit
+iter020	iter020_extended_smem	19.1927	DISCARD	memory_bound	Extended smem with dynamic allocation has high overhead
+iter021	iter021_fewer_syncs	95.6218	DISCARD	memory_bound	iter004 with launch_bounds - confirms double-buffer helps
+iter022	iter022_double_buf_bk48	0	COMPILE_FAIL	memory_bound	BK=48 double buffer exceeds 48KB smem limit
+iter023	iter023_persistent_cta	152.6928	DISCARD	memory_bound	Persistent CTA similar to iter013, no L2 benefit at this size
+iter024	iter024_register_blocking	95.8200	DISCARD	memory_bound	iter004 with maxrregcount=128 - no improvement from reg limit
+iter025	iter025_smaller_tiles_occ	0	DISCARD	memory_bound	BM=64 with 2x2 warps verification failed - thread count mismatch

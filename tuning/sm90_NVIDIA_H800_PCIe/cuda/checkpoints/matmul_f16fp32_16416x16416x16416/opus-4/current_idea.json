@@ -1,15 +1,16 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-20T16:17:33Z",
+  "timestamp": "2026-04-20T16:53:46Z",
   "dsl": "cuda",
   "shape_key": "matmul_f16fp32_16416x16416x16416",
-  "iter": "iter010_launch_bounds",
-  "bottleneck": "latency_bound",
-  "idea": "Add __launch_bounds__(256, 2) to target 2 blocks per SM for better latency hiding. Reduce smem padding from +8 to +4.",
-  "expected_gain": "+5-15 TFLOPS from better occupancy",
+  "iter": "iter025_smaller_tiles_occ",
+  "bottleneck": "memory_bound",
+  "idea": "BM=64 BN=128 to increase occupancy from 25% toward 50%",
+  "expected_gain": "+20 TFLOPS",
   "levers": [
-    "launch_bounds",
-    "smem_padding"
+    "tile_size",
+    "occupancy",
+    "parallelism"
   ],
   "status": "PLANNED"
 }
