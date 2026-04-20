@@ -1,0 +1,31 @@
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter101_warp32_2d.cu(315): warning #177-D: variable "i_h" was declared but never referenced
+    int i_h = blockIdx.y / (HV / H);
+        ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter101_warp32_2d.cu(311): warning #177-D: variable "__choreo_device_gdn_f16_BK128_BV128__ring__" was declared but never referenced
+    auto __choreo_device_gdn_f16_BK128_BV128__ring__ = nullptr;
+         ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter101_warp32_2d.cu(519): warning #177-D: variable "o_count" was declared but never referenced
+    const size_t o_count = B * T * HV * V;
+                 ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter101_warp32_2d.cu(315): warning #177-D: variable "i_h" was declared but never referenced
+    int i_h = blockIdx.y / (HV / H);
+        ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter101_warp32_2d.cu(311): warning #177-D: variable "__choreo_device_gdn_f16_BK128_BV128__ring__" was declared but never referenced
+    auto __choreo_device_gdn_f16_BK128_BV128__ring__ = nullptr;
+         ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/gdn_f16_B2_T4_H8_K128_V128/baseline/iter101_warp32_2d.cu(519): warning #177-D: variable "o_count" was declared but never referenced
+    const size_t o_count = B * T * HV * V;
+                 ^
+
+/usr/bin/ld: /tmp/tmpxft_001477a3_00000000-13_iter101_warp32_2d.o: in function `gdn_f16_BK128_BV128(choreo::spanned_view<float, 1ul> const&, choreo::spanned_view<__half, 3ul> const&, choreo::spanned_view<__half, 1ul> const&, choreo::spanned_view<__half, 4ul> const&, choreo::spanned_view<__half, 4ul> const&, choreo::spanned_view<__half, 4ul> const&, choreo::spanned_view<__half, 3ul> const&, choreo::spanned_view<__half, 4ul> const&, choreo::spanned_view<float, 4ul> const&, choreo::spanned_view<int, 1ul> const&, choreo::spanned_view<int, 1ul> const&, float, float, float)':
+tmpxft_001477a3_00000000-6_iter101_warp32_2d.compute_90a.cudafe1.cpp:(.text+0xc5f): undefined reference to `cudaGetDeviceProperties_v2'
+collect2: error: ld returned 1 exit status

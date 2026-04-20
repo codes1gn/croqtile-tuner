@@ -1,0 +1,283 @@
+// gdn_bf16_handwritten.co - Choreo kernel with handwritten 2D thread layout
+//
+// Computation: 2D thread layout (4 K-axis x 8 V-axis) with shared memory
+// reduction, matching gdn_bf16_handwritten.cu.
+//
+// Data movement: Choreo DMA for initial_state load/store and output store.
+// q/k/v/a/b loaded via .at() in __co__ section.
+//
+// Compile:
+//   ../choreo/choreo -t cute -arch=sm_90a -es gdn_bf16_handwritten.co -o gdn_bf16_handwritten.cu
+//
+// Test:
+//   python3 test_choreo_kernel.py gdn_bf16_handwritten.cu --fix-stride -T 4,128
+
+#ifndef ENABLE_DEBUG
+#define ENABLE_DEBUG 1
+#endif
+
+__cok__ {
+  template <typename T>
+  __device__ __forceinline__ T SHFL_XOR(T var, int lane_mask, int width) {
+    return __shfl_xor_sync(uint32_t(-1), var, lane_mask, width);
+  }
+
+  // 2D thread layout: 4 (K-axis) x 8 (V-axis) = 32 threads per warp
+  //   tid_k = tid / 8   (0..3)
+  //   tid_v = tid % 8   (0..7)
+  //   Each thread holds ROWS_PER_THREAD(32) x COLS_PER_THREAD(4) = 128 f32 h values
+  //
+  // K-axis reduction: 4-way via shared memory
+  // V broadcast: via shared memory
+  // L2-norm: 4-way via SHFL_XOR (masks 8, 16)
+
+  template <int BK, int BV, bool USE_QK_L2NORM_IN_KERNEL, bool IS_KDA>
+  __device__ void computation_hw(
+      const choreo::f32 a_f32, const choreo::f32 b_f32,
+      const choreo::f32 dt_bias_f32, const choreo::f32 a_log_f32,
+      const choreo::f32 softplus_beta, const choreo::f32 softplus_threshold,
+      const choreo::f32 scale,
+      choreo::f32 *__restrict__ q_local,
+      choreo::f32 *__restrict__ k_local,
+      choreo::f32 *__restrict__ v_local,
+      choreo::bf16 *__restrict__ o_bf16,
+      choreo::f32 *__restrict__ h,
+      choreo::f32 *__restrict__ reduce_smem,
+      choreo::f32 *__restrict__ bcast_smem) {
+    constexpr int ROWS_PER_THREAD = 32;
+    constexpr int COLS_PER_THREAD = 4;
+
+    const int tid = threadIdx.x;
+    const int tid_k = tid >> 3;
+    const int tid_v = tid & 7;
+
+    const float a = a_f32;
+    const float b_val = b_f32;
+    const float dt_bias = dt_bias_f32;
+    const float a_log = a_log_f32;
+
+    float x = a + dt_bias;
+    float beta_x = softplus_beta * x;
+    float softplus_x = (beta_x < softplus_threshold)
+                           ? (1.0f / softplus_beta) * logf(1.0f + expf(beta_x))
+                           : x;
+    float g_val = -expf(a_log) * softplus_x;
+    float beta = 1.0f / (1.0f + expf(-b_val));
+
+    if constexpr (USE_QK_L2NORM_IN_KERNEL) {
+      float q_sq = 0.0f, k_sq = 0.0f;
+#pragma unroll
+      for (int r = 0; r < ROWS_PER_THREAD; ++r) {
+        q_sq = fmaf(q_local[r], q_local[r], q_sq);
+        k_sq = fmaf(k_local[r], k_local[r], k_sq);
+      }
+#pragma unroll
+      for (int mask = 8; mask <= 16; mask <<= 1) {
+        q_sq += SHFL_XOR(q_sq, mask, 32);
+        k_sq += SHFL_XOR(k_sq, mask, 32);
+      }
+      float q_inv = rsqrtf(q_sq + 1e-6f);
+      float k_inv = rsqrtf(k_sq + 1e-6f);
+#pragma unroll
+      for (int r = 0; r < ROWS_PER_THREAD; ++r) {
+        q_local[r] *= q_inv;
+        k_local[r] *= k_inv;
+      }
+    }
+
+#pragma unroll
+    for (int r = 0; r < ROWS_PER_THREAD; ++r)
+      q_local[r] *= scale;
+
+    float h_scale = expf(g_val);
+#pragma unroll
+    for (int r = 0; r < ROWS_PER_THREAD; ++r) {
+#pragma unroll
+      for (int c = 0; c < COLS_PER_THREAD; ++c) {
+        h[r * COLS_PER_THREAD + c] *= h_scale;
+      }
+    }
+
+    // vp = sum_K(h * k)
+    float vp[COLS_PER_THREAD];
+#pragma unroll
+    for (int c = 0; c < COLS_PER_THREAD; ++c) {
+      vp[c] = 0.0f;
+#pragma unroll
+      for (int r = 0; r < ROWS_PER_THREAD; ++r)
+        vp[c] = fmaf(h[r * COLS_PER_THREAD + c], k_local[r], vp[c]);
+    }
+
+    __syncthreads();
+#pragma unroll
+    for (int c = 0; c < COLS_PER_THREAD; ++c)
+      reduce_smem[tid_k * BV + tid_v * COLS_PER_THREAD + c] = vp[c];
+    __syncthreads();
+
+#pragma unroll
+    for (int c = 0; c < COLS_PER_THREAD; ++c) {
+      int col_idx = tid_v * COLS_PER_THREAD + c;
+      vp[c] = reduce_smem[0 * BV + col_idx] + reduce_smem[1 * BV + col_idx] +
+              reduce_smem[2 * BV + col_idx] + reduce_smem[3 * BV + col_idx];
+    }
+
+#pragma unroll
+    for (int c = 0; c < COLS_PER_THREAD; ++c) {
+      v_local[c] = (v_local[c] - vp[c]) * beta;
+    }
+
+    __syncthreads();
+#pragma unroll
+    for (int c = 0; c < COLS_PER_THREAD; ++c)
+      bcast_smem[tid_v * COLS_PER_THREAD + c] = v_local[c];
+    __syncthreads();
+
+#pragma unroll
+    for (int r = 0; r < ROWS_PER_THREAD; ++r) {
+#pragma unroll
+      for (int c = 0; c < COLS_PER_THREAD; ++c) {
+        int global_col = tid_v * COLS_PER_THREAD + c;
+        h[r * COLS_PER_THREAD + c] += k_local[r] * bcast_smem[global_col];
+      }
+    }
+
+    // op = sum_K(h * q)
+    float op[COLS_PER_THREAD];
+#pragma unroll
+    for (int c = 0; c < COLS_PER_THREAD; ++c) {
+      op[c] = 0.0f;
+#pragma unroll
+      for (int r = 0; r < ROWS_PER_THREAD; ++r)
+        op[c] = fmaf(h[r * COLS_PER_THREAD + c], q_local[r], op[c]);
+    }
+
+    __syncthreads();
+#pragma unroll
+    for (int c = 0; c < COLS_PER_THREAD; ++c)
+      reduce_smem[tid_k * BV + tid_v * COLS_PER_THREAD + c] = op[c];
+    __syncthreads();
+
+#pragma unroll
+    for (int c = 0; c < COLS_PER_THREAD; ++c) {
+      int col_idx = tid_v * COLS_PER_THREAD + c;
+      op[c] = reduce_smem[0 * BV + col_idx] + reduce_smem[1 * BV + col_idx] +
+              reduce_smem[2 * BV + col_idx] + reduce_smem[3 * BV + col_idx];
+    }
+
+#pragma unroll
+    for (int c = 0; c < COLS_PER_THREAD; ++c) {
+      o_bf16[tid_v * COLS_PER_THREAD + c] = __float2bfloat16(op[c]);
+    }
+  }
+}
+// clang-format off
+__co__ void fused_sigmoid_gating_delta_rule_update_kernel_bf16_BK128_BV32_UseInitalState_UseQkL2normInKernel(
+  f32 [HV] A_log,
+  bf16 [B, T, HV] a,
+  bf16 [HV] dt_bias,
+  bf16 [B, T, H, K] q,
+  bf16 [B, T, H, K] k,
+  bf16 [B, T, HV, V] v,
+  bf16 [B, T, HV] b,
+  bf16 [B, T, HV, V] & o,
+  f32 [B, HV, K, V] initial_state_source,
+  s32 [B] initial_state_indices,
+  s32 [N] cu_seqlens,
+  f32 scale,
+  f32 softplus_beta,
+  f32 softplus_threshold
+) {
+  bool IS_KDA = false;
+  bool IS_VARLEN = false;
+  bool USE_QK_L2NORM_IN_KERNEL = true;
+  bool USE_INITAL_STATE = true;
+  BK = 128;
+  BV = 32;
+  ROWS_PER_THREAD = 32;
+  COLS_PER_THREAD = 4;
+  int NK = cdiv(K, BK);
+  int NV = cdiv(V, BV);
+#if ENABLE_DEBUG
+  assert(N == B && !IS_VARLEN, "N should equal to B when IS_VARLEN is not true.");
+  assert(BK >= K, "BK should be next_power_of_2(K)");
+  assert(BV >= V || BV == 32, "BV should be min(next_power_of_2(V), 32)");
+  assert(NK == 1, "NK > 1 is not supported yet");
+#endif
+  parallel {i_v, i_n, i_hv} by [NV, N, HV] : block,
+           t by 32 : thread {
+    i_h = i_hv / (HV / H);
+    tid_k = t / 8;
+    tid_v = t % 8;
+    s32 bos = i_n * T;
+    s32 eos = i_n * T + T;
+    s32 LEN = T;
+    if (IS_VARLEN) {
+      bos = cu_seqlens.at(i_n);
+      eos = cu_seqlens.at(i_n + 1);
+      LEN = eos - bos;
+    }
+    f32 a_log_l = A_log.at(i_hv);
+    f32 dt_bias_l = dt_bias.at(i_hv);
+
+    // Hidden state in local registers: [ROWS_PER_THREAD, COLS_PER_THREAD] per thread
+    local f32 [ROWS_PER_THREAD, COLS_PER_THREAD] hidden_l{0};
+
+    // Shared memory for reductions
+    shared f32 [4, BV] reduce_smem;
+    shared f32 [BV] bcast_smem;
+
+    // Load initial state
+    idx = initial_state_indices.at(i_n);
+    if (idx >= 0) {
+      foreach {r, c} in [ROWS_PER_THREAD, COLS_PER_THREAD] {
+        hidden_l.at(r, c) = initial_state_source.at(idx, i_hv, tid_k#r, i_v * BV + tid_v#c);
+      }
+    }
+
+    with i_l in LEN {
+      foreach i_l {
+        // Scalar loads
+        f32 a_val = a.at(i_n, i_l, i_hv);
+        f32 b_val = b.at(i_n, i_l, i_hv);
+
+        // Load q, k: each tid_k loads its 32 rows
+        local f32 [ROWS_PER_THREAD] q_local;
+        local f32 [ROWS_PER_THREAD] k_local;
+        foreach r in [ROWS_PER_THREAD] {
+          q_local.at(r) = q.at(i_n, i_l, i_h, tid_k#r);
+          k_local.at(r) = k.at(i_n, i_l, i_h, tid_k#r);
+        }
+
+        // Load v: each tid_v loads its 4 elements
+        local f32 [COLS_PER_THREAD] v_local;
+        foreach c in [COLS_PER_THREAD] {
+          v_local.at(c) = v.at(i_n, i_l, i_hv, i_v * BV + tid_v#c);
+        }
+
+        shared bf16 [BV] o_s;
+        call computation_hw<BK, BV, USE_QK_L2NORM_IN_KERNEL, IS_KDA>
+          (a_val, b_val, dt_bias_l,
+           a_log_l, softplus_beta, softplus_threshold, scale,
+           q_local, k_local, v_local,
+           o_s, hidden_l, reduce_smem, bcast_smem);
+
+        // Store output
+        dma.copy o_s => o.span_as([B * T, HV, V])
+                         .view(1, 1, _).from(bos + i_l, i_hv, 0)
+                         .chunkat(_, _, i_v)
+                         .span_as([BV]);
+      }
+    }
+
+    // Store final hidden state
+    if (USE_INITAL_STATE) {
+      idx = initial_state_indices.at(i_n);
+      if (idx >= 0) {
+        foreach {r, c} in [ROWS_PER_THREAD, COLS_PER_THREAD] {
+          initial_state_source.at(idx, i_hv, tid_k#r, i_v * BV + tid_v#c) = hidden_l.at(r, c);
+        }
+      }
+    }
+  }
+}
+// clang-format on

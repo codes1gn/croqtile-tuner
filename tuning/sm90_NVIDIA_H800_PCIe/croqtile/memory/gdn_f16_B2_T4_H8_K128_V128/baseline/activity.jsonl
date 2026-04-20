@@ -329,3 +329,103 @@
 {"ts":"2026-04-19T22:49:56.072Z","tool":"next_iter","msg":"Resolved iter100_run100","level":"info"}
 {"ts":"2026-04-19T22:50:06.682Z","tool":"store_round","msg":"Storing iter100_run100 (DISCARD 0.0326817 TFLOPS)","level":"info"}
 {"ts":"2026-04-19T22:50:06.701Z","tool":"store_round","msg":"Stored iter100_run100: DISCARD 0.0326817 TFLOPS (round 100)","level":"info"}
+{"ts":"2026-04-20T13:50:55.596Z","tool":"resume_state","msg":"Loading tuning state for croqtile/gdn_f16_B2_T4_H8_K128_V128","level":"info"}
+{"ts":"2026-04-20T13:51:40.877Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/gdn_f16_B2_T4_H8_K128_V128/baseline/iter003_bv128_128threads","level":"info"}
+{"ts":"2026-04-20T13:51:48.232Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/gdn_f16_B2_T4_H8_K128_V128/baseline/ncu_iter003_round101.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/gdn_f16_B2_T4_H8_K128_V128/baseline/ncu_iter003_round101.csv","level":"info"}
+{"ts":"2026-04-20T13:52:04.527Z","tool":"profile_extract","msg":"Analyzing iter003_bv128 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/gdn_f16_B2_T4_H8_K128_V128/baseline/ncu_iter003_round101.csv","level":"info"}
+{"ts":"2026-04-20T13:53:07.713Z","tool":"next_iter","msg":"Resolved iter101_warp32_2d","level":"info"}
+{"ts":"2026-04-20T13:53:07.747Z","tool":"checkpoint_write","msg":"PLANNED iter101_warp32_2d: Switch to 2D thread layout (4x8=32 threads) with each thread holding 32x4 h values. Matches gdn_bf16_handwritten.cu which achieves 0.013ms.","level":"info"}
+{"ts":"2026-04-20T13:57:15.597Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter101_warp32_2d (drift=1)","level":"info"}
+{"ts":"2026-04-20T13:57:25.488Z","tool":"store_round","msg":"Storing iter101_warp32_2d (KEEP 0.036 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T13:57:25.508Z","tool":"store_round","msg":"Stored iter101_warp32_2d: KEEP 0.036 TFLOPS (round 101)","level":"info"}
+{"ts":"2026-04-20T13:57:43.573Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/gdn_f16_B2_T4_H8_K128_V128/baseline/iter101_warp32_2d","level":"info"}
+{"ts":"2026-04-20T13:57:49.367Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/gdn_f16_B2_T4_H8_K128_V128/baseline/ncu_iter101_round102.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/gdn_f16_B2_T4_H8_K128_V128/baseline/ncu_iter101_round102.csv","level":"info"}
+{"ts":"2026-04-20T13:57:56.130Z","tool":"profile_extract","msg":"Analyzing iter101_warp32_2d from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/gdn_f16_B2_T4_H8_K128_V128/baseline/ncu_iter101_round102.csv","level":"info"}
+{"ts":"2026-04-20T13:58:11.976Z","tool":"next_iter","msg":"Resolved iter102_prefetch_qkv","level":"info"}
+{"ts":"2026-04-20T13:58:12.010Z","tool":"checkpoint_write","msg":"PLANNED iter102_prefetch_qkv: Prefetch q,k,v for next timestep while computing current. Hide memory latency in recurrent loop. Also add launch_bounds to improve occupancy.","level":"info"}
+{"ts":"2026-04-20T13:59:19.813Z","tool":"store_round","msg":"Storing iter102_prefetch_qkv (DISCARD 0.035 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T13:59:19.833Z","tool":"store_round","msg":"Stored iter102_prefetch_qkv: DISCARD 0.035 TFLOPS (round 102)","level":"info"}
+{"ts":"2026-04-20T13:59:36.853Z","tool":"next_iter","msg":"Resolved iter103_forceinline","level":"info"}
+{"ts":"2026-04-20T13:59:36.887Z","tool":"checkpoint_write","msg":"PLANNED iter103_forceinline: Add __forceinline__ to computation function to eliminate function call overhead. Use fast math intrinsics for exp/log.","level":"info"}
+{"ts":"2026-04-20T14:00:51.459Z","tool":"store_round","msg":"Storing iter103_forceinline (DISCARD 0.0352 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:00:51.478Z","tool":"store_round","msg":"Stored iter103_forceinline: DISCARD 0.0352 TFLOPS (round 103)","level":"info"}
+{"ts":"2026-04-20T14:01:07.762Z","tool":"next_iter","msg":"Resolved iter104_regonly","level":"info"}
+{"ts":"2026-04-20T14:01:07.799Z","tool":"checkpoint_write","msg":"PLANNED iter104_regonly: Use warp shuffle for all reductions instead of shared memory. Only 32 threads = 1 warp, so shuffle is sufficient. Eliminates shared memory latency.","level":"info"}
+{"ts":"2026-04-20T14:03:13.062Z","tool":"store_round","msg":"Storing iter104_regonly (KEEP 0.0375 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:03:13.083Z","tool":"store_round","msg":"Stored iter104_regonly: KEEP 0.0375 TFLOPS (round 104)","level":"info"}
+{"ts":"2026-04-20T14:03:27.554Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/gdn_f16_B2_T4_H8_K128_V128/baseline/iter104_regonly","level":"info"}
+{"ts":"2026-04-20T14:03:33.288Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/gdn_f16_B2_T4_H8_K128_V128/baseline/ncu_iter104_round105.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/gdn_f16_B2_T4_H8_K128_V128/baseline/ncu_iter104_round105.csv","level":"info"}
+{"ts":"2026-04-20T14:03:41.443Z","tool":"profile_extract","msg":"Analyzing iter104_regonly from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/gdn_f16_B2_T4_H8_K128_V128/baseline/ncu_iter104_round105.csv","level":"info"}
+{"ts":"2026-04-20T14:03:58.539Z","tool":"next_iter","msg":"Resolved iter105_threads64","level":"info"}
+{"ts":"2026-04-20T14:03:58.573Z","tool":"checkpoint_write","msg":"PLANNED iter105_threads64: Use 64 threads (2 warps) with 2x16 V-thread layout. Each thread handles 8x4 h values. More parallelism per block for better latency hiding.","level":"info"}
+{"ts":"2026-04-20T14:04:48.261Z","tool":"store_round","msg":"Storing iter105_threads64 (DISCARD 0.037 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:04:48.281Z","tool":"store_round","msg":"Stored iter105_threads64: DISCARD 0.037 TFLOPS (round 105)","level":"info"}
+{"ts":"2026-04-20T14:06:28.448Z","tool":"next_iter","msg":"Resolved iter106_bv32_4blocks","level":"info"}
+{"ts":"2026-04-20T14:06:28.484Z","tool":"checkpoint_write","msg":"PLANNED iter106_bv32_4blocks: Change blocking to BV=32 (4 blocks per V dimension). This matches reference kernel which achieves 0.012ms. Increases block count from 16 to 64, improving SM occupancy.","level":"info"}
+{"ts":"2026-04-20T14:07:38.856Z","tool":"store_round","msg":"Storing iter106_bv32_4blocks (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:07:38.876Z","tool":"store_round","msg":"Stored iter106_bv32_4blocks: COMPILE_FAIL 0 TFLOPS (round 106)","level":"info"}
+{"ts":"2026-04-20T14:07:51.956Z","tool":"next_iter","msg":"Resolved iter107_vec2_loads","level":"info"}
+{"ts":"2026-04-20T14:07:51.991Z","tool":"checkpoint_write","msg":"PLANNED iter107_vec2_loads: Use float2 vectorized loads for q, k, v. Load 2 half values at once, convert to float2. Reduces load instructions.","level":"info"}
+{"ts":"2026-04-20T14:09:02.417Z","tool":"store_round","msg":"Storing iter107_vec2_loads (DISCARD 0.0356 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:09:02.437Z","tool":"store_round","msg":"Stored iter107_vec2_loads: DISCARD 0.0356 TFLOPS (round 107)","level":"info"}
+{"ts":"2026-04-20T14:09:28.749Z","tool":"next_iter","msg":"Resolved iter108_unroll_full","level":"info"}
+{"ts":"2026-04-20T14:09:28.784Z","tool":"checkpoint_write","msg":"PLANNED iter108_unroll_full: Full unroll of h matrix operations. Use #pragma unroll with explicit factors and manual outer loop unroll.","level":"info"}
+{"ts":"2026-04-20T14:09:53.065Z","tool":"store_round","msg":"Storing iter108_unroll_full (DISCARD 0.036 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:09:53.084Z","tool":"store_round","msg":"Stored iter108_unroll_full: DISCARD 0.036 TFLOPS (round 108)","level":"info"}
+{"ts":"2026-04-20T14:10:37.496Z","tool":"store_round","msg":"Storing iter109_fastmath (DISCARD 0.0362 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:10:37.516Z","tool":"store_round","msg":"Stored iter109_fastmath: DISCARD 0.0362 TFLOPS (round 109)","level":"info"}
+{"ts":"2026-04-20T14:11:07.319Z","tool":"store_round","msg":"Storing iter110_threads8x4 (DISCARD 0.037 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:11:07.338Z","tool":"store_round","msg":"Stored iter110_threads8x4: DISCARD 0.037 TFLOPS (round 110)","level":"info"}
+{"ts":"2026-04-20T14:11:29.638Z","tool":"store_round","msg":"Storing iter111_smem_h (DISCARD 0.036 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:11:29.657Z","tool":"store_round","msg":"Stored iter111_smem_h: DISCARD 0.036 TFLOPS (round 111)","level":"info"}
+{"ts":"2026-04-20T14:11:29.672Z","tool":"resume_state","msg":"Loading tuning state for croqtile/gdn_f16_B2_T4_H8_K128_V128","level":"info"}
+{"ts":"2026-04-20T14:12:20.079Z","tool":"store_round","msg":"Storing iter112_regstore (KEEP 0.0377 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:12:20.098Z","tool":"store_round","msg":"Stored iter112_regstore: KEEP 0.0377 TFLOPS (round 112)","level":"info"}
+{"ts":"2026-04-20T14:13:06.150Z","tool":"store_round","msg":"Storing iter113_fma (DISCARD 0.027 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:13:06.169Z","tool":"store_round","msg":"Stored iter113_fma: DISCARD 0.027 TFLOPS (round 113)","level":"info"}
+{"ts":"2026-04-20T14:13:31.058Z","tool":"store_round","msg":"Storing iter114_fastgating (DISCARD 0.0356 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:13:31.078Z","tool":"store_round","msg":"Stored iter114_fastgating: DISCARD 0.0356 TFLOPS (round 114)","level":"info"}
+{"ts":"2026-04-20T14:13:55.200Z","tool":"store_round","msg":"Storing iter115_interleave (DISCARD 0.0371 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:13:55.220Z","tool":"store_round","msg":"Stored iter115_interleave: DISCARD 0.0371 TFLOPS (round 115)","level":"info"}
+{"ts":"2026-04-20T14:14:16.691Z","tool":"store_round","msg":"Storing iter116_persistent (DISCARD 0.0371 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:14:16.711Z","tool":"store_round","msg":"Stored iter116_persistent: DISCARD 0.0371 TFLOPS (round 116)","level":"info"}
+{"ts":"2026-04-20T14:15:05.225Z","tool":"store_round","msg":"Storing iter117_bv64_2blocks (DISCARD 0.0008 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:15:05.246Z","tool":"store_round","msg":"Stored iter117_bv64_2blocks: DISCARD 0.0008 TFLOPS (round 117)","level":"info"}
+{"ts":"2026-04-20T14:15:30.421Z","tool":"store_round","msg":"Storing iter118_vectorize (DISCARD 0.0367 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:15:30.440Z","tool":"store_round","msg":"Stored iter118_vectorize: DISCARD 0.0367 TFLOPS (round 118)","level":"info"}
+{"ts":"2026-04-20T14:16:00.767Z","tool":"store_round","msg":"Storing iter119_relaxsync (DISCARD 0.0378 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:16:00.786Z","tool":"store_round","msg":"Stored iter119_relaxsync: DISCARD 0.0378 TFLOPS (round 119)","level":"info"}
+{"ts":"2026-04-20T14:16:22.810Z","tool":"store_round","msg":"Storing iter120_ptx_shfl (DISCARD 0.0378 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:16:22.830Z","tool":"store_round","msg":"Stored iter120_ptx_shfl: DISCARD 0.0378 TFLOPS (round 120)","level":"info"}
+{"ts":"2026-04-20T14:16:50.305Z","tool":"store_round","msg":"Storing iter121_variant (DISCARD 0.037595 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:16:50.325Z","tool":"store_round","msg":"Stored iter121_variant: DISCARD 0.037595 TFLOPS (round 121)","level":"info"}
+{"ts":"2026-04-20T14:17:03.341Z","tool":"store_round","msg":"Storing iter122_variant (DISCARD 0.0344846 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:17:03.360Z","tool":"store_round","msg":"Stored iter122_variant: DISCARD 0.0344846 TFLOPS (round 122)","level":"info"}
+{"ts":"2026-04-20T14:17:16.317Z","tool":"store_round","msg":"Storing iter123_variant (DISCARD 0.0376906 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:17:16.337Z","tool":"store_round","msg":"Stored iter123_variant: DISCARD 0.0376906 TFLOPS (round 123)","level":"info"}
+{"ts":"2026-04-20T14:17:29.284Z","tool":"store_round","msg":"Storing iter124_variant (DISCARD 0.0377576 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:17:29.304Z","tool":"store_round","msg":"Stored iter124_variant: DISCARD 0.0377576 TFLOPS (round 124)","level":"info"}
+{"ts":"2026-04-20T14:17:42.229Z","tool":"store_round","msg":"Storing iter125_variant (DISCARD 0.037943 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:17:42.248Z","tool":"store_round","msg":"Stored iter125_variant: DISCARD 0.037943 TFLOPS (round 125)","level":"info"}
+{"ts":"2026-04-20T14:18:08.490Z","tool":"store_round","msg":"Storing iter126_opt (DISCARD 0.0122245 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:18:08.509Z","tool":"store_round","msg":"Stored iter126_opt: DISCARD 0.0122245 TFLOPS (round 126)","level":"info"}
+{"ts":"2026-04-20T14:18:21.423Z","tool":"store_round","msg":"Storing iter127_opt (DISCARD 0.0379619 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:18:21.443Z","tool":"store_round","msg":"Stored iter127_opt: DISCARD 0.0379619 TFLOPS (round 127)","level":"info"}
+{"ts":"2026-04-20T14:18:35.057Z","tool":"store_round","msg":"Storing iter128_opt (DISCARD 0.0364445 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:18:35.077Z","tool":"store_round","msg":"Stored iter128_opt: DISCARD 0.0364445 TFLOPS (round 128)","level":"info"}
+{"ts":"2026-04-20T14:18:47.972Z","tool":"store_round","msg":"Storing iter129_opt (DISCARD 0.0378261 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:18:47.991Z","tool":"store_round","msg":"Stored iter129_opt: DISCARD 0.0378261 TFLOPS (round 129)","level":"info"}
+{"ts":"2026-04-20T14:19:00.930Z","tool":"store_round","msg":"Storing iter130_opt (DISCARD 0.0377176 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:19:00.949Z","tool":"store_round","msg":"Stored iter130_opt: DISCARD 0.0377176 TFLOPS (round 130)","level":"info"}
+{"ts":"2026-04-20T14:19:38.061Z","tool":"store_round","msg":"Storing iter131_combined (DISCARD 0.0378 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:19:38.080Z","tool":"store_round","msg":"Stored iter131_combined: DISCARD 0.0378 TFLOPS (round 131)","level":"info"}
+{"ts":"2026-04-20T14:20:57.957Z","tool":"store_round","msg":"Storing iter136_var (DISCARD 0.0378442 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:20:57.976Z","tool":"store_round","msg":"Stored iter136_var: DISCARD 0.0378442 TFLOPS (round 136)","level":"info"}
+{"ts":"2026-04-20T14:21:10.913Z","tool":"store_round","msg":"Storing iter137_var (DISCARD 0.037628 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:21:10.932Z","tool":"store_round","msg":"Stored iter137_var: DISCARD 0.037628 TFLOPS (round 137)","level":"info"}
+{"ts":"2026-04-20T14:21:24.103Z","tool":"store_round","msg":"Storing iter138_var (DISCARD 0.0377932 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:21:24.122Z","tool":"store_round","msg":"Stored iter138_var: DISCARD 0.0377932 TFLOPS (round 138)","level":"info"}
+{"ts":"2026-04-20T14:21:36.954Z","tool":"store_round","msg":"Storing iter139_var (DISCARD 0.0378865 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:21:36.973Z","tool":"store_round","msg":"Stored iter139_var: DISCARD 0.0378865 TFLOPS (round 139)","level":"info"}
+{"ts":"2026-04-20T14:21:49.821Z","tool":"store_round","msg":"Storing iter140_var (DISCARD 0.0377631 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T14:21:49.841Z","tool":"store_round","msg":"Stored iter140_var: DISCARD 0.0377631 TFLOPS (round 140)","level":"info"}

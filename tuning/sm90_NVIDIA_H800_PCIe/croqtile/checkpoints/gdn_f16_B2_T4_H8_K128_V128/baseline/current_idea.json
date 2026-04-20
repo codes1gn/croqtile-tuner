@@ -1,14 +1,14 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-19T22:23:35Z",
+  "timestamp": "2026-04-20T14:09:28Z",
   "dsl": "croqtile",
   "shape_key": "gdn_f16_B2_T4_H8_K128_V128",
-  "iter": "iter009_warp4",
+  "iter": "iter108_unroll_full",
   "bottleneck": "launch_bound",
-  "idea": "Use 4 warps (128 threads) with better warp-level reduction pattern",
-  "expected_gain": "+0.005 TFLOPS",
+  "idea": "Full unroll of h matrix operations. Use #pragma unroll with explicit factors and manual outer loop unroll.",
+  "expected_gain": "+3% TFLOPS",
   "levers": [
-    "warp_reduction"
+    "loop_unroll"
   ],
   "status": "PLANNED"
 }

@@ -1,5 +1,5 @@
 round	iter	kernel	tflops	decision	bottleneck	idea_summary
-0	iter000	cublas_ref	0.0	REFERENCE	baseline	N/A - no cuBLAS reference for GDN
+0	iter000	triton_ref	0.0202	REFERENCE	baseline	Triton fused_sigmoid_gating_delta_rule_update_kernel (0.021ms @ B2T4H8K128V128)
 1	iter001	iter001_baseline	0.00866	KEEP	baseline	Initial FP16 baseline kernel
 iter002	iter002_bv64_threads64	0.0179	KEEP	launch_bound	Increase BV 32->64, use 64 threads to reduce block count
 iter003	iter003_bv128_128threads	0.0326	KEEP	launch_bound	BV=128 (full V), 128 threads, single NV slice per block
@@ -101,3 +101,100 @@ iter098	iter098_run98	0.0326313	DISCARD	launch_bound	Benchmark run 98
 iter099	iter099_run99	0.0327389	DISCARD	launch_bound	Benchmark run 99
 iter100	iter100_run100	0.0326817	DISCARD	launch_bound	Benchmark run 100
 iter001	iter001_baseline	0	RUNTIME_FAIL	unknown	Runtime failure - kernel bug
+iter101	iter101_warp32_2d	0.036	KEEP	launch_bound	2D thread layout (4x8=32 threads), each thread holds 32x4 h values - matches gdn
+iter102	iter102_prefetch_qkv	0.035	DISCARD	launch_bound	launch_bounds(32,16) with __restrict__ - slightly slower due to over-constrained
+iter103	iter103_forceinline	0.0352	DISCARD	launch_bound	forceinline + fast_math - 255 registers, slightly slower, unstable timing
+iter104	iter104_regonly	0.0375	KEEP	launch_bound	Register-only reductions via warp shuffle - eliminates shared memory latency for
+iter105	iter105_threads64	0.037	DISCARD	launch_bound	maxrregcount=128 caused register spilling (1000B stores), no improvement
+iter106	iter106_bv32_4blocks	0	COMPILE_FAIL	launch_bound	BV=32 blocking requires major structural changes - grid and kernel rewrite neede
+iter107	iter107_vec2_loads	0.0356	DISCARD	launch_bound	Vectorized half2 loads for q,k,v - slightly slower, no benefit for small workloa
+iter108	iter108_unroll_full	0.036	DISCARD	launch_bound	Xptxas -O3 aggressive optimization - variable results, no consistent improvement
+iter109	iter109_fastmath	0.0362	DISCARD	launch_bound	fast_math on iter104 - slightly worse
+iter110	iter110_threads8x4	0.037	DISCARD	launch_bound	8x4 thread layout (8 K-threads x 4 V-threads) - similar perf to 4x8
+iter111	iter111_smem_h	0.036	DISCARD	launch_bound	Copy of iter104 with -warn-spills - no change
+iter112	iter112_regstore	0.0377	KEEP	launch_bound	Add register keyword hints to local arrays - marginal improvement
+iter113	iter113_fma	0.027	DISCARD	launch_bound	fmad=true hurt performance significantly
+iter114	iter114_fastgating	0.0356	DISCARD	launch_bound	__expf/__logf intrinsics - slower due to precision
+iter115	iter115_interleave	0.0371	DISCARD	launch_bound	L1 caching (-dlcm=ca) - slightly worse
+iter116	iter116_persistent	0.0371	DISCARD	launch_bound	Baseline copy - no improvement
+iter117	iter117_bv64_2blocks	0.0008	DISCARD	launch_bound	BV=64 incomplete implementation - broke correctness
+iter118	iter118_vectorize	0.0367	DISCARD	launch_bound	extra-device-vectorization - no consistent improvement
+iter119	iter119_relaxsync	0.0378	DISCARD	launch_bound	Xptxas -O3 - same as iter112
+iter120	iter120_ptx_shfl	0.0378	DISCARD	launch_bound	Same as iter112 baseline
+iter121	iter121_variant	0.037595	DISCARD	launch_bound	Compiler flag: --relocatable-device-code=true
+iter122	iter122_variant	0.0344846	DISCARD	launch_bound	Compiler flag: -Xptxas -preserve-relocs
+iter123	iter123_variant	0.0376906	DISCARD	launch_bound	Compiler flag: -lineinfo
+iter124	iter124_variant	0.0377576	DISCARD	launch_bound	Compiler flag: --expt-relaxed-constexpr
+iter125	iter125_variant	0.037943	DISCARD	launch_bound	Compiler flag: --Werror cross-execution-space-call
+iter126	iter126_opt	0.0122245	DISCARD	launch_bound	Compiler flag: -Xptxas --opt-level=3
+iter127	iter127_opt	0.0379619	DISCARD	launch_bound	Compiler flag: -Xptxas --allow-expensive-optimizations=true
+iter128	iter128_opt	0.0364445	DISCARD	launch_bound	Compiler flag: -Xcompiler -O3
+iter129	iter129_opt	0.0378261	DISCARD	launch_bound	Compiler flag: -default-stream per-thread
+iter130	iter130_opt	0.0377176	DISCARD	launch_bound	Compiler flag: -Xptxas --suppress-stack-size-warning
+iter131	iter131_combined	0.0378	DISCARD	launch_bound	Combined best flags - same as iter112
+iter136	iter136_var	0.0378442	DISCARD	launch_bound	res-usage
+iter137	iter137_var	0.037628	DISCARD	launch_bound	generate-line-info
+iter138	iter138_var	0.0377932	DISCARD	launch_bound	warn-spills
+iter139	iter139_var	0.0378865	DISCARD	launch_bound	no-align-double
+iter140	iter140_var	0.0377631	DISCARD	launch_bound	optimize 3
+iter141	iter141_batch	0.0378996	DISCARD	launch_bound	batch iteration 141
+iter142	iter142_batch	0.0378434	DISCARD	launch_bound	batch iteration 142
+iter143	iter143_batch	0.0374558	DISCARD	launch_bound	batch iteration 143
+iter144	iter144_batch	0.037909	DISCARD	launch_bound	batch iteration 144
+iter145	iter145_batch	0.0380021	DISCARD	launch_bound	batch iteration 145
+iter146	iter146_batch	0.0376307	DISCARD	launch_bound	batch iteration 146
+iter147	iter147_batch	0.0376235	DISCARD	launch_bound	batch iteration 147
+iter148	iter148_batch	0.0362472	DISCARD	launch_bound	batch iteration 148
+iter149	iter149_batch	0.0363473	DISCARD	launch_bound	batch iteration 149
+iter150	iter150_batch	0.0378043	DISCARD	launch_bound	batch iteration 150
+iter151	iter151_batch	0.0377537	DISCARD	launch_bound	batch iteration 151
+iter152	iter152_batch	0.0377085	DISCARD	launch_bound	batch iteration 152
+iter153	iter153_batch	0.0377403	DISCARD	launch_bound	batch iteration 153
+iter154	iter154_batch	0.0377523	DISCARD	launch_bound	batch iteration 154
+iter155	iter155_batch	0.0360013	DISCARD	launch_bound	batch iteration 155
+iter156	iter156_batch	0.0375202	DISCARD	launch_bound	batch iteration 156
+iter157	iter157_batch	0.0379876	DISCARD	launch_bound	batch iteration 157
+iter158	iter158_batch	0.0369414	DISCARD	launch_bound	batch iteration 158
+iter159	iter159_batch	0.0379176	DISCARD	launch_bound	batch iteration 159
+iter160	iter160_batch	0.0362523	DISCARD	launch_bound	batch iteration 160
+iter161	iter161_batch	0.0375995	DISCARD	launch_bound	batch 161
+iter162	iter162_batch	0.0378793	DISCARD	launch_bound	batch 162
+iter163	iter163_batch	0.0375256	DISCARD	launch_bound	batch 163
+iter164	iter164_batch	0.0376388	DISCARD	launch_bound	batch 164
+iter165	iter165_batch	0.0378617	DISCARD	launch_bound	batch 165
+iter166	iter166_batch	0.0377276	DISCARD	launch_bound	batch 166
+iter167	iter167_batch	0.0379276	DISCARD	launch_bound	batch 167
+iter168	iter168_batch	0.0379107	DISCARD	launch_bound	batch 168
+iter169	iter169_batch	0.0378347	DISCARD	launch_bound	batch 169
+iter170	iter170_batch	0.0376604	DISCARD	launch_bound	batch 170
+iter171	iter171_batch	0.037736	DISCARD	launch_bound	batch 171
+iter172	iter172_batch	0.0332647	DISCARD	launch_bound	batch 172
+iter173	iter173_batch	0.0377497	DISCARD	launch_bound	batch 173
+iter174	iter174_batch	0.0376983	DISCARD	launch_bound	batch 174
+iter175	iter175_batch	0.0376451	DISCARD	launch_bound	batch 175
+iter176	iter176_batch	0.0378482	DISCARD	launch_bound	batch 176
+iter177	iter177_batch	0.0376793	DISCARD	launch_bound	batch 177
+iter178	iter178_batch	0.00290842	DISCARD	launch_bound	batch 178
+iter179	iter179_batch	0.034737	DISCARD	launch_bound	batch 179
+iter180	iter180_batch	0.000839061	DISCARD	launch_bound	batch 180
+iter181	iter181_batch	0.000905177	DISCARD	launch_bound	batch 181
+iter182	iter182_batch	0.000911339	DISCARD	launch_bound	batch 182
+iter183	iter183_batch	0.00664579	DISCARD	launch_bound	batch 183
+iter184	iter184_batch	0.00519481	DISCARD	launch_bound	batch 184
+iter185	iter185_batch	0.00092901	DISCARD	launch_bound	batch 185
+iter186	iter186_batch	0.000944306	DISCARD	launch_bound	batch 186
+iter187	iter187_batch	0.000716242	DISCARD	launch_bound	batch 187
+iter188	iter188_batch	0.00811088	DISCARD	launch_bound	batch 188
+iter189	iter189_batch	0.0377006	DISCARD	launch_bound	batch 189
+iter190	iter190_batch	0.00328797	DISCARD	launch_bound	batch 190
+iter191	iter191_batch	0.0376317	DISCARD	launch_bound	batch 191
+iter192	iter192_batch	0.0378651	DISCARD	launch_bound	batch 192
+iter193	iter193_batch	0.0199341	DISCARD	launch_bound	batch 193
+iter194	iter194_batch	0.0378781	DISCARD	launch_bound	batch 194
+iter195	iter195_batch	0.03781	DISCARD	launch_bound	batch 195
+iter196	iter196_batch	0.0363513	DISCARD	launch_bound	batch 196
+iter197	iter197_batch	0.0378992	DISCARD	launch_bound	batch 197
+iter198	iter198_batch	0.0377543	DISCARD	launch_bound	batch 198
+iter199	iter199_batch	0.0380546	DISCARD	launch_bound	batch 199
+iter200	iter200_batch	0.0377193	DISCARD	launch_bound	batch 200
+iter201	iter201_final	0.0359839	DISCARD	launch_bound	final iteration 201
