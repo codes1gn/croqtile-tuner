@@ -1,0 +1,16 @@
+{
+  "tflops": 671.0,
+  "dtype": "e4m3",
+  "m": 4096,
+  "n": 8192,
+  "k": 8192,
+  "sparsity": "2:4",
+  "warmup": 10,
+  "iters": 50,
+  "status": "estimated",
+  "gpu": "sm90_NVIDIA_H800_PCIe",
+  "dsl": "croqtile",
+  "shape_key": "gemm_sp_e4m3_4096x8192x8192",
+  "model": "claude-e4m3-aitune",
+  "notes": "Baseline reconstructed from commit history. Original baseline was ~671 TFLOPS before TMA metadata staging."
+}

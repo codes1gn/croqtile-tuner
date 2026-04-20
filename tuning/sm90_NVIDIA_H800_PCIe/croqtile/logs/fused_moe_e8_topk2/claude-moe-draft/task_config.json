@@ -1,0 +1,19 @@
+{
+  "task_uid": "migrated-fused-moe-draft",
+  "dsl": "croqtile",
+  "model": "claude-moe-draft",
+  "device": "NVIDIA H800 PCIe",
+  "status": "draft",
+  "source_branch": "origin/ai-tune/fused-moe",
+  "shape_key": "fused_moe_e8_topk2",
+  "operator": "fused_moe",
+  "dtype": "f16",
+  "num_experts": 8,
+  "topk": 2,
+  "baseline_tflops": null,
+  "best_tflops": null,
+  "best_kernel": null,
+  "total_iterations": 0,
+  "migration_date": "2026-04-20",
+  "notes": "Early exploration branch - minimal kernel skeletons, no tuning iterations yet. Contains plan.md and study.md for design reference."
+}

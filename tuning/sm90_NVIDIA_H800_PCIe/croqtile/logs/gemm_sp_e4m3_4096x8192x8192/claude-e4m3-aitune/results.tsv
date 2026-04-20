@@ -1,0 +1,70 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_cublas	671.0	KEEP	baseline	cuBLAS sparse GEMM baseline (E4M3, 2:4 sparsity)
+iter001	iter001_tma_meta	760.0	KEEP	memory_bound	TMA metadata staging for e4m3 — TFLOPS: 671 -> 760
+iter002	iter002_hoist_offset	0.0	DISCARD	memory_bound	Hoist offset optimization
+iter003	iter003_flags	0.0	DISCARD	memory_bound	Compiler flags tuning
+iter004	iter004_stages3	0.0	DISCARD	compute_bound	Pipeline stages=3 experiment
+iter005	iter005_wn128	0.0	DISCARD	compute_bound	WARP_N=128 config
+iter006	iter006_fix_wgmma	0.0	DISCARD	compute_bound	Fix WGMMA instruction
+iter007	iter007_stp	0.0	DISCARD	compute_bound	Single thread producer
+iter008	iter008_outpad	0.0	DISCARD	memory_bound	Output padding
+iter009	iter009_swiz128	0.0	DISCARD	memory_bound	Swizzle 128B
+iter010	iter010_swiz32	0.0	DISCARD	memory_bound	Swizzle 32B
+iter011	iter011_rhs64	0.0	DISCARD	memory_bound	RHS 64B loading
+iter012	iter012_cluster	765.0	KEEP	memory_bound	TMA cluster-aware for e4m3 — TFLOPS: 760 -> 765
+iter013	iter013_cluster_hoist	0.0	DISCARD	memory_bound	Cluster + hoist offset
+iter014	iter014_1p2c_tma_meta	0.0	DISCARD	compute_bound	1p2c with TMA metadata
+iter015	iter015_merged_barrier	767.0	KEEP	compute_bound	Merged metadata+data barrier — TFLOPS: 765 -> 767
+iter016	iter016_early_empty	772.0	KEEP	compute_bound	Early empty signal — TFLOPS: 767 -> 772
+iter017	iter017_tk256	0.0	DISCARD	compute_bound	TILE_K=256
+iter018	iter018_transp	0.0	DISCARD	memory_bound	Transposed layout
+iter019	iter019_hoist	0.0	DISCARD	memory_bound	Hoist optimization
+iter020	iter020_1p3c	0.0	DISCARD	compute_bound	1p3c warp specialization
+iter021	iter021_tk64	0.0	DISCARD	compute_bound	TILE_K=64
+iter022	iter022_swpipe	772.0	KEEP	compute_bound	SW pipeline — TFLOPS: 772 base
+iter023	iter023_wait1	820.0	KEEP	compute_bound	SW pipeline + warpgroup_wait<1> — TFLOPS: 772 -> 820
+iter024	iter024_nanosleep	0.0	DISCARD	compute_bound	Nanosleep sync
+iter025	iter025_preload_meta	0.0	DISCARD	memory_bound	Preload metadata
+iter026	iter026_3stage	0.0	DISCARD	compute_bound	3-stage pipeline
+iter027	iter027_3stage_nomod	0.0	DISCARD	compute_bound	3-stage no modulo
+iter028	iter028_l2promote	0.0	DISCARD	memory_bound	L2 promotion
+iter029	iter029_persistent	0.0	DISCARD	compute_bound	Persistent kernel
+iter030	iter030_tk256	0.0	DISCARD	compute_bound	TILE_K=256 v2
+iter031	iter031_n128	0.0	DISCARD	compute_bound	N=128 tiles
+iter032	iter032_reorder_wait	0.0	DISCARD	compute_bound	Reorder wait
+iter033	iter033_batch4	0.0	DISCARD	compute_bound	Batch-4 WGMMA
+iter034	iter034_cluster	0.0	DISCARD	memory_bound	Cluster config
+iter035	iter035_precomp	0.0	DISCARD	compute_bound	Precomputation
+iter036	iter036_1p2c	0.0	DISCARD	compute_bound	1p2c attempt
+iter037	iter037_stmatrix	0.0	DISCARD	memory_bound	stmatrix optimization
+iter038	iter038_glb_meta	0.0	DISCARD	memory_bound	Global metadata
+iter039	iter039_preload	0.0	DISCARD	memory_bound	Preload attempt
+iter040	iter040_3stage	900.0	KEEP	compute_bound	3-stage pipeline breakthrough (estimated from batch)
+iter041	iter041_wait2	0.0	DISCARD	compute_bound	warpgroup_wait<2>
+iter042	iter042_4stage	0.0	DISCARD	compute_bound	4-stage pipeline
+iter043	iter043_persistent	0.0	DISCARD	compute_bound	Persistent v2
+iter044	iter044_nswizzle	0.0	DISCARD	memory_bound	N-swizzle
+iter045	iter045_persistent	0.0	DISCARD	compute_bound	Persistent v3
+iter046	iter046_restrict	0.0	DISCARD	compute_bound	Restrict pointers
+iter047	iter047_k256	0.0	DISCARD	compute_bound	K=256 tiles
+iter048	iter048_1p1c_3stage	0.0	DISCARD	compute_bound	1p1c + 3-stage
+iter049	iter049_l2persist	0.0	DISCARD	memory_bound	L2 persist
+iter050	iter050_noinline_persist	0.0	DISCARD	compute_bound	No inline persist
+iter051	iter051_padgrid	0.0	DISCARD	compute_bound	Padded grid
+iter052	iter052_merged_meta_tma	0.0	DISCARD	memory_bound	Merged metadata TMA
+iter053	iter053_n128	0.0	DISCARD	compute_bound	N=128 v2
+iter054	iter054_kunroll2	0.0	DISCARD	compute_bound	K unroll x2
+iter055	iter055_meta_hoist	0.0	DISCARD	memory_bound	Metadata hoist
+iter056	iter056_nanosleep	0.0	DISCARD	compute_bound	Nanosleep v2
+iter057	iter057_2blk	0.0	DISCARD	compute_bound	2 blocks
+iter058	iter058_commit_first	0.0	DISCARD	compute_bound	Commit first
+iter059	iter059_swpipe_meta	0.0	DISCARD	memory_bound	SW pipe metadata
+iter060	iter060_glb_meta	0.0	DISCARD	memory_bound	Global metadata v2
+iter061	iter061_bankfix	0.0	DISCARD	memory_bound	Bank conflict fix
+iter062	iter062_ptx_meta	0.0	DISCARD	memory_bound	PTX metadata
+iter063	iter063_1p3c	1034.0	DISCARD	compute_bound	1p3c attempt (1034 TFLOPS, regression from best)
+iter064	iter064_unroll3	0.0	DISCARD	compute_bound	Unroll x3
+iter065	iter065_2blk2stage	0.0	DISCARD	compute_bound	2 blocks + 2 stages
+iter066	iter066_stmatrix	1100.0	KEEP	compute_bound	stmatrix (92 regs) — improved from iter063
+iter067	iter067_lhs_l2promo	1128.0	KEEP	compute_bound	LHS+meta L2 promo (NEW BEST 1128 TFLOPS)
+iter068	iter068_early_empty	0.0	DISCARD	compute_bound	Early empty final attempt

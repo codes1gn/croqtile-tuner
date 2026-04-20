@@ -1,0 +1,5 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_baseline	0.0	PENDING	unknown	Fused MoE baseline (not yet measured)
+iter001	fused_moe_basic_sm90	0.0	DRAFT	unknown	Minimal SM90 fused-MoE test harness (empty kernel body)
+iter002	fused_moe_blocked_sm90	0.0	DRAFT	unknown	Blocked/tiled version of fused MoE
+iter003	fused_moe_vllm_maxm	0.0	DRAFT	unknown	vLLM-style max-M routing kernel
