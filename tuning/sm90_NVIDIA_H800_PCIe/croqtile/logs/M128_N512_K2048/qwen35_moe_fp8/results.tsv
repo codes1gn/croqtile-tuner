@@ -23,3 +23,9 @@ iter020	iter020_cg_cache	12.89	DISCARD	memory_bound	Change global load cache pol
 iter021	iter021_wgmma_overlap	12.96	KEEP	memory_bound	STRUCTURAL: Overlap TMA prefetch with scale_accumulator. Prologue issues TMA for
 iter022	iter022_scale_prefetch	13.00	KEEP	memory_bound	Prefetch scale_a and scale_b into registers before TMA wait and WGMMA. Inline sc
 iter023	iter023_scatter_prefetch	13.00	DISCARD	memory_bound	Prefetch scatter metadata (sorted_route_ids, topk_weights) into registers and un
+iter024	iter024_km_swap	7.67	DISCARD	memory_bound	STRUCTURAL: Swap K/M loop order so RHS loaded once per K-tile, shared across M-t
+iter025	iter025_full_scale_preload	12.02	DISCARD	memory_bound	Preload all 16 scale_a and scale_b values into registers before K-loop. Regressi
+iter026	iter026_unroll_wgmma	13.00	DISCARD	memory_bound	Add pragma unroll to K-loop, WGMMA inner loop, scatter column loop. No improveme
+iter027	iter027_wait1	0	DISCARD	memory_bound	Move TMA issue before warpgroup_wait. INCORRECT: causes shared memory hazard - T
+iter028	iter028_regcap160	12.99	DISCARD	memory_bound	Reduce maxrregcount from 224 to 160. Spilling offsets occupancy gain. No net imp
+iter029	iter029_scatter_vec2	12.97	DISCARD	memory_bound	Changed L2 persistence from LHS to output buffer. Regression to 12.97T - LHS per

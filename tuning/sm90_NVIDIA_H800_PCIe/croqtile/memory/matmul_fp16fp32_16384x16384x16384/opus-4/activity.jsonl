@@ -1,0 +1,12 @@
+{"ts":"2026-04-20T01:21:09.892Z","tool":"resume_state","msg":"Loading tuning state for croqtile/matmul_fp16fp32_16384x16384x16384","level":"info"}
+{"ts":"2026-04-20T01:21:09.895Z","tool":"resume_state","msg":"No tuning artifacts found for croqtile/matmul_fp16fp32_16384x16384x16384","level":"error"}
+{"ts":"2026-04-20T01:22:10.395Z","tool":"store_baseline","msg":"Measuring cuBLAS baseline for f16fp32 16384x16384x16384","level":"info"}
+{"ts":"2026-04-20T01:22:13.699Z","tool":"store_baseline","msg":"cuBLAS baseline: 417.6107 TFLOPS (saved to tuning/sm90_NVIDIA_H800_PCIe/croqtile/baseline/matmul_fp16fp32_16384x16384x16384/opus-4/cublas_result.json)","level":"info"}
+{"ts":"2026-04-20T01:22:14.025Z","tool":"store_round","msg":"Storing iter000_cublas (KEEP 417.6107 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T01:22:14.044Z","tool":"store_round","msg":"Stored iter000_cublas: KEEP 417.6107 TFLOPS (round 0)","level":"info"}
+{"ts":"2026-04-20T01:22:14.056Z","tool":"store_baseline","msg":"Stored iter000_cublas: 417.6107 TFLOPS (baseline)","level":"info"}
+{"ts":"2026-04-20T01:25:17.662Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_fp16fp32_16384x16384x16384/opus-4/iter001_tierb_sonnet069","level":"info"}
+{"ts":"2026-04-20T01:25:36.162Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/opus-4/ncu_iter001_tierb_sonnet069_r1.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/opus-4/ncu_iter001_tierb_sonnet069_r1.csv","level":"info"}
+{"ts":"2026-04-20T01:25:43.481Z","tool":"profile_extract","msg":"Analyzing iter001_tierb_sonnet069 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/opus-4/ncu_iter001_tierb_sonnet069_r1.csv","level":"info"}
+{"ts":"2026-04-20T01:25:48.709Z","tool":"store_round","msg":"Storing iter001_tierb_sonnet069 (KEEP 482.536 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T01:25:48.728Z","tool":"store_round","msg":"Stored iter001_tierb_sonnet069: KEEP 482.536 TFLOPS (round 1)","level":"info"}

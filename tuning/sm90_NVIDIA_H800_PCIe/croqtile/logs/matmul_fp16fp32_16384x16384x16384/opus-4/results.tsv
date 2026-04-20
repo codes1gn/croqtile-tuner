@@ -1,0 +1,3 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_cublas	417.6107	KEEP	baseline	cuBLAS reference baseline
+iter001	iter001_tierb_sonnet069	482.536	KEEP	compute_bound	Tier B: copied sonnet46 best-line iter069 (1p2c SWZ16 warpgroup_wait<1> K-unroll

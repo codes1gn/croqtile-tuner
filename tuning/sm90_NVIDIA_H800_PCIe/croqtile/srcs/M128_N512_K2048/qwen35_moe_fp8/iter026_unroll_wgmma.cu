@@ -1075,143 +1075,152 @@ __global__ void __choreo_device_fused_moe_grouped_wgmma_fp8(f8_e4m3 * __restrict
   auto __choreo_device_fused_moe_grouped_wgmma_fp8__ring__ = nullptr;
   {
   auto wg_barrier = cooperative_groups::tiled_partition<128>(cooperative_groups::this_thread_block());
-  // iter024_km_swap: Swap K/M loop order. RHS loaded once per K-tile, shared across M-tiles.
-  // Single barrier reused for both RHS and LHS TMA (they never overlap).
-  __shared__ cuda::barrier<cuda::thread_scope_block> tma_barrier;
+  __shared__ cuda::barrier<cuda::thread_scope_block> choreo_copy_atom_t_0_barrier;
   if (__CHOREO_BLOCK_SINGLE__) {
-    init(&tma_barrier, blockDim.x);
+    init(&choreo_copy_atom_t_0_barrier, blockDim.x);
     cde::fence_proxy_async_shared_cta();
   }
   __syncthreads();
-  TMAAtom tma_atom{&tma_barrier};
+  TMAAtom choreo_copy_atom_t_0{&choreo_copy_atom_t_0_barrier};
 
   __shared__ alignas(1024) unsigned char anon_16[24576];
   auto __choreo_vg4id_x = threadIdx.x / 128;
   auto __choreo_vtid_x = threadIdx.x % 128;
-  f8_e4m3* sA = (f8_e4m3*)(anon_16 + 16384);  // 8KB for LHS
-  f8_e4m3* sB = (f8_e4m3*)(anon_16 + 0);       // 16KB for RHS
+  f8_e4m3* sA = (f8_e4m3*)(anon_16 + 16384);
+  f8_e4m3* sB = (f8_e4m3*)(anon_16 + 0);
   int seg_start = *((int*)expert_offsets + blockIdx.y);
   int seg_end = *((int*)expert_offsets + (blockIdx.y + 1));
   int seg_length = (seg_end - seg_start);
-
+  // if-else: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/M128_N512_K2048/qwen35_moe_fp8/iter003_full_optimized.co:744.5
   if ((seg_length > 0)) {
-    const int n_m_tiles = ((seg_length + 63) / 64);
-    const unsigned rhs_expert_n_offset = ((blockIdx.x + (N + 127) / 128 * blockIdx.y) * 128);
-    constexpr int N_ITER = 16;
-
-    int __itd = threadIdx.x & 127;
-    int __lane = __itd & 31;
-    int __warp = __itd >> 5;
-    int __row0 = __warp * 16 + (__lane >> 2);
-    int __row1 = __row0 + 8;
-
-    // Accumulators for up to 2 M-tiles (M=128 => 2 tiles of 64)
-    float mc0[64];
-    float mc1[64];
-    for (int i = 0; i < 64; ++i) { mc0[i] = 0.0f; mc1[i] = 0.0f; }
-
-    // K-loop (outer): load RHS once per K-tile
-    for (int k = 0; k < N_ITER; ++k) {
-      const unsigned rhs_k_offset = k * 128;
-
-      // Load RHS via TMA (shared across all M-tiles)
-      if (__CHOREO_BLOCK_SINGLE__) {
-        cde::cp_async_bulk_tensor_2d_global_to_shared(sB, &__choreo_tma_0_tensor_map, rhs_k_offset, rhs_expert_n_offset, tma_atom.barrier());
-        tma_atom.token() = cuda::device::barrier_arrive_tx(tma_atom.barrier(), 1, 16384);
-      } else {
-        tma_atom.token() = tma_atom.barrier().arrive();
-      }
-
-      // Prefetch scale_b (same for all M-tiles at this K-tile)
-      float sc_b = *((float*)scale_b + (blockIdx.y * ((N + 127) / 128) + blockIdx.x) * 16 + k);
-
-      // Wait for RHS to land
-      tma_atom.barrier().wait(std::move(tma_atom.token()));
-
-      // M-loop (inner): process each M-tile with the RHS already in smem
-      for (int m = 0; m < n_m_tiles; ++m) {
-        const unsigned lhs_m_offset = (m * 64 + seg_start);
-        const unsigned lhs_k_offset = k * 128;
-        int remaining = seg_length - m * 64;
+    // with-in: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/M128_N512_K2048/qwen35_moe_fp8/iter003_full_optimized.co:746.5
+    {
+      int __iv_iv_m__elem__0 = 0;
+      // foreach: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/M128_N512_K2048/qwen35_moe_fp8/iter003_full_optimized.co:746.5
+      for (__iv_iv_m__elem__0 = 0; __iv_iv_m__elem__0 < ((seg_length + 63) / 64); ++__iv_iv_m__elem__0) {
+        int remaining = seg_length - __iv_iv_m__elem__0 * 64;
         int tile_rows = (remaining < 64) ? remaining : 64;
-
-        // Load LHS via TMA
-        if (__CHOREO_BLOCK_SINGLE__) {
-          cde::cp_async_bulk_tensor_2d_global_to_shared(sA, &__choreo_tma_lhs_tensor_map, lhs_k_offset, lhs_m_offset, tma_atom.barrier());
-          tma_atom.token() = cuda::device::barrier_arrive_tx(tma_atom.barrier(), 1, 8192);
-        } else {
-          tma_atom.token() = tma_atom.barrier().arrive();
-        }
-
-        // Prefetch scale_a for this M-tile
-        auto sc_a_base = (M * k + (m * 64 + seg_start) + scale_a);
-        int r0_valid = __row0 < tile_rows;
-        int r1_valid = __row1 < tile_rows;
-        float sa0_pf = __ldg(sc_a_base + (r0_valid ? __row0 : 0));
-        float sa1_pf = __ldg(sc_a_base + (r1_valid ? __row1 : 0));
-        sa0_pf *= sc_b * static_cast<float>(r0_valid);
-        sa1_pf *= sc_b * static_cast<float>(r1_valid);
-
-        // Wait for LHS
-        tma_atom.barrier().wait(std::move(tma_atom.token()));
-
-        // WGMMA compute into temporary fragment
-        float mc_scale_frag[64];
-        memset(mc_scale_frag, 0, sizeof(mc_scale_frag));
+        float mc[64];
+        float __frag_init_val0 = 0.000000f;
+        for (int idx = 0; idx < 64; ++idx)
+          mc[idx] = __frag_init_val0;
+        // with-in: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/M128_N512_K2048/qwen35_moe_fp8/iter003_full_optimized.co:751.7
         {
-          for (int w = 0; w < 4; ++w) {
-            f8_e4m3* ma_smem_ptr = (f8_e4m3*)((w * 32 + sA));
-            uint64_t desc_ma = wgmma_make_smem_desc<WGMMA_MajorOrder::K_MAJOR, WGMMA_Swizzle::B128>(ma_smem_ptr);
-            f8_e4m3* mb_smem_ptr = (f8_e4m3*)((w * 32 + sB));
-            uint64_t desc_mb = wgmma_make_smem_desc<WGMMA_MajorOrder::K_MAJOR, WGMMA_Swizzle::B128>(mb_smem_ptr);
-            warpgroup_arrive();
-            cute::SM90::GMMA::MMA_64x128x32_F32E4M3E4M3_SS_TN<>::fma(desc_ma, desc_mb, mc_scale_frag[0], mc_scale_frag[1], mc_scale_frag[2], mc_scale_frag[3], mc_scale_frag[4], mc_scale_frag[5], mc_scale_frag[6], mc_scale_frag[7], mc_scale_frag[8], mc_scale_frag[9], mc_scale_frag[10], mc_scale_frag[11], mc_scale_frag[12], mc_scale_frag[13], mc_scale_frag[14], mc_scale_frag[15], mc_scale_frag[16], mc_scale_frag[17], mc_scale_frag[18], mc_scale_frag[19], mc_scale_frag[20], mc_scale_frag[21], mc_scale_frag[22], mc_scale_frag[23], mc_scale_frag[24], mc_scale_frag[25], mc_scale_frag[26], mc_scale_frag[27], mc_scale_frag[28], mc_scale_frag[29], mc_scale_frag[30], mc_scale_frag[31], mc_scale_frag[32], mc_scale_frag[33], mc_scale_frag[34], mc_scale_frag[35], mc_scale_frag[36], mc_scale_frag[37], mc_scale_frag[38], mc_scale_frag[39], mc_scale_frag[40], mc_scale_frag[41], mc_scale_frag[42], mc_scale_frag[43], mc_scale_frag[44], mc_scale_frag[45], mc_scale_frag[46], mc_scale_frag[47], mc_scale_frag[48], mc_scale_frag[49], mc_scale_frag[50], mc_scale_frag[51], mc_scale_frag[52], mc_scale_frag[53], mc_scale_frag[54], mc_scale_frag[55], mc_scale_frag[56], mc_scale_frag[57], mc_scale_frag[58], mc_scale_frag[59], mc_scale_frag[60], mc_scale_frag[61], mc_scale_frag[62], mc_scale_frag[63]);
+          const unsigned rhs_expert_n_offset = ((blockIdx.x + (N + 127) / 128 * blockIdx.y) * 128);
+          const unsigned lhs_m_offset = (__iv_iv_m__elem__0 * 64 + seg_start);
+          constexpr int N_ITER = 16;
+
+          // Issue TMA for k=0
+          if (__CHOREO_BLOCK_SINGLE__) {
+            cde::cp_async_bulk_tensor_2d_global_to_shared(sB, &__choreo_tma_0_tensor_map, 0, rhs_expert_n_offset, choreo_copy_atom_t_0.barrier());
+            cde::cp_async_bulk_tensor_2d_global_to_shared(sA, &__choreo_tma_lhs_tensor_map, 0, lhs_m_offset, choreo_copy_atom_t_0.barrier());
+            choreo_copy_atom_t_0.token() = cuda::device::barrier_arrive_tx(choreo_copy_atom_t_0.barrier(), 1, 24576);
+          } else {
+            choreo_copy_atom_t_0.token() = choreo_copy_atom_t_0.barrier().arrive();
           }
-        }
-        warpgroup_commit_batch();
-        warpgroup_wait<0>();
 
-        // Scale+accumulate into the correct M-tile accumulator
-        float* mc_dst = (m == 0) ? mc0 : mc1;
-        {
-          constexpr int col_num = 128 / 8;
+          // Precompute per-thread row indices for scale_a prefetch
+          int __itd = threadIdx.x & 127;
+          int __lane = __itd & 31;
+          int __warp = __itd >> 5;
+          int __row0 = __warp * 16 + (__lane >> 2);
+          int __row1 = __row0 + 8;
+
+          int __iv_iv_k__elem__0 = 0;
           #pragma unroll
-          for (int c = 0; c < col_num; c++) {
-            mc_dst[c * 4 + 0] += mc_scale_frag[c * 4 + 0] * sa0_pf;
-            mc_dst[c * 4 + 1] += mc_scale_frag[c * 4 + 1] * sa0_pf;
-            mc_dst[c * 4 + 2] += mc_scale_frag[c * 4 + 2] * sa1_pf;
-            mc_dst[c * 4 + 3] += mc_scale_frag[c * 4 + 3] * sa1_pf;
-          }
-        }
-      } // end M-loop
-    } // end K-loop
+          for (__iv_iv_k__elem__0 = 0; __iv_iv_k__elem__0 < N_ITER; ++__iv_iv_k__elem__0) {
+            float mc_scale_frag[64];
+            memset(mc_scale_frag, 0, sizeof(mc_scale_frag));
 
-    // Scatter epilogue for each M-tile
-    int base_col = blockIdx.x * 128;
-    for (int m = 0; m < n_m_tiles; ++m) {
-      float* mc_src = (m == 0) ? mc0 : mc1;
-      int remaining = seg_length - m * 64;
-      int tile_rows = (remaining < 64) ? remaining : 64;
-      auto do_scatter_row = [&](int local_row, int frag_off) __attribute__((always_inline)) {
-        if (local_row >= tile_rows) return;
-        int actual_row = seg_start + m * 64 + local_row;
-        int route_id = sorted_route_ids[actual_row];
-        int token = route_id / 8;
-        int selected = route_id % 8;
-        float weight = topk_weights[token * 8 + selected];
-        int out_base = token * N + base_col;
-        for (int c = 0; c < 16; c++) {
-          int col0 = c * 8 + (__itd & 3) * 2;
-          float v0 = mc_src[c * 4 + frag_off] * weight;
-          float v1 = mc_src[c * 4 + frag_off + 1] * weight;
-          atomicAdd(&scatter_output[out_base + col0], v0);
-          atomicAdd(&scatter_output[out_base + col0 + 1], v1);
+            // Prefetch scale_a and scale_b into registers before waiting for TMA
+            auto sc_a_base = (M * __iv_iv_k__elem__0 + (__iv_iv_m__elem__0 * 64 + seg_start) + scale_a);
+            float sc_b_prefetched = *((float*)scale_b + (blockIdx.y * ((N + 127) / 128) + blockIdx.x)*16 + __iv_iv_k__elem__0);
+            int r0_valid = __row0 < tile_rows;
+            int r1_valid = __row1 < tile_rows;
+            float sa0_pf = __ldg(sc_a_base + (r0_valid ? __row0 : 0));
+            float sa1_pf = __ldg(sc_a_base + (r1_valid ? __row1 : 0));
+            sa0_pf *= sc_b_prefetched * static_cast<float>(r0_valid);
+            sa1_pf *= sc_b_prefetched * static_cast<float>(r1_valid);
+
+            // Wait for current TMA to complete
+            choreo_copy_atom_t_0.barrier().wait(std::move(choreo_copy_atom_t_0.token()));
+
+            // WGMMA compute
+            {
+              int __iv_iv_warp__elem__0 = 0;
+              #pragma unroll
+              for (__iv_iv_warp__elem__0 = 0; __iv_iv_warp__elem__0 < 4; ++__iv_iv_warp__elem__0) {
+                f8_e4m3* ma_smem_ptr = (f8_e4m3*)((__iv_iv_warp__elem__0 * 32 + sA));
+                uint64_t desc_ma = wgmma_make_smem_desc<WGMMA_MajorOrder::K_MAJOR, WGMMA_Swizzle::B128>(ma_smem_ptr);
+                f8_e4m3* mb_smem_ptr = (f8_e4m3*)((__iv_iv_warp__elem__0 * 32 + sB));
+                uint64_t desc_mb = wgmma_make_smem_desc<WGMMA_MajorOrder::K_MAJOR, WGMMA_Swizzle::B128>(mb_smem_ptr);
+                warpgroup_arrive();
+                cute::SM90::GMMA::MMA_64x128x32_F32E4M3E4M3_SS_TN<>::fma(desc_ma, desc_mb, mc_scale_frag[0], mc_scale_frag[1], mc_scale_frag[2], mc_scale_frag[3], mc_scale_frag[4], mc_scale_frag[5], mc_scale_frag[6], mc_scale_frag[7], mc_scale_frag[8], mc_scale_frag[9], mc_scale_frag[10], mc_scale_frag[11], mc_scale_frag[12], mc_scale_frag[13], mc_scale_frag[14], mc_scale_frag[15], mc_scale_frag[16], mc_scale_frag[17], mc_scale_frag[18], mc_scale_frag[19], mc_scale_frag[20], mc_scale_frag[21], mc_scale_frag[22], mc_scale_frag[23], mc_scale_frag[24], mc_scale_frag[25], mc_scale_frag[26], mc_scale_frag[27], mc_scale_frag[28], mc_scale_frag[29], mc_scale_frag[30], mc_scale_frag[31], mc_scale_frag[32], mc_scale_frag[33], mc_scale_frag[34], mc_scale_frag[35], mc_scale_frag[36], mc_scale_frag[37], mc_scale_frag[38], mc_scale_frag[39], mc_scale_frag[40], mc_scale_frag[41], mc_scale_frag[42], mc_scale_frag[43], mc_scale_frag[44], mc_scale_frag[45], mc_scale_frag[46], mc_scale_frag[47], mc_scale_frag[48], mc_scale_frag[49], mc_scale_frag[50], mc_scale_frag[51], mc_scale_frag[52], mc_scale_frag[53], mc_scale_frag[54], mc_scale_frag[55], mc_scale_frag[56], mc_scale_frag[57], mc_scale_frag[58], mc_scale_frag[59], mc_scale_frag[60], mc_scale_frag[61], mc_scale_frag[62], mc_scale_frag[63]);
+              } // iv_warp__elem__0
+              __iv_iv_warp__elem__0 = 0;
+            }
+            // Commit WGMMA results and wait for them to be available
+            warpgroup_commit_batch();
+            warpgroup_wait<0>();
+
+            // Issue TMA for next k-tile while scale+accumulate runs
+            if (__iv_iv_k__elem__0 < N_ITER - 1) {
+              const unsigned nxt_rhs_k_offset = ((__iv_iv_k__elem__0 + 1) * 128);
+              const unsigned nxt_lhs_k_offset = ((__iv_iv_k__elem__0 + 1) * 128);
+              if (__CHOREO_BLOCK_SINGLE__) {
+                cde::cp_async_bulk_tensor_2d_global_to_shared(sB, &__choreo_tma_0_tensor_map, nxt_rhs_k_offset, rhs_expert_n_offset, choreo_copy_atom_t_0.barrier());
+                cde::cp_async_bulk_tensor_2d_global_to_shared(sA, &__choreo_tma_lhs_tensor_map, nxt_lhs_k_offset, lhs_m_offset, choreo_copy_atom_t_0.barrier());
+                choreo_copy_atom_t_0.token() = cuda::device::barrier_arrive_tx(choreo_copy_atom_t_0.barrier(), 1, 24576);
+              } else {
+                choreo_copy_atom_t_0.token() = choreo_copy_atom_t_0.barrier().arrive();
+              }
+            }
+
+            // Inline scale+accumulate using prefetched scale values (no global loads)
+            {
+              constexpr int col_num = 128 / 8;
+              #pragma unroll
+              for (int c = 0; c < col_num; c++) {
+                mc[c * 4 + 0] += mc_scale_frag[c * 4 + 0] * sa0_pf;
+                mc[c * 4 + 1] += mc_scale_frag[c * 4 + 1] * sa0_pf;
+                mc[c * 4 + 2] += mc_scale_frag[c * 4 + 2] * sa1_pf;
+                mc[c * 4 + 3] += mc_scale_frag[c * 4 + 3] * sa1_pf;
+              }
+            }
+          } // iv_k__elem__0
+          __iv_iv_k__elem__0 = 0;
         }
-      };
-      do_scatter_row(__row0, 0);
-      do_scatter_row(__row1, 2);
+  {
+    int itd = threadIdx.x & 127;
+    int lane = itd & 31;
+    int warp = itd >> 5;
+    int row0 = warp * 16 + (lane >> 2);
+    int row1 = row0 + 8;
+    int base_col = blockIdx.x * 128;
+    auto do_scatter_row = [&](int local_row, int frag_off) __attribute__((always_inline)) {
+      if (local_row >= tile_rows) return;
+      int actual_row = seg_start + __iv_iv_m__elem__0 * 64 + local_row;
+      int route_id = sorted_route_ids[actual_row];
+      int token = route_id / 8;
+      int selected = route_id % 8;
+      float weight = topk_weights[token * 8 + selected];
+      int out_base = token * N + base_col;
+      #pragma unroll
+      for (int c = 0; c < 16; c++) {
+        int col0 = c * 8 + (itd & 3) * 2;
+        float v0 = mc[c * 4 + frag_off] * weight;
+        float v1 = mc[c * 4 + frag_off + 1] * weight;
+        atomicAdd(&scatter_output[out_base + col0], v0);
+        atomicAdd(&scatter_output[out_base + col0 + 1], v1);
+      }
+    };
+    do_scatter_row(row0, 0);
+    do_scatter_row(row1, 2);
+  }
+      } // iv_m__elem__0
+      __iv_iv_m__elem__0 = 0;
     }
-  } // end if seg_length > 0
+  } // end if-else: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/M128_N512_K2048/qwen35_moe_fp8/iter003_full_optimized.co:744.5
   } // end parallel-by
 }
 
