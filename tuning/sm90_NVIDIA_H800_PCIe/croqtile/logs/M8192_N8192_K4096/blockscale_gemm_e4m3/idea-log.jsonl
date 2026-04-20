@@ -20,3 +20,6 @@
 {"round": 19, "iter": "iter020", "kernel": "iter020_1p4c_m128_n256_stg2_correct", "tflops": 666.4, "decision": "DISCARD", "bottleneck": "pipeline", "idea": "1p4c M128xN256 2-stage - fewer stages worse", "category": "pipeline"}
 {"round": 20, "iter": "iter021", "kernel": "iter021_1p4c_m128_n256_stg4_correct", "tflops": 0, "decision": "COMPILE_FAIL", "bottleneck": "N/A", "idea": "1p4c M128xN256 4-stage - SMEM exceeded", "category": "pipeline"}
 {"round": 21, "iter": "iter022", "kernel": "iter022_1p4c_m64_n512_stg2_correct", "tflops": 0, "decision": "LAUNCH_FAIL", "bottleneck": "N/A", "idea": "1p4c M64xN512 - CUDA invalid argument", "category": "tiling"}
+{"round": 22, "iter": "iter023", "kernel": "iter023_1p2c_m128_n128_stg3_correct", "tflops": 539.9, "decision": "DISCARD", "bottleneck": "tiling", "idea": "1p2c M128xN128 - smaller tile worse", "category": "tiling"}
+{"round": 23, "iter": "iter024", "kernel": "iter024_1p8c_m256_n256_stg2_correct", "tflops": 0, "decision": "COMPILE_FAIL", "bottleneck": "N/A", "idea": "1p8c M256xN256 - SMEM exceeded", "category": "tiling"}
+{"round": 24, "iter": "iter025", "kernel": "iter025_persis_1p4c_m128_n256_stg3", "tflops": 0, "decision": "COMPILE_FAIL", "bottleneck": "N/A", "idea": "Persistent 1p4c - syntax error", "category": "structure"}

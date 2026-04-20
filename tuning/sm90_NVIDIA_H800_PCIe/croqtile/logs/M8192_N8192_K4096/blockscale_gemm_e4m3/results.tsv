@@ -21,3 +21,6 @@ round	iter	kernel	tflops	decision	bottleneck	idea_summary
 19	iter020	iter020_1p4c_m128_n256_stg2_correct	666.4	DISCARD	pipeline	1p4c M128xN256 2-stg
 20	iter021	iter021_1p4c_m128_n256_stg4_correct	0	COMPILE_FAIL	N/A	4-stg SMEM exceeded
 21	iter022	iter022_1p4c_m64_n512_stg2_correct	0	LAUNCH_FAIL	N/A	N512 CUDA err
+22	iter023	iter023_1p2c_m128_n128_stg3_correct	539.9	DISCARD	tiling	M128xN128 smaller tile
+23	iter024	iter024_1p8c_m256_n256_stg2_correct	0	COMPILE_FAIL	N/A	M256xN256 SMEM exceeded
+24	iter025	iter025_persis_1p4c_m128_n256_stg3	0	COMPILE_FAIL	N/A	Persistent syntax
