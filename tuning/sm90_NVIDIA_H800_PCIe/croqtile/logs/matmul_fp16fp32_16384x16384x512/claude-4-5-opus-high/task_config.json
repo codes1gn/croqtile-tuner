@@ -133,6 +133,16 @@
       "request_number": 2,
       "started_at": "2026-04-20T10:09:20.285869",
       "ended_at": null
+    },
+    {
+      "id": 21,
+      "task_id": 1,
+      "session_id": "304aed64-a334-4045-ab8d-2772a3773987",
+      "agent_type": "cursor_cli",
+      "model": "claude-4-5-opus-high",
+      "request_number": 2,
+      "started_at": "2026-04-20T14:44:05.904182+00:00",
+      "ended_at": null
     }
   ],
   "best_tflops": 360.2,

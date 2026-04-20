@@ -1,11 +1,24 @@
 {
   "shape_key": "gdn_f16_B2_T4_H8_K128_V128",
-  "baseline_name": "triton_fused_sigmoid_gating", 
+  "baseline_name": "triton_fused_sigmoid_gating",
   "baseline_tflops": 0.0202,
   "baseline_source": "gdn_bf16_smemreduce.co (Choreo ref) = gdn_bf16_handwritten.cu",
   "best_tflops": 0.0380546,
   "best_kernel": "iter199_batch",
   "total_iterations": 200,
   "speedup_percent": 188.4,
-  "status": "completed"
+  "status": "waiting",
+  "task_id": 3,
+  "task_uid": "gdn_f16_tune_20260420_061005",
+  "model": "manual/gdn-baseline-tuning",
+  "variant": "",
+  "agent_type": "manual",
+  "device": "NVIDIA H800 PCIe",
+  "mode": "manual",
+  "request_budget": 0,
+  "request_number": 0,
+  "max_iterations": 100,
+  "respawn_count": 0,
+  "opencode_session_id": null,
+  "sessions": []
 }

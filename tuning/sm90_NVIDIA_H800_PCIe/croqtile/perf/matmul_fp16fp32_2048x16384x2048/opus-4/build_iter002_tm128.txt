@@ -1,0 +1,4 @@
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x16384x2048/opus-4/iter002_tm128.co:61.15: error: Expect `mc' to be a matrix with fixed size, but got: [].
+                mma.row.row mc, ma, mb;
+                ^
+Totally 1 errors have been detected.

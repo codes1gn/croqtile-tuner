@@ -1,0 +1,16 @@
+{
+  "task_id": 8,
+  "task_uid": "croqtile-matmul-fp16fp32-2048x16384x2048",
+  "model": "gpt-5",
+  "variant": "",
+  "agent_type": null,
+  "device": "NVIDIA H800 PCIe",
+  "mode": "opencode",
+  "status": "waiting",
+  "request_budget": 1,
+  "request_number": 0,
+  "max_iterations": 30,
+  "respawn_count": 1,
+  "opencode_session_id": null,
+  "sessions": []
+}

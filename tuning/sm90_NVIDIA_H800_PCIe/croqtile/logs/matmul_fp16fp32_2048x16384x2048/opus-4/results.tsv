@@ -1,0 +1,52 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_cublas	486.5209	KEEP	baseline	cuBLAS reference baseline
+iter001	iter001_base_wait2	333.197	KEEP	compute_bound	Adapted prior best iter023 wait2 split-epilogue 64x128 1p1c kernel as starting p
+iter002	iter002_ws1p2c_tm128	315.078	DISCARD	compute_bound	1p2c warp-specialization with TILE_M=128 for better compute density
+iter003	iter003_lb256_2	340.998	KEEP	compute_bound	Added __launch_bounds__(256, 2) to improve register allocation and occupancy
+iter004	iter004_lb_fastmath	341.132	KEEP	compute_bound	Added --use_fast_math nvcc flag for faster math approximations
+iter005	iter005_stages4	259.294	DISCARD	compute_bound	Increased pipeline stages from 3 to 4 for better latency hiding
+iter006	iter006_stages2	308.611	DISCARD	compute_bound	Reduced pipeline stages from 3 to 2 to decrease SMEM usage
+iter007	iter007_wn96	301.541	DISCARD	compute_bound	Changed WARP_N from 128 to 96 for different register pressure profile
+iter008	iter008_wn192	287.7	DISCARD	compute_bound	Increased WARP_N from 128 to 192 for larger accumulator
+iter009	iter009_maxreg128	342.257	KEEP	compute_bound	Capped registers at 128 with -maxrregcount to increase occupancy
+iter010	iter010_maxreg96	342.042	DISCARD	compute_bound	Lowered register cap to 96 for even higher occupancy
+iter011	iter011_maxreg112	343.047	KEEP	compute_bound	Register cap at 112 optimal between 128 and 96
+iter012	iter012_hoist_offset	341.258	DISCARD	compute_bound	Added choreo --hoist-offset flag
+iter013	iter013_maxreg120	341.695	DISCARD	compute_bound	Tried maxrregcount=120
+iter014	iter014_maxreg104	341.888	DISCARD	compute_bound	Tried maxrregcount=104
+iter015	iter015_maxreg108	340.353	DISCARD	compute_bound	Tried maxrregcount=108
+iter016	iter016_tilek32	278.219	DISCARD	compute_bound	Tried TILE_K=32 with 4 stages
+iter017	iter017_warpn64	258.221	DISCARD	compute_bound	Tried WARP_N=64
+iter018	iter018_warpn256	324.904	DISCARD	compute_bound	Tried WARP_N=256 without register limit
+iter019	iter019_unroll	341.417	DISCARD	compute_bound	Added pragma unroll to inner WGMMA loop
+iter020	iter020_tilek128	0	COMPILE_FAIL	compute_bound	Tried TILE_K=128 with 2 stages
+iter021	iter021_one_p_two_c	47.819	DISCARD	latency_bound	Tried 1p2c warp specialization
+iter022	iter022_maxreg116	125.941	DISCARD	compute_bound	Tried maxrregcount=116
+iter023	iter023_tilek48	0	COMPILE_FAIL	compute_bound	Tried TILE_K=48 with 4 stages
+iter024	iter024_ptxas_dlcm	339.904	DISCARD	compute_bound	Tried L1 cache bypass with -Xptxas -dlcm=cg
+iter025	iter025_verbose_asm	340.137	DISCARD	compute_bound	Tried O2 optimization level
+iter026	iter026_ftz	339.153	DISCARD	compute_bound	Tried ftz=true prec-div=false prec-sqrt=false
+iter027	iter027_maxreg110	339.605	DISCARD	compute_bound	Tried maxrregcount=110
+iter028	iter028_maxreg114	340.408	DISCARD	compute_bound	Tried maxrregcount=114
+iter029	iter029_maxreg113	340.73	DISCARD	compute_bound	Tried maxrregcount=113
+iter030	iter030_swiz64	0	COMPILE_FAIL	compute_bound	Tried SWIZ=64
+iter031	iter031_lb256_1	244.066	DISCARD	compute_bound	Tried launch_bounds(256,1) for single block per SM
+iter032	iter032_no_lb	334.802	DISCARD	compute_bound	Removed launch_bounds entirely
+iter033	iter033_maxreg111	340.467	DISCARD	compute_bound	Tried maxrregcount=111
+iter034	iter034_maxreg115	341.249	DISCARD	compute_bound	Tried maxrregcount=115
+iter035	iter035_expopt	340.948	DISCARD	compute_bound	Tried -Xptxas --allow-expensive-optimizations
+iter036	iter036_maxreg106	340.86	DISCARD	compute_bound	Tried maxrregcount=106
+iter037	iter037_maxreg117	341.021	DISCARD	compute_bound	Tried maxrregcount=117
+iter038	iter038_maxreg118	340.779	DISCARD	compute_bound	Tried maxrregcount=118
+iter039	iter039_maxreg119	341.94	DISCARD	compute_bound	Tried maxrregcount=119
+iter040	iter040_maxreg121	340.556	DISCARD	compute_bound	Tried maxrregcount=121
+iter041	iter041_maxreg122	340.398	DISCARD	compute_bound	Tried maxrregcount=122
+iter042	iter042_maxreg123	340.916	DISCARD	compute_bound	Tried maxrregcount=123
+iter043	iter043_maxreg124	340.837	DISCARD	compute_bound	Tried maxrregcount=124
+iter044	iter044_maxreg125	341.033	DISCARD	compute_bound	Tried maxrregcount=125
+iter045	iter045_maxreg126	340.867	DISCARD	compute_bound	Tried maxrregcount=126
+iter046	iter046_maxreg127	109.35	DISCARD	compute_bound	Tried maxrregcount=127
+iter047	iter047_maxreg100	342.469	DISCARD	compute_bound	Tried maxrregcount=100
+iter048	iter048_maxreg102	342.834	DISCARD	compute_bound	Tried maxrregcount=102
+iter049	iter049_maxreg98	341.969	DISCARD	compute_bound	Tried maxrregcount=98
+iter050	iter050_final_check	341.657	DISCARD	compute_bound	Final confirmation run with maxreg112

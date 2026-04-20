@@ -1,0 +1,14 @@
+{
+  "schema": "croq-checkpoint-v1",
+  "timestamp": "2026-04-20T15:06:01Z",
+  "dsl": "croqtile",
+  "shape_key": "matmul_fp16fp32_2048x16384x2048",
+  "iter": "iter012_hoist_offset",
+  "bottleneck": "compute_bound",
+  "idea": "Add choreo --hoist-offset flag to reduce address computation overhead",
+  "expected_gain": "+2-5% TFLOPS from reduced address computation",
+  "levers": [
+    "choreo_flags"
+  ],
+  "status": "PLANNED"
+}
