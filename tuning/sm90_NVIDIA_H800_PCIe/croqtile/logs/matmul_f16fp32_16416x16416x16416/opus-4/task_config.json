@@ -1,7 +1,7 @@
 {
-  "task_uid": "cffef0ca445d411c",
+  "task_uid": "croqtune-matmul-f16fp32-16416x16416x16416-opus4",
   "dsl": "croqtile",
-  "model": "sonnet-4",
+  "model": "opus-4",
   "device": "NVIDIA H800 PCIe",
   "status": "running",
   "task_id": 6,
@@ -13,8 +13,5 @@
   "max_iterations": 30,
   "respawn_count": 0,
   "opencode_session_id": null,
-  "sessions": [],
-  "best_tflops": 276.88,
-  "baseline_tflops": 409.8731,
-  "best_kernel": "iter005_early_empty_arrive"
+  "sessions": []
 }

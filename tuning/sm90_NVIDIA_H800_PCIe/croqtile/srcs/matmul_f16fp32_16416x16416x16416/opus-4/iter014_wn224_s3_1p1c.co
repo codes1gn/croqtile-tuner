@@ -1,0 +1,100 @@
+// iter014: 1p1c WN=224 STAGES=3 - explore tile size between 192 and 256
+// Hypothesis: WN=224 might hit a better balance of arithmetic intensity vs CTA count
+// SMEM: 3*(64*64*2) + 3*(224*64*2) + 1*(64*224*4) = 24576 + 86016 + 57344 = 167936 bytes (164KB)
+// Grid: cdiv(16416, 64) * cdiv(16416, 224) = 257 * 74 = 19018 CTAs
+#include <cstring>
+#include <cstdlib>
+
+#define H800_PCIE_PEAK_F16_TFLOPS 1513
+
+#define MATMUL_WARP_M 64
+#define MATMUL_WARP_N 224
+#define MATMUL_TILE_M 64
+#define MATMUL_TILE_K 64
+#define MATMUL_WARP_K 16
+#define MATMUL_SWIZ 128
+#define MATMUL_STAGES 3
+
+#define MATMUL_DEFAULT_M 16416
+#define MATMUL_DEFAULT_N 16416
+#define MATMUL_DEFAULT_K 16416
+
+__co__ void matmul(global f16 [M, K] lhs, global f16 [N, K] rhs, global f32 [M, N] output) {
+  parallel {block_m, block_n} by [cdiv(M, MATMUL_TILE_M), cdiv(N, MATMUL_WARP_N)] : block {
+    shared event full[MATMUL_STAGES], empty[MATMUL_STAGES];
+    shared f16 [MATMUL_STAGES * MATMUL_TILE_M, MATMUL_TILE_K] lhs_load_s;
+    shared f16 [MATMUL_STAGES * MATMUL_WARP_N, MATMUL_TILE_K] rhs_load_s;
+    shared f32 [MATMUL_WARP_M, MATMUL_WARP_N] output_s;
+
+    parallel p1 by 2 : group-4, t by 128 : thread {
+
+      inthreads.async (p1 == 0 && t == 0) {
+        foreach {iv_k} in [cdiv(K, MATMUL_TILE_K)] {
+          stage = iv_k % MATMUL_STAGES;
+          wait empty[stage];
+          tma.copy.async<full[stage]>.swiz<MATMUL_SWIZ> lhs.subspan(MATMUL_TILE_M, MATMUL_TILE_K).step(MATMUL_TILE_M, MATMUL_TILE_K).at(block_m, iv_k)
+              => lhs_load_s.subspan(MATMUL_TILE_M, MATMUL_TILE_K).at(stage, 0);
+          tma.copy.async<full[stage]>.swiz<MATMUL_SWIZ> rhs.subspan(MATMUL_WARP_N, MATMUL_TILE_K).step(MATMUL_WARP_N, MATMUL_TILE_K).at(block_n, iv_k)
+              => rhs_load_s.subspan(MATMUL_WARP_N, MATMUL_TILE_K).at(stage, 0);
+          trigger full[stage];
+        }
+      }
+
+      inthreads.async (p1 == 1) {
+        mc = mma.fill.f32 0.0f;
+        foreach {s} in [MATMUL_STAGES] {
+          trigger empty[s];
+        }
+        foreach {iv_k} in [cdiv(K, MATMUL_TILE_K)] {
+          stage = iv_k % MATMUL_STAGES;
+          wait full[stage];
+          foreach {iv_warp} in [cdiv(MATMUL_TILE_K, MATMUL_WARP_K)] {
+            ma = mma.load.swiz<MATMUL_SWIZ> lhs_load_s.subspan(MATMUL_TILE_M, MATMUL_TILE_K).at(stage, 0).chunkat(_, iv_warp);
+            mb = mma.load.swiz<MATMUL_SWIZ> rhs_load_s.subspan(MATMUL_WARP_N, MATMUL_TILE_K).at(stage, 0).chunkat(_, iv_warp);
+            mma.row.row mc, ma, mb;
+          }
+          mma.commit;
+          trigger empty[stage];
+        }
+        mma.store mc, output_s;
+      }
+    }
+
+    tma.copy output_s => output.subspan(MATMUL_WARP_M, MATMUL_WARP_N).at(block_m, block_n);
+  }
+}
+
+int main(int argc, char** argv) {
+  bool enable_timing = true;
+  bool skip_verify = false;
+  double user_flops = -1.0;
+  auto is_disable_timing_arg = [](const char* s) { const char* t = "--disable-timing"; int i = 0; while (t[i] != '\0' && s[i] == t[i]) ++i; return t[i] == '\0' && s[i] == '\0'; };
+  auto is_skip_verify_arg = [](const char* s) { const char* t = "--skip-verify"; int i = 0; while (t[i] != '\0' && s[i] == t[i]) ++i; return t[i] == '\0' && s[i] == '\0'; };
+  for (int i = 1; i < argc; ++i) {
+    if (is_disable_timing_arg(argv[i])) { enable_timing = false; continue; }
+    if (is_skip_verify_arg(argv[i])) { skip_verify = true; }
+    if (std::strncmp(argv[i], "--flops=", 8) == 0) { user_flops = std::atof(argv[i] + 8); continue; }
+  }
+  const char* timing_env = std::getenv("CHOREO_DISABLE_TIMING");
+  if (timing_env && timing_env[0] == '1' && timing_env[1] == '\0') enable_timing = false;
+  const char* skip_verify_env = std::getenv("CHOREO_SKIP_VERIFY");
+  if (skip_verify_env && skip_verify_env[0] == '1' && skip_verify_env[1] == '\0') skip_verify = true;
+  s32 M = MATMUL_DEFAULT_M;
+  s32 N = MATMUL_DEFAULT_N;
+  s32 K = MATMUL_DEFAULT_K;
+  int warmup = 10;
+  int iters = 50;
+  if (argc >= 4) {
+    M = std::atoi(argv[1]);
+    N = std::atoi(argv[2]);
+    K = std::atoi(argv[3]);
+  }
+  if (argc >= 6) {
+    warmup = std::atoi(argv[4]);
+    iters = std::atoi(argv[5]);
+  }
+  __co_timing_enable__ = enable_timing;
+  double flops_count = user_flops > 0 ? user_flops : (2.0 * M * N * K);
+  call matmul(M, N, K);
+  __co_report_timing__(H800_PCIE_PEAK_F16_TFLOPS, flops_count, warmup, iters, skip_verify);
+}

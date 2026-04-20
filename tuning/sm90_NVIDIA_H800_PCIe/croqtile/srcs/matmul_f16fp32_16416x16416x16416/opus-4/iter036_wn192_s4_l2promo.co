@@ -1,0 +1,78 @@
+// iter036: 1p1c WN=192 STAGES=4 + L2 promotion - more pipeline stages for better latency hiding
+// Hypothesis: WN=192 + 4 stages reduces tile size but increases TMA overlap
+// SMEM: 4*(64*64*2) + 4*(192*64*2) + 1*(64*192*4) = 32768 + 98304 + 49152 = 180224 bytes (176KB)
+// Grid: cdiv(16416, 64) * cdiv(16416, 192) = 257 * 86 = 22102 CTAs
+#include <cstring>
+#include <cstdlib>
+
+#define H800_PCIE_PEAK_F16_TFLOPS 1513
+
+#define MATMUL_WARP_M 64
+#define MATMUL_WARP_N 192
+#define MATMUL_TILE_M 64
+#define MATMUL_TILE_K 64
+#define MATMUL_WARP_K 16
+#define MATMUL_SWIZ 128
+#define MATMUL_STAGES 4
+
+#define MATMUL_DEFAULT_M 16416
+#define MATMUL_DEFAULT_N 16416
+#define MATMUL_DEFAULT_K 16416
+
+__co__ void matmul(global f16 [M, K] lhs, global f16 [N, K] rhs, global f32 [M, N] output) {
+  parallel {block_m, block_n} by [cdiv(M, MATMUL_TILE_M), cdiv(N, MATMUL_WARP_N)] : block {
+    shared event full[MATMUL_STAGES], empty[MATMUL_STAGES];
+    shared f16 [MATMUL_STAGES * MATMUL_TILE_M, MATMUL_TILE_K] lhs_load_s;
+    shared f16 [MATMUL_STAGES * MATMUL_WARP_N, MATMUL_TILE_K] rhs_load_s;
+    shared f32 [MATMUL_WARP_M, MATMUL_WARP_N] output_s;
+
+    parallel p1 by 2 : group-4, t by 128 : thread {
+
+      inthreads.async (p1 == 0 && t == 0) {
+        foreach {iv_k} in [cdiv(K, MATMUL_TILE_K)] {
+          stage = iv_k % MATMUL_STAGES;
+          wait empty[stage];
+          tma.copy.async<full[stage]>.swiz<MATMUL_SWIZ> lhs.subspan(MATMUL_TILE_M, MATMUL_TILE_K).step(MATMUL_TILE_M, MATMUL_TILE_K).at(block_m, iv_k)
+              => lhs_load_s.subspan(MATMUL_TILE_M, MATMUL_TILE_K).at(stage, 0);
+          tma.copy.async<full[stage]>.swiz<MATMUL_SWIZ> rhs.subspan(MATMUL_WARP_N, MATMUL_TILE_K).step(MATMUL_WARP_N, MATMUL_TILE_K).at(block_n, iv_k)
+              => rhs_load_s.subspan(MATMUL_WARP_N, MATMUL_TILE_K).at(stage, 0);
+          trigger full[stage];
+        }
+      }
+
+      inthreads.async (p1 == 1) {
+        mc = mma.fill.f32 0.0f;
+        foreach {s} in [MATMUL_STAGES] {
+          trigger empty[s];
+        }
+        foreach {iv_k} in [cdiv(K, MATMUL_TILE_K)] {
+          stage = iv_k % MATMUL_STAGES;
+          wait full[stage];
+          foreach {iv_warp} in [cdiv(MATMUL_TILE_K, MATMUL_WARP_K)] {
+            ma = mma.load.swiz<MATMUL_SWIZ> lhs_load_s.subspan(MATMUL_TILE_M, MATMUL_TILE_K).at(stage, 0).chunkat(_, iv_warp);
+            mb = mma.load.swiz<MATMUL_SWIZ> rhs_load_s.subspan(MATMUL_WARP_N, MATMUL_TILE_K).at(stage, 0).chunkat(_, iv_warp);
+            mma.row.row mc, ma, mb;
+          }
+          mma.commit;
+          trigger empty[stage];
+        }
+        mma.store mc, output_s;
+      }
+    }
+
+    tma.copy output_s => output.subspan(MATMUL_WARP_M, MATMUL_WARP_N).at(block_m, block_n);
+  }
+}
+
+int main(int argc, char** argv) {
+  size_t M = MATMUL_DEFAULT_M, N = MATMUL_DEFAULT_N, K = MATMUL_DEFAULT_K;
+  int warmup = 10, repeat = 50;
+  
+  if (argc >= 4) { M = std::atol(argv[1]); N = std::atol(argv[2]); K = std::atol(argv[3]); }
+  if (argc >= 5) { warmup = std::atoi(argv[4]); }
+  if (argc >= 6) { repeat = std::atoi(argv[5]); }
+  
+  __co_timing_enable__ = true;
+  call matmul(M, K, N, K, M, N);
+  __co_report_timing__(warmup, repeat, 2.0 * M * N * K);
+}

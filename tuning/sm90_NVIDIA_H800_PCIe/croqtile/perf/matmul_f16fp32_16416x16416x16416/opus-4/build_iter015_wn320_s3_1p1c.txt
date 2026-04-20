@@ -1,0 +1,4 @@
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16416x16416x16416/opus-4/iter015_wn320_s3_1p1c.co:54.13: error: MMA [f16(a)f16(b)f32(c)f32(d): m64n320k16] is not support by current architecture(SM_90A).
+              mma.row.row mc, ma, mb;
+              ^
+/home/albert/workspace/choreo/lib/target_utils.hpp:633: Assertion failed: unsupported MMA config: MMAConfig(sparsity=DENSE, a_ty=f16, b_ty=f16, scale_ty=unknown, c_ty=f32, d_ty=f32, shape=(64, 320, 16))
