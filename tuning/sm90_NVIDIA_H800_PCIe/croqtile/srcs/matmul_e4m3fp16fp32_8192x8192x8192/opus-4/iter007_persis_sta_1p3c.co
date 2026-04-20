@@ -66,7 +66,7 @@ __co__ void matmul(global f8_e4m3 [M, K] lhs, global f8_e4m3 [N, K] rhs, global 
           }
 
           inthreads.async (p1 > 0) {
-            mc = mma.fill.f16 0.0f;
+            mc = mma.fill.f32 0.0f;
             if (tile_iter == 0) {
               foreach {s} in [MATMUL_STAGES] {
                 trigger empty[s];
