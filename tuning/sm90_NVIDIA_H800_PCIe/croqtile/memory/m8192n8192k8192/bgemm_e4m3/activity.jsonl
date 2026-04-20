@@ -45,3 +45,44 @@
 {"ts":"2026-04-20T04:33:49.917Z","tool":"checkpoint_write","msg":"PLANNED iter010_wn128_1p2c_stg3: Try 1p2c warp spec (1 producer + 2 consumers) with TILE_M=128, 3 stages. Fewer consumer warpgroups may reduce contention.","level":"info"}
 {"ts":"2026-04-20T04:35:27.211Z","tool":"store_round","msg":"Storing iter010_wn128_1p2c_stg3 (DISCARD 505.154 TFLOPS)","level":"info"}
 {"ts":"2026-04-20T04:35:27.230Z","tool":"store_round","msg":"Stored iter010_wn128_1p2c_stg3: DISCARD 505.154 TFLOPS (round 10)","level":"info"}
+{"ts":"2026-04-20T04:35:57.544Z","tool":"next_iter","msg":"Resolved iter011_wn192_1p3c_stg2","level":"info"}
+{"ts":"2026-04-20T04:35:57.577Z","tool":"checkpoint_write","msg":"PLANNED iter011_wn192_1p3c_stg2: Try WARP_N=192 with 1p3c and only 2 stages to stay within shared memory limits. Wider N may reduce bank conflicts.","level":"info"}
+{"ts":"2026-04-20T04:37:58.739Z","tool":"store_round","msg":"Storing iter011_wn192_1p3c_stg2 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:37:58.757Z","tool":"store_round","msg":"Stored iter011_wn192_1p3c_stg2: COMPILE_FAIL 0 TFLOPS (round 11)","level":"info"}
+{"ts":"2026-04-20T04:37:59.144Z","tool":"next_iter","msg":"Resolved iter012_wn128_1p3c_stg2","level":"info"}
+{"ts":"2026-04-20T04:37:59.177Z","tool":"checkpoint_write","msg":"PLANNED iter012_wn128_1p3c_stg2: Same 1p3c as iter004 but with 2 stages instead of 3. Lighter memory may improve bank conflict behavior.","level":"info"}
+{"ts":"2026-04-20T04:39:33.747Z","tool":"store_round","msg":"Storing iter012_wn128_1p3c_stg2 (DISCARD 568.051 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:39:33.765Z","tool":"store_round","msg":"Stored iter012_wn128_1p3c_stg2: DISCARD 568.051 TFLOPS (round 12)","level":"info"}
+{"ts":"2026-04-20T04:39:44.634Z","tool":"next_iter","msg":"Resolved iter013_wn64_1p3c_stg4","level":"info"}
+{"ts":"2026-04-20T04:39:44.667Z","tool":"checkpoint_write","msg":"PLANNED iter013_wn64_1p3c_stg4: Try WARP_N=64 with 1p3c and 4 stages. Smaller N tile may reduce bank conflicts at cost of more tiles.","level":"info"}
+{"ts":"2026-04-20T04:41:11.442Z","tool":"next_iter","msg":"Resolved iter014_wn128_1p2c_stg4","level":"info"}
+{"ts":"2026-04-20T04:41:11.476Z","tool":"checkpoint_write","msg":"PLANNED iter014_wn128_1p2c_stg4: 1p2c with 4 stages. More pipeline depth to hide memory latency with wider consumer compute.","level":"info"}
+{"ts":"2026-04-20T04:43:01.156Z","tool":"store_round","msg":"Storing iter013_wn64_1p3c_stg4 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:43:01.175Z","tool":"store_round","msg":"Stored iter013_wn64_1p3c_stg4: COMPILE_FAIL 0 TFLOPS (round 13)","level":"info"}
+{"ts":"2026-04-20T04:43:01.519Z","tool":"store_round","msg":"Storing iter014_wn128_1p2c_stg4 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:43:01.538Z","tool":"store_round","msg":"Stored iter014_wn128_1p2c_stg4: COMPILE_FAIL 0 TFLOPS (round 14)","level":"info"}
+{"ts":"2026-04-20T04:43:10.710Z","tool":"next_iter","msg":"Resolved iter015_tilek64_1p3c_stg4","level":"info"}
+{"ts":"2026-04-20T04:43:10.744Z","tool":"checkpoint_write","msg":"PLANNED iter015_tilek64_1p3c_stg4: TILE_K=64 with 1p3c and 4 stages. Smaller K-tiles reduce smem pressure for more pipeline depth.","level":"info"}
+{"ts":"2026-04-20T04:44:44.053Z","tool":"store_round","msg":"Storing iter015_tilek64_1p3c_stg4 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:44:44.072Z","tool":"store_round","msg":"Stored iter015_tilek64_1p3c_stg4: COMPILE_FAIL 0 TFLOPS (round 15)","level":"info"}
+{"ts":"2026-04-20T04:44:44.580Z","tool":"next_iter","msg":"Resolved iter016_wn128_1p3c_stg3_swz64","level":"info"}
+{"ts":"2026-04-20T04:44:44.616Z","tool":"checkpoint_write","msg":"PLANNED iter016_wn128_1p3c_stg3_swz64: Same config as iter004 but swizzle=64. Different swizzle may reduce bank conflicts differently.","level":"info"}
+{"ts":"2026-04-20T04:45:01.807Z","tool":"checkpoint_write","msg":"PLANNED iter016_wn128_1p3c_stg3_swz64: Add mma.fence before mma.row.row to reduce WGMMA serialization from divergent paths.","level":"info"}
+{"ts":"2026-04-20T05:03:15.546Z","tool":"store_round","msg":"Storing iter016_rhs_first_load (KEEP 585.491 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T05:03:15.565Z","tool":"store_round","msg":"Stored iter016_rhs_first_load: KEEP 585.491 TFLOPS (round 16)","level":"info"}
+{"ts":"2026-04-20T05:03:24.107Z","tool":"next_iter","msg":"Resolved iter017_rhs_first_stg4","level":"info"}
+{"ts":"2026-04-20T05:03:24.141Z","tool":"checkpoint_write","msg":"PLANNED iter017_rhs_first_stg4: RHS-first load pattern with 4 stages for deeper pipeline overlap.","level":"info"}
+{"ts":"2026-04-20T05:04:51.974Z","tool":"store_round","msg":"Storing iter017_rhs_first_stg4 (DISCARD 564.744 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T05:04:51.993Z","tool":"store_round","msg":"Stored iter017_rhs_first_stg4: DISCARD 564.744 TFLOPS (round 17)","level":"info"}
+{"ts":"2026-04-20T05:04:52.559Z","tool":"next_iter","msg":"Resolved iter018_rhs_first_wn256","level":"info"}
+{"ts":"2026-04-20T05:04:52.592Z","tool":"checkpoint_write","msg":"PLANNED iter018_rhs_first_wn256: RHS-first with WARP_N=256 for larger N tile, keeping 3 stages (best depth).","level":"info"}
+{"ts":"2026-04-20T05:06:06.709Z","tool":"store_round","msg":"Storing iter018_rhs_first_wn256 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T05:06:06.727Z","tool":"store_round","msg":"Stored iter018_rhs_first_wn256: COMPILE_FAIL 0 TFLOPS (round 18)","level":"info"}
+{"ts":"2026-04-20T05:06:07.323Z","tool":"next_iter","msg":"Resolved iter019_rhs_first_tm128","level":"info"}
+{"ts":"2026-04-20T05:06:07.357Z","tool":"checkpoint_write","msg":"PLANNED iter019_rhs_first_tm128: RHS-first with TILE_M=128. Smaller M tile = smaller output smem buffer.","level":"info"}
+{"ts":"2026-04-20T05:07:34.280Z","tool":"store_round","msg":"Storing iter019_rhs_first_tm128 (DISCARD 514.625 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T05:07:34.299Z","tool":"store_round","msg":"Stored iter019_rhs_first_tm128: DISCARD 514.625 TFLOPS (round 19)","level":"info"}
+{"ts":"2026-04-20T05:07:34.913Z","tool":"next_iter","msg":"Resolved iter020_rhs_first_stg2","level":"info"}
+{"ts":"2026-04-20T05:07:34.947Z","tool":"checkpoint_write","msg":"PLANNED iter020_rhs_first_stg2: RHS-first with 2 stages instead of 3. Testing if shallower pipeline works better with RHS-first.","level":"info"}
+{"ts":"2026-04-20T05:08:58.473Z","tool":"store_round","msg":"Storing iter020_rhs_first_stg2 (DISCARD 567.919 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T05:08:58.491Z","tool":"store_round","msg":"Stored iter020_rhs_first_stg2: DISCARD 567.919 TFLOPS (round 20)","level":"info"}

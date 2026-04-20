@@ -10,3 +10,13 @@ iter007	iter007_wn128_1p3c_persis	0	COMPILE_FAIL	latency_bound	Persistent 1p3c f
 iter008	iter008_tm256_1p4c_stg2	262.145	DISCARD	latency_bound	1p4c (5 warpgroups) much slower at 262T. Too many warpgroups hurts.
 iter009	iter009_wn256_1p3c_stg2	0	COMPILE_FAIL	memory_bound	1p3c with WARP_N=256 fails verification - output store pattern wrong.
 iter010	iter010_wn128_1p2c_stg3	505.154	DISCARD	memory_bound	1p2c with TILE_M=128 slower than 1p3c. Fewer consumers means less compute per ti
+iter011	iter011_wn192_1p3c_stg2	0	COMPILE_FAIL	memory_bound	WARP_N=192 fails - 8192 not divisible by 192. Scale index out of bounds.
+iter012	iter012_wn128_1p3c_stg2	568.051	DISCARD	memory_bound	2 stages slightly worse than 3 stages (568 vs 579.9). 3 stages is optimal.
+iter013	iter013_wn64_1p3c_stg4	0	COMPILE_FAIL	memory_bound	WARP_N=64 with 1p3c failed TMA indexing - dimensions incompatible
+iter014	iter014_wn128_1p2c_stg4	0	COMPILE_FAIL	memory_bound	1p2c with 4 stages failed - CUDA invalid argument at TMA/indexing
+iter015	iter015_tilek64_1p3c_stg4	0	COMPILE_FAIL	memory_bound	TILE_K=64 failed - changes scale factor indexing, causing CUDA invalid argument
+iter016	iter016_rhs_first_load	585.491	KEEP	memory_bound	Load RHS before LHS - reordering TMA loads improved memory access pattern
+iter017	iter017_rhs_first_stg4	564.744	DISCARD	memory_bound	4 stages with RHS-first worse than 3 stages. More stages add smem pressure.
+iter018	iter018_rhs_first_wn256	0	COMPILE_FAIL	memory_bound	WARP_N=256 with 1p3c exceeds shared memory limit (270KB > 233KB)
+iter019	iter019_rhs_first_tm128	514.625	DISCARD	memory_bound	TILE_M=128 with 1p2c worse. 1p3c with TILE_M=192 is better utilization.
+iter020	iter020_rhs_first_stg2	567.919	DISCARD	memory_bound	2 stages with RHS-first worse than 3 stages. 3 stages remains optimal.
