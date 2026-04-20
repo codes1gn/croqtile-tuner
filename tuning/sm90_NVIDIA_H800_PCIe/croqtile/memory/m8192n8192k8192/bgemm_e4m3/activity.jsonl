@@ -1,0 +1,47 @@
+{"ts":"2026-04-20T04:07:44.620Z","tool":"store_baseline","msg":"Measuring cuBLAS baseline for e4m3 8192x8192x8192","level":"info"}
+{"ts":"2026-04-20T04:07:46.535Z","tool":"store_baseline","msg":"cuBLAS baseline measurement failed","level":"error"}
+{"ts":"2026-04-20T04:09:03.956Z","tool":"store_round","msg":"Storing iter000_cublas (KEEP 899.0069 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:09:03.974Z","tool":"store_round","msg":"Stored iter000_cublas: KEEP 899.0069 TFLOPS (round 0)","level":"info"}
+{"ts":"2026-04-20T04:10:28.867Z","tool":"co2cu","msg":"Compiling iter001_persis_1p1c_stg4.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T04:10:29.029Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/m8192n8192k8192/bgemm_e4m3/iter001_persis_1p1c_stg4.cu","level":"info"}
+{"ts":"2026-04-20T04:14:25.821Z","tool":"ncu_profile","msg":"Capturing profile: CHOREO_SKIP_VERIFY=1 tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/m8192n8192k8192/bgemm_e4m3/iter001_persis_1p1c_stg4","level":"info"}
+{"ts":"2026-04-20T04:14:56.804Z","tool":"profile_extract","msg":"Analyzing iter001_persis_1p1c_stg4 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/m8192n8192k8192/bgemm_e4m3/ncu_iter001_persis_1p1c_stg4_round1.csv","level":"info"}
+{"ts":"2026-04-20T04:15:44.001Z","tool":"store_round","msg":"Storing iter001_persis_1p1c_stg4 (KEEP 357.177 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:15:44.020Z","tool":"store_round","msg":"Stored iter001_persis_1p1c_stg4: KEEP 357.177 TFLOPS (round 1)","level":"info"}
+{"ts":"2026-04-20T04:16:11.053Z","tool":"next_iter","msg":"Resolved iter002_wn256_static","level":"info"}
+{"ts":"2026-04-20T04:16:11.087Z","tool":"checkpoint_write","msg":"PLANNED iter002_wn256_static: Increase WARP_N from 128 to 256 to double compute per tile, reducing relative impact of 10-way bank conflicts. Use non-persistent kernel for better occupancy.","level":"info"}
+{"ts":"2026-04-20T04:18:07.996Z","tool":"store_round","msg":"Storing iter002_wn256_static (KEEP 456.438 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:18:08.015Z","tool":"store_round","msg":"Stored iter002_wn256_static: KEEP 456.438 TFLOPS (round 2)","level":"info"}
+{"ts":"2026-04-20T04:18:29.552Z","tool":"profile_extract","msg":"Analyzing iter002_wn256_static from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/m8192n8192k8192/bgemm_e4m3/ncu_iter002_wn256_static_round2.csv","level":"info"}
+{"ts":"2026-04-20T04:18:41.501Z","tool":"next_iter","msg":"Resolved iter003_wn256_persis_stg4","level":"info"}
+{"ts":"2026-04-20T04:18:41.537Z","tool":"checkpoint_write","msg":"PLANNED iter003_wn256_persis_stg4: Convert to persistent kernel with 4 stages. Keep WARP_N=256. Persistent CTA will improve SM utilization by keeping work resident.","level":"info"}
+{"ts":"2026-04-20T04:20:26.374Z","tool":"store_round","msg":"Storing iter003_wn256_persis_stg4 (KEEP 492.713 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:20:26.393Z","tool":"store_round","msg":"Stored iter003_wn256_persis_stg4: KEEP 492.713 TFLOPS (round 3)","level":"info"}
+{"ts":"2026-04-20T04:20:40.223Z","tool":"next_iter","msg":"Resolved iter004_wn128_1p3c_stg3","level":"info"}
+{"ts":"2026-04-20T04:20:40.257Z","tool":"checkpoint_write","msg":"PLANNED iter004_wn128_1p3c_stg3: Try 1p3c warp specialization with WARP_N=128 and 3 stages. 1p3c has 3 consumer warpgroups which may hide WGMMA latency better than 1p1c.","level":"info"}
+{"ts":"2026-04-20T04:22:55.841Z","tool":"store_round","msg":"Storing iter004_wn128_1p3c_stg3 (KEEP 579.868 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:22:55.859Z","tool":"store_round","msg":"Stored iter004_wn128_1p3c_stg3: KEEP 579.868 TFLOPS (round 4)","level":"info"}
+{"ts":"2026-04-20T04:23:12.595Z","tool":"next_iter","msg":"Resolved iter005_wn192_1p3c_stg4","level":"info"}
+{"ts":"2026-04-20T04:23:12.628Z","tool":"checkpoint_write","msg":"PLANNED iter005_wn192_1p3c_stg4: Try WARP_N=192 with 1p3c and 4 stages. Medium-width N tile may balance compute and memory better.","level":"info"}
+{"ts":"2026-04-20T04:24:45.694Z","tool":"store_round","msg":"Storing iter005_wn192_1p3c_stg4 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:24:45.713Z","tool":"store_round","msg":"Stored iter005_wn192_1p3c_stg4: COMPILE_FAIL 0 TFLOPS (round 5)","level":"info"}
+{"ts":"2026-04-20T04:24:55.989Z","tool":"next_iter","msg":"Resolved iter006_wn128_1p3c_stg4","level":"info"}
+{"ts":"2026-04-20T04:24:56.023Z","tool":"checkpoint_write","msg":"PLANNED iter006_wn128_1p3c_stg4: Try WARP_N=128 with 1p3c and 4 stages for deeper pipeline.","level":"info"}
+{"ts":"2026-04-20T04:26:41.028Z","tool":"store_round","msg":"Storing iter006_wn128_1p3c_stg4 (DISCARD 565.718 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:26:41.047Z","tool":"store_round","msg":"Stored iter006_wn128_1p3c_stg4: DISCARD 565.718 TFLOPS (round 6)","level":"info"}
+{"ts":"2026-04-20T04:26:41.288Z","tool":"next_iter","msg":"Resolved iter007_wn128_1p3c_persis","level":"info"}
+{"ts":"2026-04-20T04:26:41.322Z","tool":"checkpoint_write","msg":"PLANNED iter007_wn128_1p3c_persis: Persistent 1p3c with WARP_N=128, 3 stages. Persistent CTA may improve utilization.","level":"info"}
+{"ts":"2026-04-20T04:29:02.864Z","tool":"store_round","msg":"Storing iter007_wn128_1p3c_persis (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:29:02.884Z","tool":"store_round","msg":"Stored iter007_wn128_1p3c_persis: COMPILE_FAIL 0 TFLOPS (round 7)","level":"info"}
+{"ts":"2026-04-20T04:29:03.151Z","tool":"next_iter","msg":"Resolved iter008_tm256_1p4c_stg2","level":"info"}
+{"ts":"2026-04-20T04:29:03.184Z","tool":"checkpoint_write","msg":"PLANNED iter008_tm256_1p4c_stg2: Try TILE_M=256 with 1p4c (5 warpgroups total), 2 stages. More compute per tile.","level":"info"}
+{"ts":"2026-04-20T04:30:48.677Z","tool":"store_round","msg":"Storing iter008_tm256_1p4c_stg2 (DISCARD 262.145 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:30:48.697Z","tool":"store_round","msg":"Stored iter008_tm256_1p4c_stg2: DISCARD 262.145 TFLOPS (round 8)","level":"info"}
+{"ts":"2026-04-20T04:31:40.856Z","tool":"next_iter","msg":"Resolved iter009_wn256_1p3c_stg2","level":"info"}
+{"ts":"2026-04-20T04:31:40.890Z","tool":"checkpoint_write","msg":"PLANNED iter009_wn256_1p3c_stg2: Try WARP_N=256 with 1p3c and 2 stages. Wider N tile may improve compute/memory ratio.","level":"info"}
+{"ts":"2026-04-20T04:33:36.298Z","tool":"store_round","msg":"Storing iter009_wn256_1p3c_stg2 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:33:36.317Z","tool":"store_round","msg":"Stored iter009_wn256_1p3c_stg2: COMPILE_FAIL 0 TFLOPS (round 9)","level":"info"}
+{"ts":"2026-04-20T04:33:49.883Z","tool":"next_iter","msg":"Resolved iter010_wn128_1p2c_stg3","level":"info"}
+{"ts":"2026-04-20T04:33:49.917Z","tool":"checkpoint_write","msg":"PLANNED iter010_wn128_1p2c_stg3: Try 1p2c warp spec (1 producer + 2 consumers) with TILE_M=128, 3 stages. Fewer consumer warpgroups may reduce contention.","level":"info"}
+{"ts":"2026-04-20T04:35:27.211Z","tool":"store_round","msg":"Storing iter010_wn128_1p2c_stg3 (DISCARD 505.154 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T04:35:27.230Z","tool":"store_round","msg":"Stored iter010_wn128_1p2c_stg3: DISCARD 505.154 TFLOPS (round 10)","level":"info"}

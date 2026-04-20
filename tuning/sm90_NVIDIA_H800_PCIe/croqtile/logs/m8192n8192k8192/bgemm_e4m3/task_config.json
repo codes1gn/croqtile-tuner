@@ -1,0 +1,7 @@
+{
+  "task_uid": "bgemm_e4m3_8k_tune_20260420",
+  "dsl": "croqtile",
+  "model": "bgemm_e4m3",
+  "device": "sm90_NVIDIA_H800_PCIe",
+  "status": "running"
+}

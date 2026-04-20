@@ -1,0 +1,12 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_cublas	899.0069	KEEP	baseline	cuBLAS FP8 scaled_mm reference baseline
+iter001	iter001_persis_1p1c_stg4	357.177	KEEP	memory_bound	Baseline persistent 1p1c with 4 stages, WARP_N=128. 90% shared bank conflicts ca
+iter002	iter002_wn256_static	456.438	KEEP	memory_bound	WARP_N=256 with static CTA launch. +28% over iter001 from better compute/memory 
+iter003	iter003_wn256_persis_stg4	492.713	KEEP	launch_bound	Persistent kernel WARP_N=256 with 4 stages. +8% from better SM utilization.
+iter004	iter004_wn128_1p3c_stg3	579.868	KEEP	latency_bound	1p3c warp spec with TILE_M=192, 3 stages. +17.7% from better WGMMA latency hidin
+iter005	iter005_wn192_1p3c_stg4	0	COMPILE_FAIL	latency_bound	WARP_N=192 with 4 stages exceeds shared memory limit.
+iter006	iter006_wn128_1p3c_stg4	565.718	DISCARD	latency_bound	4 stages with 1p3c worse than 3 stages (565.7 vs 579.9). Extra stage overhead.
+iter007	iter007_wn128_1p3c_persis	0	COMPILE_FAIL	latency_bound	Persistent 1p3c failed verification - step() pattern incompatible with TILE_M=19
+iter008	iter008_tm256_1p4c_stg2	262.145	DISCARD	latency_bound	1p4c (5 warpgroups) much slower at 262T. Too many warpgroups hurts.
+iter009	iter009_wn256_1p3c_stg2	0	COMPILE_FAIL	memory_bound	1p3c with WARP_N=256 fails verification - output store pattern wrong.
+iter010	iter010_wn128_1p2c_stg3	505.154	DISCARD	memory_bound	1p2c with TILE_M=128 slower than 1p3c. Fewer consumers means less compute per ti

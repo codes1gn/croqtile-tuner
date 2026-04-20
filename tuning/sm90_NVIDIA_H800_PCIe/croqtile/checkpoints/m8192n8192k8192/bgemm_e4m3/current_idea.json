@@ -1,0 +1,15 @@
+{
+  "schema": "croq-checkpoint-v1",
+  "timestamp": "2026-04-20T04:33:49Z",
+  "dsl": "croqtile",
+  "shape_key": "m8192n8192k8192",
+  "iter": "iter010_wn128_1p2c_stg3",
+  "bottleneck": "memory_bound",
+  "idea": "Try 1p2c warp spec (1 producer + 2 consumers) with TILE_M=128, 3 stages. Fewer consumer warpgroups may reduce contention.",
+  "expected_gain": "+10-40 TFLOPS",
+  "levers": [
+    "warp_spec_topology",
+    "MATMUL_TILE_M"
+  ],
+  "status": "PLANNED"
+}
