@@ -10,3 +10,7 @@ round	iter	kernel	tflops	decision	bottleneck	idea_summary
 8	iter009	iter009_2p2c_m128_n256	662.9	KEEP	latency_bound	1p3c with M128xN256 tile covering 3 of 4 quadrants
 9	iter010	iter010_1p4c_m128_n256	0	SEGFAULT	N/A	1p4c with 5 warpgroups - verification failed outputs zeros
 10	iter011	iter011_1p3c_m128_n256_stg4	0	COMPILE_FAIL	N/A	4 stages with M128xN256 exceeds shared memory 262KB > 233KB
+11	iter012	iter012_1p3c_m128_n256_stg2	667.8	KEEP	latency_bound	1p3c M128xN256 with 2 stages - less smem allows better occupancy
+12	iter013	iter013_1p5c_m192_n256_stg2	0	COMPILE_FAIL	N/A	M192 tile - 8192 not divisible by 192
+13	iter014	iter014_1p3c_m128_n384_stg2	0	COMPILE_FAIL	N/A	M128xN384 - 8192 not divisible by 384
+14	iter015	iter015_1p4c_m64_n512_stg2	0	COMPILE_FAIL	N/A	M64xN512 - 8192 not divisible by 512
