@@ -1,3 +1,6 @@
 iter	kernel	tflops	decision	bottleneck	idea_summary
 iter000	iter000_cublas	417.6107	KEEP	baseline	cuBLAS reference baseline
 iter001	iter001_tierb_sonnet069	482.536	KEEP	compute_bound	Tier B: copied sonnet46 best-line iter069 (1p2c SWZ16 warpgroup_wait<1> K-unroll
+iter002	iter002_ptxas_o3	458.144	DISCARD	compute_bound	Added -Xptxas -O3 to nvcc; measured 458T vs best 482.5T — PTXAS scheduling regre
+iter004	iter004_l2promo256	466.275	DISCARD	compute_bound	L2_PROMOTION_L2_256B on A+B TMA maps: 466T vs 482.5T best — slight regression, n
+iter005	iter005_lb384_b2	0	COMPILE_FAIL	compute_bound	__launch_bounds__(384,2): ptxas fatal insufficient registers (needs >=154) — can

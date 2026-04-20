@@ -1,0 +1,17 @@
+{
+  "schema": "croq-checkpoint-v1",
+  "timestamp": "2026-04-20T01:33:36Z",
+  "dsl": "croqtile",
+  "shape_key": "matmul_fp16fp32_16384x16384x16384",
+  "iter": "iter005_lb384_b2",
+  "bottleneck": "compute_bound",
+  "idea": "Add __launch_bounds__(384,2) to encourage 2 blocks/SM occupancy; NCU showed ~14% achieved occupancy on iter001",
+  "expected_gain": "+10-40 TFLOPS if occupancy rises without spilling",
+  "levers": [
+    "__launch_bounds__",
+    "occupancy"
+  ],
+  "status": "VERIFIED",
+  "verified_iter": "iter005_lb384_b2",
+  "drift_score": 1
+}

@@ -21,7 +21,7 @@
       "agent_type": "cursor_cli",
       "model": "cursor/claude-4.6-opus-max",
       "request_number": 1,
-      "started_at": "2026-04-19T07:45:39.181241",
+      "started_at": "2026-04-20T02:26:43.772812",
       "ended_at": null
     },
     {
@@ -31,7 +31,7 @@
       "agent_type": "cursor_cli",
       "model": "cursor/claude-4.6-opus-max",
       "request_number": 1,
-      "started_at": "2026-04-19T07:45:39.181243",
+      "started_at": "2026-04-20T02:26:43.772813",
       "ended_at": null
     },
     {
@@ -41,7 +41,7 @@
       "agent_type": "cursor_cli",
       "model": "claude-4-5-opus-high",
       "request_number": 2,
-      "started_at": "2026-04-19T07:45:39.181244",
+      "started_at": "2026-04-20T02:26:43.772814",
       "ended_at": null
     },
     {
@@ -51,17 +51,17 @@
       "agent_type": "cursor_cli",
       "model": "claude-4-5-opus-high",
       "request_number": 2,
-      "started_at": "2026-04-19T07:45:39.181244",
+      "started_at": "2026-04-20T02:26:43.772814",
       "ended_at": null
     },
     {
-      "id": 32,
+      "id": 25,
       "task_id": 5,
       "session_id": "4eae169e-5bc4-4767-81cc-2dc27264e1b6",
       "agent_type": "cursor_cli",
       "model": "claude-4-5-opus-high",
       "request_number": 2,
-      "started_at": "2026-04-19T08:37:07.099674+00:00",
+      "started_at": "2026-04-20T02:26:43.772815",
       "ended_at": null
     }
   ]

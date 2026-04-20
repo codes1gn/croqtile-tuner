@@ -10,3 +10,29 @@
 {"ts":"2026-04-20T01:25:43.481Z","tool":"profile_extract","msg":"Analyzing iter001_tierb_sonnet069 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/opus-4/ncu_iter001_tierb_sonnet069_r1.csv","level":"info"}
 {"ts":"2026-04-20T01:25:48.709Z","tool":"store_round","msg":"Storing iter001_tierb_sonnet069 (KEEP 482.536 TFLOPS)","level":"info"}
 {"ts":"2026-04-20T01:25:48.728Z","tool":"store_round","msg":"Stored iter001_tierb_sonnet069: KEEP 482.536 TFLOPS (round 1)","level":"info"}
+{"ts":"2026-04-20T01:26:13.160Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_fp16fp32_16384x16384x16384/opus-4/iter001_tierb_sonnet069","level":"info"}
+{"ts":"2026-04-20T01:26:31.421Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/opus-4/ncu_iter001_tierb_sonnet069_r2.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/opus-4/ncu_iter001_tierb_sonnet069_r2.csv","level":"info"}
+{"ts":"2026-04-20T01:26:37.437Z","tool":"profile_extract","msg":"Analyzing iter001_tierb_sonnet069 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/opus-4/ncu_iter001_tierb_sonnet069_r2.csv","level":"info"}
+{"ts":"2026-04-20T01:26:39.507Z","tool":"checkpoint_write","msg":"PLANNED iter002_ptxas_o3: Enable PTXAS -O3 on same WGMMA kernel to improve instruction scheduling and reduce stalls (Hopper tuning: pipeline + compiler)","level":"info"}
+{"ts":"2026-04-20T01:26:40.330Z","tool":"next_iter","msg":"Resolved iter002_ptxas_o3","level":"info"}
+{"ts":"2026-04-20T01:27:27.228Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter002_ptxas_o3 (drift=1)","level":"info"}
+{"ts":"2026-04-20T01:27:57.876Z","tool":"store_round","msg":"Storing iter002_ptxas_o3 (DISCARD 458.144 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T01:27:57.895Z","tool":"store_round","msg":"Stored iter002_ptxas_o3: DISCARD 458.144 TFLOPS (round 2)","level":"info"}
+{"ts":"2026-04-20T01:28:26.281Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_fp16fp32_16384x16384x16384/opus-4/iter001_tierb_sonnet069","level":"info"}
+{"ts":"2026-04-20T01:28:44.536Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/opus-4/ncu_iter001_tierb_sonnet069_r3.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/opus-4/ncu_iter001_tierb_sonnet069_r3.csv","level":"info"}
+{"ts":"2026-04-20T01:29:54.010Z","tool":"checkpoint_write","msg":"PLANNED iter003_l2promo256: Set CU_TENSOR_MAP_L2_PROMOTION_L2_256B on lhs+rhs TMA tensor maps to widen persistent L2 footprint for streaming K","level":"info"}
+{"ts":"2026-04-20T01:29:54.138Z","tool":"next_iter","msg":"Resolved iter004_l2promo256","level":"info"}
+{"ts":"2026-04-20T01:30:35.332Z","tool":"checkpoint_write","msg":"PLANNED iter004_l2promo256: Set CU_TENSOR_MAP_L2_PROMOTION_L2_256B on lhs+rhs TMA tensor maps to widen persistent L2 footprint for streaming K","level":"info"}
+{"ts":"2026-04-20T01:32:00.748Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter004_l2promo256 (drift=1)","level":"info"}
+{"ts":"2026-04-20T01:32:31.177Z","tool":"store_round","msg":"Storing iter004_l2promo256 (DISCARD 466.275 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T01:32:31.195Z","tool":"store_round","msg":"Stored iter004_l2promo256: DISCARD 466.275 TFLOPS (round 3)","level":"info"}
+{"ts":"2026-04-20T01:32:54.763Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_fp16fp32_16384x16384x16384/opus-4/iter001_tierb_sonnet069","level":"info"}
+{"ts":"2026-04-20T01:32:54.920Z","tool":"next_iter","msg":"Resolved iter005_lb384_b2","level":"info"}
+{"ts":"2026-04-20T01:33:12.982Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/opus-4/ncu_iter001_tierb_sonnet069_r4.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/opus-4/ncu_iter001_tierb_sonnet069_r4.csv","level":"info"}
+{"ts":"2026-04-20T01:33:36.290Z","tool":"checkpoint_write","msg":"PLANNED iter005_lb384_b2: Add __launch_bounds__(384,2) to encourage 2 blocks/SM occupancy; NCU showed ~14% achieved occupancy on iter001","level":"info"}
+{"ts":"2026-04-20T01:35:46.004Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter005_lb384_b2 (drift=1)","level":"info"}
+{"ts":"2026-04-20T01:36:14.030Z","tool":"store_round","msg":"Storing iter005_lb384_b2 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T01:36:14.050Z","tool":"store_round","msg":"Stored iter005_lb384_b2: COMPILE_FAIL 0 TFLOPS (round 4)","level":"info"}
+{"ts":"2026-04-20T01:36:51.395Z","tool":"next_iter","msg":"Resolved iter006_fast_math","level":"info"}
+{"ts":"2026-04-20T01:36:51.559Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_fp16fp32_16384x16384x16384/opus-4/iter001_tierb_sonnet069","level":"info"}
+{"ts":"2026-04-20T01:37:09.880Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/opus-4/ncu_iter001_tierb_sonnet069_r5.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_fp16fp32_16384x16384x16384/opus-4/ncu_iter001_tierb_sonnet069_r5.csv","level":"info"}
