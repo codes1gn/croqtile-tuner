@@ -1,0 +1,12 @@
+round	iter	kernel	tflops	decision	bottleneck	idea_summary
+0	iter001	iter001_baseline_1p1c	308.4	KEEP	baseline	baseline warp-spec 1p1c 4-stage N128 K128 SWIZ128
+1	iter002	iter002_n256_stg4	401.4	KEEP	latency_bound	wider N=256 tile for better arithmetic intensity
+2	iter003	iter003_persis_n256_stg4	374.8	DISCARD	latency_bound	persistent kernel with N256 and 114 CTAs
+3	iter004	iter004_1p2c_n256_stg4	459.5	KEEP	latency_bound	1p2c warp-spec with N256 tile and 4 stages
+4	iter005	iter005_1p3c_n384_stg3	0	COMPILE_FAIL	N/A	1p3c warp-spec with N384 tile - fails because 8192 not divisible by 384
+5	iter006	iter006_1p2c_n256_stg2	142.8	DISCARD	memory_bound	1p2c with only 2 stages - pipeline too shallow
+6	iter007	iter007_1p2c_n256_stg5	0	COMPILE_FAIL	N/A	5 stages exceeds shared memory limit 233KB
+7	iter008	iter008_1p2c_n128_stg6	281.5	DISCARD	latency_bound	smaller tile N128 with 6 stages - lower arithmetic intensity
+8	iter009	iter009_2p2c_m128_n256	662.9	KEEP	latency_bound	1p3c with M128xN256 tile covering 3 of 4 quadrants
+9	iter010	iter010_1p4c_m128_n256	0	SEGFAULT	N/A	1p4c with 5 warpgroups - verification failed outputs zeros
+10	iter011	iter011_1p3c_m128_n256_stg4	0	COMPILE_FAIL	N/A	4 stages with M128xN256 exceeds shared memory 262KB > 233KB

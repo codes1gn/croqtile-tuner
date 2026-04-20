@@ -1,0 +1,10 @@
+{
+  "dsl": "croqtile",
+  "shape_key": "M8192_N8192_K4096",
+  "model": "blockscale_gemm_e4m3",
+  "dtype": "e4m3",
+  "M": 8192,
+  "N": 8192,
+  "K": 4096,
+  "task_uid": "bsgemm_e4m3_8192x8192x4096_20260420"
+}

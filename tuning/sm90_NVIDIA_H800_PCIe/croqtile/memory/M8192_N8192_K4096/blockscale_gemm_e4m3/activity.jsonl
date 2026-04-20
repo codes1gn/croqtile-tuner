@@ -1,0 +1,4 @@
+{"ts":"2026-04-20T09:10:23.750Z","tool":"co2cu","msg":"Compiling iter001_baseline_1p1c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T09:10:23.866Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/M8192_N8192_K4096/blockscale_gemm_e4m3/iter001_baseline_1p1c.cu","level":"info"}
+{"ts":"2026-04-20T09:12:35.253Z","tool":"co2cu","msg":"Compiling iter001_baseline_1p1c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-20T09:12:35.371Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/M8192_N8192_K4096/blockscale_gemm_e4m3/iter001_baseline_1p1c.cu","level":"info"}
