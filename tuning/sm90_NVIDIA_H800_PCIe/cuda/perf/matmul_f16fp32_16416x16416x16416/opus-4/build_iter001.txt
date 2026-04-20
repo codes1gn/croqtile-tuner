@@ -1,0 +1,6 @@
+tuning/sm90_NVIDIA_H800_PCIe/cuda/srcs/matmul_f16fp32_16416x16416x16416/opus-4/iter001_mma_tiled.cu(50): warning #177-D: variable "lane_id" was declared but never referenced
+      const int lane_id = tid % 32;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+

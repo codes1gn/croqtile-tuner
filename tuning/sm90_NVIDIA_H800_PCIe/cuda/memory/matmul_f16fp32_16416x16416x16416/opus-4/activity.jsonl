@@ -1,0 +1,48 @@
+{"ts":"2026-04-20T15:50:03.952Z","tool":"resume_state","msg":"Loading tuning state for cuda/matmul_f16fp32_16416x16416x16416","level":"info"}
+{"ts":"2026-04-20T15:50:03.954Z","tool":"resume_state","msg":"No tuning artifacts found for cuda/matmul_f16fp32_16416x16416x16416","level":"error"}
+{"ts":"2026-04-20T15:50:16.597Z","tool":"store_baseline","msg":"Measuring cuBLAS baseline for f16fp32 16416x16416x16416","level":"info"}
+{"ts":"2026-04-20T15:50:20.163Z","tool":"store_baseline","msg":"cuBLAS baseline: 407.0313 TFLOPS (saved to tuning/sm90_NVIDIA_H800_PCIe/cuda/baseline/matmul_f16fp32_16416x16416x16416/opus-4/cublas_result.json)","level":"info"}
+{"ts":"2026-04-20T15:50:20.493Z","tool":"store_round","msg":"Storing iter000_cublas (KEEP 407.0313 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T15:50:20.512Z","tool":"store_round","msg":"Stored iter000_cublas: KEEP 407.0313 TFLOPS (round 0)","level":"info"}
+{"ts":"2026-04-20T15:50:20.524Z","tool":"store_baseline","msg":"Stored iter000_cublas: 407.0313 TFLOPS (baseline)","level":"info"}
+{"ts":"2026-04-20T15:55:47.908Z","tool":"store_round","msg":"Storing iter001_mma_tiled (KEEP 54.1324 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T15:55:47.928Z","tool":"store_round","msg":"Stored iter001_mma_tiled: KEEP 54.1324 TFLOPS (round 1)","level":"info"}
+{"ts":"2026-04-20T15:56:02.087Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/cuda/bin/matmul_f16fp32_16416x16416x16416/opus-4/iter001_mma_tiled --skip-verify","level":"info"}
+{"ts":"2026-04-20T15:57:28.955Z","tool":"profile_extract","msg":"Analyzing iter001_mma_tiled from tuning/sm90_NVIDIA_H800_PCIe/cuda/perf/matmul_f16fp32_16416x16416x16416/opus-4/ncu_iter001_mma_tiled_round2.csv","level":"info"}
+{"ts":"2026-04-20T15:58:24.991Z","tool":"next_iter","msg":"Resolved iter002_reduced_regs","level":"info"}
+{"ts":"2026-04-20T15:58:25.026Z","tool":"checkpoint_write","msg":"PLANNED iter002_reduced_regs: Reduce register pressure: smaller WM/WN tiles (32x32 per warp), maxrregcount=128 to cap registers, increase occupancy from 12.5% to ~25%","level":"info"}
+{"ts":"2026-04-20T16:00:10.158Z","tool":"store_round","msg":"Storing iter002_reduced_regs (DISCARD 31.5498 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T16:00:10.177Z","tool":"store_round","msg":"Stored iter002_reduced_regs: DISCARD 31.5498 TFLOPS (round 2)","level":"info"}
+{"ts":"2026-04-20T16:00:30.438Z","tool":"next_iter","msg":"Resolved iter003_async_pipeline","level":"info"}
+{"ts":"2026-04-20T16:00:30.473Z","tool":"checkpoint_write","msg":"PLANNED iter003_async_pipeline: Add async memory pipelining with cp.async.bulk and double-buffered shared memory to hide L2/DRAM latency. Keep original tile sizes but overlap loads with compute.","level":"info"}
+{"ts":"2026-04-20T16:03:19.561Z","tool":"store_round","msg":"Storing iter003_async_pipeline (DISCARD 6.1430 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T16:03:19.580Z","tool":"store_round","msg":"Stored iter003_async_pipeline: DISCARD 6.1430 TFLOPS (round 3)","level":"info"}
+{"ts":"2026-04-20T16:03:31.979Z","tool":"next_iter","msg":"Resolved iter004_vectorized_load","level":"info"}
+{"ts":"2026-04-20T16:03:32.013Z","tool":"checkpoint_write","msg":"PLANNED iter004_vectorized_load: Use vectorized 128-bit loads (half8/float4 equiv) for memory coalescing, larger BK=64 for better arithmetic intensity, original tile sizes for compute","level":"info"}
+{"ts":"2026-04-20T16:04:58.834Z","tool":"store_round","msg":"Storing iter004_vectorized_load (KEEP 96.1045 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T16:04:58.853Z","tool":"store_round","msg":"Stored iter004_vectorized_load: KEEP 96.1045 TFLOPS (round 4)","level":"info"}
+{"ts":"2026-04-20T16:05:53.309Z","tool":"profile_extract","msg":"Analyzing iter004_vectorized_load from tuning/sm90_NVIDIA_H800_PCIe/cuda/perf/matmul_f16fp32_16416x16416x16416/opus-4/ncu_iter004_round5.csv","level":"info"}
+{"ts":"2026-04-20T16:06:12.523Z","tool":"next_iter","msg":"Resolved iter005_swizzle_smem","level":"info"}
+{"ts":"2026-04-20T16:06:12.557Z","tool":"checkpoint_write","msg":"PLANNED iter005_swizzle_smem: Add swizzled shared memory layout to eliminate bank conflicts during WMMA loads. Keep vectorized global loads from iter004.","level":"info"}
+{"ts":"2026-04-20T16:07:48.037Z","tool":"store_round","msg":"Storing iter005_swizzle_smem (DISCARD 49.2608 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T16:07:48.056Z","tool":"store_round","msg":"Stored iter005_swizzle_smem: DISCARD 49.2608 TFLOPS (round 5)","level":"info"}
+{"ts":"2026-04-20T16:07:59.127Z","tool":"next_iter","msg":"Resolved iter006_larger_tiles","level":"info"}
+{"ts":"2026-04-20T16:07:59.163Z","tool":"checkpoint_write","msg":"PLANNED iter006_larger_tiles: Increase tile sizes to BM256 BN128 for higher arithmetic intensity. More compute per memory access to amortize latency.","level":"info"}
+{"ts":"2026-04-20T16:09:23.333Z","tool":"store_round","msg":"Storing iter006_larger_tiles (DISCARD 92.9272 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T16:09:23.353Z","tool":"store_round","msg":"Stored iter006_larger_tiles: DISCARD 92.9272 TFLOPS (round 6)","level":"info"}
+{"ts":"2026-04-20T16:09:58.547Z","tool":"next_iter","msg":"Resolved iter007_ptx_mma","level":"info"}
+{"ts":"2026-04-20T16:09:58.581Z","tool":"checkpoint_write","msg":"PLANNED iter007_ptx_mma: Replace WMMA API with raw PTX ldmatrix+mma.sync.m16n8k16 instructions for lower overhead. Use iter004 tile sizes.","level":"info"}
+{"ts":"2026-04-20T16:11:52.725Z","tool":"store_round","msg":"Storing iter007_ptx_mma (DISCARD 48.8401 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T16:11:52.745Z","tool":"store_round","msg":"Stored iter007_ptx_mma: DISCARD 48.8401 TFLOPS (round 7)","level":"info"}
+{"ts":"2026-04-20T16:12:04.844Z","tool":"next_iter","msg":"Resolved iter008_bk128","level":"info"}
+{"ts":"2026-04-20T16:12:04.881Z","tool":"checkpoint_write","msg":"PLANNED iter008_bk128: Double BK from 64 to 128 for more WMMA iterations per syncthreads, reducing sync overhead. Keep BM/BN at 128.","level":"info"}
+{"ts":"2026-04-20T16:15:23.313Z","tool":"store_round","msg":"Storing iter008_bk128 (DISCARD 50.1776 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T16:15:23.332Z","tool":"store_round","msg":"Stored iter008_bk128: DISCARD 50.1776 TFLOPS (round 8)","level":"info"}
+{"ts":"2026-04-20T16:15:35.881Z","tool":"next_iter","msg":"Resolved iter009_warp_1x8","level":"info"}
+{"ts":"2026-04-20T16:15:35.915Z","tool":"checkpoint_write","msg":"PLANNED iter009_warp_1x8: Change warp topology from 4x2 to 1x8 warps. Each warp computes full 128-wide row slice of output. Better L2 locality for B matrix loads.","level":"info"}
+{"ts":"2026-04-20T16:17:14.539Z","tool":"store_round","msg":"Storing iter009_warp_1x8 (DISCARD 81.6274 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T16:17:14.559Z","tool":"store_round","msg":"Stored iter009_warp_1x8: DISCARD 81.6274 TFLOPS (round 9)","level":"info"}
+{"ts":"2026-04-20T16:17:33.765Z","tool":"next_iter","msg":"Resolved iter010_launch_bounds","level":"info"}
+{"ts":"2026-04-20T16:17:33.800Z","tool":"checkpoint_write","msg":"PLANNED iter010_launch_bounds: Add __launch_bounds__(256, 2) to target 2 blocks per SM for better latency hiding. Reduce smem padding from +8 to +4.","level":"info"}
+{"ts":"2026-04-20T16:19:56.591Z","tool":"store_round","msg":"Storing iter010_launch_bounds (DISCARD 94.6233 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T16:19:56.611Z","tool":"store_round","msg":"Stored iter010_launch_bounds: DISCARD 94.6233 TFLOPS (round 10)","level":"info"}

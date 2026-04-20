@@ -141,7 +141,17 @@
       "agent_type": "cursor_cli",
       "model": "claude-4-5-opus-high",
       "request_number": 2,
-      "started_at": "2026-04-20T14:44:05.904182+00:00",
+      "started_at": "2026-04-20T14:44:05.904182",
+      "ended_at": null
+    },
+    {
+      "id": 22,
+      "task_id": 1,
+      "session_id": "e741e4e2-47bf-4c24-986a-06155e1304d6",
+      "agent_type": "cursor_cli",
+      "model": "claude-4-5-opus-high",
+      "request_number": 2,
+      "started_at": "2026-04-20T15:49:46.015445",
       "ended_at": null
     }
   ],

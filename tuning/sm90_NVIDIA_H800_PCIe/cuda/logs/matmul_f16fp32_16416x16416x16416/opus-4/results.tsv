@@ -1,0 +1,12 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_cublas	407.0313	KEEP	baseline	cuBLAS reference baseline
+iter001	iter001_mma_tiled	54.1324	KEEP	memory_bound	Initial WMMA-based kernel with basic tiling BM128 BN128 BK32
+iter002	iter002_reduced_regs	31.5498	DISCARD	launch_bound	Reduced per-warp tiles (32x32), maxrregcount=128, 512 threads - lower compute de
+iter003	iter003_async_pipeline	6.1430	DISCARD	memory_bound	Double-buffered shared memory pipeline - extra smem and sync overhead hurt perfo
+iter004	iter004_vectorized_load	96.1045	KEEP	memory_bound	Vectorized 128-bit loads (int4) with larger BK=64 - 77% improvement from better 
+iter005	iter005_swizzle_smem	49.2608	DISCARD	latency_bound	Swizzled smem store broke WMMA contiguous access pattern - 49% slower than iter0
+iter006	iter006_larger_tiles	92.9272	DISCARD	latency_bound	Larger BM256 increased register pressure - 3% slower than iter004
+iter007	iter007_ptx_mma	48.8401	DISCARD	latency_bound	PTX ldmatrix addressing incorrect or suboptimal - 49% slower than iter004
+iter008	iter008_bk128	50.1776	DISCARD	latency_bound	Larger BK=80 increased smem and register pressure - 48% slower than iter004
+iter009	iter009_warp_1x8	81.6274	DISCARD	latency_bound	1x8 warp topology with BM64 BN256 - 15% slower than iter004
+iter010	iter010_launch_bounds	94.6233	DISCARD	latency_bound	__launch_bounds__(256,2) slightly worse than iter004 - compiler hints not effect
