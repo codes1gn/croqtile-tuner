@@ -1,0 +1,5 @@
+Triton matmul FP16->FP32: 16384x16384x16384
+Config: BLOCK_M=128, BLOCK_N=256, BLOCK_K=64
+        num_stages=3, num_warps=8, GROUP_SIZE_M=8
+VERIFY: PASS max_abs_err=0.019165 rel_err=0.000024
+TFLOPS: 384.27   time_ms: 22.891

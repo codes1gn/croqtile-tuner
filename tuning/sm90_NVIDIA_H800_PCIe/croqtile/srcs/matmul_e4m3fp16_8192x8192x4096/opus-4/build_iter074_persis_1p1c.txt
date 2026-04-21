@@ -1,0 +1,6 @@
+iter074_persis_1p1c.co:54.12: info: In the current kernel `__choreo_device_blockscale_gemm`, cudaFuncAttributeMaxDynamicSharedMemorySize is set to `114688` bytes, cause shared memory usage has exceeded the default limit 48KB.
+    parallel block_id by NUM_SMS : block {
+             ^
+iter074_persis_1p1c.co:80.32: warning: The implicit type conversion may lose precision: 'f32' to 'f16'
+              mc = mma.fill.f16 0.0f;
+                                 ^

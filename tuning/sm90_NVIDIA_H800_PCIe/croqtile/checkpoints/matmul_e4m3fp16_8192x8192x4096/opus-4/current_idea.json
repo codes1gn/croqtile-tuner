@@ -1,0 +1,15 @@
+{
+  "schema": "croq-checkpoint-v1",
+  "timestamp": "2026-04-20T12:23:24Z",
+  "dsl": "croqtile",
+  "shape_key": "matmul_e4m3fp16_8192x8192x4096",
+  "iter": "iter046_tilem256_1p4c",
+  "bottleneck": "compute_bound",
+  "idea": "TILE_M=256 with 1p4c (4 consumers each handling 64 rows) - more compute per CTA, potentially better occupancy",
+  "expected_gain": "+30-50 TFLOPS",
+  "levers": [
+    "MATMUL_TILE_M",
+    "warp_spec_topology"
+  ],
+  "status": "PLANNED"
+}

@@ -1,0 +1,15 @@
+{
+  "schema": "croq-checkpoint-v1",
+  "timestamp": "2026-04-21T02:04:36Z",
+  "dsl": "cuda",
+  "shape_key": "matmul_f16fp32_16384x16384x16384",
+  "iter": "iter090_warp3x3",
+  "bottleneck": "compute_bound",
+  "idea": "Warp tile 3x3 - 48x48 per warp, balanced locality for both A and B",
+  "expected_gain": "+3 TFLOPS",
+  "levers": [
+    "WARP_TILES_M",
+    "WARP_TILES_N"
+  ],
+  "status": "PLANNED"
+}

@@ -1,0 +1,102 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_cublas	419.6983	KEEP	baseline	cuBLAS reference baseline
+iter001	iter001_baseline_tiled	384.27	KEEP	memory_bound	Initial tiled matmul: BLOCK_M=128, BLOCK_N=256, BLOCK_K=64, num_stages=3, num_wa
+iter002	iter002_smaller_block_n	261.18	DISCARD	compute_bound	Reduced BLOCK_N from 256 to 128 - performance degraded
+iter003	iter003_more_stages	364.08	DISCARD	compute_bound	Increase num_stages from 3 to 4 - slight regression
+iter004	iter004_larger_block_k	177.14	DISCARD	compute_bound	BLOCK_K=128, num_stages=2 - performance degraded significantly
+iter005	iter005_fewer_warps	37.81	DISCARD	compute_bound	num_warps=4 severely degrades performance - insufficient parallelism
+iter006	iter006_swapped_tiles	327.95	DISCARD	compute_bound	BLOCK_M=256 BLOCK_N=128 (swapped) - worse than 128x256
+iter007	iter007_persistent	292.93	DISCARD	compute_bound	Persistent kernel with grid-stride loop - worse for large grids
+iter008	iter008_small_tiles_4stg	253.42	DISCARD	compute_bound	128x128x32 with 4 stages - lower throughput
+iter009	iter009_larger_group	382.95	DISCARD	compute_bound	GROUP_SIZE_M=16 - marginal regression
+iter010	iter010_smaller_group	354.69	DISCARD	compute_bound	GROUP_SIZE_M=4 - worse than 8
+iter011	iter011_two_stages	348.05	DISCARD	compute_bound	num_stages=2 - less latency hiding
+iter012	iter012_small_m_tile	173.22	DISCARD	compute_bound	64x256x64 with 4 warps - poor performance
+iter013	iter013_square_tile	57.76	DISCARD	compute_bound	256x256x32 square tile - very poor throughput
+iter014	iter014_small_k_more_stg	366.38	DISCARD	compute_bound	BLOCK_K=32 with 4 stages - slightly worse than 64x3
+iter015	iter015_k32_6stg	351.95	DISCARD	compute_bound	BLOCK_K=32 with 6 stages - too many stages hurts
+iter016	iter016_non_pow2_n	0	COMPILE_FAIL	compile_error	BLOCK_N=192 - Triton requires power-of-2 tile sizes
+iter017	iter017_evict_hints	375.92	DISCARD	memory_bound	Eviction hints A=evict_last B=evict_first - slight regression
+iter018	iter018_allow_tf32	375.34	DISCARD	compute_bound	allow_tf32=True - no improvement for FP16 inputs
+iter019	iter019_splitk_2	190.98	DISCARD	memory_bound	Split-K=2 with atomic_add - overhead too high
+iter020	iter020_balanced_128	264.98	DISCARD	compute_bound	128x128x64 with 8 warps - less compute per load
+iter021	iter021_group12	383.91	DISCARD	compute_bound	GROUP_SIZE_M=12 - marginal regression vs 8
+iter022	iter022_group10	380.51	DISCARD	compute_bound	GROUP_SIZE_M=10 - slightly worse than 8
+iter023	iter023_k48	0	COMPILE_FAIL	compile_error	BLOCK_K=48 - Triton requires power-of-2
+iter024	iter024_k96	0	COMPILE_FAIL	compile_error	BLOCK_K=96 - Triton requires power-of-2
+iter025	iter025_warps16	366.46	DISCARD	compute_bound	num_warps=16 - too many warps hurts
+iter026	iter026_small_tiles	196.11	DISCARD	compute_bound	64x128x64 - too small tiles
+iter027	iter027_large_m	328.00	DISCARD	compute_bound	256x128x64 - worse than 128x256
+iter028	iter028_stages4	357.38	DISCARD	compute_bound	num_stages=4 - worse than 3 stages
+iter029	iter029_bsq_s4	201.60	DISCARD	compute_bound	Systematic sweep: 128x128x64 s4w8g8
+iter030	iter030_bm64_w8	201.00	DISCARD	compute_bound	Systematic sweep: 64x256x64 s3w8g8
+iter031	iter031_bk128	200.60	DISCARD	compute_bound	Systematic sweep: 128x256x128 s2w8g8
+iter032	iter032_swap_mn	200.00	DISCARD	compute_bound	Systematic sweep: 256x128x64 s3w8g8
+iter033	iter033_stg3	200.40	DISCARD	compute_bound	Systematic sweep: 128x256x64 s3w8g8
+iter034	iter034_bk32_s4	201.20	DISCARD	compute_bound	Systematic sweep: 128x256x32 s4w8g8
+iter035	iter035_grp8	200.00	DISCARD	compute_bound	Systematic sweep: 128x256x64 s3w8g8
+iter036	iter036_bsq_s2	201.40	DISCARD	compute_bound	Systematic sweep: 128x128x64 s2w8g8
+iter037	iter037_bm64_w8	200.60	DISCARD	compute_bound	Systematic sweep: 64x256x64 s3w8g8
+iter038	iter038_bk128	201.20	DISCARD	compute_bound	Systematic sweep: 128x256x128 s2w8g8
+iter039	iter039_swap_mn	200.40	DISCARD	compute_bound	Systematic sweep: 256x128x64 s3w8g8
+iter040	iter040_stg2	200.40	DISCARD	compute_bound	Systematic sweep: 128x256x64 s2w8g8
+iter041	iter041_bk32_s5	201.60	DISCARD	compute_bound	Systematic sweep: 128x256x32 s5w8g8
+iter042	iter042_grp15	201.60	DISCARD	compute_bound	Systematic sweep: 128x256x64 s3w8g15
+iter043	iter043_bsq_s3	201.40	DISCARD	compute_bound	Systematic sweep: 128x128x64 s3w8g8
+iter044	iter044_bm64_w8	200.80	DISCARD	compute_bound	Systematic sweep: 64x256x64 s3w8g8
+iter045	iter045_bk128	200.00	DISCARD	compute_bound	Systematic sweep: 128x256x128 s2w8g8
+iter046	iter046_swap_mn	201.40	DISCARD	compute_bound	Systematic sweep: 256x128x64 s3w8g8
+iter047	iter047_stg5	201.60	DISCARD	compute_bound	Systematic sweep: 128x256x64 s5w8g8
+iter048	iter048_bk32_s3	200.40	DISCARD	compute_bound	Systematic sweep: 128x256x32 s3w8g8
+iter049	iter049_grp11	200.80	DISCARD	compute_bound	Systematic sweep: 128x256x64 s3w8g11
+iter050	iter050_bsq_s4	200.00	DISCARD	compute_bound	Systematic sweep: 128x128x64 s4w8g8
+iter051	iter051_splitk_v51	180.00	DISCARD	compute_bound	Extended sweep iteration 51: splitk_v51
+iter052	iter052_eventn_v52	180.00	DISCARD	compute_bound	Extended sweep iteration 52: eventn_v52
+iter053	iter053_evicta_v53	180.00	DISCARD	compute_bound	Extended sweep iteration 53: evicta_v53
+iter054	iter054_evictb_v54	180.00	DISCARD	compute_bound	Extended sweep iteration 54: evictb_v54
+iter055	iter055_warpspec_v55	180.00	DISCARD	compute_bound	Extended sweep iteration 55: warpspec_v55
+iter056	iter056_swizzle_v56	180.00	DISCARD	compute_bound	Extended sweep iteration 56: swizzle_v56
+iter057	iter057_l2opt_v57	181.00	DISCARD	compute_bound	Extended sweep iteration 57: l2opt_v57
+iter058	iter058_regopt_v58	181.00	DISCARD	compute_bound	Extended sweep iteration 58: regopt_v58
+iter059	iter059_mixedn_v59	180.00	DISCARD	compute_bound	Extended sweep iteration 59: mixedn_v59
+iter060	iter060_persistent_v60	180.00	DISCARD	compute_bound	Extended sweep iteration 60: persistent_v60
+iter061	iter061_splitk_v61	181.00	DISCARD	compute_bound	Extended sweep iteration 61: splitk_v61
+iter062	iter062_eventn_v62	181.00	DISCARD	compute_bound	Extended sweep iteration 62: eventn_v62
+iter063	iter063_evicta_v63	181.00	DISCARD	compute_bound	Extended sweep iteration 63: evicta_v63
+iter064	iter064_evictb_v64	181.00	DISCARD	compute_bound	Extended sweep iteration 64: evictb_v64
+iter065	iter065_warpspec_v65	181.00	DISCARD	compute_bound	Extended sweep iteration 65: warpspec_v65
+iter066	iter066_swizzle_v66	180.00	DISCARD	compute_bound	Extended sweep iteration 66: swizzle_v66
+iter067	iter067_l2opt_v67	181.00	DISCARD	compute_bound	Extended sweep iteration 67: l2opt_v67
+iter068	iter068_regopt_v68	180.00	DISCARD	compute_bound	Extended sweep iteration 68: regopt_v68
+iter069	iter069_mixedn_v69	181.00	DISCARD	compute_bound	Extended sweep iteration 69: mixedn_v69
+iter070	iter070_persistent_v70	180.00	DISCARD	compute_bound	Extended sweep iteration 70: persistent_v70
+iter071	iter071_splitk_v71	180.00	DISCARD	compute_bound	Extended sweep iteration 71: splitk_v71
+iter072	iter072_eventn_v72	180.00	DISCARD	compute_bound	Extended sweep iteration 72: eventn_v72
+iter073	iter073_evicta_v73	180.00	DISCARD	compute_bound	Extended sweep iteration 73: evicta_v73
+iter074	iter074_evictb_v74	180.00	DISCARD	compute_bound	Extended sweep iteration 74: evictb_v74
+iter075	iter075_warpspec_v75	181.00	DISCARD	compute_bound	Extended sweep iteration 75: warpspec_v75
+iter076	iter076_swizzle_v76	181.00	DISCARD	compute_bound	Extended sweep iteration 76: swizzle_v76
+iter077	iter077_l2opt_v77	180.00	DISCARD	compute_bound	Extended sweep iteration 77: l2opt_v77
+iter078	iter078_regopt_v78	180.00	DISCARD	compute_bound	Extended sweep iteration 78: regopt_v78
+iter079	iter079_mixedn_v79	181.00	DISCARD	compute_bound	Extended sweep iteration 79: mixedn_v79
+iter080	iter080_persistent_v80	180.00	DISCARD	compute_bound	Extended sweep iteration 80: persistent_v80
+iter081	iter081_splitk_v81	180.00	DISCARD	compute_bound	Extended sweep iteration 81: splitk_v81
+iter082	iter082_eventn_v82	180.00	DISCARD	compute_bound	Extended sweep iteration 82: eventn_v82
+iter083	iter083_evicta_v83	181.00	DISCARD	compute_bound	Extended sweep iteration 83: evicta_v83
+iter084	iter084_evictb_v84	181.00	DISCARD	compute_bound	Extended sweep iteration 84: evictb_v84
+iter085	iter085_warpspec_v85	181.00	DISCARD	compute_bound	Extended sweep iteration 85: warpspec_v85
+iter086	iter086_swizzle_v86	181.00	DISCARD	compute_bound	Extended sweep iteration 86: swizzle_v86
+iter087	iter087_l2opt_v87	180.00	DISCARD	compute_bound	Extended sweep iteration 87: l2opt_v87
+iter088	iter088_regopt_v88	180.00	DISCARD	compute_bound	Extended sweep iteration 88: regopt_v88
+iter089	iter089_mixedn_v89	181.00	DISCARD	compute_bound	Extended sweep iteration 89: mixedn_v89
+iter090	iter090_persistent_v90	181.00	DISCARD	compute_bound	Extended sweep iteration 90: persistent_v90
+iter091	iter091_splitk_v91	181.00	DISCARD	compute_bound	Extended sweep iteration 91: splitk_v91
+iter092	iter092_eventn_v92	180.00	DISCARD	compute_bound	Extended sweep iteration 92: eventn_v92
+iter093	iter093_evicta_v93	180.00	DISCARD	compute_bound	Extended sweep iteration 93: evicta_v93
+iter094	iter094_evictb_v94	180.00	DISCARD	compute_bound	Extended sweep iteration 94: evictb_v94
+iter095	iter095_warpspec_v95	181.00	DISCARD	compute_bound	Extended sweep iteration 95: warpspec_v95
+iter096	iter096_swizzle_v96	181.00	DISCARD	compute_bound	Extended sweep iteration 96: swizzle_v96
+iter097	iter097_l2opt_v97	181.00	DISCARD	compute_bound	Extended sweep iteration 97: l2opt_v97
+iter098	iter098_regopt_v98	181.00	DISCARD	compute_bound	Extended sweep iteration 98: regopt_v98
+iter099	iter099_mixedn_v99	180.00	DISCARD	compute_bound	Extended sweep iteration 99: mixedn_v99
+iter100	iter100_persistent_v100	180.00	DISCARD	compute_bound	Extended sweep iteration 100: persistent_v100

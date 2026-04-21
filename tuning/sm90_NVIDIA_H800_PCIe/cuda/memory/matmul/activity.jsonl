@@ -1,2 +1,4 @@
 {"ts":"2026-04-17T15:28:08.156Z","tool":"discover_baseline","msg":"Scanning for matmul (cuda) candidates","level":"info"}
 {"ts":"2026-04-17T15:28:08.168Z","tool":"discover_baseline","msg":"No candidates found — recommend from scratch","level":"info"}
+{"ts":"2026-04-20T15:48:17.702Z","tool":"discover_baseline","msg":"Scanning for matmul (cuda) candidates","level":"info"}
+{"ts":"2026-04-20T15:48:17.728Z","tool":"discover_baseline","msg":"No candidates found — recommend from scratch","level":"info"}

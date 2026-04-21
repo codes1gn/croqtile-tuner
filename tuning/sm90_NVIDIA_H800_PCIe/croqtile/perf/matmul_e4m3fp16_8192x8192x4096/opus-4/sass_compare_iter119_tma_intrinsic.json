@@ -1,0 +1,98 @@
+{
+  "iter": "iter119_tma_intrinsic",
+  "baseline": {
+    "total_instructions": 1049,
+    "estimated_registers": 155,
+    "tensor_ops": {},
+    "top_instructions": {
+      "FFMA": 256,
+      "UIADD3": 93,
+      "ULDC": 77,
+      "UIMAD": 71,
+      "F2FP": 64,
+      "BRA": 58,
+      "UMOV": 49,
+      "UISETP": 46,
+      "NOP": 36,
+      "ISETP": 29
+    },
+    "memory_ops": {
+      "LDS": 3,
+      "STS": 1
+    }
+  },
+  "custom": {
+    "total_instructions": 883,
+    "estimated_registers": 155,
+    "tensor_ops": {},
+    "top_instructions": {
+      "IMAD": 116,
+      "LOP3": 83,
+      "CS2R": 68,
+      "FFMA": 64,
+      "F2FP": 64,
+      "HADD2": 64,
+      "LEA": 52,
+      "ST": 33,
+      "VIADD": 28,
+      "ISETP": 26
+    },
+    "memory_ops": {
+      "LDG.CONSTANT": 2,
+      "LDG.E": 1
+    }
+  },
+  "divergences": [
+    {
+      "category": "memory_pattern",
+      "severity": "medium",
+      "detail": "Baseline has LDS (3x) but custom does not"
+    },
+    {
+      "category": "memory_pattern",
+      "severity": "medium",
+      "detail": "Baseline has STS (1x) but custom does not"
+    },
+    {
+      "category": "synchronization",
+      "severity": "medium",
+      "detail": "Barrier density: baseline 0.002 vs custom 0.027"
+    },
+    {
+      "category": "instruction_mix",
+      "severity": "low",
+      "detail": "FFMA: baseline 24.4% vs custom 7.2% (diff 17.2%)"
+    },
+    {
+      "category": "instruction_mix",
+      "severity": "low",
+      "detail": "IMAD: baseline 1.5% vs custom 13.1% (diff 11.6%)"
+    },
+    {
+      "category": "instruction_mix",
+      "severity": "low",
+      "detail": "CS2R: baseline 0.0% vs custom 7.7% (diff 7.7%)"
+    },
+    {
+      "category": "instruction_mix",
+      "severity": "low",
+      "detail": "LOP3: baseline 2.1% vs custom 9.4% (diff 7.3%)"
+    },
+    {
+      "category": "instruction_mix",
+      "severity": "low",
+      "detail": "HADD2: baseline 0.0% vs custom 7.2% (diff 7.2%)"
+    }
+  ],
+  "summary": [
+    "[MEDIUM] memory_pattern: Baseline has LDS (3x) but custom does not",
+    "[MEDIUM] memory_pattern: Baseline has STS (1x) but custom does not",
+    "[MEDIUM] synchronization: Barrier density: baseline 0.002 vs custom 0.027",
+    "[LOW] instruction_mix: FFMA: baseline 24.4% vs custom 7.2% (diff 17.2%)",
+    "[LOW] instruction_mix: IMAD: baseline 1.5% vs custom 13.1% (diff 11.6%)"
+  ],
+  "actionable_insights": "Use the divergences above to guide your next IDEA. High-severity items (tensor_core, register_pressure) usually have the biggest impact. Focus on matching the baseline's instruction patterns where feasible."
+}
+
+[sass_compare] Comparison saved: tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_e4m3fp16_8192x8192x4096/opus-4/sass_compare_iter119_tma_intrinsic.json
+[sass_compare] Use the divergences to inform your next IDEA.

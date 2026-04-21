@@ -1,0 +1,6 @@
+tuning/sm90_NVIDIA_H800_PCIe/cuda/srcs/matmul_f16fp32_16384x16384x16384/opus-4/iter029_wmma_512_128.cu(67): warning #177-D: variable "rowsPerIterB" was declared but never referenced
+      const int rowsPerIterB = BLOCK_SIZE / loadsPerRowB;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+

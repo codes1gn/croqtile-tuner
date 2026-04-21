@@ -1,0 +1,155 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_cublas	914.2985	KEEP	baseline	cuBLAS/scaled_mm FP8 reference baseline
+iter001	iter001_warpspec_1p1c	328.511	KEEP	memory_bound	Warp-specialized 1p1c blockscale GEMM adapted from prior 16K tuning session
+iter002	iter002_launch_bounds	435.097	KEEP	launch_bound	Add launch_bounds(256,2) to force 2 blocks/SM, reduce register pressure from 153
+iter003	iter003_swiz_group4	420.053	DISCARD	memory_bound	Block ID swizzle with group_size=4 for L2 cache reuse
+iter004	iter004_stages3	418.373	DISCARD	memory_bound	Increase pipeline stages from 2 to 3
+iter005	iter005_wn192	0	DISCARD	memory_bound	WARP_N=192 causes bounds error - 8192 not divisible by 192
+iter006	iter006_wn256	418.823	DISCARD	memory_bound	WARP_N=256 needs more registers, only 1 block/SM
+iter007	iter007_warpspec_1p2c	442.16	KEEP	compute_bound	1p2c warp specialization: 1 producer + 2 consumer warpgroups, each consumer hand
+iter008	iter008_stages3	513.95	KEEP	memory_bound	1p2c warp spec + 3-stage pipeline: increased pipeline depth from 2 to 3 to hide 
+iter009	iter009_tile256	193.55	DISCARD	memory_bound	Increased TILE_N/WARP_N to 256 - caused wgmma serialization due to divergent pat
+iter010	iter010_stages4	537.57	KEEP	memory_bound	1p2c warp spec + 4-stage pipeline: deeper pipelining to further hide memory late
+iter011	iter011_stages5	523.50	DISCARD	memory_bound	5-stage pipeline - too many stages may increase register pressure
+iter012	iter012_swizzle	546.23	KEEP	memory_bound	Block ID swizzling (group=4) with 1p2c 4-stage pipeline: improves L2 cache local
+iter013	iter013_swiz3stg	157.81	DISCARD	compute_bound	3-stage with swizzle - severe regression, possibly resource conflict
+iter014	iter014_swizgrp8	573.57	KEEP	compute_bound	Swizzle group 8 with 1p2c 4-stage: larger group improves L2 data reuse across CT
+iter015	iter015_swizgrp16	580.02	KEEP	compute_bound	Swizzle group 16: larger group continues L2 improvement trend
+iter016	iter016_swizgrp32	576.92	DISCARD	compute_bound	Swizzle group 32 - slightly worse than group 16, sweet spot exceeded
+iter017	iter017_regbound	0	COMPILE_FAIL	compute_bound	launch_bounds(384,2) - compiler cannot fit kernel in 80 registers
+iter018	iter018_warpspec1p1c	393.75	DISCARD	compute_bound	1p1c with swizzle - much slower than 1p2c, insufficient compute parallelism
+iter019	iter019_tilen64	383.77	DISCARD	compute_bound	TILE_N=64 with swizzle - smaller tile size reduces parallelism too much
+iter020	iter020_swizgrp12	574.99	DISCARD	compute_bound	Swizzle group 12 - confirms group 16 is optimal
+iter021	iter021_stages2swiz	569.17	DISCARD	compute_bound	2 stages with swizzle - 4 stages still optimal even with good L2 locality
+iter022	iter022_swizgrp20	574.62	DISCARD	compute_bound	Swizzle group 20 - confirms group 16 is optimal
+iter023	iter023_sasscomp	0	DISCARD	compute_bound	SASS analysis: custom has 15x higher barrier density than cuBLAS. FFMA usage muc
+iter024	iter024_noppc	442.02	DISCARD	compute_bound	Non-warp-spec kernel: all warps do load+compute. Lower barrier density but worse
+iter025	iter025_unroll	156.07	DISCARD	compute_bound	Add pragma unroll to iv_warp loop. FAILED - compiler serializes WGMMA due to div
+iter026	iter026_warpspec1p3c	361.02	DISCARD	compute_bound	1p3c warp spec (TILE_M=192, 3 consumers). WGMMA serialization warning, larger SM
+iter027	iter027_swizgrp14	569.98	DISCARD	memory_bound	Swizzle group 14 - finer search between 12 and 16
+iter028	iter028_swizgrp18	576.73	DISCARD	memory_bound	Swizzle group 18 - still worse than group 16 (580.02)
+iter029	iter029_fastmath	578.39	DISCARD	compute_bound	--use_fast_math nvcc flag - no improvement over baseline 580.02
+iter030	iter030_maxreg120	585.81	KEEP	compute_bound	-maxrregcount=120 forces spilling but increases occupancy. NEW BEST!
+iter031	iter031_maxreg110	164.58	DISCARD	compute_bound	-maxrregcount=110 too aggressive - spill overhead too high
+iter032	iter032_maxreg130	585.79	DISCARD	compute_bound	-maxrregcount=130 same as 120
+iter033	iter033_maxreg115	165.03	DISCARD	compute_bound	-maxrregcount=115 still too aggressive
+iter034	iter034_maxreg120fast	165.92	DISCARD	compute_bound	-maxrregcount=120 + fast_math: INTERFERES, causes performance regression
+iter035	iter035_maxreg118	164.96	DISCARD	compute_bound	-maxrregcount=118 still fails - boundary is at 120
+iter036	iter036_maxreg119	164.96	DISCARD	compute_bound	-maxrregcount=119 fails - EXACT boundary is 120 registers
+iter037	iter037_stages5maxreg	0	DISCARD	memory_bound	Skipped - complex to regenerate 5-stage with swizzle
+iter038	iter038_dlcmca	165.13	DISCARD	memory_bound	-Xptxas -dlcm=ca with maxreg=120 interferes - causes regression
+iter039	iter039_swiz24maxreg	164.21	DISCARD	compute_bound	swiz24+maxreg120 - GPU perf regression detected, all kernels showing ~165 TFLOPS
+iter040	iter040_stages3_maxreg	576.81	DISCARD	latency_bound:barrier_stall	3 pipeline stages with attempted maxreg=120 (ignored by compiler)
+iter041	iter041_scale_prefetch	153.31	DISCARD	memory_bound:uncoalesced_global	Use -O2 instead of -O3 to reduce register pressure
+iter042	iter042_wg_arrive_once	573.35	DISCARD	latency_bound:barrier_stall	Baseline check before warpgroup_arrive optimization (same as iter030 within nois
+iter043	iter043_ldg_prefetch	576.0	DISCARD	memory_bound	L2 prefetch for scale factors - median 576 TFLOPS
+iter044	iter044_arrive_outside	577.0	DISCARD	latency_bound	Move warpgroup_arrive outside inner loop - no improvement (compiler still serial
+iter045	iter045_wait_before_scale	167.0	DISCARD	latency_bound	Move warpgroup_wait before scale - WORSE (eliminates latency hiding)
+iter046	iter046_tilem256_1p4c	0.0	DISCARD	compute_bound	TILE_M=256 1p4c: skipped - requires .co rewrite, Round 26 showed 1p3c worse
+iter047	iter047_escalation_analysis	580.0	DISCARD	latency_bound	ESCALATION: 7-DISCARD analysis - kernel at 580T beats scaled_mm 470T but gap to 
+iter061	iter061_nanosleep	549.1	DISCARD	latency_bound	nanosleep(32) after barrier wait - worse performance
+iter062	iter062_unroll_wgmma	601.4	KEEP	compute_bound	#pragma unroll 4 on iv_warp loop - marginal improvement
+iter063	iter063_precompute_scale_offsets	598.1	DISCARD	compute_bound	Precomputed scale strides - no improvement
+iter064	iter064_async_scale_load	599.8	DISCARD	compute_bound	__ldg for scale loads - no improvement
+iter065	iter065_scale_cp_async	595.5	DISCARD	compute_bound	__restrict__ scale pointers - no improvement
+iter066	iter066_cluster_launch	594.5	DISCARD	compute_bound	__cluster_dims__(2,1,1) - no significant improvement
+iter067	iter067_cluster4	594.7	DISCARD	compute_bound	__cluster_dims__(4,1,1) - no improvement
+iter068	iter068_cluster_unroll	592.7	DISCARD	compute_bound	cluster + unroll pragma - no improvement
+iter069	iter069_cluster_swiz8	583.7	DISCARD	compute_bound	cluster + swizzle 8 - worse
+iter070	iter070_cluster_maxreg120	594.8	DISCARD	compute_bound	cluster + maxreg120 - no improvement
+iter075	iter075_cluster_unroll_fullk	589.7	DISCARD	compute_bound	cluster + full unroll - no improvement
+iter076	iter076_cluster8	591.9	DISCARD	compute_bound	cluster(8,1,1) - no improvement
+iter077	iter077_cluster_fastmath	596.4	DISCARD	compute_bound	cluster + fast_math - no improvement
+iter078	iter078_1p1c_4stages	398.8	DISCARD	compute_bound	1p1c topology with 4 stages - much slower
+iter079	iter079_scale_preload	591.0	DISCARD	compute_bound	Scale prefetch registers - no improvement
+iter080	iter080_combined_best	600.9	KEEP	compute_bound	cluster(2,1,1) + fast_math + unroll combined - best median 600.9
+iter081	iter081_cluster_2x2	597.7	DISCARD	compute_bound	cluster(2,2,1) + unroll - no improvement over (2,1,1)
+iter082	iter082_cluster_1x2	601.4	KEEP	compute_bound	cluster(1,2,1) + unroll - similar to (2,1,1)
+iter083	iter083_fastmath_unroll	600.4	KEEP	compute_bound	fast_math + unroll without cluster - stable 600 TFLOPS
+iter084	iter084_inline_scale	590.5	DISCARD	compute_bound	Inline PTX scale prefetch - no improvement
+iter086	iter086_maxreg128_2blocks	600.0	DISCARD	compute_bound	maxrregcount=128 (ignored by compiler) - no improvement
+iter087	iter087_l2_bypass	167.9	DISCARD	memory_bound	L2 cache bypass (-dlcm=cg) - severe regression, TMA needs L2
+iter088	iter088_l2_cache_all	599.6	DISCARD	compute_bound	L2 cache all (-dlcm=ca) - no improvement
+iter089	iter089_ptxas_opt	591.1	DISCARD	compute_bound	ptxas -O4 optimization - no improvement
+iter090	iter090_scalar_scale	598.3	DISCARD	compute_bound	Extra device vectorization flag - no improvement
+iter091	iter091_splitk2	598.2	DISCARD	compute_bound	Split-K=2 (incomplete - no atomicAdd) - no improvement
+iter092	iter092_min_blocks	594.8	DISCARD	compute_bound	launch_bounds(384,1) - no improvement
+iter093	iter093_coop_launch	564.5	DISCARD	compute_bound	rdc=true cooperative - worse performance
+iter094	iter094_noftz	516.9	DISCARD	compute_bound	ftz=false - regression
+iter095	iter095_prec_div	155.8	DISCARD	compute_bound	prec-div=true - severe regression
+iter096	iter096_default_stream	594.2	DISCARD	compute_bound	default-stream per-thread - no improvement
+iter100	iter100_best_final	598.9	KEEP	compute_bound	FINAL: cluster(2,1,1)+fast_math+unroll - 65.2% of baseline
+iter101	iter101_persistent_sms	586.8	DISCARD	compute_bound	Persistent kernel: 1 CTA per SM (gridStride=multiProcessorCount), strided tile l
+iter102	iter102_nvjet114	587.35	DISCARD	compute_bound	Persistent grid fixed to 114 CTAs (nvJet count); same barrier re-init between ti
+iter103	iter103_cluster_launch	595.0	DISCARD	compute_bound	Non-persistent iter082 + __cluster_dims__(2,1,1) + cudaLaunchKernelExC + NonPort
+iter104	iter104_stages6	545.0	DISCARD	memory_bound	MATMUL_STAGES 6 co2cu 229KB SMEM scale_accum fix 545 TFLOPS vs 601
+iter105	iter105_pers_cluster	583.5	DISCARD	compute_bound	Persistent 114 CTAs cluster 2x1 cudaLaunchKernelExC 583 TFLOPS
+iter106	iter106_ptxas_o3	605.7	KEEP	compute_bound	iter062 duplicate plus nvcc -Xptxas -O3 605.7 TFLOPS new best
+iter107	iter107_ptxo3_cluster	594.1	DISCARD	compute_bound	iter106 ptxO3 plus cluster 2x1 LaunchExC 594 TFLOPS below 605
+iter108	iter108_ptxo3_dlcm_ca	597.8	DISCARD	memory_bound	iter106 ptxO3 plus Xptxas dlcm ca 598 TFLOPS
+iter109	iter109_ptxo3_dscm_wt	594.3	DISCARD	compute_bound	iter106 ptxO3 dscm wt 594 TFLOPS
+iter110	iter110_ptxo3_restrict	595.8	DISCARD	compute_bound	iter106 ptxO3 restrict pointers 596 TFLOPS
+iter111	iter111_ptxo3_maxr200	592.4	DISCARD	compute_bound	iter106 ptxO3 maxrregcount 200 592 TFLOPS
+iter113	iter113_no_ptxas_o3	595.3	DISCARD	compute_bound	iter106 ablation without Xptxas O3 595 confirms ptxas helps
+iter114	iter114_no_fastmath	598.4	DISCARD	compute_bound	iter106 without use_fast_math 598 TFLOPS
+iter115	iter115_swiz14	587.0	DISCARD	compute_bound	iter106 ptxO3 SWIZ_GROUP 14 587 TFLOPS
+iter112	iter112_host_o2	598.5	DISCARD	compute_bound	iter106 nvcc host O2 with ptxas O3 598 TFLOPS
+iter116	iter116_swiz12	588.1	DISCARD	compute_bound	iter106 ptxO3 SWIZ_GROUP 12 588 TFLOPS
+iter117	iter117_swiz20	594.1	DISCARD	compute_bound	iter106 ptxO3 SWIZ_GROUP 20 594 TFLOPS
+iter118	iter106_ptxas_o3	606.0	KEEP	compute_bound	Independent remeasure iter106 ptxas_o3 binary 606 TFLOPS confirms best
+iter119	iter119_tma_intrinsic	595.3	DISCARD	compute_bound	Replace cde cp_async TMA with choreo tma_load_2d_shared_cta_global_mbarrier; SAS
+iter120	iter120_host_o2	591.8	DISCARD	compute_bound	iter106 nvcc host O2 with Xptxas O3 592 TFLOPS
+iter121	iter121_ptxas_o2	605.0	DISCARD	compute_bound	iter106 with Xptxas O2 only high variance vs O3 no sustained win
+iter122	iter122_maxr168	598.0	DISCARD	compute_bound	maxrregcount 168 on iter106
+iter123	iter123_prefetch	598.7	DISCARD	memory_bound	iter106 ptxas O3 Xptxas dlcm ca
+iter124	iter124_fatbin_zip	595.4	DISCARD	compute_bound	nvcc Xfatbin compress-all regression
+iter125	iter125_dlcm_cs	584.3	DISCARD	memory_bound	Xptxas dlcm cs slower
+iter126	iter119_tma_intrinsic	595.3	DISCARD	compute_bound	ncu profile iter119_tma_intrinsic same compute_bound as iter106; barrier density
+iter127	iter127_spin_define	609.7	DISCARD	compute_bound	CHOREO_PTX_BARRIER_MAX Spins define before choreo.h no semantic change high vari
+iter128	iter106_ptxas_o3	606.0	DISCARD	compute_bound	Producer-only PTX empty wait attempted: must keep cuda wait arrive token semanti
+iter129	iter129_raw_mbar	608.6	KEEP	compute_bound	full pipeline: uint64_t full_mbar init1 tma_load_2d x2 expect_tx 32KB tma_mbarri
+iter130	iter130_fence	608.4	DISCARD	compute_bound	iter129 plus proxy fence after expect_tx
+iter131	iter131_no_unroll	594.0	DISCARD	compute_bound	iter129 without unroll inner WGMMA
+iter132	iter132_maxr200	591.0	DISCARD	compute_bound	iter129 source nvcc maxrregcount 200
+iter133	iter133_dlcm_ca	591.4	DISCARD	memory_bound	iter129 Xptxas dlcm ca
+iter134	iter134_host_o2	593.6	DISCARD	compute_bound	iter129 nvcc host O2
+iter135	iter135_ptx_o2	590.3	DISCARD	compute_bound	iter129 Xptxas O2
+iter136	iter136_lineinfo	592.0	DISCARD	compute_bound	iter129 lineinfo
+iter137	iter137_maxr232	581.3	DISCARD	compute_bound	iter129 maxrregcount 232
+iter138	iter138_fast_sqrt	587.7	DISCARD	compute_bound	iter129 prec sqrt false
+iter139	iter139_both_mbar	595.5	DISCARD	compute_bound	Empty pipeline: uint64_t empty_mbar[4] init 257; producer tma_mbarrier_arrive th
+iter140	iter140_empty_fence	602.3	DISCARD	compute_bound	iter139 + cde::fence_proxy_async_shared_cta after consumer empty-mbar bootstrap 
+iter141	iter141_maxr200	585.0	DISCARD	compute_bound	iter139_both_mbar.cu + nvcc -maxrregcount=200
+iter142	iter142_ptxas_o2	366.8	DISCARD	compute_bound	iter139 + replace -Xptxas O3 with O2 only severe regression
+iter143	iter143_no_fast_math	595.9	DISCARD	compute_bound	iter139 build without --use_fast_math
+iter144	iter144_host_o2	597.7	DISCARD	compute_bound	iter139 + -Xcompiler -O2
+iter145	iter145_lineinfo	592.7	DISCARD	compute_bound	iter139 + -lineinfo
+iter146	iter146_maxr232	588.6	DISCARD	compute_bound	iter139 + -maxrregcount=232
+iter147	iter147_ndebug	594.9	DISCARD	compute_bound	iter139 + -DNDEBUG
+iter148	iter148_fence_maxr200	589.0	DISCARD	compute_bound	iter140_empty_fence + -maxrregcount=200
+iter149	iter149_no_wg_arrive	593.4	DISCARD	compute_bound	Remove explicit warpgroup_arrive before QGMMA quad
+iter150	iter150_wg_wait1	599.1	DISCARD	compute_bound	warpgroup_wait<1> after single commit
+iter151	iter151_no_unroll_wgmma	604.96	DISCARD	compute_bound	#pragma unroll removed inner WGMMA first run peak 605TFLOPS high var
+iter152	iter152_dbl_wg_arrive	593.3	DISCARD	compute_bound	two consecutive warpgroup_arrive
+iter153	iter153_frag_brace	598.4	DISCARD	compute_bound	mc_scale_frag[64]{} zero init no memset
+iter154	iter154_wait1_no_arrive	591.3	DISCARD	compute_bound	no arrive plus wait1
+iter155	iter155_no_proxy_fence	595.3	DISCARD	compute_bound	drop proxy fence before store syncthreads
+iter156	iter156_wg_arrive_each_mma	593.1	DISCARD	compute_bound	arrive inside loop once per MMA
+iter157	iter157_inner_unroll2	487.4	DISCARD	compute_bound	pragma unroll 2 regression
+iter158	iter158_full139_ref	599.0	DISCARD	compute_bound	identical to iter139 control
+iter159	iter159_persistent114	578.3	DISCARD	structural_variant	114 persistent grid-stride tiles cuda barriers (iter102) waves fewer CTAs not fa
+iter160	iter160_pers_cluster	576.7	DISCARD	structural_variant	persistent + cluster 2x1 launch iter105
+iter161	iter161_cluster_launch	603.5	DISCARD	structural_variant	cluster cudaLaunchKernelExC only iter103 best-of-batch still below 608.6 mbar129
+iter162	iter162_stages6	545.4	DISCARD	structural_variant	6 pipeline stages iter104 regression vs 4
+iter163	iter163_mma64_wn64	383.8	DISCARD	structural_variant	64x64x32 WGMMA TILE_N 64 iter019 structural smaller tile hurts blockscale
+iter164	iter164_persistent_sms	575.8	DISCARD	structural_variant	persistent query SM count iter101
+iter165	iter165_combined_best	364.7	DISCARD	structural_variant	legacy iter080 combined best regression vs current tuned kernels
+iter166	iter166_ptxas_o3	599.2	DISCARD	structural_variant	iter106 ptxas O3 no mbar
+iter167	iter167_mbar129_control	594.9	DISCARD	structural_variant	copy iter129 control same session variance
+iter168	iter168_ptxo3_cluster	595.2	DISCARD	structural_variant	ptxas O3 + cluster iter107
+iter169	iter169_persistent_mbar	586.7	DISCARD	persistent_mbar	iter129 full_mbar + 114 CTA grid-stride; re-init full+empty between tiles
+iter170	iter170_mbar_inval	574.2	DISCARD	persistent_mbar	mbarrier.inval + init on full_mbar between tiles
+iter171	iter171_phase_pipe	583.6	DISCARD	persistent_mbar	MATMUL_STAGES-based parity for wait_parity
+iter172	iter172_skip_first_sync	586.1	DISCARD	persistent_mbar	no leading loop __syncthreads; sync only before re-init path
+iter173	iter173_reinit_stride	585.5	DISCARD	persistent_mbar	inval only when k_tile even; init always
+iter174	iter174_best_flags	577.3	DISCARD	persistent_mbar	iter170+172 + nvcc -lineinfo (iter174 build_flags)

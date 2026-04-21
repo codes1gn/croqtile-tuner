@@ -1,0 +1,44 @@
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_e4m3fp16_8192x8192x4096/opus-4/iter169_persistent_mbar.cu(374): warning #2361-D: invalid narrowing conversion from "unsigned long" to "unsigned int"
+    uint32_t __choreo_tma_1_box_shape[] = {(K / ((K + 127) / 128)), (N / ((N + 127) / 128))};
+                                           ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_e4m3fp16_8192x8192x4096/opus-4/iter169_persistent_mbar.cu(374): warning #2361-D: invalid narrowing conversion from "unsigned long" to "unsigned int"
+    uint32_t __choreo_tma_1_box_shape[] = {(K / ((K + 127) / 128)), (N / ((N + 127) / 128))};
+                                                                    ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_e4m3fp16_8192x8192x4096/opus-4/iter169_persistent_mbar.cu(292): warning #177-D: variable "anon_1" was declared but never referenced
+              auto anon_1 = __choreo_vg4id_x - 1;
+                   ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_e4m3fp16_8192x8192x4096/opus-4/iter169_persistent_mbar.cu(255): warning #177-D: variable "anon_3" was declared but never referenced
+      auto anon_3 = __choreo_vg4id_x - 1;
+           ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_e4m3fp16_8192x8192x4096/opus-4/iter169_persistent_mbar.cu(166): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) cuda::barrier<cuda::thread_scope_block> choreo_copy_atom_t_0_barrier;
+                                                                    ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_e4m3fp16_8192x8192x4096/opus-4/iter169_persistent_mbar.cu(184): warning #20054-D: dynamic initialization is not supported for a function-scope static __shared__ variable within a __device__/__global__ function
+    __attribute__((shared)) cuda::barrier<cuda::thread_scope_block> empty[4];
+                                                                    ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_e4m3fp16_8192x8192x4096/opus-4/iter169_persistent_mbar.cu(374): warning #2361-D: invalid narrowing conversion from "unsigned long" to "unsigned int"
+    uint32_t __choreo_tma_1_box_shape[] = {(K / ((K + 127) / 128)), (N / ((N + 127) / 128))};
+                                           ^
+
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_e4m3fp16_8192x8192x4096/opus-4/iter169_persistent_mbar.cu(374): warning #2361-D: invalid narrowing conversion from "unsigned long" to "unsigned int"
+    uint32_t __choreo_tma_1_box_shape[] = {(K / ((K + 127) / 128)), (N / ((N + 127) / 128))};
+                                                                    ^
+
+ptxas info    : (C7510) Potential Performance Loss: wgmma.mma_async instructions are serialized due to wgmma pipeline crossing function boundary at a function call in the function '_Z31__choreo_device_blockscale_gemmP13__nv_fp8_e4m3PfS0_S1_P6__halfjjjjj14CUtensorMap_stS4_S4_'
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_e4m3fp16_8192x8192x4096/opus-4/iter169_persistent_mbar.cu: In function ‘void blockscale_gemm(const choreo::spanned_view<__nv_fp8_e4m3, 2>&, const choreo::spanned_view<float, 2>&, const choreo::spanned_view<__nv_fp8_e4m3, 2>&, const choreo::spanned_view<float, 2>&, const choreo::spanned_view<__half, 2>&)’:
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_e4m3fp16_8192x8192x4096/opus-4/iter169_persistent_mbar.cu:374:42: warning: narrowing conversion of ‘(((long unsigned int)K) / ((((long unsigned int)K) + 127) / 128))’ from ‘long unsigned int’ to ‘uint32_t’ {aka ‘unsigned int’} [-Wnarrowing]
+  374 |   uint32_t __choreo_tma_1_box_shape[] = {(K / ((K + 127) / 128)), (N / ((N + 127) / 128))};
+      |                                        ~~^~~~~~~~~~~~~~~~~~~~~~~
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_e4m3fp16_8192x8192x4096/opus-4/iter169_persistent_mbar.cu:374:69: warning: narrowing conversion of ‘(((long unsigned int)N) / ((((long unsigned int)N) + 127) / 128))’ from ‘long unsigned int’ to ‘uint32_t’ {aka ‘unsigned int’} [-Wnarrowing]
+  374 |   uint32_t __choreo_tma_1_box_shape[] = {(K / ((K + 127) / 128)), (N / ((N + 127) / 128))};
+      |                                                                   ~~^~~~~~~~~~~~~~~~~~~~~~~

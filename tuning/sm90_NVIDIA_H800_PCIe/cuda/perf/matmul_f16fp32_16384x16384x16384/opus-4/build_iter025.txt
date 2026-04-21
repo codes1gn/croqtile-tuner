@@ -1,0 +1,14 @@
+tuning/sm90_NVIDIA_H800_PCIe/cuda/srcs/matmul_f16fp32_16384x16384x16384/opus-4/iter025_wmma_256_256.cu(64): warning #177-D: variable "loadBRow" was declared but never referenced
+      const int loadBRow = tid / 32;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+tuning/sm90_NVIDIA_H800_PCIe/cuda/srcs/matmul_f16fp32_16384x16384x16384/opus-4/iter025_wmma_256_256.cu(65): warning #177-D: variable "loadBCol" was declared but never referenced
+      const int loadBCol = (tid % 32) * 8;
+                ^
+
+tuning/sm90_NVIDIA_H800_PCIe/cuda/srcs/matmul_f16fp32_16384x16384x16384/opus-4/iter025_wmma_256_256.cu(28): warning #177-D: variable "WARPS_M" was declared but never referenced
+  constexpr int WARPS_M = 8;
+                ^
+
