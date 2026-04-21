@@ -35,22 +35,37 @@ logger = logging.getLogger("croqtuner.artifact_scanner")
 
 
 def _is_baseline_row(kernel: str | None, bottleneck: str | None) -> bool:
-    """Detect whether a results.tsv row is the external baseline (cuBLAS/torch).
+    """Detect whether a results.tsv row is the external baseline (cuBLAS/torch/triton).
     
-    Only iter000 rows with explicit baseline markers should qualify. Custom kernels
-    with "baseline" in their name (e.g. iter001_baseline_1p1c) are NOT baselines.
+    The kernel column in results.tsv may contain:
+    - iter000_cublas, iter000_torch, iter000_baseline_ref (iter-prefixed baselines)
+    - triton_ref, cublas_baseline (non-iter-prefixed external references)
+    - iter001_baseline, iter002_xyz (tuned kernels, NOT baselines)
+    
+    Returns True for:
+    - iter000_* kernels with baseline markers (cublas, torch, baseline, ref)
+    - framework/* kernel names (e.g. framework/torch_mm)
+    - Non-iter-prefixed kernels with bottleneck="baseline" (external references)
+    
+    Returns False for:
+    - iter001+ kernels, even if they have "baseline" in their name or bottleneck
     """
     bn = (bottleneck or "").lower()
     k = (kernel or "").lower()
-    # Check bottleneck column for explicit baseline marker
-    if bn in ("baseline", "baseline_profile"):
-        return True
+    
     # Check for framework reference kernels (not custom iter-named kernels)
     if k.startswith("framework/"):
         return True
+    
     # iter000_cublas or iter000_torch style baseline kernels
-    if k.startswith("iter000") and any(x in k for x in ("cublas", "torch", "baseline")):
+    if k.startswith("iter000") and any(x in k for x in ("cublas", "torch", "baseline", "ref")):
         return True
+    
+    # Non-iter-prefixed kernels (e.g., "triton_ref", "cublas_baseline") with
+    # bottleneck="baseline" are external reference baselines
+    if bn in ("baseline", "baseline_profile") and not k.startswith("iter"):
+        return True
+    
     return False
 
 

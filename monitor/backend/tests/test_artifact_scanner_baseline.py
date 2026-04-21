@@ -6,12 +6,24 @@ from app.artifact_scanner import _CANONICAL_DTYPE, _is_baseline_row, _normalize_
 
 
 def test_is_baseline_row_iter000_markers_only():
+    # iter000 with baseline markers should be detected as baseline
     assert _is_baseline_row("iter000_cublas", None) is True
     assert _is_baseline_row("iter000_torch", None) is True
     assert _is_baseline_row("iter000_baseline_ref", None) is True
+    assert _is_baseline_row("iter000_triton_ref", None) is True
     assert _is_baseline_row("framework/torch_mm", None) is True
+    
+    # Non-iter-prefixed kernels with bottleneck="baseline" are external references
+    # (e.g., "triton_ref" in GDN tuning, "cublas_baseline" in GEMM tuning)
+    assert _is_baseline_row("triton_ref", "baseline") is True
+    assert _is_baseline_row("cublas_baseline", "baseline") is True
+    
+    # Non-iter000 kernels should NOT be detected as baseline, even if:
+    # - they have "baseline" in their name
+    # - they have bottleneck="baseline" (iter-prefixed means it's a tuned kernel)
     assert _is_baseline_row("iter001_baseline_1p1c", None) is False
-    assert _is_baseline_row("iter123_custom", "baseline") is True
+    assert _is_baseline_row("iter001_baseline", "baseline") is False
+    assert _is_baseline_row("iter123_custom", "baseline") is False
 
 
 def test_normalize_dtype_random_compositions():
