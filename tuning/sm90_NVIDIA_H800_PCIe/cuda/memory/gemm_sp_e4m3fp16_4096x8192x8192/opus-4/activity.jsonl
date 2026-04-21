@@ -1,3 +1,4 @@
 {"ts":"2026-04-21T02:11:51.946Z","tool":"resume_state","msg":"Loading tuning state for cuda/gemm_sp_e4m3fp16_4096x8192x8192","level":"info"}
 {"ts":"2026-04-21T02:11:51.948Z","tool":"resume_state","msg":"No tuning artifacts found for cuda/gemm_sp_e4m3fp16_4096x8192x8192","level":"error"}
 {"ts":"2026-04-21T04:36:20.711Z","tool":"next_iter","msg":"Resolved iter020_sparse_wgmma_correct","level":"info"}
+{"ts":"2026-04-21T05:11:05.618Z","tool":"resume_state","msg":"Loading tuning state for cuda/gemm_sp_e4m3fp16_4096x8192x8192","level":"info"}
