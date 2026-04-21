@@ -20,5 +20,15 @@
   "n": 512,
   "k": 2048,
   "num_experts": 256,
-  "topk": 8
+  "topk": 8,
+  "task_id": 8,
+  "variant": "",
+  "agent_type": null,
+  "mode": "opencode",
+  "request_budget": 1,
+  "request_number": 0,
+  "max_iterations": 30,
+  "respawn_count": 0,
+  "opencode_session_id": null,
+  "sessions": []
 }

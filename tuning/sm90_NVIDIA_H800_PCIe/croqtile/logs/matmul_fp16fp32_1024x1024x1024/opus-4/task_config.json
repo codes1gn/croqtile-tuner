@@ -1,5 +1,5 @@
 {
-  "task_id": 10,
+  "task_id": 25,
   "task_uid": "793237f7bf5c",
   "model": "opus-4",
   "variant": "",
@@ -14,13 +14,13 @@
   "opencode_session_id": "ses_2611935b2ffe6Y1VFVdDkatb2P",
   "sessions": [
     {
-      "id": 16,
-      "task_id": 10,
+      "id": 35,
+      "task_id": 25,
       "session_id": "ses_2611935b2ffe6Y1VFVdDkatb2P",
       "agent_type": null,
       "model": "opus-4",
       "request_number": 1,
-      "started_at": "2026-04-20T10:09:20.619627",
+      "started_at": "2026-04-21T10:33:01.560721",
       "ended_at": null
     }
   ],

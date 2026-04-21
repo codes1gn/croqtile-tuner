@@ -4,7 +4,7 @@
   "model": "opus-4",
   "device": "NVIDIA H800 PCIe",
   "status": "completed",
-  "task_id": 102,
+  "task_id": 15,
   "variant": "f32_accumulator",
   "agent_type": "cursor_cli",
   "mode": "cursor_cli",

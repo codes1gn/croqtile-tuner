@@ -43,7 +43,7 @@
     "backup_location": ".backup/blockscale_gemm_e4m3_4096x4096x4096_winners_20260421_124424/"
   },
   "notes": "Full migration from ai-tune/2026-03-22/blockscale_gemm_v2. Contains all 69 .cu iteration files + 17 .co files + EXPERIMENT_SUMMARY.md. File naming follows source branch convention (e.g., blockscale_gemm_e4m3_iter049_overlap_tma_scale.cu).",
-  "task_id": 14,
+  "task_id": 16,
   "variant": "",
   "agent_type": null,
   "mode": "opencode",

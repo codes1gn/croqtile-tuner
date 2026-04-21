@@ -2,9 +2,19 @@
   "task_uid": "croqtune-fp16fp32-2048x2048x16384-20260420222853",
   "dsl": "croqtile",
   "model": "opus-4",
-  "device": "sm90_NVIDIA_H800_PCIe",
+  "device": "NVIDIA H800 PCIe",
   "status": "completed",
   "best_tflops": 371.64,
   "baseline_tflops": 476.7218,
-  "best_kernel": "iter053_np_wn160_s4_1p1c"
+  "best_kernel": "iter053_np_wn160_s4_1p1c",
+  "task_id": 24,
+  "variant": "",
+  "agent_type": null,
+  "mode": "opencode",
+  "request_budget": 1,
+  "request_number": 0,
+  "max_iterations": 30,
+  "respawn_count": 0,
+  "opencode_session_id": null,
+  "sessions": []
 }

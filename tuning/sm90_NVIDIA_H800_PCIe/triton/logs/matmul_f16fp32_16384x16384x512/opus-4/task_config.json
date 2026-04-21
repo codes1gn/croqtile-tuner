@@ -2,9 +2,19 @@
   "task_uid": "triton-f16fp32-16384x16384x512-20260421",
   "dsl": "triton",
   "model": "opus-4",
-  "device": "sm90_NVIDIA_H800_PCIe",
+  "device": "NVIDIA H800 PCIe",
   "status": "completed",
   "best_tflops": 355.39,
   "baseline_tflops": 395.8035,
-  "best_kernel": "iter018_gm32_ef"
+  "best_kernel": "iter018_gm32_ef",
+  "task_id": 5,
+  "variant": "",
+  "agent_type": null,
+  "mode": "opencode",
+  "request_budget": 1,
+  "request_number": 0,
+  "max_iterations": 30,
+  "respawn_count": 0,
+  "opencode_session_id": null,
+  "sessions": []
 }

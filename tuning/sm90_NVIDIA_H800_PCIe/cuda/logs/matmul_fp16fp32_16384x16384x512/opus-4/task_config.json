@@ -1,5 +1,5 @@
 {
-  "task_id": 16,
+  "task_id": 1,
   "task_uid": "52369f52-12b7-47",
   "model": "opus-4",
   "variant": "",
@@ -14,23 +14,33 @@
   "opencode_session_id": "06c02d01-ea09-4970-9cfb-e15523fe1418",
   "sessions": [
     {
-      "id": 38,
-      "task_id": 16,
+      "id": 1,
+      "task_id": 1,
       "session_id": "06c02d01-ea09-4970-9cfb-e15523fe1418",
       "agent_type": "cursor_cli",
       "model": "opus-4",
       "request_number": 0,
-      "started_at": "2026-04-21T01:10:16.327938",
+      "started_at": "2026-04-21T10:33:00.362296",
       "ended_at": null
     },
     {
-      "id": 39,
-      "task_id": 16,
+      "id": 2,
+      "task_id": 1,
       "session_id": "f2726352-64ce-4383-b77f-e62dc81c6d5b",
       "agent_type": "cursor_cli",
       "model": "opus-4",
       "request_number": 0,
-      "started_at": "2026-04-21T02:10:15.774030+00:00",
+      "started_at": "2026-04-21T10:33:00.362299",
+      "ended_at": null
+    },
+    {
+      "id": 40,
+      "task_id": 1,
+      "session_id": "12d19975-fdda-4b30-a594-61856c295acb",
+      "agent_type": "cursor_cli",
+      "model": "opus-4",
+      "request_number": 0,
+      "started_at": "2026-04-21T10:35:33.318846+00:00",
       "ended_at": null
     }
   ]
