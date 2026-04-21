@@ -1,0 +1,12 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_cublas	400.7045	KEEP	baseline	cuBLAS reference baseline
+iter001	iter001_wn192s3_1p1c	129.0	KEEP	latency_bound	Initial WARP_N=192 kernel with 3 stages, 1p1c warp spec
+iter002	iter002_wn192s3_tm64	227.3	KEEP	latency_bound	TILE_M=64 with WARP_N=192 - smaller M tile, more CTAs
+iter003	iter003_wn192s4_tm64	146.5	DISCARD	latency_bound	TILE_M=64, 4 stages - more pipeline depth
+iter004	iter004_wn192s2_tm64	117.0	DISCARD	latency_bound	TILE_M=64, 2 stages - less pipeline
+iter005	iter005_wn192s3_tm64_1p2c	266.2	KEEP	latency_bound	1p2c warp spec with TILE_M=128, 3 stages
+iter006	iter006_wn192s3_tm128_1p1c	269.8	KEEP	compute_bound	1p1c with TILE_M=128 and 3 stages
+iter007	iter007_wn192s1_tm192_1p1c	26.1	DISCARD	compute_bound	TILE_M=192 with 1 stage - WGMMA serialized
+iter008	iter008_wn192s3_swiz64	0	SEGFAULT	memory_bound	SWIZ=64 with WARP_N=192 - TMA invalid arg
+iter009	iter009_wn192s4_tk32	0	SEGFAULT	memory_bound	TILE_K=32 with 4 stages - TMA illegal access
+iter010	iter010_wn192s3_persis	0	SEGFAULT	memory_bound	Persistent kernel with tile loop

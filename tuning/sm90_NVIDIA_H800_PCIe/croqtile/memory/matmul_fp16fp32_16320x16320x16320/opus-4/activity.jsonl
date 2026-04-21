@@ -1,0 +1,27 @@
+{"ts":"2026-04-21T00:46:58.163Z","tool":"store_baseline","msg":"Measuring cuBLAS baseline for fp16fp32 16320x16320x16320","level":"info"}
+{"ts":"2026-04-21T00:47:01.752Z","tool":"store_baseline","msg":"cuBLAS baseline: 400.7045 TFLOPS (saved to tuning/sm90_NVIDIA_H800_PCIe/croqtile/baseline/matmul_fp16fp32_16320x16320x16320/opus-4/cublas_result.json)","level":"info"}
+{"ts":"2026-04-21T00:47:02.080Z","tool":"store_round","msg":"Storing iter000_cublas (KEEP 400.7045 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:47:02.099Z","tool":"store_round","msg":"Stored iter000_cublas: KEEP 400.7045 TFLOPS (round 0)","level":"info"}
+{"ts":"2026-04-21T00:47:02.109Z","tool":"store_baseline","msg":"Stored iter000_cublas: 400.7045 TFLOPS (baseline)","level":"info"}
+{"ts":"2026-04-21T00:49:04.559Z","tool":"store_round","msg":"Storing iter001_wn192s3_1p1c (KEEP 129.0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:49:04.578Z","tool":"store_round","msg":"Stored iter001_wn192s3_1p1c: KEEP 129.0 TFLOPS (round 1)","level":"info"}
+{"ts":"2026-04-21T00:50:41.870Z","tool":"store_round","msg":"Storing iter002_wn192s3_tm64 (KEEP 227.3 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:50:41.888Z","tool":"store_round","msg":"Stored iter002_wn192s3_tm64: KEEP 227.3 TFLOPS (round 2)","level":"info"}
+{"ts":"2026-04-21T00:51:47.336Z","tool":"store_round","msg":"Storing iter003_wn192s4_tm64 (DISCARD 146.5 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:51:47.356Z","tool":"store_round","msg":"Stored iter003_wn192s4_tm64: DISCARD 146.5 TFLOPS (round 3)","level":"info"}
+{"ts":"2026-04-21T00:52:47.183Z","tool":"store_round","msg":"Storing iter004_wn192s2_tm64 (DISCARD 117.0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:52:47.202Z","tool":"store_round","msg":"Stored iter004_wn192s2_tm64: DISCARD 117.0 TFLOPS (round 4)","level":"info"}
+{"ts":"2026-04-21T00:54:31.998Z","tool":"store_round","msg":"Storing iter005_wn192s3_tm64_1p2c (KEEP 266.2 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:54:32.017Z","tool":"store_round","msg":"Stored iter005_wn192s3_tm64_1p2c: KEEP 266.2 TFLOPS (round 5)","level":"info"}
+{"ts":"2026-04-21T00:55:24.631Z","tool":"store_round","msg":"Storing iter006_wn192s3_tm128_1p1c (KEEP 269.8 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:55:24.650Z","tool":"store_round","msg":"Stored iter006_wn192s3_tm128_1p1c: KEEP 269.8 TFLOPS (round 6)","level":"info"}
+{"ts":"2026-04-21T00:57:39.335Z","tool":"store_round","msg":"Storing iter007_wn192s1_tm192_1p1c (DISCARD 26.1 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:57:39.355Z","tool":"store_round","msg":"Stored iter007_wn192s1_tm192_1p1c: DISCARD 26.1 TFLOPS (round 7)","level":"info"}
+{"ts":"2026-04-21T00:58:30.321Z","tool":"store_round","msg":"Storing iter008_wn192s3_swiz64 (SEGFAULT 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:58:30.341Z","tool":"store_round","msg":"Stored iter008_wn192s3_swiz64: SEGFAULT 0 TFLOPS (round 8)","level":"info"}
+{"ts":"2026-04-21T00:59:40.154Z","tool":"store_round","msg":"Storing iter009_wn192s4_tk32 (SEGFAULT 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:59:40.173Z","tool":"store_round","msg":"Stored iter009_wn192s4_tk32: SEGFAULT 0 TFLOPS (round 9)","level":"info"}
+{"ts":"2026-04-21T00:59:47.933Z","tool":"ncu_profile","msg":"Capturing profile: bash tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_16320x16320x16320/opus-4/iter006_wn192s3_tm128_1p1c.cute.result --skip-verify","level":"info"}
+{"ts":"2026-04-21T01:00:32.477Z","tool":"ncu_profile","msg":"Capturing profile: /tmp/1776732880662634025_127665022400320/__choreo_cute_iter006_wn192s3_tm128_1p1c.exe --skip-verify","level":"info"}
+{"ts":"2026-04-21T01:03:18.638Z","tool":"store_round","msg":"Storing iter010_wn192s3_persis (SEGFAULT 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:03:18.657Z","tool":"store_round","msg":"Stored iter010_wn192s3_persis: SEGFAULT 0 TFLOPS (round 10)","level":"info"}

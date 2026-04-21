@@ -1,0 +1,7 @@
+{
+  "task_uid": "croqtune-wn192-16320",
+  "dsl": "croqtile",
+  "model": "opus-4",
+  "device": "sm90_NVIDIA_H800_PCIe",
+  "status": "running"
+}
