@@ -25,3 +25,8 @@ iter022	iter022_b192x192	131.52	DISCARD	compute_bound	192x192 severe occupancy d
 iter023	iter023_k64s3	336.37	DISCARD	compute_bound	BLOCK_K=64 stages=3 close but lower than k128s2
 iter024	iter024_threads192	239.11	DISCARD	compute_bound	threads=192 causes work imbalance
 iter025	iter025_k32s5	259.91	DISCARD	compute_bound	BLOCK_K=32 too many inner loop iterations
+iter026	iter026_b128x144	164.17	DISCARD	memory_bound	BLOCK_N=144 causes TMA fallback warning
+iter027	iter027_panel7	331.52	DISCARD	compute_bound	panel_size=7 less efficient than 8
+iter028	iter028_b64x64s4	185.31	DISCARD	latency_bound	64x64 tiles too small causing launch overhead
+iter029	iter029_b128x176	146.74	DISCARD	memory_bound	BLOCK_N=176 causes TMA fallback
+iter030	iter030_panel12	340.48	DISCARD	compute_bound	panel_size=12 close but less than panel_size=8

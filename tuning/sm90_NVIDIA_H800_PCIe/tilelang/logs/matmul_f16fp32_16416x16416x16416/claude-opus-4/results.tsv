@@ -23,3 +23,10 @@ iter020	iter020_b96x256	0	COMPILE_FAIL	compute_bound	96x256 fails MMA layout con
 iter021	iter021_b160x256	0	COMPILE_FAIL	compute_bound	160x256 fails MMA layout constraint (warp_row_tiles % 16)
 iter022	iter022_b144x256	0	COMPILE_FAIL	compute_bound	144x256 fails WGMMA warp_row_tiles constraint
 iter023	iter023_b128x192	217.51	DISCARD	compute_bound	128x192 tiles worse than 128x256
+iter024	iter024_t192	0	COMPILE_FAIL	compute_bound	192 threads fails WGMMA constraint
+iter025	iter025_t384	0	COMPILE_FAIL	compute_bound	384 threads fails WGMMA constraint
+iter026	iter026_panel14	276.83	DISCARD	compute_bound	panel_size=14 worse than panel_size=10
+iter027	iter027_panel9	318.41	KEEP	compute_bound	panel_size=9 beats panel_size=10 - new best
+iter028	iter028_panel11	309.51	DISCARD	compute_bound	panel_size=11 worse than panel_size=9
+iter029	iter029_panel7	317.94	DISCARD	compute_bound	panel_size=7 slightly worse than panel_size=9
+iter030	iter030_panel9_k64	312.88	DISCARD	compute_bound	K=64 with 3 stages worse than K=32 with 4 stages

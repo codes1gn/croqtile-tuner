@@ -92,3 +92,18 @@
 {"ts":"2026-04-21T12:33:27.995Z","tool":"next_iter","msg":"Resolved iter025_k32s5","level":"info"}
 {"ts":"2026-04-21T12:34:04.032Z","tool":"store_round","msg":"Storing iter025_k32s5 (DISCARD 259.91 TFLOPS)","level":"info"}
 {"ts":"2026-04-21T12:34:04.050Z","tool":"store_round","msg":"Stored iter025_k32s5: DISCARD 259.91 TFLOPS (round 25)","level":"info"}
+{"ts":"2026-04-21T12:34:20.605Z","tool":"next_iter","msg":"Resolved iter026_b128x144","level":"info"}
+{"ts":"2026-04-21T12:35:12.504Z","tool":"store_round","msg":"Storing iter026_b128x144 (DISCARD 164.17 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:35:12.523Z","tool":"store_round","msg":"Stored iter026_b128x144: DISCARD 164.17 TFLOPS (round 26)","level":"info"}
+{"ts":"2026-04-21T12:35:21.059Z","tool":"next_iter","msg":"Resolved iter027_panel7","level":"info"}
+{"ts":"2026-04-21T12:35:55.988Z","tool":"store_round","msg":"Storing iter027_panel7 (DISCARD 331.52 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:35:56.006Z","tool":"store_round","msg":"Stored iter027_panel7: DISCARD 331.52 TFLOPS (round 27)","level":"info"}
+{"ts":"2026-04-21T12:36:04.308Z","tool":"next_iter","msg":"Resolved iter028_b64x64s4","level":"info"}
+{"ts":"2026-04-21T12:36:41.733Z","tool":"store_round","msg":"Storing iter028_b64x64s4 (DISCARD 185.31 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:36:41.752Z","tool":"store_round","msg":"Stored iter028_b64x64s4: DISCARD 185.31 TFLOPS (round 28)","level":"info"}
+{"ts":"2026-04-21T12:36:50.921Z","tool":"next_iter","msg":"Resolved iter029_b128x176","level":"info"}
+{"ts":"2026-04-21T12:37:29.338Z","tool":"store_round","msg":"Storing iter029_b128x176 (DISCARD 146.74 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:37:29.356Z","tool":"store_round","msg":"Stored iter029_b128x176: DISCARD 146.74 TFLOPS (round 29)","level":"info"}
+{"ts":"2026-04-21T12:37:30.283Z","tool":"next_iter","msg":"Resolved iter030_panel12","level":"info"}
+{"ts":"2026-04-21T12:38:08.953Z","tool":"store_round","msg":"Storing iter030_panel12 (DISCARD 340.48 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:38:08.972Z","tool":"store_round","msg":"Stored iter030_panel12: DISCARD 340.48 TFLOPS (round 30)","level":"info"}
