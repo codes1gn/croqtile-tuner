@@ -6,3 +6,5 @@ iter003	iter003_b128_s2	118.34	DISCARD	memory_bound	block_sizes=[128,128,32] num
 iter004	iter004_b256x128	216.06	KEEP	memory_bound	Larger M tile [256,128,64] improves A matrix reuse
 iter005	iter005_b256x256	53.80	DISCARD	memory_bound	Too large tiles [256,256,64] hurt occupancy significantly
 iter006	iter006_blockptr	215.85	DISCARD	memory_bound	block_ptr indexing no improvement on this config
+iter007	iter007_b128x256_s3	284.44	KEEP	memory_bound	Wider N tile [128,256,64] with 3 stages for optimal shared memory
+iter008	iter008_b64x512_s3	317.54	KEEP	memory_bound	Very wide N tile [64,512,64] maximizes B matrix reuse

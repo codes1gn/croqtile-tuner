@@ -30,3 +30,7 @@
 {"ts":"2026-04-21T15:06:24.447Z","tool":"store_round","msg":"Stored iter005_b256x256: DISCARD 53.80 TFLOPS (round 5)","level":"info"}
 {"ts":"2026-04-21T15:07:10.234Z","tool":"store_round","msg":"Storing iter006_blockptr (DISCARD 215.85 TFLOPS)","level":"info"}
 {"ts":"2026-04-21T15:07:10.253Z","tool":"store_round","msg":"Stored iter006_blockptr: DISCARD 215.85 TFLOPS (round 6)","level":"info"}
+{"ts":"2026-04-21T15:10:39.575Z","tool":"store_round","msg":"Storing iter007_b128x256_s3 (KEEP 284.44 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T15:10:39.594Z","tool":"store_round","msg":"Stored iter007_b128x256_s3: KEEP 284.44 TFLOPS (round 7)","level":"info"}
+{"ts":"2026-04-21T15:11:14.602Z","tool":"store_round","msg":"Storing iter008_b64x512_s3 (KEEP 317.54 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T15:11:14.621Z","tool":"store_round","msg":"Stored iter008_b64x512_s3: KEEP 317.54 TFLOPS (round 8)","level":"info"}
