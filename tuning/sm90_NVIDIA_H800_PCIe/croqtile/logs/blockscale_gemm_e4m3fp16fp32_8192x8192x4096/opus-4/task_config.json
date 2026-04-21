@@ -1,5 +1,5 @@
 {
-  "task_uid": "matmul-e4m3fp16-8192x8192x4096-opus4",
+  "task_uid": "blockscale-e4m3fp16fp32-8192x8192x4096-opus4",
   "dsl": "croqtile",
   "model": "opus-4",
   "device": "NVIDIA H800 PCIe",

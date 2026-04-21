@@ -11,6 +11,6 @@
   "method": "scaled_mm_fp8",
   "gpu": "sm90_NVIDIA_H800_PCIe",
   "dsl": "croqtile",
-  "shape_key": "matmul_e4m3fp16_8192x8192x4096",
+  "shape_key": "blockscale_gemm_e4m3fp16fp32_8192x8192x4096",
   "model": "opus-4"
 }
