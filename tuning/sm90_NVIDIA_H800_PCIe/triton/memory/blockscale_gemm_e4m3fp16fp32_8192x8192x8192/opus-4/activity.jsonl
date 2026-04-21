@@ -82,3 +82,15 @@
 {"ts":"2026-04-21T11:14:35.037Z","tool":"store_round","msg":"Stored iter047_gm4: KEEP 297.26 TFLOPS (round 47)","level":"info"}
 {"ts":"2026-04-21T11:14:35.410Z","tool":"store_round","msg":"Storing iter048_smallm (DISCARD 189.58 TFLOPS)","level":"info"}
 {"ts":"2026-04-21T11:14:35.430Z","tool":"store_round","msg":"Stored iter048_smallm: DISCARD 189.58 TFLOPS (round 48)","level":"info"}
+{"ts":"2026-04-21T11:16:00.751Z","tool":"store_round","msg":"Storing iter049_gm2 (DISCARD 281.06 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T11:16:00.770Z","tool":"store_round","msg":"Stored iter049_gm2: DISCARD 281.06 TFLOPS (round 49)","level":"info"}
+{"ts":"2026-04-21T11:16:01.149Z","tool":"store_round","msg":"Storing iter050_w4 (DISCARD 237.96 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T11:16:01.169Z","tool":"store_round","msg":"Stored iter050_w4: DISCARD 237.96 TFLOPS (round 50)","level":"info"}
+{"ts":"2026-04-21T11:17:28.078Z","tool":"store_round","msg":"Storing iter051_transpose (DISCARD 45.42 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T11:17:28.097Z","tool":"store_round","msg":"Stored iter051_transpose: DISCARD 45.42 TFLOPS (round 51)","level":"info"}
+{"ts":"2026-04-21T11:17:28.475Z","tool":"store_round","msg":"Storing iter052_bk128s4 (DISCARD 258.25 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T11:17:28.494Z","tool":"store_round","msg":"Stored iter052_bk128s4: DISCARD 258.25 TFLOPS (round 52)","level":"info"}
+{"ts":"2026-04-21T11:18:41.069Z","tool":"store_round","msg":"Storing iter053_noswizzle (DISCARD 285.75 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T11:18:41.089Z","tool":"store_round","msg":"Stored iter053_noswizzle: DISCARD 285.75 TFLOPS (round 53)","level":"info"}
+{"ts":"2026-04-21T11:18:41.473Z","tool":"store_round","msg":"Storing iter054_w6fail (COMPILE_FAIL 0.0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T11:18:41.492Z","tool":"store_round","msg":"Stored iter054_w6fail: COMPILE_FAIL 0.0 TFLOPS (round 54)","level":"info"}

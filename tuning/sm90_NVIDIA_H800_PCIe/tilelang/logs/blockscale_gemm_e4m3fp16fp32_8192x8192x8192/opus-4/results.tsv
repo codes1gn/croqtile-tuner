@@ -7,3 +7,5 @@ iter004	iter004_panel_tune	360.17	KEEP	compute_bound	128x192x64 tiles, 4 stages,
 iter005	iter005_bk128_tune	363.89	KEEP	compute_bound	Larger BLOCK_K=128 reduces K loop iterations, 2 stages, panel=8
 iter006	iter006_best_sweep	364.56	KEEP	compute_bound	128x192x128 s=2 p=10 from comprehensive 162-config sweep
 iter007	iter007_panel6	363.31	DISCARD	compute_bound	panel_size=6 instead of 10, no improvement
+iter008	iter008_bk96	316.33	DISCARD	compute_bound	BLOCK_K=96 for better balance, measurement variance
+iter009	iter009_panel14	373.67	KEEP	compute_bound	panel_size=14 for best L2 locality

@@ -27,3 +27,7 @@
 {"ts":"2026-04-21T11:12:46.678Z","tool":"store_round","msg":"Stored iter006_best_sweep: KEEP 364.56 TFLOPS (round 6)","level":"info"}
 {"ts":"2026-04-21T11:14:36.329Z","tool":"store_round","msg":"Storing iter007_panel6 (DISCARD 363.31 TFLOPS)","level":"info"}
 {"ts":"2026-04-21T11:14:36.348Z","tool":"store_round","msg":"Stored iter007_panel6: DISCARD 363.31 TFLOPS (round 7)","level":"info"}
+{"ts":"2026-04-21T11:15:59.800Z","tool":"store_round","msg":"Storing iter008_bk96 (DISCARD 316.33 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T11:15:59.820Z","tool":"store_round","msg":"Stored iter008_bk96: DISCARD 316.33 TFLOPS (round 8)","level":"info"}
+{"ts":"2026-04-21T11:17:41.460Z","tool":"store_round","msg":"Storing iter009_panel14 (KEEP 373.67 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T11:17:41.479Z","tool":"store_round","msg":"Stored iter009_panel14: KEEP 373.67 TFLOPS (round 9)","level":"info"}
