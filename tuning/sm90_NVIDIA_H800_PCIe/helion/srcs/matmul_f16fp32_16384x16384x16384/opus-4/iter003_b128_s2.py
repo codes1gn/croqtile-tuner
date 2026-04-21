@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Helion matmul f16->f32: iter001_baseline
+"""Helion matmul f16->f32: iter003_b128_s2
 Shape: 16384x16384x16384
-Config: block_sizes=[128,128,64], num_warps=8, num_stages=4
+Config: block_sizes=[128,128,32], num_warps=8, num_stages=2
+Hypothesis: Keep large blocks for compute intensity but reduce stages for lower register pressure
 """
 from __future__ import annotations
 
@@ -14,9 +15,9 @@ WARMUP = 10
 ITERS = 50
 
 cfg = helion.Config(
-    block_sizes=[128, 128, 64],
+    block_sizes=[128, 128, 32],
     num_warps=8,
-    num_stages=4,
+    num_stages=2,
 )
 
 @helion.kernel(
@@ -41,7 +42,7 @@ def verify() -> bool:
     out = matmul_f16fp32(a, b)
     ref = torch.matmul(a.float(), b.float())
     max_err = (out - ref).abs().max().item()
-    tol = 5e-2  # Larger tolerance for fp16 at K=16384
+    tol = 5e-2
     if max_err < tol:
         print(f"VERIFY: PASS max_abs_err={max_err:.6f}")
         return True
@@ -73,15 +74,12 @@ def bench() -> float:
 
 
 def profile_only() -> None:
-    """For ncu profiling - pre-allocate tensors, sync, then run kernel."""
     a = torch.randn(M, K, device="cuda", dtype=torch.float16)
     b = torch.randn(K, N, device="cuda", dtype=torch.float16)
     torch.cuda.synchronize()
-    # Warmup
     for _ in range(3):
         _ = matmul_f16fp32(a, b)
     torch.cuda.synchronize()
-    # Single call for profiling
     out = matmul_f16fp32(a, b)
     torch.cuda.synchronize()
     print("PROFILE: done")

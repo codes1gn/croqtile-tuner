@@ -1,0 +1,14 @@
+{
+  "schema": "croq-checkpoint-v1",
+  "timestamp": "2026-04-21T15:04:38Z",
+  "dsl": "helion",
+  "shape_key": "matmul_f16fp32_16384x16384x16384",
+  "iter": "iter004_b256x128",
+  "bottleneck": "memory_bound",
+  "idea": "Try larger M tile [256,128,64] for better A matrix reuse, keep good config otherwise",
+  "expected_gain": "+20-40 TFLOPS from better data locality",
+  "levers": [
+    "block_sizes"
+  ],
+  "status": "PLANNED"
+}

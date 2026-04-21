@@ -9,3 +9,18 @@
 {"ts":"2026-04-21T14:57:47.309Z","tool":"store_baseline","msg":"Stored iter000_cublas: 391.6564 TFLOPS (baseline)","level":"info"}
 {"ts":"2026-04-21T14:59:28.627Z","tool":"store_round","msg":"Storing iter001_baseline (KEEP 214.00 TFLOPS)","level":"info"}
 {"ts":"2026-04-21T14:59:28.645Z","tool":"store_round","msg":"Stored iter001_baseline: KEEP 214.00 TFLOPS (round 1)","level":"info"}
+{"ts":"2026-04-21T14:59:50.271Z","tool":"ncu_profile","msg":"Capturing profile: python3 tuning/sm90_NVIDIA_H800_PCIe/helion/srcs/matmul_f16fp32_16384x16384x16384/opus-4/iter001_baseline.py","level":"info"}
+{"ts":"2026-04-21T14:59:57.420Z","tool":"ncu_profile","msg":"Capturing profile: /usr/bin/python3 -- tuning/sm90_NVIDIA_H800_PCIe/helion/srcs/matmul_f16fp32_16384x16384x16384/opus-4/iter001_baseline.py","level":"info"}
+{"ts":"2026-04-21T15:00:12.797Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/helion/perf/matmul_f16fp32_16384x16384x16384/opus-4/ncu_iter001_baseline_round2.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/helion/perf/matmul_f16fp32_16384x16384x16384/opus-4/ncu_iter001_baseline_round2.csv","level":"info"}
+{"ts":"2026-04-21T15:00:20.206Z","tool":"profile_extract","msg":"Analyzing iter001_baseline_round2 from tuning/sm90_NVIDIA_H800_PCIe/helion/perf/matmul_f16fp32_16384x16384x16384/opus-4/ncu_iter001_baseline_round2.csv","level":"info"}
+{"ts":"2026-04-21T15:01:43.197Z","tool":"profile_extract","msg":"Analyzing iter001_round2 from tuning/sm90_NVIDIA_H800_PCIe/helion/perf/matmul_f16fp32_16384x16384x16384/opus-4/ncu_iter001_round2.csv","level":"info"}
+{"ts":"2026-04-21T15:02:32.550Z","tool":"next_iter","msg":"Resolved iter002_small_blocks","level":"info"}
+{"ts":"2026-04-21T15:02:32.579Z","tool":"checkpoint_write","msg":"PLANNED iter002_small_blocks: Reduce register pressure: smaller block_sizes=[64,64,32], num_stages=2, num_warps=4 for higher occupancy","level":"info"}
+{"ts":"2026-04-21T15:03:26.669Z","tool":"store_round","msg":"Storing iter002_small_blocks (DISCARD 65.08 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T15:03:26.689Z","tool":"store_round","msg":"Stored iter002_small_blocks: DISCARD 65.08 TFLOPS (round 2)","level":"info"}
+{"ts":"2026-04-21T15:03:43.687Z","tool":"next_iter","msg":"Resolved iter003_b128_s2","level":"info"}
+{"ts":"2026-04-21T15:03:43.722Z","tool":"checkpoint_write","msg":"PLANNED iter003_b128_s2: Keep large blocks [128,128,32] but reduce stages to 2 for lower register pressure","level":"info"}
+{"ts":"2026-04-21T15:04:20.122Z","tool":"store_round","msg":"Storing iter003_b128_s2 (DISCARD 118.34 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T15:04:20.141Z","tool":"store_round","msg":"Stored iter003_b128_s2: DISCARD 118.34 TFLOPS (round 3)","level":"info"}
+{"ts":"2026-04-21T15:04:38.198Z","tool":"next_iter","msg":"Resolved iter004_b256x128","level":"info"}
+{"ts":"2026-04-21T15:04:38.232Z","tool":"checkpoint_write","msg":"PLANNED iter004_b256x128: Try larger M tile [256,128,64] for better A matrix reuse, keep good config otherwise","level":"info"}

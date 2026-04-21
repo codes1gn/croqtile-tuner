@@ -30,3 +30,9 @@ iter026	iter026_b192x128k128s3	0	COMPILE_FAIL	memory_bound	stages=3 with BLOCK_K
 iter027	iter027_b192x128k256s2	0	COMPILE_FAIL	memory_bound	BLOCK_K=256 exceeds shared memory even with stages=2
 iter028	iter028_b128x128k128s2	213.70	DISCARD	compute_bound	128x128 with K=128 worse than 192x128
 iter029	iter029_b128x192k128s2	247.40	DISCARD	compute_bound	128x192 with K=128 slightly worse than 192x128
+iter030	iter030_b192x128k128s2_t256	87.55	DISCARD	compute_bound	256 threads with K=128 causes issues
+iter031	iter031_b192x128k128s2_p4	248.18	DISCARD	compute_bound	panel_size=4 worse than 8
+iter032	iter032_b192x128k128s2_p16	254.85	DISCARD	compute_bound	panel_size=16 similar variance to panel_size=8
+iter033	iter033_b192x128k128s2_noswz	193.12	DISCARD	memory_bound	No swizzle has high variance - swizzle is needed
+iter034	iter034_b256x128k128s2	59.35	DISCARD	memory_bound	256x128 with K=128 too much shared memory pressure
+iter035	iter035_b192x96k128s2	201.69	DISCARD	compute_bound	192x96 with K=128 worse than 192x128
