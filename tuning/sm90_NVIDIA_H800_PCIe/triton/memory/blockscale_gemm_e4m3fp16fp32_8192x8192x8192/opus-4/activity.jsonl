@@ -74,3 +74,11 @@
 {"ts":"2026-04-21T11:12:20.871Z","tool":"store_round","msg":"Stored iter044_w12: COMPILE_FAIL 0.0 TFLOPS (round 44)","level":"info"}
 {"ts":"2026-04-21T11:12:27.839Z","tool":"store_round","msg":"Storing iter043_narrowtile (KEEP 295.84 TFLOPS)","level":"info"}
 {"ts":"2026-04-21T11:12:27.859Z","tool":"store_round","msg":"Stored iter043_narrowtile: KEEP 295.84 TFLOPS (round 43)","level":"info"}
+{"ts":"2026-04-21T11:14:34.234Z","tool":"store_round","msg":"Storing iter045_s4fail (COMPILE_FAIL 0.0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T11:14:34.253Z","tool":"store_round","msg":"Stored iter045_s4fail: COMPILE_FAIL 0.0 TFLOPS (round 45)","level":"info"}
+{"ts":"2026-04-21T11:14:34.624Z","tool":"store_round","msg":"Storing iter046_w16 (DISCARD 294.05 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T11:14:34.644Z","tool":"store_round","msg":"Stored iter046_w16: DISCARD 294.05 TFLOPS (round 46)","level":"info"}
+{"ts":"2026-04-21T11:14:35.019Z","tool":"store_round","msg":"Storing iter047_gm4 (KEEP 297.26 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T11:14:35.037Z","tool":"store_round","msg":"Stored iter047_gm4: KEEP 297.26 TFLOPS (round 47)","level":"info"}
+{"ts":"2026-04-21T11:14:35.410Z","tool":"store_round","msg":"Storing iter048_smallm (DISCARD 189.58 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T11:14:35.430Z","tool":"store_round","msg":"Stored iter048_smallm: DISCARD 189.58 TFLOPS (round 48)","level":"info"}

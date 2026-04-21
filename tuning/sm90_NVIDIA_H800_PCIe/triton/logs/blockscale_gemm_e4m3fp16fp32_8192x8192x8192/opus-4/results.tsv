@@ -33,3 +33,7 @@ iter041	iter041_w8gm4	244.38	DISCARD	compute_bound	8 warps + GROUP_M=4
 iter042	iter042_w4	156.52	DISCARD	compute_bound	4 warps too few
 iter044	iter044_w12	0.0	COMPILE_FAIL	unknown	12 warps compilation error
 iter043	iter043_narrowtile	295.84	KEEP	compute_bound	256x64 tile with BLOCK_K=256
+iter045	iter045_s4fail	0.0	COMPILE_FAIL	unknown	4 stages exceeded smem limit
+iter046	iter046_w16	294.05	DISCARD	compute_bound	16 warps on narrow tile
+iter047	iter047_gm4	297.26	KEEP	compute_bound	256x64 with GROUP_M=4
+iter048	iter048_smallm	189.58	DISCARD	compute_bound	128x64 tile too small

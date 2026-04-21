@@ -25,3 +25,5 @@
 {"ts":"2026-04-21T11:01:55.553Z","tool":"store_round","msg":"Stored iter005_bk128_tune: KEEP 363.89 TFLOPS (round 5)","level":"info"}
 {"ts":"2026-04-21T11:12:46.660Z","tool":"store_round","msg":"Storing iter006_best_sweep (KEEP 364.56 TFLOPS)","level":"info"}
 {"ts":"2026-04-21T11:12:46.678Z","tool":"store_round","msg":"Stored iter006_best_sweep: KEEP 364.56 TFLOPS (round 6)","level":"info"}
+{"ts":"2026-04-21T11:14:36.329Z","tool":"store_round","msg":"Storing iter007_panel6 (DISCARD 363.31 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T11:14:36.348Z","tool":"store_round","msg":"Stored iter007_panel6: DISCARD 363.31 TFLOPS (round 7)","level":"info"}
