@@ -1,0 +1,2 @@
+{"ts":"2026-04-21T10:36:20.503Z","tool":"discover_baseline","msg":"Scanning for blockscale_gemm (triton) candidates","level":"info"}
+{"ts":"2026-04-21T10:36:20.520Z","tool":"discover_baseline","msg":"No candidates found — recommend from scratch","level":"info"}

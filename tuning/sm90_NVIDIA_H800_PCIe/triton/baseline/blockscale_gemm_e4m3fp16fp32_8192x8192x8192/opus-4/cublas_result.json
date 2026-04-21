@@ -1,0 +1,15 @@
+{
+  "tflops": 460.2319,
+  "dtype": "e4m3fp16fp32",
+  "m": 8192,
+  "n": 8192,
+  "k": 8192,
+  "warmup": 10,
+  "iters": 50,
+  "avg_ms": 2.389,
+  "status": "ok",
+  "gpu": "sm90_NVIDIA_H800_PCIe",
+  "dsl": "triton",
+  "shape_key": "blockscale_gemm_e4m3fp16fp32_8192x8192x8192",
+  "model": "opus-4"
+}

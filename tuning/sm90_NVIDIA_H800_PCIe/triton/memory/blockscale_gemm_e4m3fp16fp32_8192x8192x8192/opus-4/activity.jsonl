@@ -1,0 +1,7 @@
+{"ts":"2026-04-21T10:35:50.507Z","tool":"resume_state","msg":"Loading tuning state for triton/blockscale_gemm_e4m3fp16fp32_8192x8192x8192","level":"info"}
+{"ts":"2026-04-21T10:35:50.510Z","tool":"resume_state","msg":"No tuning artifacts found for triton/blockscale_gemm_e4m3fp16fp32_8192x8192x8192","level":"error"}
+{"ts":"2026-04-21T10:36:10.713Z","tool":"store_baseline","msg":"Measuring cuBLAS baseline for e4m3fp16fp32 8192x8192x8192","level":"info"}
+{"ts":"2026-04-21T10:36:13.176Z","tool":"store_baseline","msg":"cuBLAS baseline: 460.2319 TFLOPS (saved to tuning/sm90_NVIDIA_H800_PCIe/triton/baseline/blockscale_gemm_e4m3fp16fp32_8192x8192x8192/opus-4/cublas_result.json)","level":"info"}
+{"ts":"2026-04-21T10:36:13.544Z","tool":"store_round","msg":"Storing iter000_cublas (KEEP 460.2319 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T10:36:13.564Z","tool":"store_round","msg":"Stored iter000_cublas: KEEP 460.2319 TFLOPS (round 0)","level":"info"}
+{"ts":"2026-04-21T10:36:13.575Z","tool":"store_baseline","msg":"Stored iter000_cublas: 460.2319 TFLOPS (baseline)","level":"info"}
