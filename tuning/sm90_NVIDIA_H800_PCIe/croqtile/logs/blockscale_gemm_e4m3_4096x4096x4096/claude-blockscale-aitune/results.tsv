@@ -1,6 +1,81 @@
-iter	kernel	tflops	decision	bottleneck	idea_summary
-iter000	iter000_baseline	397.9	KEEP	baseline	Blockscale GEMM E4M3 baseline @4096^3 (M64N128K32)
-iter049	iter049_blockscale	380.0	KEEP	memory_bound	TMA overlap: issue next TMA after WGMMA wait, before scale_accumulator (+21% @2k)
-iter051	iter051_blockscale	602.0	KEEP	compute_bound	N256 WGMMA: M64N256K32 doubles compute per tile @4096^3
-iter053	iter053_blockscale	610.0	KEEP	compute_bound	N256 + L2 256B promotion on RHS TMA tensor @4096^3
-iter066	iter066_blockscale	621.0	KEEP	compute_bound	N256 + L2 + prefetch scale_a before WGMMA (BEST @4096^3, +56.1% over baseline)
+iter	kernel	tflops_2k	tflops_4k	decision	bottleneck	idea_summary
+baseline	dyn_sm90_warpspec_1p1c	314.0		BASELINE	baseline	1-warpgroup warpspec N128 starting point
+baseline_b	dyn_sm90 (non-warpspec)	314.0		DISCARD	baseline	Same perf without warp specialization
+baseline_c	dyn_sm90_warpspec_persis_1p1c	135.0		DISCARD	smem_bound	Persistent kills perf via WGMMA divergence
+iter001	blockscale_gemm_e4m3_iter001_reorder_commit.cu			KEEP	baseline	Reorder commit
+iter002	blockscale_gemm_e4m3_iter002_inline_scale.cu			KEEP	baseline	Inline scale
+iter003	blockscale_gemm_e4m3_iter003_4stage.co	242.0		DISCARD	smem_bound	4-stage pipeline - extra SMEM reduces occupancy
+iter004	blockscale_gemm_e4m3_iter004_n256.co	225.0		DISCARD	smem_bound	N256 WGMMA - 114KB SMEM kills occupancy
+iter005	blockscale_gemm_e4m3_iter005_swpipe.cu	199.0		DISCARD	register_bound	SW pipeline - register overhead from double-buffer accum
+iter006	blockscale_gemm_e4m3_iter006_defer_commit.cu	311.0		DISCARD	compute_bound	Deferred commit - same as baseline
+iter007	blockscale_gemm_e4m3_iter007_large.co		398.0	KEEP	compute_bound	4096³ shows +27% from better SM utilization
+iter008	blockscale_gemm_e4m3_iter008_smem_reuse.cu			KEEP	smem_bound	SMEM reuse experiment
+iter009	blockscale_gemm_e4m3_iter009_n64.co	291.0		DISCARD	compute_bound	N64 WGMMA - worse compute-to-memory ratio
+iter010	blockscale_gemm_e4m3_iter010_f32acc.co	220.0		DISCARD	register_bound	F32 accumulation - 2x register usage kills occupancy
+iter011	blockscale_gemm_e4m3_iter011_single_arrive.cu	318.0		KEEP	compute_bound	Single arrive - marginal +1.1%
+iter012	blockscale_gemm_e4m3_iter012_async_tma.cu	231.0		DISCARD	smem_bound	Async TMA double-buf - 49KB SMEM kills occupancy
+iter012_b	blockscale_gemm_e4m3_iter012_ws_nondiv.co			DISCARD	baseline	WS non-div variant
+iter013	blockscale_gemm_e4m3_iter013_precomp_scale.cu	318.0		KEEP	compute_bound	Precompute scale - marginal +1.1%
+iter014	blockscale_gemm_e4m3_iter014_persistent.cu			DISCARD	compute_bound	Persistent experiment
+iter015	blockscale_gemm_e4m3_iter015_stmatrix.co			DISCARD	compute_bound	Stmatrix experiment (.co)
+iter016	blockscale_gemm_e4m3_iter016_unroll2.cu			DISCARD	compute_bound	K-loop unroll 2x
+iter017	blockscale_gemm_e4m3_iter017_swpipe2.cu			DISCARD	compute_bound	SW pipeline v2
+iter018	blockscale_gemm_e4m3_iter018_gridswizzle.cu			DISCARD	memory_bound	Grid swizzle experiment
+iter019	blockscale_gemm_e4m3_iter019_tma_overlap.cu	358.0	424.0	KEEP	memory_bound	TMA overlap - +14%@2k from concurrent LHS+RHS TMA loads
+iter020	blockscale_gemm_e4m3_iter020_combined.cu			DISCARD	compute_bound	Combined optimizations
+iter022	blockscale_gemm_e4m3_iter022_tma_prefetch.cu			DISCARD	memory_bound	TMA prefetch
+iter023	blockscale_gemm_e4m3_iter023_batch_precomp.cu			DISCARD	compute_bound	Batch precompute
+iter024	blockscale_gemm_e4m3_iter024_m128.co			DISCARD	smem_bound	M128 tile (.co)
+iter025	blockscale_gemm_e4m3_iter025_splitk.cu			DISCARD	memory_bound	Split-K experiment
+iter026	blockscale_gemm_e4m3_iter026_restrict.cu	356.0		DISCARD	compute_bound	__restrict__ - no effect
+iter027	blockscale_gemm_e4m3_iter027_sw_pipeline.cu	274.0		DISCARD	smem_bound	SW pipeline - register+SMEM pressure
+iter028	blockscale_gemm_e4m3_iter028_explicit_sync.cu	352.0		DISCARD	compute_bound	Explicit sync - compiler barriers better
+iter029	blockscale_gemm_e4m3_iter029_cta_swizzle.cu	353.0	465.0	KEEP	memory_bound	CTA swizzle W=4 - +10.5%@4k from L2 locality
+iter030	blockscale_gemm_e4m3_iter030_fast_swizzle.cu	351.0	405.0	DISCARD	memory_bound	Bitwise swizzle - somehow slower
+iter031	blockscale_gemm_e4m3_iter031_combined.cu	367.0	408.0	KEEP	compute_bound	Combined cleanup - best@2k at this point
+iter032	blockscale_gemm_e4m3_iter032_persistent.cu	363.0	417.0	DISCARD	compute_bound	Persistent - loop overhead
+iter033	blockscale_gemm_e4m3_iter033_single_barrier.cu	361.0	475.0	KEEP	compute_bound	Single barrier - +13.5%@4k, single combined barrier
+iter034	blockscale_gemm_e4m3_iter034_doublebuf.cu	364.0		KEEP	compute_bound	Scale prefetch - marginal +0.8%
+iter035	blockscale_gemm_e4m3_iter035_swizzle8_l2promo.cu		462.0	DISCARD	memory_bound	Swizzle8 + L2 promo - W=8 swizzle worse than W=4
+iter036	blockscale_gemm_e4m3_iter036_doublebuf_swizzle.cu	363.0		DISCARD	compute_bound	Combined best - marginal
+iter037	blockscale_gemm_e4m3_iter037_stmatrix_store.cu	362.0		DISCARD	compute_bound	stmatrix store - output store is <2% of time
+iter038	blockscale_gemm_e4m3_iter038_scale_smem.cu	339.0		DISCARD	memory_bound	Scale via SMEM - extra sync > strided access savings
+iter038_b	blockscale_gemm_e4m3_iter038_dyn_doublebuf.cu			DISCARD	smem_bound	Dynamic double-buf variant
+iter039	blockscale_gemm_e4m3_iter039_setmaxnreg.cu	218.0		DISCARD	register_bound	maxrregcount=64 - massive register spilling
+iter040	blockscale_gemm_e4m3_iter040_split_wgmma.cu	369.0	486.0	KEEP	compute_bound	Split WGMMA - new best both sizes
+iter040_b	blockscale_gemm_e4m3_iter040_kunroll2.cu			DISCARD	compute_bound	K-unroll variant
+iter041	blockscale_gemm_e4m3_iter041_interleave_scale.cu	368.0	486.0	DISCARD	compute_bound	Interleave scale - same as iter040
+iter042	blockscale_gemm_e4m3_iter042_persistent_v2.cu	145.0		DISCARD	compute_bound	Persistent v2 - -60.7%, sequential worse than HW scheduling
+iter043	blockscale_gemm_e4m3_iter043_static_doublebuf.cu	211.0		DISCARD	compute_bound	Static double-buf - C7520 WGMMA serialization
+iter044	blockscale_gemm_e4m3_iter044_elect_one.cu	362.0	473.0	DISCARD	compute_bound	Predicated PTX TMA - C7520 fixed but no speedup
+iter045	blockscale_gemm_e4m3_iter045_swizzle1.cu	375.0	497.0	KEEP	compute_bound	Swizzle W=1 - new best! Column-first ordering best
+iter046	blockscale_gemm_e4m3_iter046_splitcommit.cu	373.0	496.0	DISCARD	compute_bound	Split commit - per-WGMMA commit no help
+iter047	blockscale_gemm_e4m3_iter047_sw1_pipeline.cu	270.0		DISCARD	smem_bound	W=1 pipeline - 2x SMEM halves occupancy
+iter048	blockscale_gemm_e4m3_iter048_prefetch_scale_a.cu	368.0		DISCARD	memory_bound	Prefetch scale_a - L1 cache already handles it
+iter049	blockscale_gemm_e4m3_iter049_overlap_tma_scale.cu	380.0	504.0	KEEP	compute_bound	TMA-scale overlap - BEST@2k! TMA for next block overlaps with scale_accumulator
+iter050	blockscale_gemm_e4m3_iter050_scaled0_overlap.cu	382.0		DISCARD	compute_bound	ScaleOut::Zero - same as iter049
+iter051	blockscale_gemm_e4m3_iter051_n256.cu	372.0	602.0	KEEP	compute_bound	N256 WGMMA - +19.4%@4k! Doubled compute density
+iter052	blockscale_gemm_e4m3_iter052_tma_prefetch.cu	301.0		DISCARD	memory_bound	TMA L2 prefetch - L2 contention
+iter052_b	blockscale_gemm_e4m3_iter052_n256_l2.cu			DISCARD	memory_bound	N256 L2 variant
+iter053	blockscale_gemm_e4m3_iter053_n256_l2rhs.cu		610.0	KEEP	memory_bound	N256 + L2 RHS - +1.3% from L2_256B on RHS
+iter054	blockscale_gemm_e4m3_iter054_kunroll2.cu	381.0	612.0	DISCARD	compute_bound	K-loop unroll 2 - compiler already optimizes
+iter055	blockscale_gemm_e4m3_iter055_regpipe.cu	167.0		DISCARD	register_bound	Register pipeline - -56%, stack spilling catastrophe
+iter055_b	blockscale_gemm_e4m3_iter055_f32accum.cu			DISCARD	register_bound	F32 accum variant
+iter055_c	blockscale_gemm_e4m3_iter055_splitbatch.cu			DISCARD	compute_bound	Split batch variant
+iter056	blockscale_gemm_e4m3_iter056_n64.cu	350.0		DISCARD	compute_bound	N64 tile - halved compute density
+iter057	blockscale_gemm_e4m3_iter057_directstore.cu	315.0		DISCARD	memory_bound	Direct global store - uncoalesced stores
+iter058	blockscale_gemm_e4m3_iter058_ktile256.cu	300.0		DISCARD	smem_bound	K-tile 256 - 49KB SMEM kills occupancy
+iter059	blockscale_gemm_e4m3_iter059_o3.cu	377.0		DISCARD	compute_bound	-O3 flag - O3 no better than O2
+iter060	blockscale_gemm_e4m3_iter060_l2lhs.cu	378.0		DISCARD	memory_bound	L2 both tensors - no benefit at 2048³
+iter061	blockscale_gemm_e4m3_iter061_persistent_lite.cu	372.0		DISCARD	register_bound	Delayed scale - register pressure from 2x fragments
+iter062	blockscale_gemm_e4m3_iter062_m128.cu	244.0		DISCARD	compute_bound	2-warpgroup M128 - C7520 serialization
+iter062_b	blockscale_gemm_e4m3_iter062_n192.cu			DISCARD	compute_bound	N192 tile variant
+iter063	blockscale_gemm_e4m3_iter063_prefetch_scale.cu	380.0	507.0	DISCARD	compute_bound	Scale prefetch - marginal
+iter064	blockscale_gemm_e4m3_iter064_persistent.cu	362.0	513.0	DISCARD	compute_bound	Persistent N128 - tile loop overhead
+iter065	blockscale_gemm_e4m3_iter065_n256_persistent.cu		561.0	DISCARD	memory_bound	N256 persistent - breaks L2 locality
+iter066	blockscale_gemm_e4m3_iter066_n256_prefetch.cu		621.0	KEEP	compute_bound	N256 + prefetch - BEST@4k! Scale prefetch +2.8%
+iter067	blockscale_gemm_e4m3_iter067_n256_l2both.cu		610.0	DISCARD	memory_bound	N256 L2 both - L2 on LHS hurts
+iter068	blockscale_gemm_e4m3_iter068_shfl_scale.cu	357.0		DISCARD	compute_bound	Shfl scale broadcast - shfl latency + divergence
+iter069	blockscale_gemm_e4m3_iter069_precomp_desc.cu	380.0		DISCARD	compute_bound	Precomputed descs - compiler already hoists
+iter070	blockscale_gemm_e4m3_iter070_combined.cu	380.0		DISCARD	compute_bound	Combined micro-opts - compute-bound ceiling
+iter071	blockscale_gemm_e4m3_iter071_splitk.cu	197.0		DISCARD	memory_bound	Split-K atomic - FP16 atomicAdd too slow
