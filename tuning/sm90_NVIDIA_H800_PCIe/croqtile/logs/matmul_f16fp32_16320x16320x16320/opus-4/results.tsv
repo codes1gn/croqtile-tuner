@@ -26,3 +26,73 @@ iter023	iter023_wn256_s3_reg160	306.88	DISCARD	memory_bound	maxrregcount=160 - r
 iter024	iter024_wn256_s3_swz15	228.77	DISCARD	memory_bound	Grid swizzle=15 - suboptimal L2 cache reuse pattern
 iter025	iter003_profile	319.77	KEEP	latency_bound	Profiled iter003: 8-way bank conflicts on smem stores (75%), 2 warps/sched, need
 iter026	iter026_wn128_s3_swz12	151.68	DISCARD	memory_bound	WARP_N=128 to reduce bank conflicts - kernel internals hardcoded for 256
+iter027	iter027_wn192_s3_swz12	0	SEGFAULT	misc	WARP_N=192 STAGES=3 - smem layout mismatch from stage reduction
+iter028	iter028_wn256_s3_ftz	313.0	DISCARD	memory_bound	ftz=true - no benefit for tensor core compute
+iter029	iter029_wn256_s3_swz9	18.43	DISCARD	memory_bound	Grid swizzle=9 - incompatible with M/N tile ratio
+iter030	iter030_wn256_s3_tmaswz32	188.40	DISCARD	memory_bound	TMA swizzle=32 - worse shared memory layout
+iter031	iter031_swz6	311.45	DISCARD	memory_bound	Grid swizzle=6
+iter032	iter032_swz4	283.73	DISCARD	memory_bound	Grid swizzle=4
+iter033	iter033_swz20	291.60	DISCARD	memory_bound	Grid swizzle=20 - inconsistent perf
+iter034	iter034_swz24	322.08	DISCARD	memory_bound	Grid swizzle=24
+iter035	iter035_swz32	316.63	DISCARD	memory_bound	Grid swizzle=32
+iter036	iter036_reg200	172.84	DISCARD	compute_bound	maxrregcount=200
+iter037	iter037_reg255	163.53	DISCARD	compute_bound	maxrregcount=255
+iter038	iter038_unroll	317.40	DISCARD	compute_bound	-funroll-loops
+iter039	iter039_precdiv	321.65	DISCARD	compute_bound	prec-div=false
+iter040	iter040_precsqrt	316.35	DISCARD	compute_bound	prec-sqrt=false (unstable)
+iter041	iter041_prec	317.24	DISCARD	compute_bound	prec-div+sqrt=false (unstable)
+iter042	iter042_swz17	312.75	DISCARD	memory_bound	Grid swizzle=17
+iter043	iter043_swz18	164.68	DISCARD	memory_bound	Grid swizzle=18
+iter044	iter044_swz19	317.24	DISCARD	memory_bound	Grid swizzle=19
+iter046	iter046_swz21	314.23	DISCARD	memory_bound	Grid swizzle=21
+iter047	iter047_swz22	319.53	DISCARD	memory_bound	Grid swizzle=22
+iter048	iter048_swz23	309.42	DISCARD	memory_bound	Grid swizzle=23
+iter050	iter050_swz25	319.36	DISCARD	memory_bound	Grid swizzle=25
+iter051	iter051_swz26	319.53	DISCARD	memory_bound	Grid swizzle=26
+iter053	iter053_swz28	160.39	DISCARD	memory_bound	Grid swizzle=28
+iter054	iter054_wm48	317.92	DISCARD	memory_bound	WARP_M=48
+iter055	iter055_wm96	314.97	DISCARD	memory_bound	WARP_M=96
+iter056	iter056_tm48	249.44	DISCARD	memory_bound	TILE_M=48
+iter057	iter057_tk32	149.43	DISCARD	memory_bound	TILE_K=32
+iter058	iter058_wm48_swz14	321.30	DISCARD	memory_bound	WARP_M=48 + swizzle=14
+iter059	iter059_wm48_swz10	318.77	DISCARD	memory_bound	WARP_M=48 + swizzle=10
+iter060	iter060_baseline	319.77	KEEP	memory_bound	Baseline with ptxas verbose (168 regs, 64B smem)
+iter061	iter061_wm80	316.23	DISCARD	memory_bound	WARP_M=80
+iter062	iter062_wm56	318.26	DISCARD	memory_bound	WARP_M=56
+iter063	iter063_wm48_swz12	317.02	DISCARD	memory_bound	WARP_M=48 + swz12
+iter064	iter064_wm72	319.69	DISCARD	memory_bound	WARP_M=72
+iter065	iter065_wm40	316.71	DISCARD	memory_bound	WARP_M=40
+iter066	iter066_wm52	318.33	DISCARD	memory_bound	WARP_M=52
+iter067	iter067_wm60	316.19	DISCARD	memory_bound	WARP_M=60
+iter068	iter068_wm68	317.45	DISCARD	memory_bound	WARP_M=68
+iter069	iter069_wn128	0	DISCARD	misc	WARP_N=128 - INVALID: kernel internals not updated
+iter070	iter070_wn160	0	DISCARD	misc	WARP_N=160 - INVALID: kernel internals not updated
+iter071	iter071_wn192	0	DISCARD	misc	WARP_N=192 - INVALID: kernel internals not updated
+iter072	iter072_wn224	0	DISCARD	misc	WARP_N=224 - INVALID: kernel internals not updated
+iter074	iter074_wn288	0	DISCARD	misc	WARP_N=288 - INVALID: kernel internals not updated
+iter075	iter075_wn320	0	DISCARD	misc	WARP_N=320 - INVALID: kernel internals not updated
+iter076	iter076_wn352	0	DISCARD	misc	WARP_N=352 - INVALID: kernel internals not updated
+iter077	iter077_wn384	0	DISCARD	misc	WARP_N=384 - INVALID: kernel internals not updated
+iter078	iter078_wn416	0	DISCARD	misc	WARP_N=416 - INVALID: kernel internals not updated
+iter079	iter079_wn448	0	DISCARD	misc	WARP_N=448 - INVALID: kernel internals not updated
+iter080	iter080_wn480	0	DISCARD	misc	WARP_N=480 - INVALID: kernel internals not updated
+iter081	iter081_wn512	0	DISCARD	misc	WARP_N=512 - INVALID: kernel internals not updated
+iter082	iter082_wk8	321.70	DISCARD	compute_bound	WARP_K=8
+iter083	iter083_wk16	319.77	DISCARD	compute_bound	WARP_K=16
+iter084	iter084_wk24	321.96	DISCARD	compute_bound	WARP_K=24
+iter085	iter085_wk32	322.29	DISCARD	compute_bound	WARP_K=32
+iter087	iter087_wk48	317.86	DISCARD	compute_bound	WARP_K=48
+iter089	iter089_wk64	323.88	DISCARD	compute_bound	WARP_K=64
+iter091	iter091_wk80	318.23	DISCARD	compute_bound	WARP_K=80
+iter093	iter093_wk96	323.91	DISCARD	compute_bound	WARP_K=96
+iter095	iter095_wk112	326.02	DISCARD	compute_bound	WARP_K=112
+iter096	iter096_wk64_swz10	321.77	DISCARD	compute_bound	WARP_K=64 + swz10
+iter097	iter097_wk64_swz14	321.59	DISCARD	compute_bound	WARP_K=64 + swz14
+iter98	iter98_wk24_swz10	142.94	DISCARD	contention	wk24_swz10 - GPU contention suspected
+iter99	iter99_wk24_swz14	142.94	DISCARD	contention	wk24_swz14 - GPU contention suspected
+iter100	iter100_wk32_swz10	142.94	DISCARD	contention	wk32_swz10 - GPU contention suspected
+iter101	iter101_wk32_swz14	142.94	DISCARD	contention	wk32_swz14 - GPU contention suspected
+iter102	iter102_wk48_swz14	142.94	DISCARD	contention	wk48_swz14 - GPU contention suspected
+iter103	iter103_wk64_swz11	142.94	DISCARD	contention	wk64_swz11 - GPU contention suspected
+iter104	iter104_wk64_swz13	142.94	DISCARD	contention	wk64_swz13 - GPU contention suspected
+iter105	iter105_wk48_swz11	142.94	DISCARD	contention	wk48_swz11 - GPU contention suspected
