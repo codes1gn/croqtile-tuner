@@ -92,10 +92,11 @@ def verify() -> bool:
 
 
 def bench(warmup: int = 10, iters: int = 50) -> float:
+    # dot_scaled full-K tiles need modest stages — num_stages=3 exceeded SMEM (H800).
     cfg = helion.Config(
         block_sizes=[128, 128],
-        num_warps=8,
-        num_stages=3,
+        num_warps=4,
+        num_stages=1,
         indexing="block_ptr",
     )
 

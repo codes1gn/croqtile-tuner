@@ -9,3 +9,4 @@ iter006	iter006_best_sweep	364.56	KEEP	compute_bound	128x192x128 s=2 p=10 from c
 iter007	iter007_panel6	363.31	DISCARD	compute_bound	panel_size=6 instead of 10, no improvement
 iter008	iter008_bk96	316.33	DISCARD	compute_bound	BLOCK_K=96 for better balance, measurement variance
 iter009	iter009_panel14	373.67	KEEP	compute_bound	panel_size=14 for best L2 locality
+iter010	iter010_panel11	365.11	DISCARD	compute_bound	panel_size=11 showed 390T best in sweep but variance

@@ -42,3 +42,7 @@
 {"round": 52, "iter": "iter052", "bottleneck": "compute_bound", "idea": "256x64 BLOCK_K=128 4stages", "category": "pipeline", "expected_gain": "+0%", "decision": "DISCARD", "tflops": 258.25, "timestamp": "2026-04-21T11:17:28Z"}
 {"round": 53, "iter": "iter053", "bottleneck": "compute_bound", "idea": "GROUP_M=1 no swizzle worse", "category": "memory", "expected_gain": "+0%", "decision": "DISCARD", "tflops": 285.75, "timestamp": "2026-04-21T11:18:41Z"}
 {"round": 54, "iter": "iter054", "bottleneck": "unknown", "idea": "6 warps invalid - must be power of 2", "category": "compute", "expected_gain": "+0%", "decision": "COMPILE_FAIL", "tflops": 0.0, "timestamp": "2026-04-21T11:18:41Z"}
+{"round": 55, "iter": "iter055", "bottleneck": "unknown", "idea": "192 not power of 2", "category": "tiling", "expected_gain": "+0%", "decision": "COMPILE_FAIL", "tflops": 0.0, "timestamp": "2026-04-21T11:20:49Z"}
+{"round": 56, "iter": "iter056", "bottleneck": "compute_bound", "idea": "256x32 too narrow", "category": "tiling", "expected_gain": "+0%", "decision": "DISCARD", "tflops": 186.86, "timestamp": "2026-04-21T11:20:50Z"}
+{"round": 57, "iter": "iter057", "bottleneck": "compute_bound", "idea": "128x64 tile decent but not best", "category": "tiling", "expected_gain": "+0%", "decision": "DISCARD", "tflops": 227.86, "timestamp": "2026-04-21T11:20:50Z"}
+{"round": 58, "iter": "iter058", "bottleneck": "unknown", "idea": "512x32 exceeded smem", "category": "tiling", "expected_gain": "+0%", "decision": "COMPILE_FAIL", "tflops": 0.0, "timestamp": "2026-04-21T11:20:51Z"}

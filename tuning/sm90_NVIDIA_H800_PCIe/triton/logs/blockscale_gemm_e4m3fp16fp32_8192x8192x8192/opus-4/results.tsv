@@ -43,3 +43,7 @@ iter051	iter051_transpose	45.42	DISCARD	memory_bound	transposed 64x256 tile poor
 iter052	iter052_bk128s4	258.25	DISCARD	compute_bound	256x64 BLOCK_K=128 4stages
 iter053	iter053_noswizzle	285.75	DISCARD	compute_bound	GROUP_M=1 no swizzle worse
 iter054	iter054_w6fail	0.0	COMPILE_FAIL	unknown	6 warps invalid - must be power of 2
+iter055	iter055_nonpow2	0.0	COMPILE_FAIL	unknown	192 not power of 2
+iter056	iter056_verynarrow	186.86	DISCARD	compute_bound	256x32 too narrow
+iter057	iter057_smallm	227.86	DISCARD	compute_bound	128x64 tile decent but not best
+iter058	iter058_tall	0.0	COMPILE_FAIL	unknown	512x32 exceeded smem

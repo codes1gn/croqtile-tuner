@@ -94,3 +94,12 @@
 {"ts":"2026-04-21T11:18:41.089Z","tool":"store_round","msg":"Stored iter053_noswizzle: DISCARD 285.75 TFLOPS (round 53)","level":"info"}
 {"ts":"2026-04-21T11:18:41.473Z","tool":"store_round","msg":"Storing iter054_w6fail (COMPILE_FAIL 0.0 TFLOPS)","level":"info"}
 {"ts":"2026-04-21T11:18:41.492Z","tool":"store_round","msg":"Stored iter054_w6fail: COMPILE_FAIL 0.0 TFLOPS (round 54)","level":"info"}
+{"ts":"2026-04-21T11:18:59.835Z","tool":"resume_state","msg":"Loading tuning state for triton/blockscale_gemm_e4m3fp16fp32_8192x8192x8192","level":"info"}
+{"ts":"2026-04-21T11:20:49.806Z","tool":"store_round","msg":"Storing iter055_nonpow2 (COMPILE_FAIL 0.0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T11:20:49.825Z","tool":"store_round","msg":"Stored iter055_nonpow2: COMPILE_FAIL 0.0 TFLOPS (round 55)","level":"info"}
+{"ts":"2026-04-21T11:20:50.242Z","tool":"store_round","msg":"Storing iter056_verynarrow (DISCARD 186.86 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T11:20:50.262Z","tool":"store_round","msg":"Stored iter056_verynarrow: DISCARD 186.86 TFLOPS (round 56)","level":"info"}
+{"ts":"2026-04-21T11:20:50.640Z","tool":"store_round","msg":"Storing iter057_smallm (DISCARD 227.86 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T11:20:50.659Z","tool":"store_round","msg":"Stored iter057_smallm: DISCARD 227.86 TFLOPS (round 57)","level":"info"}
+{"ts":"2026-04-21T11:20:51.038Z","tool":"store_round","msg":"Storing iter058_tall (COMPILE_FAIL 0.0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T11:20:51.058Z","tool":"store_round","msg":"Stored iter058_tall: COMPILE_FAIL 0.0 TFLOPS (round 58)","level":"info"}
