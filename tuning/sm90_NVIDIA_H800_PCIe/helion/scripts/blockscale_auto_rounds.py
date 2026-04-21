@@ -7,7 +7,9 @@ K inner tile BK must be a multiple of GROUP=32 (FP8 blockscale scale granularity
 Scale columns per dot = BK // 32.
 
 Usage (repo root):
-  HELION_AUTOTUNE_EFFORT=none PYTHONPATH=$PWD python3 tuning/.../blockscale_auto_rounds.py --from 101 --to 200
+  HELION_AUTOTUNE_EFFORT=none PYTHONPATH=$PWD python3 tuning/.../blockscale_auto_rounds.py --from 251 --to 350
+
+Round routing: 5–100 legacy GRID; 101–200 EXPANDED; 201–250 PHASE2; 251+ PHASE3 (fine-tune near best).
 """
 from __future__ import annotations
 
@@ -272,15 +274,82 @@ def build_phase2_grid() -> list[tuple[int, int, int, int, str, int]]:
 PHASE2_GRID = build_phase2_grid()
 
 
+def build_phase3_grid() -> list[tuple[int, int, int, int, str, int]]:
+    """
+    Fine-tune around iter117 (~162T, 128², w4, s3, pointer, BK64).
+    Includes: s4+BK64, s3+BK128, w8+s3+BK64, 64×128 / 128×64 asym, BK=96, block_ptr pairs.
+    """
+    seen: set[tuple[int, int, int, int, str, int]] = set()
+    out: list[tuple[int, int, int, int, str, int]] = []
+
+    def add(
+        t: tuple[int, int, int, int, str, int],
+    ) -> None:
+        if t not in seen:
+            seen.add(t)
+            out.append(t)
+
+    # User-priority probes first
+    priority: list[tuple[int, int, int, int, str, int]] = [
+        # Deeper pipeline: stages=4, BK=64 (128²)
+        (128, 128, 4, 4, "pointer", 64),
+        (128, 128, 4, 4, "block_ptr", 64),
+        (128, 128, 8, 4, "pointer", 64),
+        (128, 128, 8, 4, "block_ptr", 64),
+        # Larger K-tile: stages=3, BK=128
+        (128, 128, 4, 3, "pointer", 128),
+        (128, 128, 4, 3, "block_ptr", 128),
+        (128, 128, 8, 3, "pointer", 128),
+        (128, 128, 8, 3, "block_ptr", 128),
+        # warps=8, s=3, BK=64
+        (128, 128, 8, 3, "pointer", 64),
+        (128, 128, 8, 3, "block_ptr", 64),
+        # Asymmetric 64×128 / 128×64, s=3, BK=64
+        (64, 128, 4, 3, "pointer", 64),
+        (64, 128, 4, 3, "block_ptr", 64),
+        (128, 64, 4, 3, "pointer", 64),
+        (128, 64, 4, 3, "block_ptr", 64),
+        # BK=96 (ncol=3), 128² anchor configs
+        (128, 128, 4, 3, "pointer", 96),
+        (128, 128, 4, 3, "block_ptr", 96),
+        (128, 128, 4, 4, "pointer", 96),
+        (128, 128, 4, 4, "block_ptr", 96),
+        (128, 128, 8, 3, "pointer", 96),
+        (128, 128, 8, 3, "block_ptr", 96),
+    ]
+    for t in priority:
+        add(t)
+
+    blocks = [
+        (128, 128),
+        (64, 128),
+        (128, 64),
+        (96, 128),
+        (128, 96),
+    ]
+    for bm, bn in blocks:
+        for nw in (4, 8, 16):
+            for st in (3, 4):
+                for ix in ("pointer", "block_ptr"):
+                    for bk in (64, 96, 128):
+                        add((bm, bn, nw, st, ix, bk))
+    return out
+
+
+PHASE3_GRID = build_phase3_grid()
+
+
 def spec_for_round(r: int) -> tuple[int, int, int, int, str, int, int, str]:
     if r < 101:
         g = GRID[(r - 5) % len(GRID)]
     elif r < 201:
         g = EXPANDED_GRID[(r - 101) % len(EXPANDED_GRID)]
-    else:
+    elif r < 251:
         g = PHASE2_GRID[(r - 201) % len(PHASE2_GRID)]
+    else:
+        g = PHASE3_GRID[(r - 251) % len(PHASE3_GRID)]
     bm, bn, nw, st, ix, bk = g
-    assert bk in (32, 64, 128) and bk % 32 == 0
+    assert bk % 32 == 0 and bk in (32, 64, 96, 128), f"invalid BK={bk}"
     ncol = bk // 32
     tag = f"m{bm}n{bn}_w{nw}_s{st}_bk{bk}_{ix[:5]}"
     return bm, bn, nw, st, ix, bk, ncol, tag
@@ -476,7 +545,8 @@ def main() -> None:
     print(
         f"[blockscale_auto_rounds] grids: legacy={len(GRID)} "
         f"expanded(101-200)={len(EXPANDED_GRID)} "
-        f"phase2(201+)={len(PHASE2_GRID)}",
+        f"phase2(201-250)={len(PHASE2_GRID)} "
+        f"phase3(251+)={len(PHASE3_GRID)}",
         flush=True,
     )
     for rnd in range(args.from_r, args.to_r + 1):

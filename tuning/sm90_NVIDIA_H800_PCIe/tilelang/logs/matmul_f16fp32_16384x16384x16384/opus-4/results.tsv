@@ -50,3 +50,11 @@ iter047	iter047_b64x192k64s2	120.58	DISCARD	memory_bound	64x192 small M-tile poo
 iter048	iter048_panel4_v2	179.95	DISCARD	latency_bound	panel_size=4 worse L2 locality than 8
 iter049	iter049_s3_k128	166.07	DISCARD	latency_bound	128x128x128 stages=3 excessive shared memory
 iter050	iter050_b192x192k128s2	81.88	DISCARD	latency_bound	192x192 square tiles high register pressure
+iter051	iter051_t256_v2	98.87	DISCARD	latency_bound	256 threads causes register spilling and occupancy drop
+iter052	iter052_t64	18.31	DISCARD	latency_bound	64 threads insufficient parallelism for large tiles
+iter053	iter053_b128x128k128s2	177.60	DISCARD	compute_bound	128x128 square tiles lower B matrix reuse than 128x192
+iter054	iter054_b128x224k128	67.50	DISCARD	latency_bound	N=224 causes TMA inefficiency and grid imbalance
+iter055	iter055_b128x160k128	137.14	DISCARD	compute_bound	N=160 grid imbalance vs 192
+iter056	iter056_b192x128k128s2	162.39	DISCARD	compute_bound	192x128 worse B reuse pattern than 128x192
+iter057	iter057_b128x192k64s2	173.90	DISCARD	memory_bound	K=64 stages=2 lower compute intensity per tile
+iter058	iter058_b128x192k64s5	166.87	DISCARD	memory_bound	K=64 stages=5 shared memory overhead too high

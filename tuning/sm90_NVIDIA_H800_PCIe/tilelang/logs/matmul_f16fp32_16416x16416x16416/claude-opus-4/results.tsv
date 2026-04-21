@@ -52,3 +52,20 @@ iter049	iter049_bt_layout	38.71	DISCARD	memory_bound	Transposed B explicit copy 
 iter050	iter050_panel3	299.92	DISCARD	memory_bound	panel_size=3 worse L2 locality than 6
 iter051	iter051_k128_s2	297.92	DISCARD	latency_bound	K=128 with 2 stages - less latency hiding
 iter052	iter052_b256x128_t512	0.00	HANG	compute_bound	512 threads hung during compile - WGMMA constraint
+iter053	iter053_panel2	137.36	DISCARD	memory_bound	panel_size=2 bad L2 locality
+iter054	iter054_panel1	105.54	DISCARD	memory_bound	panel_size=1 worst L2 locality
+iter055	iter055_panel13	128.20	DISCARD	memory_bound	panel_size=13 too large panels
+iter056	iter056_k24	0.00	COMPILE_FAIL	compute_bound	K=24 not valid for TileLang swizzle layout
+iter057	iter057_k40	0.00	COMPILE_FAIL	compute_bound	K=40 not valid for TileLang swizzle layout
+iter058	iter058_k56	0.00	COMPILE_FAIL	compute_bound	K=56 not valid for TileLang swizzle layout
+iter059	iter059_k80	0.00	COMPILE_FAIL	memory_bound	K=80 TMA fallback and smem limit exceeded
+iter060	iter060_b192x256	204.89	DISCARD	compute_bound	192x256 tiles - WGMMA constraint may hurt
+iter061	iter061_k64_s2	163.06	DISCARD	latency_bound	K=64 with 2 stages - bad latency hiding
+iter062	iter062_k32_s5	155.31	DISCARD	memory_bound	5 stages with K=32 - too much smem overhead
+iter063	iter063_k64_s4	178.72	DISCARD	memory_bound	K=64 s=4 - too much smem for occupancy
+iter064	iter064_s7	152.56	DISCARD	memory_bound	7 stages too much smem overhead
+iter065	iter065_b256x128_p6	133.14	DISCARD	compute_bound	256x128 panel=6 worse than 128x256
+iter066	iter066_b128x384	163.76	DISCARD	latency_bound	128x384 with 2 stages - not enough latency hiding
+iter067	iter067_b64x384	121.29	DISCARD	compute_bound	64x384 too wide and shallow
+iter068	iter068_b96x256	0.00	COMPILE_FAIL	compute_bound	96x256 WGMMA constraint - warp_row_tiles not div 16
+iter069	iter069_b128x256_s6	161.83	DISCARD	memory_bound	6 stages with same tile - too much smem
