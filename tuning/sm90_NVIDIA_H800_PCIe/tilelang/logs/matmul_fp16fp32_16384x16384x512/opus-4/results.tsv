@@ -1,0 +1,25 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_cublas	117.5774	KEEP	baseline	cuBLAS reference baseline
+iter001	iter001_b128x128k64s4_baseline	79.15	KEEP	memory_bound	Initial adapted kernel from 16384x16384x16384 shape, using 128x128 tiles with K=
+iter002	iter002_b256x128k32	35.02	DISCARD	compute_bound	Larger tiles 256x128 with BLOCK_K=32 - actually worse due to register pressure
+iter003	iter003_b64x64k32s2	31.27	DISCARD	compute_bound	Smaller tiles 64x64 with BLOCK_K=32, num_stages=2 - even worse
+iter004	iter004_b128x256k64s3	30.03	DISCARD	compute_bound	Wider tiles 128x256 with K=64, stages=3 - worse
+iter005	iter005_b128x128k64s2_t256	96.52	KEEP	compute_bound	128x128 tiles with K=64, stages=2, threads=256 - more threads helps small K
+iter006	iter006_b128x128k64s2_t128	99.59	KEEP	compute_bound	128x128 tiles with K=64, stages=2, threads=128 - lower thread count better
+iter007	iter007_b128x128k64s1_t128	0	HANG	compute_bound	128x128 tiles with K=64, stages=1, threads=128 - kernel hangs with single stage
+iter007	iter007_b128x128k64s1_t128	0	HANG	compute_bound	stages=1 hangs
+iter008	iter008_b128x128k64s3_t128	226.58	KEEP	compute_bound	128x128 tiles with K=64, stages=3, threads=128 - massive improvement
+iter009	iter009_b128x128k64s4_t128	226.98	DISCARD	compute_bound	stages=4 same as stages=3
+iter010	iter010_b128x192k64s3	249.30	KEEP	compute_bound	Wider tiles 128x192 with K=64, stages=3 - excellent performance
+iter011	iter011_b192x128k64s3	252.52	KEEP	compute_bound	Taller tiles 192x128 with K=64, stages=3 - slightly better than 128x192
+iter012	iter012_b192x192k64s3	116.16	DISCARD	compute_bound	192x192 tiles too large - worse than baseline
+iter013	iter013_b256x128k64s3	121.68	DISCARD	compute_bound	256x128 tiles too large in M dimension
+iter014	iter014_b192x128k32s3	222.01	DISCARD	compute_bound	BLOCK_K=32 worse than K=64
+iter015	iter015_b192x128k64s3_p4	247.10	DISCARD	compute_bound	panel_size=4 slightly worse than 8
+iter016	iter016_b192x128k64s3_p16	250.12	DISCARD	compute_bound	panel_size=16 similar to 8
+iter017	iter017_b192x128k64s2	236.50	DISCARD	compute_bound	stages=2 worse than stages=3 for 192x128
+iter018	iter018_b192x128k64s4	248.98	DISCARD	compute_bound	stages=4 also worse than stages=3 for 192x128
+iter019	iter019_b160x128k64s3	0	COMPILE_FAIL	compute_bound	BLOCK_M=160 incompatible with WGMMA tile constraints
+iter020	iter020_b224x128k64s3	0	COMPILE_FAIL	compute_bound	BLOCK_M=224 incompatible with WGMMA constraints
+iter021	iter021_b192x64k64s3	198.12	DISCARD	compute_bound	Narrower tiles 192x64 worse
+iter022	iter022_b256x64k64s3	220.46	DISCARD	compute_bound	256x64 tiles still worse than 192x128

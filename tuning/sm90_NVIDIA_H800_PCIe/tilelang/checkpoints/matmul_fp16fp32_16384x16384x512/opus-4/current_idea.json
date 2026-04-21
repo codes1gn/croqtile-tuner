@@ -1,0 +1,17 @@
+{
+  "schema": "croq-checkpoint-v1",
+  "timestamp": "2026-04-21T14:30:25Z",
+  "dsl": "tilelang",
+  "shape_key": "matmul_fp16fp32_16384x16384x512",
+  "iter": "iter003_b64x64k32s2",
+  "bottleneck": "compute_bound",
+  "idea": "Try smaller tiles 64x64 with BLOCK_K=32, num_stages=2 for better occupancy with small K",
+  "expected_gain": "+5-10 TFLOPS",
+  "levers": [
+    "BLOCK_M",
+    "BLOCK_N",
+    "BLOCK_K",
+    "num_stages"
+  ],
+  "status": "PLANNED"
+}

@@ -4,7 +4,7 @@
   "model": "sonnet-4",
   "device": "NVIDIA H800 PCIe",
   "status": "waiting",
-  "task_id": 17,
+  "task_id": 24,
   "variant": "",
   "agent_type": "cursor",
   "mode": "opencode",

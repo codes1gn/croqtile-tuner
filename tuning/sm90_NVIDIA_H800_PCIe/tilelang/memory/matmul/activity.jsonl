@@ -2,3 +2,4 @@
 {"ts":"2026-04-21T12:13:00.098Z","tool":"discover_baseline","msg":"No candidates found — recommend from scratch","level":"info"}
 {"ts":"2026-04-21T12:13:19.187Z","tool":"discover_baseline","msg":"Scanning for matmul (tilelang) candidates","level":"info"}
 {"ts":"2026-04-21T12:13:19.205Z","tool":"discover_baseline","msg":"No candidates found — recommend from scratch","level":"info"}
+{"ts":"2026-04-21T14:26:38.089Z","tool":"discover_baseline","msg":"Scanning for matmul (tilelang) candidates","level":"info"}
