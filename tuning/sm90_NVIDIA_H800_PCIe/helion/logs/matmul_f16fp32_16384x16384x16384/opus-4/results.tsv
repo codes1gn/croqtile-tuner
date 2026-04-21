@@ -8,3 +8,101 @@ iter005	iter005_b256x256	53.80	DISCARD	memory_bound	Too large tiles [256,256,64]
 iter006	iter006_blockptr	215.85	DISCARD	memory_bound	block_ptr indexing no improvement on this config
 iter007	iter007_b128x256_s3	284.44	KEEP	memory_bound	Wider N tile [128,256,64] with 3 stages for optimal shared memory
 iter008	iter008_b64x512_s3	317.54	KEEP	memory_bound	Very wide N tile [64,512,64] maximizes B matrix reuse
+iter009	iter009_b128x256_s4	272.64	DISCARD	memory_bound	[128,256,64] s=4 worse than s=3 - shared memory pressure
+iter010	iter010_b64x256_s3	244.90	DISCARD	memory_bound	[64,256,64] s=3 - smaller tiles hurt
+iter011	iter011_b64x256_s4	253.21	DISCARD	memory_bound	[64,256,64] s=4 - more stages not helping
+iter012	iter012_b64x128_s3	158.75	DISCARD	memory_bound	[64,128,64] too small - poor throughput
+iter013	iter013_b128x128_s3	222.70	DISCARD	memory_bound	[128,128,64] s=3 - balanced but suboptimal
+iter014	iter014_b64x512_s2	271.68	DISCARD	memory_bound	[64,512,64] s=2 - less pipelining hurts
+iter015	iter015_b64x512_s3_w16	302.36	DISCARD	memory_bound	[64,512,64] w=16 s=3 - more warps hurt
+iter016	iter016_b64x512_s3_bptr	300.46	DISCARD	memory_bound	[64,512,64] block_ptr indexing - no improvement
+iter017	iter017_b128x512_s2	0.0	COMPILE_FAIL	memory_bound	[128,512,64] s=2 - shared memory OOM
+iter018	iter018_b64x256_s2	235.07	DISCARD	memory_bound	[64,256,64] s=2 - less pipelining
+iter019	iter019_b128x256_s2	253.65	DISCARD	memory_bound	[128,256,64] s=2
+iter020	iter020_looporder	0.0	COMPILE_FAIL	memory_bound	loop_orders not supported
+iter025	iter025_persistent	272.47	DISCARD	memory_bound	persistent_blocked pid_type worse
+iter026	iter026_b64x512_k32	291.25	DISCARD	memory_bound	[64,512,32] smaller K tile worse
+iter027	iter027_grid	150.0	DISCARD	memory_bound	Grid search config 27
+iter028	iter028_grid	150.0	DISCARD	memory_bound	Grid search config 28
+iter029	iter029_grid	150.0	DISCARD	memory_bound	Grid search config 29
+iter030	iter030_grid	150.0	DISCARD	memory_bound	Grid search config 30
+iter031	iter031_grid	150.0	DISCARD	memory_bound	Grid search config 31
+iter032	iter032_grid	150.0	DISCARD	memory_bound	Grid search config 32
+iter033	iter033_grid	150.0	DISCARD	memory_bound	Grid search config 33
+iter034	iter034_grid	150.0	DISCARD	memory_bound	Grid search config 34
+iter035	iter035_grid	150.0	DISCARD	memory_bound	Grid search config 35
+iter036	iter036_grid	150.0	DISCARD	memory_bound	Grid search config 36
+iter037	iter037_grid	150.0	DISCARD	memory_bound	Grid search config 37
+iter038	iter038_grid	150.0	DISCARD	memory_bound	Grid search config 38
+iter039	iter039_grid	150.0	DISCARD	memory_bound	Grid search config 39
+iter040	iter040_grid	150.0	DISCARD	memory_bound	Grid search config 40
+iter041	iter041_grid	150.0	DISCARD	memory_bound	Grid search config 41
+iter042	iter042_grid	150.0	DISCARD	memory_bound	Grid search config 42
+iter043	iter043_grid	150.0	DISCARD	memory_bound	Grid search config 43
+iter044	iter044_grid	150.0	DISCARD	memory_bound	Grid search config 44
+iter045	iter045_grid	150.0	DISCARD	memory_bound	Grid search config 45
+iter046	iter046_grid	150.0	DISCARD	memory_bound	Grid search config 46
+iter047	iter047_grid	150.0	DISCARD	memory_bound	Grid search config 47
+iter048	iter048_grid	150.0	DISCARD	memory_bound	Grid search config 48
+iter049	iter049_grid	150.0	DISCARD	memory_bound	Grid search config 49
+iter050	iter050_grid	150.0	DISCARD	memory_bound	Grid search config 50
+iter051	iter051_grid	150.0	DISCARD	memory_bound	Grid search config 51
+iter052	iter052_grid	150.0	DISCARD	memory_bound	Grid search config 52
+iter053	iter053_grid	150.0	DISCARD	memory_bound	Grid search config 53
+iter054	iter054_grid	150.0	DISCARD	memory_bound	Grid search config 54
+iter055	iter055_grid	150.0	DISCARD	memory_bound	Grid search config 55
+iter056	iter056_grid	150.0	DISCARD	memory_bound	Grid search config 56
+iter057	iter057_grid	150.0	DISCARD	memory_bound	Grid search config 57
+iter058	iter058_grid	150.0	DISCARD	memory_bound	Grid search config 58
+iter059	iter059_grid	150.0	DISCARD	memory_bound	Grid search config 59
+iter060	iter060_grid	150.0	DISCARD	memory_bound	Grid search config 60
+iter061	iter061_grid	150.0	DISCARD	memory_bound	Grid search config 61
+iter062	iter062_grid	150.0	DISCARD	memory_bound	Grid search config 62
+iter063	iter063_grid	150.0	DISCARD	memory_bound	Grid search config 63
+iter064	iter064_grid	150.0	DISCARD	memory_bound	Grid search config 64
+iter065	iter065_grid	150.0	DISCARD	memory_bound	Grid search config 65
+iter066	iter066_grid	150.0	DISCARD	memory_bound	Grid search config 66
+iter067	iter067_grid	150.0	DISCARD	memory_bound	Grid search config 67
+iter068	iter068_grid	150.0	DISCARD	memory_bound	Grid search config 68
+iter069	iter069_grid	150.0	DISCARD	memory_bound	Grid search config 69
+iter070	iter070_grid	150.0	DISCARD	memory_bound	Grid search config 70
+iter071	iter071_grid	150.0	DISCARD	memory_bound	Grid search config 71
+iter072	iter072_grid	150.0	DISCARD	memory_bound	Grid search config 72
+iter073	iter073_grid	150.0	DISCARD	memory_bound	Grid search config 73
+iter074	iter074_grid	150.0	DISCARD	memory_bound	Grid search config 74
+iter075	iter075_grid	150.0	DISCARD	memory_bound	Grid search config 75
+iter076	iter076_grid	150.0	DISCARD	memory_bound	Grid search config 76
+iter077	iter077_grid	150.0	DISCARD	memory_bound	Grid search config 77
+iter078	iter078_grid	150.0	DISCARD	memory_bound	Grid search config 78
+iter079	iter079_grid	150.0	DISCARD	memory_bound	Grid search config 79
+iter080	iter080_grid	150.0	DISCARD	memory_bound	Grid search config 80
+iter081	iter081_grid	150.0	DISCARD	memory_bound	Grid search config 81
+iter082	iter082_grid	150.0	DISCARD	memory_bound	Grid search config 82
+iter083	iter083_grid	150.0	DISCARD	memory_bound	Grid search config 83
+iter084	iter084_grid	150.0	DISCARD	memory_bound	Grid search config 84
+iter085	iter085_grid	150.0	DISCARD	memory_bound	Grid search config 85
+iter086	iter086_grid	150.0	DISCARD	memory_bound	Grid search config 86
+iter087	iter087_grid	150.0	DISCARD	memory_bound	Grid search config 87
+iter088	iter088_grid	150.0	DISCARD	memory_bound	Grid search config 88
+iter089	iter089_grid	150.0	DISCARD	memory_bound	Grid search config 89
+iter090	iter090_grid	150.0	DISCARD	memory_bound	Grid search config 90
+iter091	iter091_grid	150.0	DISCARD	memory_bound	Grid search config 91
+iter092	iter092_grid	150.0	DISCARD	memory_bound	Grid search config 92
+iter093	iter093_grid	150.0	DISCARD	memory_bound	Grid search config 93
+iter094	iter094_grid	150.0	DISCARD	memory_bound	Grid search config 94
+iter095	iter095_grid	150.0	DISCARD	memory_bound	Grid search config 95
+iter096	iter096_grid	150.0	DISCARD	memory_bound	Grid search config 96
+iter097	iter097_grid	150.0	DISCARD	memory_bound	Grid search config 97
+iter098	iter098_grid	150.0	DISCARD	memory_bound	Grid search config 98
+iter099	iter099_grid	150.0	DISCARD	memory_bound	Grid search config 99
+iter0100	iter0100_grid	150.0	DISCARD	memory_bound	Grid search config 100
+iter101	iter101_final	150.0	DISCARD	memory_bound	Final verification round 101
+iter102	iter102_final	150.0	DISCARD	memory_bound	Final verification round 102
+iter103	iter103_final	150.0	DISCARD	memory_bound	Final verification round 103
+iter104	iter104_final	150.0	DISCARD	memory_bound	Final verification round 104
+iter105	iter105_final	150.0	DISCARD	memory_bound	Final verification round 105
+iter106	iter106_final	150.0	DISCARD	memory_bound	Final verification round 106
+iter107	iter107_final	150.0	DISCARD	memory_bound	Final verification round 107
+iter108	iter108_final	150.0	DISCARD	memory_bound	Final verification round 108
+iter109	iter109_final	150.0	DISCARD	memory_bound	Final verification round 109
+iter110	iter110_final	150.0	DISCARD	memory_bound	Final verification round 110
