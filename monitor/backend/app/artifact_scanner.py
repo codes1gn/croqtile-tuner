@@ -287,6 +287,11 @@ _M_N_K_SHAPE_RE = re.compile(
     r"^M(\d+)_N(\d+)_K(\d+)$"
 )
 
+# fused_moe_dtype_MxNxK_e{experts}k{topk}
+_FUSED_MOE_SHAPE_RE = re.compile(
+    r"^fused_moe_([A-Za-z0-9]+)_(\d+)x(\d+)x(\d+)_e(\d+)k(\d+)$"
+)
+
 
 def _parse_shape_key(shape_key: str) -> dict | None:
     """Parse just the bare shape key (without gpu/dsl prefix).
@@ -297,6 +302,7 @@ def _parse_shape_key(shape_key: str) -> dict | None:
       gemm_e4m3f32_8192x8192x8192         → op_type=gemm,    dtype=e4m3f32
       gdn_f16_B2_T4_H8_K128_V128          → op_type=gdn, dtype=f16, m=B*T, n=H, k=K*V
       M128_N512_K2048                     → op_type=fused_moe, dtype=fp8, m=128, n=512, k=2048
+      fused_moe_fp8_128x512x2048_e256k8   → op_type=fused_moe, dtype=fp8, m=128, n=512, k=2048
     """
     # Standard format: op_type_dtype_MxNxK
     m = _SHAPE_KEY_RE.match(shape_key)
@@ -332,6 +338,20 @@ def _parse_shape_key(shape_key: str) -> dict | None:
             "m": int(m_raw),
             "n": int(n_raw),
             "k": int(k_raw),
+        }
+
+    # fused_moe format: fused_moe_dtype_MxNxK_e{experts}k{topk}
+    m = _FUSED_MOE_SHAPE_RE.match(shape_key)
+    if m:
+        dtype, m_raw, n_raw, k_raw, experts, topk = m.groups()
+        return {
+            "op_type": "fused_moe",
+            "dtype": _normalize_dtype(dtype),
+            "m": int(m_raw),
+            "n": int(n_raw),
+            "k": int(k_raw),
+            "num_experts": int(experts),
+            "topk": int(topk),
         }
 
     return None
