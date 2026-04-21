@@ -1,0 +1,32 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_cublas	403.3344	KEEP	baseline	cuBLAS reference baseline
+iter001	iter001_adapted	146.2046	KEEP	memory_bound	Adapted iter105 from 16416x16416x16416, cp.async + WMMA 2-stage pipeline
+iter002	iter002_smaller_tile_4stage	102.6649	DISCARD	compute_bound	Smaller 64x64 tiles + 4-stage pipeline - reduced compute intensity, slower
+iter003	iter003_maxreg128	147.1224	KEEP	compute_bound	128x128 tiles with --maxrregcount=128 for slightly better occupancy
+iter004	iter004_ldmatrix_mma	114.0247	DISCARD	compute_bound	128x256 tiles with BK=16, larger output tile but too many K iterations
+iter005	iter005_swizzle_smem	163.9827	KEEP	compute_bound	Added #pragma unroll 4 to K loop, reduced bank conflicts
+iter006	iter006_stage3_bk64	0	COMPILE_FAIL	compute_bound	BK=64 exceeds shared memory limit (68KB vs 48KB max)
+iter007	iter007_warp_spec	0	DISCARD	compute_bound	Warp specialization verification failed - mapping incorrect
+iter008	iter008_cta_swizzle	158.9686	DISCARD	compute_bound	CTA swizzle 4x4 pattern - slightly worse than baseline
+iter009	iter009_bk48_minpad	0	COMPILE_FAIL	compute_bound	BK=48 exceeds shared memory limit (51KB vs 48KB)
+iter010	iter010_splitk4	38.6832	DISCARD	compute_bound	Split-K with atomics - verification failed and slow
+iter011	iter011_regbuf_frag	149.1926	DISCARD	compute_bound	Register double-buffering increased pressure, slower than baseline
+iter012	iter012_fullk_nostage	82.9713	DISCARD	memory_bound	Single-stage loses pipelining benefit, much slower
+iter013	iter013_vec4_load	159.5937	DISCARD	compute_bound	Loop unroll 8 increased register pressure, slightly slower
+iter014	iter014_unroll2	163.5049	DISCARD	compute_bound	Loop unroll 2
+iter015	iter015_noreg	164.7474	KEEP	compute_bound	No maxrregcount
+iter016	iter016_noreg_unroll2	169.2019	KEEP	compute_bound	No maxrregcount + unroll 2
+iter017	iter017_noreg_unroll1	165.2036	DISCARD	compute_bound	No maxrregcount + unroll 1
+iter018	iter018_noreg_nounroll	159.7529	DISCARD	compute_bound	No pragma unroll
+iter019	iter019_pad4	0	COMPILE_FAIL	compute_bound	Padding 4 instead of 8
+iter020	iter020_pad16	165.4324	DISCARD	compute_bound	Padding 16
+iter021	iter021_launch384	134.7037	DISCARD	compute_bound	Launch bounds 384x1
+iter022	iter022_launch512	169.2650	KEEP	compute_bound	Launch bounds 512x1
+iter023	iter023_launch192	0	DISCARD	compute_bound	Launch bounds 192x2 - invalid measurement
+iter024	iter024_warps2x4	167.5074	DISCARD	compute_bound	Warps 2x4 layout
+iter025	iter025_bk16	143.0814	DISCARD	compute_bound	BK=16
+iter026	iter026_occupancy3	82.3595	DISCARD	compute_bound	Occupancy hint 3
+iter027	iter027_occupancy1	136.4339	DISCARD	compute_bound	Occupancy hint 1
+iter028	iter028_unroll3	168.2182	DISCARD	compute_bound	Unroll 3
+iter029	iter029_bm64	145.3726	DISCARD	compute_bound	BM=64
+iter030	iter030_bn64	124.1515	DISCARD	compute_bound	BN=64

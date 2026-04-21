@@ -1,0 +1,100 @@
+{"ts":"2026-04-21T01:10:19.559Z","tool":"store_baseline","msg":"Measuring cuBLAS baseline for f16fp32 16320x16320x16320","level":"info"}
+{"ts":"2026-04-21T01:10:23.122Z","tool":"store_baseline","msg":"cuBLAS baseline: 400.2004 TFLOPS (saved to tuning/sm90_NVIDIA_H800_PCIe/croqtile/baseline/matmul_f16fp32_16320x16320x16320/opus-4/cublas_result.json)","level":"info"}
+{"ts":"2026-04-21T01:10:23.452Z","tool":"store_round","msg":"Storing iter000_cublas (KEEP 400.2004 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:10:23.472Z","tool":"store_round","msg":"Stored iter000_cublas: KEEP 400.2004 TFLOPS (round 0)","level":"info"}
+{"ts":"2026-04-21T01:10:23.484Z","tool":"store_baseline","msg":"Stored iter000_cublas: 400.2004 TFLOPS (baseline)","level":"info"}
+{"ts":"2026-04-21T01:11:34.718Z","tool":"co2cu","msg":"Compiling iter001_wn192_s4_1p1c.co -> .cu (arch=sm90a)","level":"info"}
+{"ts":"2026-04-21T01:12:11.945Z","tool":"co2cu","msg":"Compiling iter001_wn192_s4_1p1c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-21T01:12:12.047Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16320x16320x16320/opus-4/iter001_wn192_s4_1p1c.cu","level":"info"}
+{"ts":"2026-04-21T01:16:08.702Z","tool":"store_round","msg":"Storing iter001_wn192_s4_1p1c (KEEP 254.91 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:16:08.721Z","tool":"store_round","msg":"Stored iter001_wn192_s4_1p1c: KEEP 254.91 TFLOPS (round 1)","level":"info"}
+{"ts":"2026-04-21T01:16:29.638Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_16320x16320x16320/opus-4/iter001_wn192_s4_1p1c 16320 16320 16320 1 1","level":"info"}
+{"ts":"2026-04-21T01:17:16.343Z","tool":"profile_extract","msg":"Analyzing iter001_wn192_s4_1p1c from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16320x16320x16320/opus-4/ncu_iter001_wn192_s4_1p1c_round2.csv","level":"info"}
+{"ts":"2026-04-21T01:17:56.052Z","tool":"next_iter","msg":"Resolved iter002_wn256_s3_1p1c","level":"info"}
+{"ts":"2026-04-21T01:17:56.085Z","tool":"checkpoint_write","msg":"PLANNED iter002_wn256_s3_1p1c: WN=256 S3: Higher arithmetic intensity per CTA despite imperfect N-tiling (16320/256=63.75)","level":"info"}
+{"ts":"2026-04-21T01:18:33.036Z","tool":"co2cu","msg":"Compiling iter002_wn256_s3_1p1c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-21T01:18:33.138Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16320x16320x16320/opus-4/iter002_wn256_s3_1p1c.cu","level":"info"}
+{"ts":"2026-04-21T01:20:01.262Z","tool":"store_round","msg":"Storing iter002_wn256_s3_1p1c (KEEP 287.389 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:20:01.281Z","tool":"store_round","msg":"Stored iter002_wn256_s3_1p1c: KEEP 287.389 TFLOPS (round 2)","level":"info"}
+{"ts":"2026-04-21T01:20:43.252Z","tool":"profile_extract","msg":"Analyzing iter002_wn256_s3_1p1c from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16320x16320x16320/opus-4/ncu_iter002_wn256_s3_1p1c_round3.csv","level":"info"}
+{"ts":"2026-04-21T01:20:55.329Z","tool":"next_iter","msg":"Resolved iter003_wn256_s3_swz12","level":"info"}
+{"ts":"2026-04-21T01:20:55.364Z","tool":"checkpoint_write","msg":"PLANNED iter003_wn256_s3_swz12: WN=256 S3 + Grid SWIZZLE=12: Improve L2 cache locality for B-matrix tiles","level":"info"}
+{"ts":"2026-04-21T01:21:22.913Z","tool":"co2cu","msg":"Compiling iter003_wn256_s3_swz12.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-21T01:21:23.017Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16320x16320x16320/opus-4/iter003_wn256_s3_swz12.cu","level":"info"}
+{"ts":"2026-04-21T01:26:48.530Z","tool":"store_round","msg":"Storing iter003_wn256_s3_swz12 (KEEP 319.772 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:26:48.548Z","tool":"store_round","msg":"Stored iter003_wn256_s3_swz12: KEEP 319.772 TFLOPS (round 3)","level":"info"}
+{"ts":"2026-04-21T01:27:25.319Z","tool":"profile_extract","msg":"Analyzing iter003_wn256_s3_swz12 from tuning/sm90_NVIDIA_H800_PCIe/croqtile/perf/matmul_f16fp32_16320x16320x16320/opus-4/ncu_iter003_round4.csv","level":"info"}
+{"ts":"2026-04-21T01:27:39.726Z","tool":"next_iter","msg":"Resolved iter004_wn256_s3_swz12_lb","level":"info"}
+{"ts":"2026-04-21T01:27:39.760Z","tool":"checkpoint_write","msg":"PLANNED iter004_wn256_s3_swz12_lb: WN=256 S3 SWIZZLE=12 + launch_bounds(256,1): Constrain registers for better allocation","level":"info"}
+{"ts":"2026-04-21T01:31:45.810Z","tool":"store_round","msg":"Storing iter004_wn256_s3_swz12_lb (DISCARD 315.435 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:31:45.829Z","tool":"store_round","msg":"Stored iter004_wn256_s3_swz12_lb: DISCARD 315.435 TFLOPS (round 4)","level":"info"}
+{"ts":"2026-04-21T01:31:58.971Z","tool":"next_iter","msg":"Resolved iter005_wn256_s4_swz12","level":"info"}
+{"ts":"2026-04-21T01:31:59.006Z","tool":"checkpoint_write","msg":"PLANNED iter005_wn256_s4_swz12: WN=256 STAGES=4 SWIZZLE=12: More pipeline depth for better TMA latency hiding","level":"info"}
+{"ts":"2026-04-21T01:33:13.941Z","tool":"co2cu","msg":"Compiling iter005_wn256_s4_swz12.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-21T01:33:14.046Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16320x16320x16320/opus-4/iter005_wn256_s4_swz12.cu","level":"info"}
+{"ts":"2026-04-21T01:37:38.523Z","tool":"store_round","msg":"Storing iter005_wn256_s4_swz12 (DISCARD 317.399 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:37:38.542Z","tool":"store_round","msg":"Stored iter005_wn256_s4_swz12: DISCARD 317.399 TFLOPS (round 5)","level":"info"}
+{"ts":"2026-04-21T01:37:53.935Z","tool":"next_iter","msg":"Resolved iter006_wn256_s3_swz8","level":"info"}
+{"ts":"2026-04-21T01:39:26.622Z","tool":"store_round","msg":"Storing iter006_wn256_s3_swz8 (DISCARD 307.817 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:39:26.642Z","tool":"store_round","msg":"Stored iter006_wn256_s3_swz8: DISCARD 307.817 TFLOPS (round 6)","level":"info"}
+{"ts":"2026-04-21T01:39:26.912Z","tool":"next_iter","msg":"Resolved iter007_wn256_s3_swz16","level":"info"}
+{"ts":"2026-04-21T01:41:01.402Z","tool":"store_round","msg":"Storing iter007_wn256_s3_swz16 (DISCARD 314.81 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:41:01.421Z","tool":"store_round","msg":"Stored iter007_wn256_s3_swz16: DISCARD 314.81 TFLOPS (round 7)","level":"info"}
+{"ts":"2026-04-21T01:41:01.712Z","tool":"next_iter","msg":"Resolved iter008_wn192_s4_swz12","level":"info"}
+{"ts":"2026-04-21T01:41:43.157Z","tool":"co2cu","msg":"Compiling iter008_wn192_s4_swz12.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-21T01:41:43.260Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16320x16320x16320/opus-4/iter008_wn192_s4_swz12.cu","level":"info"}
+{"ts":"2026-04-21T01:45:25.406Z","tool":"store_round","msg":"Storing iter008_wn192_s4_swz12 (DISCARD 282.681 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:45:25.424Z","tool":"store_round","msg":"Stored iter008_wn192_s4_swz12: DISCARD 282.681 TFLOPS (round 8)","level":"info"}
+{"ts":"2026-04-21T01:45:40.002Z","tool":"next_iter","msg":"Resolved iter009_wn256_s3_swz10","level":"info"}
+{"ts":"2026-04-21T01:45:40.332Z","tool":"next_iter","msg":"Resolved iter010_wn256_s3_swz11","level":"info"}
+{"ts":"2026-04-21T01:45:40.671Z","tool":"next_iter","msg":"Resolved iter011_wn256_s3_swz13","level":"info"}
+{"ts":"2026-04-21T01:45:41.022Z","tool":"next_iter","msg":"Resolved iter012_wn256_s3_swz14","level":"info"}
+{"ts":"2026-04-21T01:52:03.705Z","tool":"store_round","msg":"Storing iter009_wn256_s3_swz10 (DISCARD 310.109 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:52:03.725Z","tool":"store_round","msg":"Stored iter009_wn256_s3_swz10: DISCARD 310.109 TFLOPS (round 9)","level":"info"}
+{"ts":"2026-04-21T01:52:17.198Z","tool":"store_round","msg":"Storing iter010_wn256_s3_swz11 (DISCARD 284.309 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:52:17.217Z","tool":"store_round","msg":"Stored iter010_wn256_s3_swz11: DISCARD 284.309 TFLOPS (round 10)","level":"info"}
+{"ts":"2026-04-21T01:52:17.760Z","tool":"store_round","msg":"Storing iter011_wn256_s3_swz13 (DISCARD 126.226 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:52:17.779Z","tool":"store_round","msg":"Stored iter011_wn256_s3_swz13: DISCARD 126.226 TFLOPS (round 11)","level":"info"}
+{"ts":"2026-04-21T01:52:18.164Z","tool":"store_round","msg":"Storing iter012_wn256_s3_swz14 (DISCARD 312.968 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:52:18.183Z","tool":"store_round","msg":"Stored iter012_wn256_s3_swz14: DISCARD 312.968 TFLOPS (round 12)","level":"info"}
+{"ts":"2026-04-21T01:52:35.455Z","tool":"next_iter","msg":"Resolved iter013_wn256_s3_swz12_1p2c","level":"info"}
+{"ts":"2026-04-21T01:52:35.488Z","tool":"checkpoint_write","msg":"PLANNED iter013_wn256_s3_swz12_1p2c: WN=256 S3 SWIZZLE=12 + 1p2c warp spec: More consumer threads for compute","level":"info"}
+{"ts":"2026-04-21T01:54:46.282Z","tool":"co2cu","msg":"Compiling iter013_wn256_s3_swz12_1p2c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-21T01:55:21.578Z","tool":"co2cu","msg":"Compiling iter013_wn256_s3_swz12_1p2c.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-21T01:55:21.684Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16320x16320x16320/opus-4/iter013_wn256_s3_swz12_1p2c.cu","level":"info"}
+{"ts":"2026-04-21T01:58:39.498Z","tool":"store_round","msg":"Storing iter013_wn256_s3_swz12_1p2c (DISCARD 19.98 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:58:39.517Z","tool":"store_round","msg":"Stored iter013_wn256_s3_swz12_1p2c: DISCARD 19.98 TFLOPS (round 13)","level":"info"}
+{"ts":"2026-04-21T01:58:57.249Z","tool":"next_iter","msg":"Resolved iter014_wn256_s2_swz12","level":"info"}
+{"ts":"2026-04-21T01:58:57.265Z","tool":"co2cu","msg":"Compiling iter014_wn256_s2_swz12.co -> .cu (arch=sm_90a)","level":"info"}
+{"ts":"2026-04-21T01:58:57.368Z","tool":"co2cu","msg":"Ready: tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_f16fp32_16320x16320x16320/opus-4/iter014_wn256_s2_swz12.cu","level":"info"}
+{"ts":"2026-04-21T02:03:11.891Z","tool":"store_round","msg":"Storing iter014_wn256_s2_swz12 (DISCARD 20.96 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T02:03:11.910Z","tool":"store_round","msg":"Stored iter014_wn256_s2_swz12: DISCARD 20.96 TFLOPS (round 14)","level":"info"}
+{"ts":"2026-04-21T02:03:26.743Z","tool":"next_iter","msg":"Resolved iter015_wn256_s3_swz12_fastmath","level":"info"}
+{"ts":"2026-04-21T02:04:48.229Z","tool":"store_round","msg":"Storing iter015_wn256_s3_swz12_fastmath (DISCARD 309.222 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T02:04:48.248Z","tool":"store_round","msg":"Stored iter015_wn256_s3_swz12_fastmath: DISCARD 309.222 TFLOPS (round 15)","level":"info"}
+{"ts":"2026-04-21T02:05:45.504Z","tool":"next_iter","msg":"Resolved iter016_wn256_s3_swz12_ptxo3","level":"info"}
+{"ts":"2026-04-21T02:06:55.264Z","tool":"store_round","msg":"Storing iter016_wn256_s3_swz12_ptxo3 (DISCARD 286.02 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T02:06:55.284Z","tool":"store_round","msg":"Stored iter016_wn256_s3_swz12_ptxo3: DISCARD 286.02 TFLOPS (round 16)","level":"info"}
+{"ts":"2026-04-21T02:07:16.662Z","tool":"next_iter","msg":"Resolved iter017_wn256_tm128_tk128","level":"info"}
+{"ts":"2026-04-21T02:10:15.412Z","tool":"store_round","msg":"Storing iter017_wn256_tm128_tk128 (DISCARD 18.90 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T02:10:15.431Z","tool":"store_round","msg":"Stored iter017_wn256_tm128_tk128: DISCARD 18.90 TFLOPS (round 17)","level":"info"}
+{"ts":"2026-04-21T02:10:35.789Z","tool":"next_iter","msg":"Resolved iter018_wn256_s3_wk128","level":"info"}
+{"ts":"2026-04-21T02:12:38.864Z","tool":"store_round","msg":"Storing iter018_wn256_s3_wk128 (DISCARD 310.87 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T02:12:38.884Z","tool":"store_round","msg":"Stored iter018_wn256_s3_wk128: DISCARD 310.87 TFLOPS (round 18)","level":"info"}
+{"ts":"2026-04-21T02:31:00.057Z","tool":"store_round","msg":"Storing iter019_wn256_s3_swiz64 (DISCARD 276.32 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T02:31:00.077Z","tool":"store_round","msg":"Stored iter019_wn256_s3_swiz64: DISCARD 276.32 TFLOPS (round 19)","level":"info"}
+{"ts":"2026-04-21T02:35:30.574Z","tool":"store_round","msg":"Storing iter020_wn256_s4_swz12v2 (HANG 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T02:35:30.595Z","tool":"store_round","msg":"Stored iter020_wn256_s4_swz12v2: HANG 0 TFLOPS (round 20)","level":"info"}
+{"ts":"2026-04-21T02:36:45.433Z","tool":"store_round","msg":"Storing iter021_wm128_wn256_s3 (DISCARD 308.99 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T02:36:45.452Z","tool":"store_round","msg":"Stored iter021_wm128_wn256_s3: DISCARD 308.99 TFLOPS (round 21)","level":"info"}
+{"ts":"2026-04-21T02:38:29.950Z","tool":"store_round","msg":"Storing iter022_wm32_wn256_s3 (DISCARD 304.35 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T02:38:29.970Z","tool":"store_round","msg":"Stored iter022_wm32_wn256_s3: DISCARD 304.35 TFLOPS (round 22)","level":"info"}
+{"ts":"2026-04-21T02:40:25.906Z","tool":"store_round","msg":"Storing iter023_wn256_s3_reg160 (DISCARD 306.88 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T02:40:25.926Z","tool":"store_round","msg":"Stored iter023_wn256_s3_reg160: DISCARD 306.88 TFLOPS (round 23)","level":"info"}
+{"ts":"2026-04-21T02:41:51.000Z","tool":"store_round","msg":"Storing iter024_wn256_s3_swz15 (DISCARD 228.77 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T02:41:51.020Z","tool":"store_round","msg":"Stored iter024_wn256_s3_swz15: DISCARD 228.77 TFLOPS (round 24)","level":"info"}
+{"ts":"2026-04-21T02:42:15.445Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/croqtile/bin/matmul_f16fp32_16320x16320x16320/opus-4/iter003_wn256_s3_swz12 16320 16320 16320 1 1","level":"info"}
+{"ts":"2026-04-21T02:44:20.342Z","tool":"store_round","msg":"Storing iter003_profile (KEEP 319.77 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T02:44:20.361Z","tool":"store_round","msg":"Stored iter003_profile: KEEP 319.77 TFLOPS (round 25)","level":"info"}
+{"ts":"2026-04-21T02:46:33.312Z","tool":"store_round","msg":"Storing iter026_wn128_s3_swz12 (DISCARD 151.68 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T02:46:33.330Z","tool":"store_round","msg":"Stored iter026_wn128_s3_swz12: DISCARD 151.68 TFLOPS (round 26)","level":"info"}

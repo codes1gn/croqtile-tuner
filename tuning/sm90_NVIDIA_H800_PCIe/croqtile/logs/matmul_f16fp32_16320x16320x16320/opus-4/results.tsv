@@ -1,0 +1,28 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_cublas	400.2004	KEEP	baseline	cuBLAS reference baseline
+iter001	iter001_wn192_s4_1p1c	254.91	KEEP	memory_bound	1p1c WN=192 S4 baseline with perfect N tiling (16320/192=85)
+iter002	iter002_wn256_s3_1p1c	287.389	KEEP	memory_bound	WN=256 S3: Higher arithmetic intensity per CTA despite imperfect N-tiling
+iter003	iter003_wn256_s3_swz12	319.772	KEEP	compute_bound	WN=256 S3 + Grid SWIZZLE=12: Improve L2 cache locality
+iter004	iter004_wn256_s3_swz12_lb	315.435	DISCARD	compute_bound	WN=256 S3 SWIZZLE=12 + launch_bounds(256,1)
+iter005	iter005_wn256_s4_swz12	317.399	DISCARD	compute_bound	WN=256 STAGES=4 SWIZZLE=12: More pipeline depth
+iter006	iter006_wn256_s3_swz8	307.817	DISCARD	compute_bound	WN=256 S3 SWIZZLE=8: Lower swizzle value
+iter007	iter007_wn256_s3_swz16	314.81	DISCARD	compute_bound	WN=256 S3 SWIZZLE=16: Higher swizzle value
+iter008	iter008_wn192_s4_swz12	282.681	DISCARD	memory_bound	WN=192 S4 SWIZZLE=12: Perfect N tiling + grid swizzle
+iter009	iter009_wn256_s3_swz10	310.109	DISCARD	compute_bound	WN=256 S3 SWIZZLE=10
+iter010	iter010_wn256_s3_swz11	284.309	DISCARD	compute_bound	WN=256 S3 SWIZZLE=11
+iter011	iter011_wn256_s3_swz13	126.226	DISCARD	contention	WN=256 S3 SWIZZLE=13
+iter012	iter012_wn256_s3_swz14	312.968	DISCARD	compute_bound	WN=256 S3 SWIZZLE=14
+iter013	iter013_wn256_s3_swz12_1p2c	19.98	DISCARD	memory_bound	1p2c WN=128 S3 SWIZZLE=12: More consumer threads
+iter014	iter014_wn256_s2_swz12	20.96	DISCARD	latency_bound	WN=256 S2 SWIZZLE=12: Fewer stages
+iter015	iter015_wn256_s3_swz12_fastmath	309.222	DISCARD	compute_bound	WN=256 S3 SWIZZLE=12 + --use_fast_math
+iter016	iter016_wn256_s3_swz12_ptxo3	286.02	DISCARD	memory_bound	PTX O3 optimization - compiler over-optimized shared memory access patterns
+iter017	iter017_wn256_tm128_tk128	18.90	DISCARD	memory_bound	Larger tile M/K (128x128) - internal layouts not adapted
+iter018	iter018_wn256_s3_wk128	310.87	DISCARD	memory_bound	WARP_K=32 - larger inner K tile reduces occupancy
+iter019	iter019_wn256_s3_swiz64	276.32	DISCARD	memory_bound	TMA swizzle=64 bits - worse bank conflict pattern
+iter020	iter020_wn256_s4_swz12v2	0	HANG	misc	4-stage pipeline + swizzle - barrier deadlock from shared memory offset miscalcu
+iter021	iter021_wm128_wn256_s3	308.99	DISCARD	memory_bound	WARP_M=128 - increased register pressure reduces occupancy
+iter022	iter022_wm32_wn256_s3	304.35	DISCARD	memory_bound	WARP_M=32 - smaller M tile reduces arithmetic intensity per thread
+iter023	iter023_wn256_s3_reg160	306.88	DISCARD	memory_bound	maxrregcount=160 - register spilling hurts more than occupancy gain
+iter024	iter024_wn256_s3_swz15	228.77	DISCARD	memory_bound	Grid swizzle=15 - suboptimal L2 cache reuse pattern
+iter025	iter003_profile	319.77	KEEP	latency_bound	Profiled iter003: 8-way bank conflicts on smem stores (75%), 2 warps/sched, need
+iter026	iter026_wn128_s3_swz12	151.68	DISCARD	memory_bound	WARP_N=128 to reduce bank conflicts - kernel internals hardcoded for 256

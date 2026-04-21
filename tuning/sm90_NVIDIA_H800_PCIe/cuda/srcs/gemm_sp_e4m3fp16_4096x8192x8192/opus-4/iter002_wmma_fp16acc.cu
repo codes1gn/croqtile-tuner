@@ -1,0 +1,315 @@
+/*
+ * Sparse GEMM E4M3 -> FP16 using WMMA with FP16 accumulation
+ * Shape: M=4096, N=8192, K=8192  
+ * 
+ * This uses the simpler WMMA API as a baseline for tensor core usage.
+ * Later iterations will upgrade to WGMMA for higher throughput.
+ */
+
+#include <cuda.h>
+#include <cuda_fp16.h>
+#include <cuda_fp8.h>
+#include <cuda_runtime.h>
+#include <mma.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <random>
+#include <cmath>
+
+using namespace nvcuda;
+
+#define CHECK_CUDA(call) do { \
+    cudaError_t err = call; \
+    if (err != cudaSuccess) { \
+        fprintf(stderr, "CUDA error at %s:%d: %s\n", __FILE__, __LINE__, cudaGetErrorString(err)); \
+        exit(EXIT_FAILURE); \
+    } \
+} while(0)
+
+constexpr int M_DIM = 4096;
+constexpr int N_DIM = 8192;
+constexpr int K_DIM = 8192;
+
+constexpr int WMMA_M = 16;
+constexpr int WMMA_N = 16;
+constexpr int WMMA_K = 16;
+
+constexpr int TILE_M = 64;
+constexpr int TILE_N = 64;
+constexpr int TILE_K = 32;
+
+constexpr double H800_PEAK_FP8_TFLOPS = 3026.0;
+
+__host__ __device__ inline __nv_fp8_e4m3 fp8_from_float(float v) {
+    __nv_fp8_e4m3 result;
+    result.__x = __nv_cvt_float_to_fp8(v, __NV_SATFINITE, __NV_E4M3);
+    return result;
+}
+
+__host__ __device__ inline __nv_fp8_e4m3 fp8_zero() {
+    __nv_fp8_e4m3 result;
+    result.__x = 0;
+    return result;
+}
+
+__host__ inline float fp8_to_float(__nv_fp8_e4m3 v) {
+    __half_raw hr = __nv_cvt_fp8_to_halfraw(v.__x, __NV_E4M3);
+    return __half2float(*reinterpret_cast<half*>(&hr));
+}
+
+__global__ void sparse_gemm_wmma_kernel(
+    const half* __restrict__ A_fp16,
+    const half* __restrict__ B_fp16,
+    half* __restrict__ C,
+    int M, int N, int K
+) {
+    __shared__ half As[TILE_M][TILE_K];
+    __shared__ half Bs[TILE_K][TILE_N];
+    
+    const int warp_id = threadIdx.x / 32;
+    const int num_warps = blockDim.x / 32;
+    const int warps_per_tile_row = (TILE_M / WMMA_M);
+    const int warps_per_tile_col = (TILE_N / WMMA_N);
+    
+    if (warp_id >= warps_per_tile_row * warps_per_tile_col) return;
+    
+    const int warp_row = warp_id / warps_per_tile_col;
+    const int warp_col = warp_id % warps_per_tile_col;
+    
+    wmma::fragment<wmma::matrix_a, WMMA_M, WMMA_N, WMMA_K, half, wmma::row_major> a_frag;
+    wmma::fragment<wmma::matrix_b, WMMA_M, WMMA_N, WMMA_K, half, wmma::row_major> b_frag;
+    wmma::fragment<wmma::accumulator, WMMA_M, WMMA_N, WMMA_K, half> c_frag;
+    
+    wmma::fill_fragment(c_frag, __float2half(0.0f));
+    
+    int block_row = blockIdx.x * TILE_M;
+    int block_col = blockIdx.y * TILE_N;
+    
+    for (int k_tile = 0; k_tile < K; k_tile += TILE_K) {
+        for (int i = threadIdx.x; i < TILE_M * TILE_K; i += blockDim.x) {
+            int row = i / TILE_K;
+            int col = i % TILE_K;
+            int global_row = block_row + row;
+            int global_col = k_tile + col;
+            if (global_row < M && global_col < K) {
+                As[row][col] = A_fp16[global_row * K + global_col];
+            } else {
+                As[row][col] = __float2half(0.0f);
+            }
+        }
+        
+        for (int i = threadIdx.x; i < TILE_K * TILE_N; i += blockDim.x) {
+            int row = i / TILE_N;
+            int col = i % TILE_N;
+            int global_k = k_tile + row;
+            int global_n = block_col + col;
+            if (global_k < K && global_n < N) {
+                Bs[row][col] = B_fp16[global_n * K + global_k];
+            } else {
+                Bs[row][col] = __float2half(0.0f);
+            }
+        }
+        
+        __syncthreads();
+        
+        for (int k = 0; k < TILE_K; k += WMMA_K) {
+            int a_row = warp_row * WMMA_M;
+            int a_col = k;
+            int b_row = k;
+            int b_col = warp_col * WMMA_N;
+            
+            wmma::load_matrix_sync(a_frag, &As[a_row][a_col], TILE_K);
+            wmma::load_matrix_sync(b_frag, &Bs[b_row][b_col], TILE_N);
+            wmma::mma_sync(c_frag, a_frag, b_frag, c_frag);
+        }
+        
+        __syncthreads();
+    }
+    
+    int c_row = block_row + warp_row * WMMA_M;
+    int c_col = block_col + warp_col * WMMA_N;
+    
+    if (c_row + WMMA_M <= M && c_col + WMMA_N <= N) {
+        wmma::store_matrix_sync(&C[c_row * N + c_col], c_frag, N, wmma::mem_row_major);
+    } else if (c_row < M && c_col < N) {
+        half temp[WMMA_M * WMMA_N];
+        wmma::store_matrix_sync(temp, c_frag, WMMA_N, wmma::mem_row_major);
+        for (int r = 0; r < WMMA_M && c_row + r < M; r++) {
+            for (int c = 0; c < WMMA_N && c_col + c < N; c++) {
+                C[(c_row + r) * N + (c_col + c)] = temp[r * WMMA_N + c];
+            }
+        }
+    }
+}
+
+void init_sparse_matrix(__nv_fp8_e4m3* dense, half* dense_fp16, int rows, int cols, std::mt19937& gen) {
+    std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
+    
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; j += 4) {
+            float vals[4];
+            int idx[4] = {0, 1, 2, 3};
+            
+            for (int k = 0; k < 4; ++k) {
+                vals[k] = dist(gen);
+                if (std::fabs(vals[k]) < 0.1f) vals[k] = (vals[k] < 0) ? -0.25f : 0.25f;
+            }
+            
+            for (int a = 0; a < 3; ++a) {
+                for (int b = a + 1; b < 4; ++b) {
+                    if (std::fabs(vals[idx[a]]) < std::fabs(vals[idx[b]])) {
+                        std::swap(idx[a], idx[b]);
+                    }
+                }
+            }
+            
+            int keep1 = idx[0], keep2 = idx[1];
+            
+            for (int k = 0; k < 4; ++k) {
+                float v = (k == keep1 || k == keep2) ? vals[k] : 0.0f;
+                dense[i * cols + j + k] = fp8_from_float(v);
+                dense_fp16[i * cols + j + k] = __float2half(v);
+            }
+        }
+    }
+}
+
+void init_dense_matrix(__nv_fp8_e4m3* mat, half* mat_fp16, int rows, int cols, std::mt19937& gen) {
+    std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
+    for (int i = 0; i < rows * cols; ++i) {
+        float v = dist(gen);
+        if (std::fabs(v) < 0.1f) v = (v < 0) ? -0.25f : 0.25f;
+        mat[i] = fp8_from_float(v);
+        mat_fp16[i] = __float2half(v);
+    }
+}
+
+int main(int argc, char** argv) {
+    bool skip_verify = false;
+    int warmup = 10;
+    int repeat = 50;
+    
+    for (int i = 1; i < argc; ++i) {
+        if (strcmp(argv[i], "--skip-verify") == 0) skip_verify = true;
+        if (strncmp(argv[i], "--warmup=", 9) == 0) warmup = atoi(argv[i] + 9);
+        if (strncmp(argv[i], "--repeat=", 9) == 0) repeat = atoi(argv[i] + 9);
+    }
+    
+    printf("Sparse GEMM E4M3->FP16 (WMMA): M=%d, N=%d, K=%d\n", M_DIM, N_DIM, K_DIM);
+    printf("Tile: %dx%dx%d, WMMA: %dx%dx%d\n", TILE_M, TILE_N, TILE_K, WMMA_M, WMMA_N, WMMA_K);
+    
+    std::mt19937 gen(42);
+    
+    size_t A_sz = M_DIM * K_DIM;
+    size_t B_sz = N_DIM * K_DIM;
+    size_t C_sz = M_DIM * N_DIM;
+    
+    __nv_fp8_e4m3* h_A_fp8 = (__nv_fp8_e4m3*)malloc(A_sz * sizeof(__nv_fp8_e4m3));
+    __nv_fp8_e4m3* h_B_fp8 = (__nv_fp8_e4m3*)malloc(B_sz * sizeof(__nv_fp8_e4m3));
+    half* h_A_fp16 = (half*)malloc(A_sz * sizeof(half));
+    half* h_B_fp16 = (half*)malloc(B_sz * sizeof(half));
+    half* h_C = (half*)malloc(C_sz * sizeof(half));
+    
+    init_sparse_matrix(h_A_fp8, h_A_fp16, M_DIM, K_DIM, gen);
+    init_dense_matrix(h_B_fp8, h_B_fp16, N_DIM, K_DIM, gen);
+    memset(h_C, 0, C_sz * sizeof(half));
+    
+    half *d_A, *d_B, *d_C;
+    
+    CHECK_CUDA(cudaMalloc(&d_A, A_sz * sizeof(half)));
+    CHECK_CUDA(cudaMalloc(&d_B, B_sz * sizeof(half)));
+    CHECK_CUDA(cudaMalloc(&d_C, C_sz * sizeof(half)));
+    
+    CHECK_CUDA(cudaMemcpy(d_A, h_A_fp16, A_sz * sizeof(half), cudaMemcpyHostToDevice));
+    CHECK_CUDA(cudaMemcpy(d_B, h_B_fp16, B_sz * sizeof(half), cudaMemcpyHostToDevice));
+    CHECK_CUDA(cudaMemset(d_C, 0, C_sz * sizeof(half)));
+    
+    dim3 grid((M_DIM + TILE_M - 1) / TILE_M, (N_DIM + TILE_N - 1) / TILE_N);
+    constexpr int warps_per_tile = (TILE_M / WMMA_M) * (TILE_N / WMMA_N);
+    dim3 block(warps_per_tile * 32);
+    
+    for (int i = 0; i < warmup; ++i) {
+        sparse_gemm_wmma_kernel<<<grid, block>>>(d_A, d_B, d_C, M_DIM, N_DIM, K_DIM);
+    }
+    CHECK_CUDA(cudaDeviceSynchronize());
+    
+    cudaEvent_t start, stop;
+    CHECK_CUDA(cudaEventCreate(&start));
+    CHECK_CUDA(cudaEventCreate(&stop));
+    
+    CHECK_CUDA(cudaEventRecord(start));
+    for (int i = 0; i < repeat; ++i) {
+        sparse_gemm_wmma_kernel<<<grid, block>>>(d_A, d_B, d_C, M_DIM, N_DIM, K_DIM);
+    }
+    CHECK_CUDA(cudaEventRecord(stop));
+    CHECK_CUDA(cudaEventSynchronize(stop));
+    
+    float ms = 0;
+    CHECK_CUDA(cudaEventElapsedTime(&ms, start, stop));
+    float avg_ms = ms / repeat;
+    
+    double flops = 2.0 * M_DIM * N_DIM * K_DIM;
+    double tflops = (flops / (avg_ms / 1000.0)) / 1e12;
+    double eff = (tflops / H800_PEAK_FP8_TFLOPS) * 100.0;
+    
+    printf("Timing avg ms: %.4f\n", avg_ms);
+    printf("TFLOPS: %.2f\n", tflops);
+    printf("HW efficiency: %.2f%%\n", eff);
+    
+    if (!skip_verify) {
+        CHECK_CUDA(cudaMemcpy(h_C, d_C, C_sz * sizeof(half), cudaMemcpyDeviceToHost));
+        
+        printf("Sampled verification...\n");
+        std::mt19937 vgen(123);
+        std::uniform_int_distribution<int> dm(0, M_DIM - 1);
+        std::uniform_int_distribution<int> dn(0, N_DIM - 1);
+        
+        int num_samples = 1000;
+        int failed = 0;
+        float max_err = 0.0f;
+        
+        for (int s = 0; s < num_samples; ++s) {
+            int i = dm(vgen);
+            int j = dn(vgen);
+            
+            float ref = 0.0f;
+            for (int kk = 0; kk < K_DIM; ++kk) {
+                ref += __half2float(h_A_fp16[i * K_DIM + kk]) * __half2float(h_B_fp16[j * K_DIM + kk]);
+            }
+            
+            float got = __half2float(h_C[i * N_DIM + j]);
+            float diff = std::fabs(got - ref);
+            float tol = 1.0f + 0.02f * std::fabs(ref);
+            
+            if (diff > max_err) max_err = diff;
+            if (diff > tol) {
+                if (failed < 5) {
+                    printf("Mismatch (%d,%d): got=%.4f ref=%.4f diff=%.4f\n", i, j, got, ref, diff);
+                }
+                failed++;
+            }
+        }
+        
+        printf("Verification: %d/%d passed, max_err=%.4f\n", num_samples - failed, num_samples, max_err);
+        if (failed > num_samples / 10) {
+            printf("VERIFY: FAIL max_abs_err=%.4f\n", max_err);
+            return 1;
+        }
+        printf("VERIFY: PASS\n");
+    }
+    
+    printf("Test Passed\n");
+    
+    CHECK_CUDA(cudaFree(d_A));
+    CHECK_CUDA(cudaFree(d_B));
+    CHECK_CUDA(cudaFree(d_C));
+    
+    free(h_A_fp8);
+    free(h_B_fp8);
+    free(h_A_fp16);
+    free(h_B_fp16);
+    free(h_C);
+    
+    return 0;
+}

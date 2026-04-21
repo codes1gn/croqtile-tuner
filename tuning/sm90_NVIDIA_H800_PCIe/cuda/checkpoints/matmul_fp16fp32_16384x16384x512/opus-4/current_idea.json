@@ -1,0 +1,14 @@
+{
+  "schema": "croq-checkpoint-v1",
+  "timestamp": "2026-04-21T01:41:32Z",
+  "dsl": "cuda",
+  "shape_key": "matmul_fp16fp32_16384x16384x512",
+  "iter": "iter018_noreg_nounroll",
+  "bottleneck": "compute_bound",
+  "idea": "No maxrregcount + no pragma unroll",
+  "expected_gain": "+5 TFLOPS",
+  "levers": [
+    "unroll"
+  ],
+  "status": "PLANNED"
+}

@@ -1,0 +1,71 @@
+#define MATMUL_WARP_M 64
+#define MATMUL_WARP_N 256
+#define MATMUL_TILE_M 128
+#define MATMUL_TILE_K 128
+#define MATMUL_WARP_K 64
+#define MATMUL_SWIZ 128
+#define MATMUL_STAGES 3
+
+#include <cute.co>
+#include <common/matrix.co>
+#include <dma/cute_tma.co>
+#include <warpspec/warp_specialize_2cta.co>
+
+struct KernelTraits {
+    constexpr atom_layout = GMMA_RS_F16_64x256x16;
+    constexpr tma_swiz_bits = MATMUL_SWIZ;
+    constexpr tile_M = MATMUL_TILE_M;
+    constexpr tile_N = MATMUL_WARP_N;
+    constexpr tile_K = MATMUL_TILE_K;
+    constexpr num_stages = MATMUL_STAGES;
+    constexpr atom_M = MATMUL_WARP_M;
+    constexpr atom_N = MATMUL_WARP_N;
+    constexpr atom_K = MATMUL_WARP_K;
+};
+
+kernel <<<KernelTraits::blocks, KernelTraits::threads>>>
+matmul_f16fp32_iter017(M, N, K: int; sA: <f16>, sB: <f16>, sC: <f32>)
+{
+    constexpr tile_M = KernelTraits::tile_M;
+    constexpr tile_N = KernelTraits::tile_N;
+    constexpr tile_K = KernelTraits::tile_K;
+    constexpr num_stages = KernelTraits::num_stages;
+
+    alloc_barrier: mbarrier[num_stages];
+    alloc_barrier: empty[num_stages];
+
+    gA_desc: cuteTMA_2D = make_tma_2d(sA, tile_M, tile_K);
+    gB_desc: cuteTMA_2D = make_tma_2d(sB, tile_K, tile_N);
+
+    smem_A: f16[num_stages][tile_M][tile_K];
+    smem_B: f16[num_stages][tile_K][tile_N];
+
+    accum: f32[tile_M][tile_N];
+    accum[:] = 0;
+
+    block_m: int = blockIdx.x * 2 + (threadIdx.x / 128);
+    block_n: int = blockIdx.y;
+
+    num_k_tiles: int = K / tile_K;
+
+    warpspec!(warpgroup_id: 0-1) as producer {
+        parallel-for: k_iter in range(0, num_k_tiles) {
+            stage_idx: int = k_iter % num_stages;
+            wait(empty[stage_idx]);
+            tma_load_2d_tile(gA_desc, smem_A[stage_idx], block_m * tile_M, k_iter * tile_K);
+            tma_load_2d_tile(gB_desc, smem_B[stage_idx], k_iter * tile_K, block_n * tile_N);
+            arrive(mbarrier[stage_idx]);
+        }
+    }
+
+    warpspec!(warpgroup_id: 0-1) as consumer {
+        parallel-for: k_iter in range(0, num_k_tiles) {
+            stage_idx: int = k_iter % num_stages;
+            wait(mbarrier[stage_idx]);
+            wgmma!(accum, smem_A[stage_idx], smem_B[stage_idx]);
+            arrive(empty[stage_idx]);
+        }
+    }
+
+    store_tile_f32(sC, accum, block_m * tile_M, block_n * tile_N);
+}

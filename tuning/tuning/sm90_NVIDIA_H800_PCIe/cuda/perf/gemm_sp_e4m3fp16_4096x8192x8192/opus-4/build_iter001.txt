@@ -1,0 +1,2 @@
+cc1plus: fatal error: /home/albert/workspace/croqtile-tuner/tuning/sm90_NVIDIA_H800_PCIe/cuda/cmd/gemm_sp_e4m3fp16_4096x8192x8192/opus-4/../../../../../tuning/sm90_NVIDIA_H800_PCIe/cuda/srcs/gemm_sp_e4m3fp16_4096x8192x8192/opus-4/iter001_baseline_wgmma_1p2c.cu: No such file or directory
+compilation terminated.

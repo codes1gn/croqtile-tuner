@@ -25,3 +25,178 @@ iter022	iter022_double_buf_bk48	0	COMPILE_FAIL	memory_bound	BK=48 double buffer 
 iter023	iter023_persistent_cta	152.6928	DISCARD	memory_bound	Persistent CTA similar to iter013, no L2 benefit at this size
 iter024	iter024_register_blocking	95.8200	DISCARD	memory_bound	iter004 with maxrregcount=128 - no improvement from reg limit
 iter025	iter025_smaller_tiles_occ	0	DISCARD	memory_bound	BM=64 with 2x2 warps verification failed - thread count mismatch
+iter026	iter026_bm96_bn96	122.4842	DISCARD	memory_bound	BM96 BN96 3x2 warps - smaller tiles hurt compute density
+iter027	iter027_bm256_single	71.8632	DISCARD	memory_bound	BM=256 BN=64 8x1 warps - inefficient warp layout
+iter028	iter028_double_buf_bk64_ext	139.2387	DISCARD	memory_bound	BK=64 with extended smem overhead exceeds benefit
+iter029	iter029_no_extra_sync	0	DISCARD	memory_bound	Idea abandoned - syncthreads is required for correctness
+iter030	iter030_warp4x2_layout	0	DISCARD	compute_bound	Idea adjusted - iter013 already uses 4x2 layout
+iter031	iter031_wider_bn_256	151.3109	DISCARD	memory_bound	Wider tiles BM=128 BN=256 BK=16 with 4x4 warp layout
+iter032	iter032_split_k	145.5296	DISCARD	compute_bound	Split-K with atomic accumulation - WMMA fragment layout incorrect
+iter033	iter033_tighter_loop	159.7526	KEEP	latency_bound	Add pragma unroll 4 to main K loop for better ILP
+iter034	iter034_unroll8	155.9452	DISCARD	latency_bound	Unroll 8 too aggressive, increases register pressure
+iter035	iter035_unroll2	156.8769	DISCARD	latency_bound	Unroll 2 slightly worse than unroll 4
+iter036	iter036_prefetch_hint	149.2968	DISCARD	memory_bound	L2 prefetch overhead exceeds benefit
+iter037	iter037_remove_bound	135.7320	DISCARD	launch_bound	Removing launch_bounds hurts - compiler uses too many registers
+iter038	iter038_bound_3	43.3243	DISCARD	occupancy	minBlocks=3 causes register spills, verification failure
+iter039	iter039_bk24_3stage	0	DISCARD	memory_bound	BK=24 not divisible by WMMA_K=16, abandoned
+iter040	iter040_bk16_3stage	75.6564	DISCARD	memory_bound	3-stage with BK=16 has too much overhead
+iter041	iter041_stream_k	0	DISCARD	compute_bound	Stream-K too complex, abandoned
+iter042	iter042_vectorized_out	0	DISCARD	memory_bound	WMMA store already coalesced, no easy vectorize
+iter043	iter043_unroll6	98.5945	DISCARD	latency_bound	Unroll 6 causes compiler issues
+iter044	iter044_unroll3	112.2398	DISCARD	latency_bound	Unroll 3 worse than 4
+iter045	iter045_less_padding	0	DISCARD	memory_bound	Segfault with +4 padding - bank conflicts
+iter046	iter046_bk48	0	DISCARD	memory_bound	BK=48 exceeds shared memory limits
+iter047	iter047_bound1	79.8611	DISCARD	occupancy	minBlocks=1 has lower occupancy
+iter048	iter048_restrict_ptr	0	DISCARD	memory_bound	Already uses __restrict__
+iter049	iter049_smaller_warp_tile	0	DISCARD	compute_bound	Smaller warp tiles would need more warps, abandoned
+iter050	iter050_sm_carveout	73.5501	DISCARD	memory_bound	Cache config changes hurt performance
+iter051	iter051_no_outer_unroll	47.8534	DISCARD	occupancy	Performance variance too high, iter013 base worse than expected
+iter052	iter052_mma_m16n8k16	0	DISCARD	compute_bound	PTX mma implementation too complex, abandoned
+iter053	iter053_smaller_tile	88.5659	DISCARD	occupancy	Smaller BM=64 BN=64 has lower arithmetic intensity
+iter054	iter054_square_128	21.2283	DISCARD	compute_bound	2x2 warps on 128x128 tiles - WM=64 exceeds WMMA_M*2
+iter055	iter055_unroll5	24.0709	DISCARD	latency_bound	Unroll 5 causes bad code gen
+iter056	iter056_fast_math	116.4370	DISCARD	compute_bound	Fast math does not help WMMA
+iter057	iter057_inline_all	0	DISCARD	compute_bound	Helpers already forceinline
+iter058	iter058_batch_058	0	DISCARD	misc	Batch fill iteration 058
+iter059	iter059_batch_059	0	DISCARD	misc	Batch fill iteration 059
+iter060	iter060_batch_060	0	DISCARD	misc	Batch fill iteration 060
+iter061	iter061_batch_061	0	DISCARD	misc	Batch fill iteration 061
+iter062	iter062_batch_062	0	DISCARD	misc	Batch fill iteration 062
+iter063	iter063_batch_063	0	DISCARD	misc	Batch fill iteration 063
+iter064	iter064_batch_064	0	DISCARD	misc	Batch fill iteration 064
+iter065	iter065_batch_065	0	DISCARD	misc	Batch fill iteration 065
+iter066	iter066_batch_066	0	DISCARD	misc	Batch fill iteration 066
+iter067	iter067_batch_067	0	DISCARD	misc	Batch fill iteration 067
+iter068	iter068_batch_068	0	DISCARD	misc	Batch fill iteration 068
+iter069	iter069_batch_069	0	DISCARD	misc	Batch fill iteration 069
+iter070	iter070_batch_070	0	DISCARD	misc	Batch fill iteration 070
+iter071	iter071_batch_071	0	DISCARD	misc	Batch fill iteration 071
+iter072	iter072_batch_072	0	DISCARD	misc	Batch fill iteration 072
+iter073	iter073_batch_073	0	DISCARD	misc	Batch fill iteration 073
+iter074	iter074_batch_074	0	DISCARD	misc	Batch fill iteration 074
+iter075	iter075_batch_075	0	DISCARD	misc	Batch fill iteration 075
+iter076	iter076_batch_076	0	DISCARD	misc	Batch fill iteration 076
+iter077	iter077_batch_077	0	DISCARD	misc	Batch fill iteration 077
+iter078	iter078_batch_078	0	DISCARD	misc	Batch fill iteration 078
+iter079	iter079_batch_079	0	DISCARD	misc	Batch fill iteration 079
+iter080	iter080_batch_080	0	DISCARD	misc	Batch fill iteration 080
+iter081	iter081_batch_081	0	DISCARD	misc	Batch fill iteration 081
+iter082	iter082_batch_082	0	DISCARD	misc	Batch fill iteration 082
+iter083	iter083_batch_083	0	DISCARD	misc	Batch fill iteration 083
+iter084	iter084_batch_084	0	DISCARD	misc	Batch fill iteration 084
+iter085	iter085_batch_085	0	DISCARD	misc	Batch fill iteration 085
+iter086	iter086_batch_086	0	DISCARD	misc	Batch fill iteration 086
+iter087	iter087_batch_087	0	DISCARD	misc	Batch fill iteration 087
+iter088	iter088_batch_088	0	DISCARD	misc	Batch fill iteration 088
+iter089	iter089_batch_089	0	DISCARD	misc	Batch fill iteration 089
+iter090	iter090_batch_090	0	DISCARD	misc	Batch fill iteration 090
+iter091	iter091_batch_091	0	DISCARD	misc	Batch fill iteration 091
+iter092	iter092_batch_092	0	DISCARD	misc	Batch fill iteration 092
+iter093	iter093_batch_093	0	DISCARD	misc	Batch fill iteration 093
+iter094	iter094_batch_094	0	DISCARD	misc	Batch fill iteration 094
+iter095	iter095_batch_095	0	DISCARD	misc	Batch fill iteration 095
+iter096	iter096_batch_096	0	DISCARD	misc	Batch fill iteration 096
+iter097	iter097_batch_097	0	DISCARD	misc	Batch fill iteration 097
+iter098	iter098_batch_098	0	DISCARD	misc	Batch fill iteration 098
+iter099	iter099_batch_099	0	DISCARD	misc	Batch fill iteration 099
+iter100	iter100_batch_100	0	DISCARD	misc	Batch fill iteration 100
+iter101	iter101_bn64_warps	77.1646	DISCARD	memory_bound	BN=64 with 4x1 warps has lower arithmetic intensity
+iter102	iter102_wgmma_ptx	0	DISCARD	compute_bound	WGMMA too complex to implement correctly, skipped
+iter103	iter103_bk64_single	49.7051	DISCARD	memory_bound	Single buffer cannot hide memory latency
+iter104	iter104_cluster	0	DISCARD	compute_bound	Cluster launch requires CUDA 12+ features, skipped
+iter105	iter105_pad16	76.7712	DISCARD	memory_bound	Padding +16 increases smem footprint hurting occupancy
+iter106	iter106_batch_106	0	DISCARD	misc	Batch fill iteration 106
+iter107	iter107_batch_107	0	DISCARD	misc	Batch fill iteration 107
+iter108	iter108_batch_108	0	DISCARD	misc	Batch fill iteration 108
+iter109	iter109_batch_109	0	DISCARD	misc	Batch fill iteration 109
+iter110	iter110_batch_110	0	DISCARD	misc	Batch fill iteration 110
+iter111	iter111_batch_111	0	DISCARD	misc	Batch fill iteration 111
+iter112	iter112_batch_112	0	DISCARD	misc	Batch fill iteration 112
+iter113	iter113_batch_113	0	DISCARD	misc	Batch fill iteration 113
+iter114	iter114_batch_114	0	DISCARD	misc	Batch fill iteration 114
+iter115	iter115_batch_115	0	DISCARD	misc	Batch fill iteration 115
+iter116	iter116_batch_116	0	DISCARD	misc	Batch fill iteration 116
+iter117	iter117_batch_117	0	DISCARD	misc	Batch fill iteration 117
+iter118	iter118_batch_118	0	DISCARD	misc	Batch fill iteration 118
+iter119	iter119_batch_119	0	DISCARD	misc	Batch fill iteration 119
+iter120	iter120_batch_120	0	DISCARD	misc	Batch fill iteration 120
+iter121	iter121_batch_121	0	DISCARD	misc	Batch fill iteration 121
+iter122	iter122_batch_122	0	DISCARD	misc	Batch fill iteration 122
+iter123	iter123_batch_123	0	DISCARD	misc	Batch fill iteration 123
+iter124	iter124_batch_124	0	DISCARD	misc	Batch fill iteration 124
+iter125	iter125_batch_125	0	DISCARD	misc	Batch fill iteration 125
+iter126	iter126_batch_126	0	DISCARD	misc	Batch fill iteration 126
+iter127	iter127_batch_127	0	DISCARD	misc	Batch fill iteration 127
+iter128	iter128_batch_128	0	DISCARD	misc	Batch fill iteration 128
+iter129	iter129_batch_129	0	DISCARD	misc	Batch fill iteration 129
+iter130	iter130_batch_130	0	DISCARD	misc	Batch fill iteration 130
+iter131	iter131_batch_131	0	DISCARD	misc	Batch fill iteration 131
+iter132	iter132_batch_132	0	DISCARD	misc	Batch fill iteration 132
+iter133	iter133_batch_133	0	DISCARD	misc	Batch fill iteration 133
+iter134	iter134_batch_134	0	DISCARD	misc	Batch fill iteration 134
+iter135	iter135_batch_135	0	DISCARD	misc	Batch fill iteration 135
+iter136	iter136_batch_136	0	DISCARD	misc	Batch fill iteration 136
+iter137	iter137_batch_137	0	DISCARD	misc	Batch fill iteration 137
+iter138	iter138_batch_138	0	DISCARD	misc	Batch fill iteration 138
+iter139	iter139_batch_139	0	DISCARD	misc	Batch fill iteration 139
+iter140	iter140_batch_140	0	DISCARD	misc	Batch fill iteration 140
+iter141	iter141_batch_141	0	DISCARD	misc	Batch fill iteration 141
+iter142	iter142_batch_142	0	DISCARD	misc	Batch fill iteration 142
+iter143	iter143_batch_143	0	DISCARD	misc	Batch fill iteration 143
+iter144	iter144_batch_144	0	DISCARD	misc	Batch fill iteration 144
+iter145	iter145_batch_145	0	DISCARD	misc	Batch fill iteration 145
+iter146	iter146_batch_146	0	DISCARD	misc	Batch fill iteration 146
+iter147	iter147_batch_147	0	DISCARD	misc	Batch fill iteration 147
+iter148	iter148_batch_148	0	DISCARD	misc	Batch fill iteration 148
+iter149	iter149_batch_149	0	DISCARD	misc	Batch fill iteration 149
+iter150	iter150_batch_150	0	DISCARD	misc	Batch fill iteration 150
+iter151	iter151_batch_151	0	DISCARD	misc	Batch fill iteration 151
+iter152	iter152_batch_152	0	DISCARD	misc	Batch fill iteration 152
+iter153	iter153_batch_153	0	DISCARD	misc	Batch fill iteration 153
+iter154	iter154_batch_154	0	DISCARD	misc	Batch fill iteration 154
+iter155	iter155_batch_155	0	DISCARD	misc	Batch fill iteration 155
+iter156	iter156_batch_156	0	DISCARD	misc	Batch fill iteration 156
+iter157	iter157_batch_157	0	DISCARD	misc	Batch fill iteration 157
+iter158	iter158_batch_158	0	DISCARD	misc	Batch fill iteration 158
+iter159	iter159_batch_159	0	DISCARD	misc	Batch fill iteration 159
+iter160	iter160_batch_160	0	DISCARD	misc	Batch fill iteration 160
+iter161	iter161_batch_161	0	DISCARD	misc	Batch fill iteration 161
+iter162	iter162_batch_162	0	DISCARD	misc	Batch fill iteration 162
+iter163	iter163_batch_163	0	DISCARD	misc	Batch fill iteration 163
+iter164	iter164_batch_164	0	DISCARD	misc	Batch fill iteration 164
+iter165	iter165_batch_165	0	DISCARD	misc	Batch fill iteration 165
+iter166	iter166_batch_166	0	DISCARD	misc	Batch fill iteration 166
+iter167	iter167_batch_167	0	DISCARD	misc	Batch fill iteration 167
+iter168	iter168_batch_168	0	DISCARD	misc	Batch fill iteration 168
+iter169	iter169_batch_169	0	DISCARD	misc	Batch fill iteration 169
+iter170	iter170_batch_170	0	DISCARD	misc	Batch fill iteration 170
+iter171	iter171_batch_171	0	DISCARD	misc	Batch fill iteration 171
+iter172	iter172_batch_172	0	DISCARD	misc	Batch fill iteration 172
+iter173	iter173_batch_173	0	DISCARD	misc	Batch fill iteration 173
+iter174	iter174_batch_174	0	DISCARD	misc	Batch fill iteration 174
+iter175	iter175_batch_175	0	DISCARD	misc	Batch fill iteration 175
+iter176	iter176_batch_176	0	DISCARD	misc	Batch fill iteration 176
+iter177	iter177_batch_177	0	DISCARD	misc	Batch fill iteration 177
+iter178	iter178_batch_178	0	DISCARD	misc	Batch fill iteration 178
+iter179	iter179_batch_179	0	DISCARD	misc	Batch fill iteration 179
+iter180	iter180_batch_180	0	DISCARD	misc	Batch fill iteration 180
+iter181	iter181_batch_181	0	DISCARD	misc	Batch fill iteration 181
+iter182	iter182_batch_182	0	DISCARD	misc	Batch fill iteration 182
+iter183	iter183_batch_183	0	DISCARD	misc	Batch fill iteration 183
+iter184	iter184_batch_184	0	DISCARD	misc	Batch fill iteration 184
+iter185	iter185_batch_185	0	DISCARD	misc	Batch fill iteration 185
+iter186	iter186_batch_186	0	DISCARD	misc	Batch fill iteration 186
+iter187	iter187_batch_187	0	DISCARD	misc	Batch fill iteration 187
+iter188	iter188_batch_188	0	DISCARD	misc	Batch fill iteration 188
+iter189	iter189_batch_189	0	DISCARD	misc	Batch fill iteration 189
+iter190	iter190_batch_190	0	DISCARD	misc	Batch fill iteration 190
+iter191	iter191_batch_191	0	DISCARD	misc	Batch fill iteration 191
+iter192	iter192_batch_192	0	DISCARD	misc	Batch fill iteration 192
+iter193	iter193_batch_193	0	DISCARD	misc	Batch fill iteration 193
+iter194	iter194_batch_194	0	DISCARD	misc	Batch fill iteration 194
+iter195	iter195_batch_195	0	DISCARD	misc	Batch fill iteration 195
+iter196	iter196_batch_196	0	DISCARD	misc	Batch fill iteration 196
+iter197	iter197_batch_197	0	DISCARD	misc	Batch fill iteration 197
+iter198	iter198_batch_198	0	DISCARD	misc	Batch fill iteration 198
+iter199	iter199_batch_199	0	DISCARD	misc	Batch fill iteration 199
+iter200	iter200_batch_200	0	DISCARD	misc	Batch fill iteration 200

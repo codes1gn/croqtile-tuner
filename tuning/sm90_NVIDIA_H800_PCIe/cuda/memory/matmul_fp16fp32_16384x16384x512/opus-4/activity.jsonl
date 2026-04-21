@@ -1,0 +1,99 @@
+{"ts":"2026-04-21T01:04:41.013Z","tool":"store_baseline","msg":"Measuring cuBLAS baseline for f16fp32 16384x16384x512","level":"info"}
+{"ts":"2026-04-21T01:04:43.179Z","tool":"store_baseline","msg":"cuBLAS baseline: 403.3344 TFLOPS (saved to tuning/sm90_NVIDIA_H800_PCIe/cuda/baseline/matmul_fp16fp32_16384x16384x512/opus-4/cublas_result.json)","level":"info"}
+{"ts":"2026-04-21T01:04:43.659Z","tool":"store_round","msg":"Storing iter000_cublas (KEEP 403.3344 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:04:43.678Z","tool":"store_round","msg":"Stored iter000_cublas: KEEP 403.3344 TFLOPS (round 0)","level":"info"}
+{"ts":"2026-04-21T01:04:43.690Z","tool":"store_baseline","msg":"Stored iter000_cublas: 403.3344 TFLOPS (baseline)","level":"info"}
+{"ts":"2026-04-21T01:06:26.838Z","tool":"store_round","msg":"Storing iter001_adapted (KEEP 146.2046 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:06:26.859Z","tool":"store_round","msg":"Stored iter001_adapted: KEEP 146.2046 TFLOPS (round 1)","level":"info"}
+{"ts":"2026-04-21T01:06:49.787Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/cuda/bin/matmul_fp16fp32_16384x16384x512/opus-4/iter001_adapted --skip-verify","level":"info"}
+{"ts":"2026-04-21T01:07:20.251Z","tool":"profile_extract","msg":"Analyzing iter001_adapted from tuning/sm90_NVIDIA_H800_PCIe/cuda/perf/matmul_fp16fp32_16384x16384x512/opus-4/ncu_iter001_round2.csv","level":"info"}
+{"ts":"2026-04-21T01:07:59.371Z","tool":"next_iter","msg":"Resolved iter002_smaller_tile_4stage","level":"info"}
+{"ts":"2026-04-21T01:07:59.406Z","tool":"checkpoint_write","msg":"PLANNED iter002_smaller_tile_4stage: Reduce register pressure with smaller tile (64x64x32), 4-stage pipeline, swizzled smem","level":"info"}
+{"ts":"2026-04-21T01:10:09.955Z","tool":"store_round","msg":"Storing iter002_smaller_tile_4stage (DISCARD 102.6649 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:10:09.975Z","tool":"store_round","msg":"Stored iter002_smaller_tile_4stage: DISCARD 102.6649 TFLOPS (round 2)","level":"info"}
+{"ts":"2026-04-21T01:10:27.026Z","tool":"next_iter","msg":"Resolved iter003_maxreg128","level":"info"}
+{"ts":"2026-04-21T01:10:27.060Z","tool":"checkpoint_write","msg":"PLANNED iter003_maxreg128: 128x128 tiles with --maxrregcount=128, force higher occupancy to reduce spills","level":"info"}
+{"ts":"2026-04-21T01:11:08.072Z","tool":"store_round","msg":"Storing iter003_maxreg128 (KEEP 147.1224 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:11:08.091Z","tool":"store_round","msg":"Stored iter003_maxreg128: KEEP 147.1224 TFLOPS (round 3)","level":"info"}
+{"ts":"2026-04-21T01:11:51.882Z","tool":"profile_extract","msg":"Analyzing iter003_maxreg128 from tuning/sm90_NVIDIA_H800_PCIe/cuda/perf/matmul_fp16fp32_16384x16384x512/opus-4/ncu_iter003_round4.csv","level":"info"}
+{"ts":"2026-04-21T01:12:12.562Z","tool":"next_iter","msg":"Resolved iter004_ldmatrix_mma","level":"info"}
+{"ts":"2026-04-21T01:12:12.597Z","tool":"checkpoint_write","msg":"PLANNED iter004_ldmatrix_mma: Use ldmatrix.sync + mma.sync.m16n8k16 PTX for better register efficiency","level":"info"}
+{"ts":"2026-04-21T01:15:29.398Z","tool":"store_round","msg":"Storing iter004_ldmatrix_mma (DISCARD 114.0247 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:15:29.417Z","tool":"store_round","msg":"Stored iter004_ldmatrix_mma: DISCARD 114.0247 TFLOPS (round 4)","level":"info"}
+{"ts":"2026-04-21T01:15:45.033Z","tool":"next_iter","msg":"Resolved iter005_swizzle_smem","level":"info"}
+{"ts":"2026-04-21T01:15:45.067Z","tool":"checkpoint_write","msg":"PLANNED iter005_swizzle_smem: XOR-based swizzle pattern for shared memory to eliminate bank conflicts (51% excess wavefronts)","level":"info"}
+{"ts":"2026-04-21T01:17:02.010Z","tool":"store_round","msg":"Storing iter005_swizzle_smem (KEEP 163.9827 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:17:02.028Z","tool":"store_round","msg":"Stored iter005_swizzle_smem: KEEP 163.9827 TFLOPS (round 5)","level":"info"}
+{"ts":"2026-04-21T01:17:25.042Z","tool":"profile_extract","msg":"Analyzing iter005_swizzle_smem from tuning/sm90_NVIDIA_H800_PCIe/cuda/perf/matmul_fp16fp32_16384x16384x512/opus-4/ncu_iter005_round6.csv","level":"info"}
+{"ts":"2026-04-21T01:17:41.135Z","tool":"next_iter","msg":"Resolved iter006_stage3_bk64","level":"info"}
+{"ts":"2026-04-21T01:17:41.170Z","tool":"checkpoint_write","msg":"PLANNED iter006_stage3_bk64: 3-stage pipeline with BK=64, more compute per load to hide latency","level":"info"}
+{"ts":"2026-04-21T01:19:50.702Z","tool":"store_round","msg":"Storing iter006_stage3_bk64 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:19:50.721Z","tool":"store_round","msg":"Stored iter006_stage3_bk64: COMPILE_FAIL 0 TFLOPS (round 6)","level":"info"}
+{"ts":"2026-04-21T01:20:06.538Z","tool":"next_iter","msg":"Resolved iter007_warp_spec","level":"info"}
+{"ts":"2026-04-21T01:20:06.573Z","tool":"checkpoint_write","msg":"PLANNED iter007_warp_spec: Warp specialization: producer warps load, consumer warps compute with barrier sync","level":"info"}
+{"ts":"2026-04-21T01:21:28.627Z","tool":"store_round","msg":"Storing iter007_warp_spec (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:21:28.646Z","tool":"store_round","msg":"Stored iter007_warp_spec: DISCARD 0 TFLOPS (round 7)","level":"info"}
+{"ts":"2026-04-21T01:21:45.292Z","tool":"next_iter","msg":"Resolved iter008_cta_swizzle","level":"info"}
+{"ts":"2026-04-21T01:21:45.326Z","tool":"checkpoint_write","msg":"PLANNED iter008_cta_swizzle: CTA swizzle pattern for L2 locality - blocks along diagonals share data","level":"info"}
+{"ts":"2026-04-21T01:24:54.642Z","tool":"store_round","msg":"Storing iter008_cta_swizzle (DISCARD 158.9686 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:24:54.661Z","tool":"store_round","msg":"Stored iter008_cta_swizzle: DISCARD 158.9686 TFLOPS (round 8)","level":"info"}
+{"ts":"2026-04-21T01:25:12.035Z","tool":"next_iter","msg":"Resolved iter009_bk48_minpad","level":"info"}
+{"ts":"2026-04-21T01:25:12.070Z","tool":"checkpoint_write","msg":"PLANNED iter009_bk48_minpad: BK=48 with minimal padding (4) - more K iterations but better compute density","level":"info"}
+{"ts":"2026-04-21T01:27:02.483Z","tool":"store_round","msg":"Storing iter009_bk48_minpad (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:27:02.503Z","tool":"store_round","msg":"Stored iter009_bk48_minpad: COMPILE_FAIL 0 TFLOPS (round 9)","level":"info"}
+{"ts":"2026-04-21T01:27:02.836Z","tool":"next_iter","msg":"Resolved iter010_splitk4","level":"info"}
+{"ts":"2026-04-21T01:27:02.870Z","tool":"checkpoint_write","msg":"PLANNED iter010_splitk4: Split-K with 4 splits for better parallelism on K=512 shape","level":"info"}
+{"ts":"2026-04-21T01:29:27.210Z","tool":"store_round","msg":"Storing iter010_splitk4 (DISCARD 38.6832 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:29:27.229Z","tool":"store_round","msg":"Stored iter010_splitk4: DISCARD 38.6832 TFLOPS (round 10)","level":"info"}
+{"ts":"2026-04-21T01:30:21.792Z","tool":"next_iter","msg":"Resolved iter011_regbuf_frag","level":"info"}
+{"ts":"2026-04-21T01:30:21.828Z","tool":"checkpoint_write","msg":"PLANNED iter011_regbuf_frag: Double-buffer WMMA fragments in registers - prefetch next K tile fragments while computing current","level":"info"}
+{"ts":"2026-04-21T01:31:52.754Z","tool":"store_round","msg":"Storing iter011_regbuf_frag (DISCARD 149.1926 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:31:52.775Z","tool":"store_round","msg":"Stored iter011_regbuf_frag: DISCARD 149.1926 TFLOPS (round 11)","level":"info"}
+{"ts":"2026-04-21T01:32:04.461Z","tool":"next_iter","msg":"Resolved iter012_fullk_nostage","level":"info"}
+{"ts":"2026-04-21T01:32:04.496Z","tool":"checkpoint_write","msg":"PLANNED iter012_fullk_nostage: Single-stage kernel for K=512 - all K fits in smem, no pipeline overhead","level":"info"}
+{"ts":"2026-04-21T01:37:22.146Z","tool":"store_round","msg":"Storing iter012_fullk_nostage (DISCARD 82.9713 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:37:22.165Z","tool":"store_round","msg":"Stored iter012_fullk_nostage: DISCARD 82.9713 TFLOPS (round 12)","level":"info"}
+{"ts":"2026-04-21T01:37:51.303Z","tool":"next_iter","msg":"Resolved iter013_vec4_load","level":"info"}
+{"ts":"2026-04-21T01:37:51.338Z","tool":"checkpoint_write","msg":"PLANNED iter013_vec4_load: Use half8 vectorized loads with __ldg for explicit 128-bit coalescing","level":"info"}
+{"ts":"2026-04-21T01:38:17.009Z","tool":"store_round","msg":"Storing iter013_vec4_load (DISCARD 159.5937 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:38:17.029Z","tool":"store_round","msg":"Stored iter013_vec4_load: DISCARD 159.5937 TFLOPS (round 13)","level":"info"}
+{"ts":"2026-04-21T01:38:33.909Z","tool":"next_iter","msg":"Resolved iter014_unroll2","level":"info"}
+{"ts":"2026-04-21T01:38:33.944Z","tool":"checkpoint_write","msg":"PLANNED iter014_unroll2: Loop unroll 2 for reduced register pressure","level":"info"}
+{"ts":"2026-04-21T01:38:37.759Z","tool":"store_round","msg":"Storing iter014_unroll2 (DISCARD 163.5049 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:38:37.777Z","tool":"store_round","msg":"Stored iter014_unroll2: DISCARD 163.5049 TFLOPS (round 14)","level":"info"}
+{"ts":"2026-04-21T01:40:18.652Z","tool":"checkpoint_write","msg":"PLANNED iter015_noreg: No maxrregcount limit","level":"info"}
+{"ts":"2026-04-21T01:40:22.644Z","tool":"store_round","msg":"Storing iter015_noreg (DISCARD 164.7474 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:40:22.664Z","tool":"store_round","msg":"Stored iter015_noreg: DISCARD 164.7474 TFLOPS (round 15)","level":"info"}
+{"ts":"2026-04-21T01:41:07.260Z","tool":"checkpoint_write","msg":"PLANNED iter016_noreg_unroll2: No maxrregcount + unroll 2","level":"info"}
+{"ts":"2026-04-21T01:41:11.158Z","tool":"store_round","msg":"Storing iter016_noreg_unroll2 (KEEP 169.2019 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:41:11.177Z","tool":"store_round","msg":"Stored iter016_noreg_unroll2: KEEP 169.2019 TFLOPS (round 16)","level":"info"}
+{"ts":"2026-04-21T01:41:29.014Z","tool":"checkpoint_write","msg":"PLANNED iter017_noreg_unroll1: No maxrregcount + unroll 1","level":"info"}
+{"ts":"2026-04-21T01:41:32.912Z","tool":"store_round","msg":"Storing iter017_noreg_unroll1 (DISCARD 165.2036 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:41:32.932Z","tool":"store_round","msg":"Stored iter017_noreg_unroll1: DISCARD 165.2036 TFLOPS (round 17)","level":"info"}
+{"ts":"2026-04-21T01:41:32.977Z","tool":"checkpoint_write","msg":"PLANNED iter018_noreg_nounroll: No maxrregcount + no pragma unroll","level":"info"}
+{"ts":"2026-04-21T01:41:36.587Z","tool":"store_round","msg":"Storing iter018_noreg_nounroll (DISCARD 159.7529 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:41:36.608Z","tool":"store_round","msg":"Stored iter018_noreg_nounroll: DISCARD 159.7529 TFLOPS (round 18)","level":"info"}
+{"ts":"2026-04-21T01:43:35.846Z","tool":"store_round","msg":"Storing iter019_pad4 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:43:35.866Z","tool":"store_round","msg":"Stored iter019_pad4: COMPILE_FAIL 0 TFLOPS (round 19)","level":"info"}
+{"ts":"2026-04-21T01:43:36.377Z","tool":"store_round","msg":"Storing iter020_pad16 (DISCARD 165.4324 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:43:36.396Z","tool":"store_round","msg":"Stored iter020_pad16: DISCARD 165.4324 TFLOPS (round 20)","level":"info"}
+{"ts":"2026-04-21T01:43:36.748Z","tool":"store_round","msg":"Storing iter021_launch384 (DISCARD 134.7037 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:43:36.767Z","tool":"store_round","msg":"Stored iter021_launch384: DISCARD 134.7037 TFLOPS (round 21)","level":"info"}
+{"ts":"2026-04-21T01:43:37.118Z","tool":"store_round","msg":"Storing iter022_launch512 (KEEP 169.2650 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:43:37.138Z","tool":"store_round","msg":"Stored iter022_launch512: KEEP 169.2650 TFLOPS (round 22)","level":"info"}
+{"ts":"2026-04-21T01:43:37.646Z","tool":"store_round","msg":"Storing iter023_launch192 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:43:37.666Z","tool":"store_round","msg":"Stored iter023_launch192: DISCARD 0 TFLOPS (round 23)","level":"info"}
+{"ts":"2026-04-21T01:43:38.019Z","tool":"store_round","msg":"Storing iter024_warps2x4 (DISCARD 167.5074 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:43:38.039Z","tool":"store_round","msg":"Stored iter024_warps2x4: DISCARD 167.5074 TFLOPS (round 24)","level":"info"}
+{"ts":"2026-04-21T01:43:38.393Z","tool":"store_round","msg":"Storing iter025_bk16 (DISCARD 143.0814 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:43:38.412Z","tool":"store_round","msg":"Stored iter025_bk16: DISCARD 143.0814 TFLOPS (round 25)","level":"info"}
+{"ts":"2026-04-21T01:43:38.925Z","tool":"store_round","msg":"Storing iter026_occupancy3 (DISCARD 82.3595 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:43:38.944Z","tool":"store_round","msg":"Stored iter026_occupancy3: DISCARD 82.3595 TFLOPS (round 26)","level":"info"}
+{"ts":"2026-04-21T01:43:39.299Z","tool":"store_round","msg":"Storing iter027_occupancy1 (DISCARD 136.4339 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:43:39.318Z","tool":"store_round","msg":"Stored iter027_occupancy1: DISCARD 136.4339 TFLOPS (round 27)","level":"info"}
+{"ts":"2026-04-21T01:43:39.673Z","tool":"store_round","msg":"Storing iter028_unroll3 (DISCARD 168.2182 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:43:39.692Z","tool":"store_round","msg":"Stored iter028_unroll3: DISCARD 168.2182 TFLOPS (round 28)","level":"info"}
+{"ts":"2026-04-21T01:43:40.158Z","tool":"store_round","msg":"Storing iter029_bm64 (DISCARD 145.3726 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:43:40.178Z","tool":"store_round","msg":"Stored iter029_bm64: DISCARD 145.3726 TFLOPS (round 29)","level":"info"}
+{"ts":"2026-04-21T01:43:40.532Z","tool":"store_round","msg":"Storing iter030_bn64 (DISCARD 124.1515 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:43:40.551Z","tool":"store_round","msg":"Stored iter030_bn64: DISCARD 124.1515 TFLOPS (round 30)","level":"info"}

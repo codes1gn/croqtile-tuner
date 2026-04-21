@@ -1,0 +1,14 @@
+{
+  "schema": "croq-checkpoint-v1",
+  "timestamp": "2026-04-21T01:52:35Z",
+  "dsl": "croqtile",
+  "shape_key": "matmul_f16fp32_16320x16320x16320",
+  "iter": "iter013_wn256_s3_swz12_1p2c",
+  "bottleneck": "compute_bound",
+  "idea": "WN=256 S3 SWIZZLE=12 + 1p2c warp spec: More consumer threads for compute",
+  "expected_gain": "+10 TFLOPS",
+  "levers": [
+    "warp_specialization"
+  ],
+  "status": "PLANNED"
+}

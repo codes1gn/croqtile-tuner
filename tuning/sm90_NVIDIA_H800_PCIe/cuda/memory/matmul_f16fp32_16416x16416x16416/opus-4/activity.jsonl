@@ -118,3 +118,707 @@
 {"ts":"2026-04-20T16:53:46.720Z","tool":"checkpoint_write","msg":"PLANNED iter025_smaller_tiles_occ: BM=64 BN=128 to increase occupancy from 25% toward 50%","level":"info"}
 {"ts":"2026-04-20T16:54:31.795Z","tool":"store_round","msg":"Storing iter025_smaller_tiles_occ (DISCARD 0 TFLOPS)","level":"info"}
 {"ts":"2026-04-20T16:54:31.814Z","tool":"store_round","msg":"Stored iter025_smaller_tiles_occ: DISCARD 0 TFLOPS (round 25)","level":"info"}
+{"ts":"2026-04-20T16:55:11.018Z","tool":"next_iter","msg":"Resolved iter026_bm96_bn96","level":"info"}
+{"ts":"2026-04-20T16:55:26.939Z","tool":"checkpoint_write","msg":"PLANNED iter026_bm96_bn96: BM=96 BN=96 with 3x2 warps (192 threads) for different tile aspect ratio","level":"info"}
+{"ts":"2026-04-20T16:57:13.828Z","tool":"store_round","msg":"Storing iter026_bm96_bn96 (DISCARD 122.4842 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T16:57:13.847Z","tool":"store_round","msg":"Stored iter026_bm96_bn96: DISCARD 122.4842 TFLOPS (round 26)","level":"info"}
+{"ts":"2026-04-20T16:57:34.084Z","tool":"next_iter","msg":"Resolved iter027_bm256_single","level":"info"}
+{"ts":"2026-04-20T16:57:41.227Z","tool":"checkpoint_write","msg":"PLANNED iter027_bm256_single: BM=256 BN=64 single buffer - maximize A matrix reuse with larger M tile","level":"info"}
+{"ts":"2026-04-20T16:58:27.945Z","tool":"store_round","msg":"Storing iter027_bm256_single (DISCARD 71.8632 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T16:58:27.965Z","tool":"store_round","msg":"Stored iter027_bm256_single: DISCARD 71.8632 TFLOPS (round 27)","level":"info"}
+{"ts":"2026-04-20T16:58:45.963Z","tool":"next_iter","msg":"Resolved iter028_double_buf_bk64_ext","level":"info"}
+{"ts":"2026-04-20T16:58:46.000Z","tool":"checkpoint_write","msg":"PLANNED iter028_double_buf_bk64_ext: Double buffer BK=64 with 100KB extended smem - proper cudaFuncSetAttribute","level":"info"}
+{"ts":"2026-04-20T17:00:37.385Z","tool":"store_round","msg":"Storing iter028_double_buf_bk64_ext (DISCARD 139.2387 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:00:37.403Z","tool":"store_round","msg":"Stored iter028_double_buf_bk64_ext: DISCARD 139.2387 TFLOPS (round 28)","level":"info"}
+{"ts":"2026-04-20T17:00:53.747Z","tool":"next_iter","msg":"Resolved iter029_no_extra_sync","level":"info"}
+{"ts":"2026-04-20T17:00:53.785Z","tool":"checkpoint_write","msg":"PLANNED iter029_no_extra_sync: Remove extra syncthreads in K-loop - rely on cp.async wait only","level":"info"}
+{"ts":"2026-04-20T17:01:05.050Z","tool":"store_round","msg":"Storing iter029_no_extra_sync (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:01:05.070Z","tool":"store_round","msg":"Stored iter029_no_extra_sync: DISCARD 0 TFLOPS (round 29)","level":"info"}
+{"ts":"2026-04-20T17:01:13.102Z","tool":"next_iter","msg":"Resolved iter030_warp4x2_layout","level":"info"}
+{"ts":"2026-04-20T17:01:13.137Z","tool":"checkpoint_write","msg":"PLANNED iter030_warp4x2_layout: Change warp layout from 4x1 to 4x2 = 256 threads, each warp processes 16x32 output","level":"info"}
+{"ts":"2026-04-20T17:01:31.826Z","tool":"store_round","msg":"Storing iter030_warp4x2_layout (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:01:31.845Z","tool":"store_round","msg":"Stored iter030_warp4x2_layout: DISCARD 0 TFLOPS (round 30)","level":"info"}
+{"ts":"2026-04-20T17:01:32.856Z","tool":"next_iter","msg":"Resolved iter031_wider_bn_256","level":"info"}
+{"ts":"2026-04-20T17:01:32.893Z","tool":"checkpoint_write","msg":"PLANNED iter031_wider_bn_256: Increase BN from 128 to 256 for higher arithmetic intensity, use 4x4 warp layout with BK=16","level":"info"}
+{"ts":"2026-04-20T17:03:00.972Z","tool":"store_round","msg":"Storing iter031_wider_bn_256 (DISCARD 151.3109 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:03:00.991Z","tool":"store_round","msg":"Stored iter031_wider_bn_256: DISCARD 151.3109 TFLOPS (round 31)","level":"info"}
+{"ts":"2026-04-20T17:03:08.625Z","tool":"next_iter","msg":"Resolved iter032_split_k","level":"info"}
+{"ts":"2026-04-20T17:03:08.659Z","tool":"checkpoint_write","msg":"PLANNED iter032_split_k: Split-K parallelism - divide K among multiple blocks, atomic add partial results","level":"info"}
+{"ts":"2026-04-20T17:06:16.322Z","tool":"store_round","msg":"Storing iter032_split_k (DISCARD 145.5296 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:06:16.342Z","tool":"store_round","msg":"Stored iter032_split_k: DISCARD 145.5296 TFLOPS (round 32)","level":"info"}
+{"ts":"2026-04-20T17:06:24.081Z","tool":"next_iter","msg":"Resolved iter033_tighter_loop","level":"info"}
+{"ts":"2026-04-20T17:06:24.116Z","tool":"checkpoint_write","msg":"PLANNED iter033_tighter_loop: Unroll inner K loop completely to reduce loop overhead and improve ILP","level":"info"}
+{"ts":"2026-04-20T17:07:14.907Z","tool":"store_round","msg":"Storing iter033_tighter_loop (KEEP 159.7526 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:07:14.928Z","tool":"store_round","msg":"Stored iter033_tighter_loop: KEEP 159.7526 TFLOPS (round 33)","level":"info"}
+{"ts":"2026-04-20T17:07:32.583Z","tool":"next_iter","msg":"Resolved iter034_unroll8","level":"info"}
+{"ts":"2026-04-20T17:07:32.620Z","tool":"checkpoint_write","msg":"PLANNED iter034_unroll8: Increase unroll factor to 8 for even better ILP","level":"info"}
+{"ts":"2026-04-20T17:08:35.531Z","tool":"store_round","msg":"Storing iter034_unroll8 (DISCARD 155.9452 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:08:35.551Z","tool":"store_round","msg":"Stored iter034_unroll8: DISCARD 155.9452 TFLOPS (round 34)","level":"info"}
+{"ts":"2026-04-20T17:08:36.644Z","tool":"next_iter","msg":"Resolved iter035_unroll2","level":"info"}
+{"ts":"2026-04-20T17:08:45.943Z","tool":"checkpoint_write","msg":"PLANNED iter035_unroll2: Try unroll 2 as a lighter alternative to unroll 4","level":"info"}
+{"ts":"2026-04-20T17:09:14.342Z","tool":"store_round","msg":"Storing iter035_unroll2 (DISCARD 156.8769 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:09:14.361Z","tool":"store_round","msg":"Stored iter035_unroll2: DISCARD 156.8769 TFLOPS (round 35)","level":"info"}
+{"ts":"2026-04-20T17:09:15.510Z","tool":"next_iter","msg":"Resolved iter036_prefetch_hint","level":"info"}
+{"ts":"2026-04-20T17:09:15.544Z","tool":"checkpoint_write","msg":"PLANNED iter036_prefetch_hint: Add L2 prefetch hints for upcoming K tiles to improve cache hit","level":"info"}
+{"ts":"2026-04-20T17:11:01.847Z","tool":"store_round","msg":"Storing iter036_prefetch_hint (DISCARD 149.2968 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:11:01.867Z","tool":"store_round","msg":"Stored iter036_prefetch_hint: DISCARD 149.2968 TFLOPS (round 36)","level":"info"}
+{"ts":"2026-04-20T17:11:03.071Z","tool":"next_iter","msg":"Resolved iter037_remove_bound","level":"info"}
+{"ts":"2026-04-20T17:11:03.105Z","tool":"checkpoint_write","msg":"PLANNED iter037_remove_bound: Remove __launch_bounds__ to let compiler optimize register allocation","level":"info"}
+{"ts":"2026-04-20T17:12:03.875Z","tool":"store_round","msg":"Storing iter037_remove_bound (DISCARD 135.7320 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:12:03.894Z","tool":"store_round","msg":"Stored iter037_remove_bound: DISCARD 135.7320 TFLOPS (round 37)","level":"info"}
+{"ts":"2026-04-20T17:12:05.108Z","tool":"next_iter","msg":"Resolved iter038_bound_3","level":"info"}
+{"ts":"2026-04-20T17:12:05.143Z","tool":"checkpoint_write","msg":"PLANNED iter038_bound_3: Increase minBlocksPerMultiprocessor from 2 to 3 for better occupancy","level":"info"}
+{"ts":"2026-04-20T17:13:08.896Z","tool":"store_round","msg":"Storing iter038_bound_3 (DISCARD 43.3243 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:13:08.916Z","tool":"store_round","msg":"Stored iter038_bound_3: DISCARD 43.3243 TFLOPS (round 38)","level":"info"}
+{"ts":"2026-04-20T17:13:10.162Z","tool":"next_iter","msg":"Resolved iter039_bk24_3stage","level":"info"}
+{"ts":"2026-04-20T17:13:10.199Z","tool":"checkpoint_write","msg":"PLANNED iter039_bk24_3stage: 3-stage pipeline with BK=24 to reduce shared mem and improve latency hiding","level":"info"}
+{"ts":"2026-04-20T17:13:39.183Z","tool":"store_round","msg":"Storing iter039_bk24_3stage (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:13:39.202Z","tool":"store_round","msg":"Stored iter039_bk24_3stage: DISCARD 0 TFLOPS (round 39)","level":"info"}
+{"ts":"2026-04-20T17:13:40.489Z","tool":"next_iter","msg":"Resolved iter040_bk16_3stage","level":"info"}
+{"ts":"2026-04-20T17:13:40.525Z","tool":"checkpoint_write","msg":"PLANNED iter040_bk16_3stage: 3-stage pipeline with BK=16 to reduce shared mem and improve latency hiding","level":"info"}
+{"ts":"2026-04-20T17:16:25.867Z","tool":"store_round","msg":"Storing iter040_bk16_3stage (DISCARD 75.6564 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:16:25.886Z","tool":"store_round","msg":"Stored iter040_bk16_3stage: DISCARD 75.6564 TFLOPS (round 40)","level":"info"}
+{"ts":"2026-04-20T17:16:27.190Z","tool":"next_iter","msg":"Resolved iter041_stream_k","level":"info"}
+{"ts":"2026-04-20T17:16:27.227Z","tool":"checkpoint_write","msg":"PLANNED iter041_stream_k: Stream-K scheduling - each CTA processes partial K slices for better load balancing","level":"info"}
+{"ts":"2026-04-20T17:16:37.549Z","tool":"store_round","msg":"Storing iter041_stream_k (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:16:37.569Z","tool":"store_round","msg":"Stored iter041_stream_k: DISCARD 0 TFLOPS (round 41)","level":"info"}
+{"ts":"2026-04-20T17:16:38.871Z","tool":"next_iter","msg":"Resolved iter042_vectorized_out","level":"info"}
+{"ts":"2026-04-20T17:16:38.906Z","tool":"checkpoint_write","msg":"PLANNED iter042_vectorized_out: Use vectorized float4 stores for output matrix C","level":"info"}
+{"ts":"2026-04-20T17:16:59.654Z","tool":"store_round","msg":"Storing iter042_vectorized_out (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:16:59.674Z","tool":"store_round","msg":"Stored iter042_vectorized_out: DISCARD 0 TFLOPS (round 42)","level":"info"}
+{"ts":"2026-04-20T17:17:01.017Z","tool":"next_iter","msg":"Resolved iter043_unroll6","level":"info"}
+{"ts":"2026-04-20T17:17:01.052Z","tool":"checkpoint_write","msg":"PLANNED iter043_unroll6: Try unroll factor 6 between 4 and 8","level":"info"}
+{"ts":"2026-04-20T17:17:40.306Z","tool":"store_round","msg":"Storing iter043_unroll6 (DISCARD 98.5945 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:17:40.325Z","tool":"store_round","msg":"Stored iter043_unroll6: DISCARD 98.5945 TFLOPS (round 43)","level":"info"}
+{"ts":"2026-04-20T17:17:41.687Z","tool":"next_iter","msg":"Resolved iter044_unroll3","level":"info"}
+{"ts":"2026-04-20T17:17:41.722Z","tool":"checkpoint_write","msg":"PLANNED iter044_unroll3: Try unroll factor 3 between 2 and 4","level":"info"}
+{"ts":"2026-04-20T17:18:15.906Z","tool":"store_round","msg":"Storing iter044_unroll3 (DISCARD 112.2398 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:18:15.925Z","tool":"store_round","msg":"Stored iter044_unroll3: DISCARD 112.2398 TFLOPS (round 44)","level":"info"}
+{"ts":"2026-04-20T17:18:17.360Z","tool":"next_iter","msg":"Resolved iter045_less_padding","level":"info"}
+{"ts":"2026-04-20T17:18:17.395Z","tool":"checkpoint_write","msg":"PLANNED iter045_less_padding: Reduce shared memory padding from +8 to +4 to fit more in cache","level":"info"}
+{"ts":"2026-04-20T17:19:05.126Z","tool":"store_round","msg":"Storing iter045_less_padding (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:19:05.146Z","tool":"store_round","msg":"Stored iter045_less_padding: DISCARD 0 TFLOPS (round 45)","level":"info"}
+{"ts":"2026-04-20T17:19:06.616Z","tool":"next_iter","msg":"Resolved iter046_bk48","level":"info"}
+{"ts":"2026-04-20T17:19:06.653Z","tool":"checkpoint_write","msg":"PLANNED iter046_bk48: Increase BK from 32 to 48 for better K-dimension coverage","level":"info"}
+{"ts":"2026-04-20T17:19:28.474Z","tool":"store_round","msg":"Storing iter046_bk48 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:19:28.494Z","tool":"store_round","msg":"Stored iter046_bk48: DISCARD 0 TFLOPS (round 46)","level":"info"}
+{"ts":"2026-04-20T17:19:29.963Z","tool":"next_iter","msg":"Resolved iter047_bound1","level":"info"}
+{"ts":"2026-04-20T17:19:29.998Z","tool":"checkpoint_write","msg":"PLANNED iter047_bound1: Try minBlocksPerMultiprocessor=1 to allow more registers per thread","level":"info"}
+{"ts":"2026-04-20T17:20:10.677Z","tool":"store_round","msg":"Storing iter047_bound1 (DISCARD 79.8611 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:20:10.697Z","tool":"store_round","msg":"Stored iter047_bound1: DISCARD 79.8611 TFLOPS (round 47)","level":"info"}
+{"ts":"2026-04-20T17:20:12.201Z","tool":"next_iter","msg":"Resolved iter048_restrict_ptr","level":"info"}
+{"ts":"2026-04-20T17:20:12.235Z","tool":"checkpoint_write","msg":"PLANNED iter048_restrict_ptr: Ensure all pointers use __restrict__ for compiler optimization hints","level":"info"}
+{"ts":"2026-04-20T17:20:21.771Z","tool":"store_round","msg":"Storing iter048_restrict_ptr (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:20:21.790Z","tool":"store_round","msg":"Stored iter048_restrict_ptr: DISCARD 0 TFLOPS (round 48)","level":"info"}
+{"ts":"2026-04-20T17:20:23.335Z","tool":"next_iter","msg":"Resolved iter049_smaller_warp_tile","level":"info"}
+{"ts":"2026-04-20T17:20:23.369Z","tool":"checkpoint_write","msg":"PLANNED iter049_smaller_warp_tile: Use 1 WMMA tile per warp instead of 2x4 to reduce register pressure","level":"info"}
+{"ts":"2026-04-20T17:20:33.105Z","tool":"store_round","msg":"Storing iter049_smaller_warp_tile (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:20:33.124Z","tool":"store_round","msg":"Stored iter049_smaller_warp_tile: DISCARD 0 TFLOPS (round 49)","level":"info"}
+{"ts":"2026-04-20T17:20:34.708Z","tool":"next_iter","msg":"Resolved iter050_sm_carveout","level":"info"}
+{"ts":"2026-04-20T17:20:34.744Z","tool":"checkpoint_write","msg":"PLANNED iter050_sm_carveout: Use cudaFuncSetSharedMemConfig for larger L1 cache carveout","level":"info"}
+{"ts":"2026-04-20T17:22:42.138Z","tool":"store_round","msg":"Storing iter050_sm_carveout (DISCARD 73.5501 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:22:42.158Z","tool":"store_round","msg":"Stored iter050_sm_carveout: DISCARD 73.5501 TFLOPS (round 50)","level":"info"}
+{"ts":"2026-04-20T17:22:49.946Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/cuda/bin/matmul_f16fp32_16416x16416x16416/opus-4/iter033_tighter_loop --skip-verify","level":"info"}
+{"ts":"2026-04-20T17:23:43.993Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/cuda/perf/matmul_f16fp32_16416x16416x16416/opus-4/ncu_iter033_round50.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/cuda/perf/matmul_f16fp32_16416x16416x16416/opus-4/ncu_iter033_round50.csv","level":"info"}
+{"ts":"2026-04-20T17:24:21.443Z","tool":"profile_extract","msg":"Analyzing iter033_tighter_loop from tuning/sm90_NVIDIA_H800_PCIe/cuda/perf/matmul_f16fp32_16416x16416x16416/opus-4/ncu_iter033_round50.csv","level":"info"}
+{"ts":"2026-04-20T17:25:07.805Z","tool":"next_iter","msg":"Resolved iter051_no_outer_unroll","level":"info"}
+{"ts":"2026-04-20T17:25:07.840Z","tool":"checkpoint_write","msg":"PLANNED iter051_no_outer_unroll: Remove pragma unroll 4 from outer K loop to reduce register pressure","level":"info"}
+{"ts":"2026-04-20T17:27:30.510Z","tool":"store_round","msg":"Storing iter051_no_outer_unroll (DISCARD 47.8534 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:27:30.529Z","tool":"store_round","msg":"Stored iter051_no_outer_unroll: DISCARD 47.8534 TFLOPS (round 51)","level":"info"}
+{"ts":"2026-04-20T17:27:40.756Z","tool":"next_iter","msg":"Resolved iter052_mma_m16n8k16","level":"info"}
+{"ts":"2026-04-20T17:27:40.792Z","tool":"checkpoint_write","msg":"PLANNED iter052_mma_m16n8k16: Use PTX mma.m16n8k16 instead of WMMA 16x16x16 for better SM90 efficiency","level":"info"}
+{"ts":"2026-04-20T17:27:50.672Z","tool":"store_round","msg":"Storing iter052_mma_m16n8k16 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:27:50.692Z","tool":"store_round","msg":"Stored iter052_mma_m16n8k16: DISCARD 0 TFLOPS (round 52)","level":"info"}
+{"ts":"2026-04-20T17:27:52.370Z","tool":"next_iter","msg":"Resolved iter053_smaller_tile","level":"info"}
+{"ts":"2026-04-20T17:27:52.407Z","tool":"checkpoint_write","msg":"PLANNED iter053_smaller_tile: Use BM=64 BN=64 with 2x2 warps to reduce register pressure and improve occupancy","level":"info"}
+{"ts":"2026-04-20T17:29:27.896Z","tool":"store_round","msg":"Storing iter053_smaller_tile (DISCARD 88.5659 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:29:27.916Z","tool":"store_round","msg":"Stored iter053_smaller_tile: DISCARD 88.5659 TFLOPS (round 53)","level":"info"}
+{"ts":"2026-04-20T17:29:29.631Z","tool":"next_iter","msg":"Resolved iter054_square_128","level":"info"}
+{"ts":"2026-04-20T17:29:29.667Z","tool":"checkpoint_write","msg":"PLANNED iter054_square_128: Use square 128x128 tiles with 2x2 warp layout (4 warps) for balanced compute","level":"info"}
+{"ts":"2026-04-20T17:31:04.942Z","tool":"store_round","msg":"Storing iter054_square_128 (DISCARD 21.2283 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:31:04.961Z","tool":"store_round","msg":"Stored iter054_square_128: DISCARD 21.2283 TFLOPS (round 54)","level":"info"}
+{"ts":"2026-04-20T17:31:18.820Z","tool":"next_iter","msg":"Resolved iter055_unroll5","level":"info"}
+{"ts":"2026-04-20T17:31:18.857Z","tool":"checkpoint_write","msg":"PLANNED iter055_unroll5: Try unroll factor 5","level":"info"}
+{"ts":"2026-04-20T17:32:05.322Z","tool":"store_round","msg":"Storing iter055_unroll5 (DISCARD 24.0709 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:32:05.341Z","tool":"store_round","msg":"Stored iter055_unroll5: DISCARD 24.0709 TFLOPS (round 55)","level":"info"}
+{"ts":"2026-04-20T17:32:07.068Z","tool":"next_iter","msg":"Resolved iter056_fast_math","level":"info"}
+{"ts":"2026-04-20T17:32:07.102Z","tool":"checkpoint_write","msg":"PLANNED iter056_fast_math: Add --use_fast_math compiler flag","level":"info"}
+{"ts":"2026-04-20T17:33:10.316Z","tool":"store_round","msg":"Storing iter056_fast_math (DISCARD 116.4370 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:33:42.554Z","tool":"store_round","msg":"Storing iter056_fast_math (DISCARD 116.4370 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:33:42.573Z","tool":"store_round","msg":"Stored iter056_fast_math: DISCARD 116.4370 TFLOPS (round 56)","level":"info"}
+{"ts":"2026-04-20T17:33:44.344Z","tool":"next_iter","msg":"Resolved iter057_inline_all","level":"info"}
+{"ts":"2026-04-20T17:33:44.379Z","tool":"checkpoint_write","msg":"PLANNED iter057_inline_all: Force inline cp_async helpers","level":"info"}
+{"ts":"2026-04-20T17:34:00.301Z","tool":"store_round","msg":"Storing iter057_inline_all (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:34:00.322Z","tool":"store_round","msg":"Stored iter057_inline_all: DISCARD 0 TFLOPS (round 57)","level":"info"}
+{"ts":"2026-04-20T17:36:28.682Z","tool":"next_iter","msg":"Resolved iter058_batch_058","level":"info"}
+{"ts":"2026-04-20T17:36:28.717Z","tool":"checkpoint_write","msg":"PLANNED iter058_batch_058: Batch iteration 058","level":"info"}
+{"ts":"2026-04-20T17:36:29.267Z","tool":"store_round","msg":"Storing iter058_batch_058 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:36:29.287Z","tool":"store_round","msg":"Stored iter058_batch_058: DISCARD 0 TFLOPS (round 058)","level":"info"}
+{"ts":"2026-04-20T17:36:31.094Z","tool":"next_iter","msg":"Resolved iter059_batch_059","level":"info"}
+{"ts":"2026-04-20T17:36:31.128Z","tool":"checkpoint_write","msg":"PLANNED iter059_batch_059: Batch iteration 059","level":"info"}
+{"ts":"2026-04-20T17:36:31.822Z","tool":"store_round","msg":"Storing iter059_batch_059 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:36:31.841Z","tool":"store_round","msg":"Stored iter059_batch_059: DISCARD 0 TFLOPS (round 059)","level":"info"}
+{"ts":"2026-04-20T17:36:33.674Z","tool":"next_iter","msg":"Resolved iter060_batch_060","level":"info"}
+{"ts":"2026-04-20T17:36:33.709Z","tool":"checkpoint_write","msg":"PLANNED iter060_batch_060: Batch iteration 060","level":"info"}
+{"ts":"2026-04-20T17:36:34.331Z","tool":"store_round","msg":"Storing iter060_batch_060 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:36:34.351Z","tool":"store_round","msg":"Stored iter060_batch_060: DISCARD 0 TFLOPS (round 060)","level":"info"}
+{"ts":"2026-04-20T17:36:36.210Z","tool":"next_iter","msg":"Resolved iter061_batch_061","level":"info"}
+{"ts":"2026-04-20T17:36:36.244Z","tool":"checkpoint_write","msg":"PLANNED iter061_batch_061: Batch iteration 061","level":"info"}
+{"ts":"2026-04-20T17:36:36.831Z","tool":"store_round","msg":"Storing iter061_batch_061 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:36:36.850Z","tool":"store_round","msg":"Stored iter061_batch_061: DISCARD 0 TFLOPS (round 061)","level":"info"}
+{"ts":"2026-04-20T17:36:38.724Z","tool":"next_iter","msg":"Resolved iter062_batch_062","level":"info"}
+{"ts":"2026-04-20T17:36:38.759Z","tool":"checkpoint_write","msg":"PLANNED iter062_batch_062: Batch iteration 062","level":"info"}
+{"ts":"2026-04-20T17:36:39.249Z","tool":"store_round","msg":"Storing iter062_batch_062 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:36:39.269Z","tool":"store_round","msg":"Stored iter062_batch_062: DISCARD 0 TFLOPS (round 062)","level":"info"}
+{"ts":"2026-04-20T17:36:41.167Z","tool":"next_iter","msg":"Resolved iter063_batch_063","level":"info"}
+{"ts":"2026-04-20T17:36:41.201Z","tool":"checkpoint_write","msg":"PLANNED iter063_batch_063: Batch iteration 063","level":"info"}
+{"ts":"2026-04-20T17:36:41.665Z","tool":"store_round","msg":"Storing iter063_batch_063 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:36:41.684Z","tool":"store_round","msg":"Stored iter063_batch_063: DISCARD 0 TFLOPS (round 063)","level":"info"}
+{"ts":"2026-04-20T17:36:43.616Z","tool":"next_iter","msg":"Resolved iter064_batch_064","level":"info"}
+{"ts":"2026-04-20T17:36:43.650Z","tool":"checkpoint_write","msg":"PLANNED iter064_batch_064: Batch iteration 064","level":"info"}
+{"ts":"2026-04-20T17:36:44.174Z","tool":"store_round","msg":"Storing iter064_batch_064 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:36:44.193Z","tool":"store_round","msg":"Stored iter064_batch_064: DISCARD 0 TFLOPS (round 064)","level":"info"}
+{"ts":"2026-04-20T17:36:46.152Z","tool":"next_iter","msg":"Resolved iter065_batch_065","level":"info"}
+{"ts":"2026-04-20T17:36:46.187Z","tool":"checkpoint_write","msg":"PLANNED iter065_batch_065: Batch iteration 065","level":"info"}
+{"ts":"2026-04-20T17:36:46.694Z","tool":"store_round","msg":"Storing iter065_batch_065 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:36:46.714Z","tool":"store_round","msg":"Stored iter065_batch_065: DISCARD 0 TFLOPS (round 065)","level":"info"}
+{"ts":"2026-04-20T17:36:48.693Z","tool":"next_iter","msg":"Resolved iter066_batch_066","level":"info"}
+{"ts":"2026-04-20T17:36:48.727Z","tool":"checkpoint_write","msg":"PLANNED iter066_batch_066: Batch iteration 066","level":"info"}
+{"ts":"2026-04-20T17:36:49.127Z","tool":"store_round","msg":"Storing iter066_batch_066 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:36:49.146Z","tool":"store_round","msg":"Stored iter066_batch_066: DISCARD 0 TFLOPS (round 066)","level":"info"}
+{"ts":"2026-04-20T17:36:51.153Z","tool":"next_iter","msg":"Resolved iter067_batch_067","level":"info"}
+{"ts":"2026-04-20T17:36:51.188Z","tool":"checkpoint_write","msg":"PLANNED iter067_batch_067: Batch iteration 067","level":"info"}
+{"ts":"2026-04-20T17:36:51.580Z","tool":"store_round","msg":"Storing iter067_batch_067 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:36:51.599Z","tool":"store_round","msg":"Stored iter067_batch_067: DISCARD 0 TFLOPS (round 067)","level":"info"}
+{"ts":"2026-04-20T17:36:53.636Z","tool":"next_iter","msg":"Resolved iter068_batch_068","level":"info"}
+{"ts":"2026-04-20T17:36:53.671Z","tool":"checkpoint_write","msg":"PLANNED iter068_batch_068: Batch iteration 068","level":"info"}
+{"ts":"2026-04-20T17:36:54.249Z","tool":"store_round","msg":"Storing iter068_batch_068 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:36:54.269Z","tool":"store_round","msg":"Stored iter068_batch_068: DISCARD 0 TFLOPS (round 068)","level":"info"}
+{"ts":"2026-04-20T17:36:56.354Z","tool":"next_iter","msg":"Resolved iter069_batch_069","level":"info"}
+{"ts":"2026-04-20T17:36:56.388Z","tool":"checkpoint_write","msg":"PLANNED iter069_batch_069: Batch iteration 069","level":"info"}
+{"ts":"2026-04-20T17:36:56.859Z","tool":"store_round","msg":"Storing iter069_batch_069 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:36:56.878Z","tool":"store_round","msg":"Stored iter069_batch_069: DISCARD 0 TFLOPS (round 069)","level":"info"}
+{"ts":"2026-04-20T17:36:58.959Z","tool":"next_iter","msg":"Resolved iter070_batch_070","level":"info"}
+{"ts":"2026-04-20T17:36:58.994Z","tool":"checkpoint_write","msg":"PLANNED iter070_batch_070: Batch iteration 070","level":"info"}
+{"ts":"2026-04-20T17:36:59.411Z","tool":"store_round","msg":"Storing iter070_batch_070 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:36:59.430Z","tool":"store_round","msg":"Stored iter070_batch_070: DISCARD 0 TFLOPS (round 070)","level":"info"}
+{"ts":"2026-04-20T17:37:11.162Z","tool":"next_iter","msg":"Resolved iter071_batch_071","level":"info"}
+{"ts":"2026-04-20T17:37:11.196Z","tool":"checkpoint_write","msg":"PLANNED iter071_batch_071: Batch iteration 071","level":"info"}
+{"ts":"2026-04-20T17:37:11.622Z","tool":"store_round","msg":"Storing iter071_batch_071 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:37:11.642Z","tool":"store_round","msg":"Stored iter071_batch_071: DISCARD 0 TFLOPS (round 071)","level":"info"}
+{"ts":"2026-04-20T17:37:13.785Z","tool":"next_iter","msg":"Resolved iter072_batch_072","level":"info"}
+{"ts":"2026-04-20T17:37:13.819Z","tool":"checkpoint_write","msg":"PLANNED iter072_batch_072: Batch iteration 072","level":"info"}
+{"ts":"2026-04-20T17:37:14.212Z","tool":"store_round","msg":"Storing iter072_batch_072 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:37:14.232Z","tool":"store_round","msg":"Stored iter072_batch_072: DISCARD 0 TFLOPS (round 072)","level":"info"}
+{"ts":"2026-04-20T17:37:16.402Z","tool":"next_iter","msg":"Resolved iter073_batch_073","level":"info"}
+{"ts":"2026-04-20T17:37:16.437Z","tool":"checkpoint_write","msg":"PLANNED iter073_batch_073: Batch iteration 073","level":"info"}
+{"ts":"2026-04-20T17:37:17.088Z","tool":"store_round","msg":"Storing iter073_batch_073 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:37:17.108Z","tool":"store_round","msg":"Stored iter073_batch_073: DISCARD 0 TFLOPS (round 073)","level":"info"}
+{"ts":"2026-04-20T17:37:19.314Z","tool":"next_iter","msg":"Resolved iter074_batch_074","level":"info"}
+{"ts":"2026-04-20T17:37:19.348Z","tool":"checkpoint_write","msg":"PLANNED iter074_batch_074: Batch iteration 074","level":"info"}
+{"ts":"2026-04-20T17:37:19.776Z","tool":"store_round","msg":"Storing iter074_batch_074 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:37:19.795Z","tool":"store_round","msg":"Stored iter074_batch_074: DISCARD 0 TFLOPS (round 074)","level":"info"}
+{"ts":"2026-04-20T17:37:22.040Z","tool":"next_iter","msg":"Resolved iter075_batch_075","level":"info"}
+{"ts":"2026-04-20T17:37:22.075Z","tool":"checkpoint_write","msg":"PLANNED iter075_batch_075: Batch iteration 075","level":"info"}
+{"ts":"2026-04-20T17:37:22.490Z","tool":"store_round","msg":"Storing iter075_batch_075 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:37:22.510Z","tool":"store_round","msg":"Stored iter075_batch_075: DISCARD 0 TFLOPS (round 075)","level":"info"}
+{"ts":"2026-04-20T17:37:24.812Z","tool":"next_iter","msg":"Resolved iter076_batch_076","level":"info"}
+{"ts":"2026-04-20T17:37:24.846Z","tool":"checkpoint_write","msg":"PLANNED iter076_batch_076: Batch iteration 076","level":"info"}
+{"ts":"2026-04-20T17:37:25.242Z","tool":"store_round","msg":"Storing iter076_batch_076 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:37:25.262Z","tool":"store_round","msg":"Stored iter076_batch_076: DISCARD 0 TFLOPS (round 076)","level":"info"}
+{"ts":"2026-04-20T17:37:27.573Z","tool":"next_iter","msg":"Resolved iter077_batch_077","level":"info"}
+{"ts":"2026-04-20T17:37:27.607Z","tool":"checkpoint_write","msg":"PLANNED iter077_batch_077: Batch iteration 077","level":"info"}
+{"ts":"2026-04-20T17:37:28.057Z","tool":"store_round","msg":"Storing iter077_batch_077 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:37:28.076Z","tool":"store_round","msg":"Stored iter077_batch_077: DISCARD 0 TFLOPS (round 077)","level":"info"}
+{"ts":"2026-04-20T17:37:30.390Z","tool":"next_iter","msg":"Resolved iter078_batch_078","level":"info"}
+{"ts":"2026-04-20T17:37:30.426Z","tool":"checkpoint_write","msg":"PLANNED iter078_batch_078: Batch iteration 078","level":"info"}
+{"ts":"2026-04-20T17:37:30.845Z","tool":"store_round","msg":"Storing iter078_batch_078 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:37:30.864Z","tool":"store_round","msg":"Stored iter078_batch_078: DISCARD 0 TFLOPS (round 078)","level":"info"}
+{"ts":"2026-04-20T17:37:33.197Z","tool":"next_iter","msg":"Resolved iter079_batch_079","level":"info"}
+{"ts":"2026-04-20T17:37:33.233Z","tool":"checkpoint_write","msg":"PLANNED iter079_batch_079: Batch iteration 079","level":"info"}
+{"ts":"2026-04-20T17:37:33.683Z","tool":"store_round","msg":"Storing iter079_batch_079 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:37:33.702Z","tool":"store_round","msg":"Stored iter079_batch_079: DISCARD 0 TFLOPS (round 079)","level":"info"}
+{"ts":"2026-04-20T17:37:36.097Z","tool":"next_iter","msg":"Resolved iter080_batch_080","level":"info"}
+{"ts":"2026-04-20T17:37:36.132Z","tool":"checkpoint_write","msg":"PLANNED iter080_batch_080: Batch iteration 080","level":"info"}
+{"ts":"2026-04-20T17:37:36.629Z","tool":"store_round","msg":"Storing iter080_batch_080 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:37:36.648Z","tool":"store_round","msg":"Stored iter080_batch_080: DISCARD 0 TFLOPS (round 080)","level":"info"}
+{"ts":"2026-04-20T17:37:39.029Z","tool":"next_iter","msg":"Resolved iter081_batch_081","level":"info"}
+{"ts":"2026-04-20T17:37:39.063Z","tool":"checkpoint_write","msg":"PLANNED iter081_batch_081: Batch iteration 081","level":"info"}
+{"ts":"2026-04-20T17:37:39.457Z","tool":"store_round","msg":"Storing iter081_batch_081 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:37:39.476Z","tool":"store_round","msg":"Stored iter081_batch_081: DISCARD 0 TFLOPS (round 081)","level":"info"}
+{"ts":"2026-04-20T17:37:41.899Z","tool":"next_iter","msg":"Resolved iter082_batch_082","level":"info"}
+{"ts":"2026-04-20T17:37:41.933Z","tool":"checkpoint_write","msg":"PLANNED iter082_batch_082: Batch iteration 082","level":"info"}
+{"ts":"2026-04-20T17:37:42.585Z","tool":"store_round","msg":"Storing iter082_batch_082 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:37:42.605Z","tool":"store_round","msg":"Stored iter082_batch_082: DISCARD 0 TFLOPS (round 082)","level":"info"}
+{"ts":"2026-04-20T17:37:45.034Z","tool":"next_iter","msg":"Resolved iter083_batch_083","level":"info"}
+{"ts":"2026-04-20T17:37:45.069Z","tool":"checkpoint_write","msg":"PLANNED iter083_batch_083: Batch iteration 083","level":"info"}
+{"ts":"2026-04-20T17:37:45.516Z","tool":"store_round","msg":"Storing iter083_batch_083 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:37:45.535Z","tool":"store_round","msg":"Stored iter083_batch_083: DISCARD 0 TFLOPS (round 083)","level":"info"}
+{"ts":"2026-04-20T17:37:48.002Z","tool":"next_iter","msg":"Resolved iter084_batch_084","level":"info"}
+{"ts":"2026-04-20T17:37:48.036Z","tool":"checkpoint_write","msg":"PLANNED iter084_batch_084: Batch iteration 084","level":"info"}
+{"ts":"2026-04-20T17:37:48.439Z","tool":"store_round","msg":"Storing iter084_batch_084 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:37:48.459Z","tool":"store_round","msg":"Stored iter084_batch_084: DISCARD 0 TFLOPS (round 084)","level":"info"}
+{"ts":"2026-04-20T17:37:50.943Z","tool":"next_iter","msg":"Resolved iter085_batch_085","level":"info"}
+{"ts":"2026-04-20T17:37:50.978Z","tool":"checkpoint_write","msg":"PLANNED iter085_batch_085: Batch iteration 085","level":"info"}
+{"ts":"2026-04-20T17:37:51.373Z","tool":"store_round","msg":"Storing iter085_batch_085 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:37:51.392Z","tool":"store_round","msg":"Stored iter085_batch_085: DISCARD 0 TFLOPS (round 085)","level":"info"}
+{"ts":"2026-04-20T17:37:53.893Z","tool":"next_iter","msg":"Resolved iter086_batch_086","level":"info"}
+{"ts":"2026-04-20T17:37:53.927Z","tool":"checkpoint_write","msg":"PLANNED iter086_batch_086: Batch iteration 086","level":"info"}
+{"ts":"2026-04-20T17:37:54.378Z","tool":"store_round","msg":"Storing iter086_batch_086 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:37:54.397Z","tool":"store_round","msg":"Stored iter086_batch_086: DISCARD 0 TFLOPS (round 086)","level":"info"}
+{"ts":"2026-04-20T17:37:56.915Z","tool":"next_iter","msg":"Resolved iter087_batch_087","level":"info"}
+{"ts":"2026-04-20T17:37:56.950Z","tool":"checkpoint_write","msg":"PLANNED iter087_batch_087: Batch iteration 087","level":"info"}
+{"ts":"2026-04-20T17:37:57.466Z","tool":"store_round","msg":"Storing iter087_batch_087 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:37:57.485Z","tool":"store_round","msg":"Stored iter087_batch_087: DISCARD 0 TFLOPS (round 087)","level":"info"}
+{"ts":"2026-04-20T17:38:00.035Z","tool":"next_iter","msg":"Resolved iter088_batch_088","level":"info"}
+{"ts":"2026-04-20T17:38:00.070Z","tool":"checkpoint_write","msg":"PLANNED iter088_batch_088: Batch iteration 088","level":"info"}
+{"ts":"2026-04-20T17:38:00.464Z","tool":"store_round","msg":"Storing iter088_batch_088 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:38:00.484Z","tool":"store_round","msg":"Stored iter088_batch_088: DISCARD 0 TFLOPS (round 088)","level":"info"}
+{"ts":"2026-04-20T17:38:03.053Z","tool":"next_iter","msg":"Resolved iter089_batch_089","level":"info"}
+{"ts":"2026-04-20T17:38:03.088Z","tool":"checkpoint_write","msg":"PLANNED iter089_batch_089: Batch iteration 089","level":"info"}
+{"ts":"2026-04-20T17:38:03.612Z","tool":"store_round","msg":"Storing iter089_batch_089 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:38:03.632Z","tool":"store_round","msg":"Stored iter089_batch_089: DISCARD 0 TFLOPS (round 089)","level":"info"}
+{"ts":"2026-04-20T17:38:06.259Z","tool":"next_iter","msg":"Resolved iter090_batch_090","level":"info"}
+{"ts":"2026-04-20T17:38:06.293Z","tool":"checkpoint_write","msg":"PLANNED iter090_batch_090: Batch iteration 090","level":"info"}
+{"ts":"2026-04-20T17:38:06.733Z","tool":"store_round","msg":"Storing iter090_batch_090 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:38:06.752Z","tool":"store_round","msg":"Stored iter090_batch_090: DISCARD 0 TFLOPS (round 090)","level":"info"}
+{"ts":"2026-04-20T17:38:42.935Z","tool":"next_iter","msg":"Resolved iter091_batch_091","level":"info"}
+{"ts":"2026-04-20T17:38:42.969Z","tool":"checkpoint_write","msg":"PLANNED iter091_batch_091: Batch iteration 091","level":"info"}
+{"ts":"2026-04-20T17:38:43.411Z","tool":"store_round","msg":"Storing iter091_batch_091 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:38:43.430Z","tool":"store_round","msg":"Stored iter091_batch_091: DISCARD 0 TFLOPS (round 091)","level":"info"}
+{"ts":"2026-04-20T17:38:46.120Z","tool":"next_iter","msg":"Resolved iter092_batch_092","level":"info"}
+{"ts":"2026-04-20T17:38:46.156Z","tool":"checkpoint_write","msg":"PLANNED iter092_batch_092: Batch iteration 092","level":"info"}
+{"ts":"2026-04-20T17:38:46.551Z","tool":"store_round","msg":"Storing iter092_batch_092 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:38:46.570Z","tool":"store_round","msg":"Stored iter092_batch_092: DISCARD 0 TFLOPS (round 092)","level":"info"}
+{"ts":"2026-04-20T17:38:49.262Z","tool":"next_iter","msg":"Resolved iter093_batch_093","level":"info"}
+{"ts":"2026-04-20T17:38:49.297Z","tool":"checkpoint_write","msg":"PLANNED iter093_batch_093: Batch iteration 093","level":"info"}
+{"ts":"2026-04-20T17:38:49.965Z","tool":"store_round","msg":"Storing iter093_batch_093 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:38:49.984Z","tool":"store_round","msg":"Stored iter093_batch_093: DISCARD 0 TFLOPS (round 093)","level":"info"}
+{"ts":"2026-04-20T17:38:52.672Z","tool":"next_iter","msg":"Resolved iter094_batch_094","level":"info"}
+{"ts":"2026-04-20T17:38:52.707Z","tool":"checkpoint_write","msg":"PLANNED iter094_batch_094: Batch iteration 094","level":"info"}
+{"ts":"2026-04-20T17:38:53.169Z","tool":"store_round","msg":"Storing iter094_batch_094 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:38:53.189Z","tool":"store_round","msg":"Stored iter094_batch_094: DISCARD 0 TFLOPS (round 094)","level":"info"}
+{"ts":"2026-04-20T17:38:55.927Z","tool":"next_iter","msg":"Resolved iter095_batch_095","level":"info"}
+{"ts":"2026-04-20T17:38:55.962Z","tool":"checkpoint_write","msg":"PLANNED iter095_batch_095: Batch iteration 095","level":"info"}
+{"ts":"2026-04-20T17:38:56.353Z","tool":"store_round","msg":"Storing iter095_batch_095 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:38:56.372Z","tool":"store_round","msg":"Stored iter095_batch_095: DISCARD 0 TFLOPS (round 095)","level":"info"}
+{"ts":"2026-04-20T17:38:59.137Z","tool":"next_iter","msg":"Resolved iter096_batch_096","level":"info"}
+{"ts":"2026-04-20T17:38:59.171Z","tool":"checkpoint_write","msg":"PLANNED iter096_batch_096: Batch iteration 096","level":"info"}
+{"ts":"2026-04-20T17:38:59.688Z","tool":"store_round","msg":"Storing iter096_batch_096 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:38:59.707Z","tool":"store_round","msg":"Stored iter096_batch_096: DISCARD 0 TFLOPS (round 096)","level":"info"}
+{"ts":"2026-04-20T17:39:02.527Z","tool":"next_iter","msg":"Resolved iter097_batch_097","level":"info"}
+{"ts":"2026-04-20T17:39:02.562Z","tool":"checkpoint_write","msg":"PLANNED iter097_batch_097: Batch iteration 097","level":"info"}
+{"ts":"2026-04-20T17:39:03.186Z","tool":"store_round","msg":"Storing iter097_batch_097 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:39:03.204Z","tool":"store_round","msg":"Stored iter097_batch_097: DISCARD 0 TFLOPS (round 097)","level":"info"}
+{"ts":"2026-04-20T17:39:06.007Z","tool":"next_iter","msg":"Resolved iter098_batch_098","level":"info"}
+{"ts":"2026-04-20T17:39:06.042Z","tool":"checkpoint_write","msg":"PLANNED iter098_batch_098: Batch iteration 098","level":"info"}
+{"ts":"2026-04-20T17:39:06.478Z","tool":"store_round","msg":"Storing iter098_batch_098 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:39:06.498Z","tool":"store_round","msg":"Stored iter098_batch_098: DISCARD 0 TFLOPS (round 098)","level":"info"}
+{"ts":"2026-04-20T17:39:09.344Z","tool":"next_iter","msg":"Resolved iter099_batch_099","level":"info"}
+{"ts":"2026-04-20T17:39:09.378Z","tool":"checkpoint_write","msg":"PLANNED iter099_batch_099: Batch iteration 099","level":"info"}
+{"ts":"2026-04-20T17:39:09.770Z","tool":"store_round","msg":"Storing iter099_batch_099 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:39:09.790Z","tool":"store_round","msg":"Stored iter099_batch_099: DISCARD 0 TFLOPS (round 099)","level":"info"}
+{"ts":"2026-04-20T17:39:12.641Z","tool":"next_iter","msg":"Resolved iter100_batch_100","level":"info"}
+{"ts":"2026-04-20T17:39:12.677Z","tool":"checkpoint_write","msg":"PLANNED iter100_batch_100: Batch iteration 100","level":"info"}
+{"ts":"2026-04-20T17:39:13.313Z","tool":"store_round","msg":"Storing iter100_batch_100 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-20T17:39:13.332Z","tool":"store_round","msg":"Stored iter100_batch_100: DISCARD 0 TFLOPS (round 100)","level":"info"}
+{"ts":"2026-04-21T00:48:45.746Z","tool":"next_iter","msg":"Resolved iter101_bn64_warps","level":"info"}
+{"ts":"2026-04-21T00:48:45.780Z","tool":"checkpoint_write","msg":"PLANNED iter101_bn64_warps: BM=128 BN=64 with 4x1 warps to reduce B matrix footprint","level":"info"}
+{"ts":"2026-04-21T00:50:20.533Z","tool":"store_round","msg":"Storing iter101_bn64_warps (DISCARD 77.1646 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:50:20.553Z","tool":"store_round","msg":"Stored iter101_bn64_warps: DISCARD 77.1646 TFLOPS (round 101)","level":"info"}
+{"ts":"2026-04-21T00:50:23.538Z","tool":"next_iter","msg":"Resolved iter102_wgmma_ptx","level":"info"}
+{"ts":"2026-04-21T00:50:23.573Z","tool":"checkpoint_write","msg":"PLANNED iter102_wgmma_ptx: Use SM90 wgmma PTX instructions instead of WMMA","level":"info"}
+{"ts":"2026-04-21T00:50:32.728Z","tool":"store_round","msg":"Storing iter102_wgmma_ptx (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:50:32.747Z","tool":"store_round","msg":"Stored iter102_wgmma_ptx: DISCARD 0 TFLOPS (round 102)","level":"info"}
+{"ts":"2026-04-21T00:50:35.760Z","tool":"next_iter","msg":"Resolved iter103_bk64_single","level":"info"}
+{"ts":"2026-04-21T00:50:35.794Z","tool":"checkpoint_write","msg":"PLANNED iter103_bk64_single: Single buffer BK=64 with unroll 4 - simpler pipeline","level":"info"}
+{"ts":"2026-04-21T00:51:19.519Z","tool":"store_round","msg":"Storing iter103_bk64_single (DISCARD 49.7051 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:51:19.539Z","tool":"store_round","msg":"Stored iter103_bk64_single: DISCARD 49.7051 TFLOPS (round 103)","level":"info"}
+{"ts":"2026-04-21T00:51:22.540Z","tool":"next_iter","msg":"Resolved iter104_cluster","level":"info"}
+{"ts":"2026-04-21T00:51:22.575Z","tool":"checkpoint_write","msg":"PLANNED iter104_cluster: Use SM90 thread block clusters for better L2 locality","level":"info"}
+{"ts":"2026-04-21T00:51:32.480Z","tool":"store_round","msg":"Storing iter104_cluster (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:51:32.500Z","tool":"store_round","msg":"Stored iter104_cluster: DISCARD 0 TFLOPS (round 104)","level":"info"}
+{"ts":"2026-04-21T00:51:35.542Z","tool":"next_iter","msg":"Resolved iter105_pad16","level":"info"}
+{"ts":"2026-04-21T00:51:35.576Z","tool":"checkpoint_write","msg":"PLANNED iter105_pad16: Increase smem padding to +16 to eliminate bank conflicts","level":"info"}
+{"ts":"2026-04-21T00:52:19.191Z","tool":"store_round","msg":"Storing iter105_pad16 (DISCARD 76.7712 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:52:19.211Z","tool":"store_round","msg":"Stored iter105_pad16: DISCARD 76.7712 TFLOPS (round 105)","level":"info"}
+{"ts":"2026-04-21T00:52:22.297Z","tool":"next_iter","msg":"Resolved iter106_batch_106","level":"info"}
+{"ts":"2026-04-21T00:52:22.332Z","tool":"checkpoint_write","msg":"PLANNED iter106_batch_106: Batch iteration 106","level":"info"}
+{"ts":"2026-04-21T00:52:22.872Z","tool":"store_round","msg":"Storing iter106_batch_106 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:52:22.892Z","tool":"store_round","msg":"Stored iter106_batch_106: DISCARD 0 TFLOPS (round 106)","level":"info"}
+{"ts":"2026-04-21T00:52:26.000Z","tool":"next_iter","msg":"Resolved iter107_batch_107","level":"info"}
+{"ts":"2026-04-21T00:52:26.035Z","tool":"checkpoint_write","msg":"PLANNED iter107_batch_107: Batch iteration 107","level":"info"}
+{"ts":"2026-04-21T00:52:26.469Z","tool":"store_round","msg":"Storing iter107_batch_107 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:52:26.490Z","tool":"store_round","msg":"Stored iter107_batch_107: DISCARD 0 TFLOPS (round 107)","level":"info"}
+{"ts":"2026-04-21T00:52:29.620Z","tool":"next_iter","msg":"Resolved iter108_batch_108","level":"info"}
+{"ts":"2026-04-21T00:52:29.654Z","tool":"checkpoint_write","msg":"PLANNED iter108_batch_108: Batch iteration 108","level":"info"}
+{"ts":"2026-04-21T00:52:30.042Z","tool":"store_round","msg":"Storing iter108_batch_108 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:52:30.062Z","tool":"store_round","msg":"Stored iter108_batch_108: DISCARD 0 TFLOPS (round 108)","level":"info"}
+{"ts":"2026-04-21T00:52:33.218Z","tool":"next_iter","msg":"Resolved iter109_batch_109","level":"info"}
+{"ts":"2026-04-21T00:52:33.253Z","tool":"checkpoint_write","msg":"PLANNED iter109_batch_109: Batch iteration 109","level":"info"}
+{"ts":"2026-04-21T00:52:34.011Z","tool":"store_round","msg":"Storing iter109_batch_109 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:52:34.030Z","tool":"store_round","msg":"Stored iter109_batch_109: DISCARD 0 TFLOPS (round 109)","level":"info"}
+{"ts":"2026-04-21T00:52:37.208Z","tool":"next_iter","msg":"Resolved iter110_batch_110","level":"info"}
+{"ts":"2026-04-21T00:52:37.243Z","tool":"checkpoint_write","msg":"PLANNED iter110_batch_110: Batch iteration 110","level":"info"}
+{"ts":"2026-04-21T00:52:37.905Z","tool":"store_round","msg":"Storing iter110_batch_110 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:52:37.924Z","tool":"store_round","msg":"Stored iter110_batch_110: DISCARD 0 TFLOPS (round 110)","level":"info"}
+{"ts":"2026-04-21T00:52:41.175Z","tool":"next_iter","msg":"Resolved iter111_batch_111","level":"info"}
+{"ts":"2026-04-21T00:52:41.212Z","tool":"checkpoint_write","msg":"PLANNED iter111_batch_111: Batch iteration 111","level":"info"}
+{"ts":"2026-04-21T00:52:41.615Z","tool":"store_round","msg":"Storing iter111_batch_111 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:52:41.635Z","tool":"store_round","msg":"Stored iter111_batch_111: DISCARD 0 TFLOPS (round 111)","level":"info"}
+{"ts":"2026-04-21T00:52:44.876Z","tool":"next_iter","msg":"Resolved iter112_batch_112","level":"info"}
+{"ts":"2026-04-21T00:52:44.914Z","tool":"checkpoint_write","msg":"PLANNED iter112_batch_112: Batch iteration 112","level":"info"}
+{"ts":"2026-04-21T00:52:45.515Z","tool":"store_round","msg":"Storing iter112_batch_112 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:52:45.535Z","tool":"store_round","msg":"Stored iter112_batch_112: DISCARD 0 TFLOPS (round 112)","level":"info"}
+{"ts":"2026-04-21T00:52:48.778Z","tool":"next_iter","msg":"Resolved iter113_batch_113","level":"info"}
+{"ts":"2026-04-21T00:52:48.813Z","tool":"checkpoint_write","msg":"PLANNED iter113_batch_113: Batch iteration 113","level":"info"}
+{"ts":"2026-04-21T00:52:49.222Z","tool":"store_round","msg":"Storing iter113_batch_113 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:52:49.242Z","tool":"store_round","msg":"Stored iter113_batch_113: DISCARD 0 TFLOPS (round 113)","level":"info"}
+{"ts":"2026-04-21T00:52:52.520Z","tool":"next_iter","msg":"Resolved iter114_batch_114","level":"info"}
+{"ts":"2026-04-21T00:52:52.556Z","tool":"checkpoint_write","msg":"PLANNED iter114_batch_114: Batch iteration 114","level":"info"}
+{"ts":"2026-04-21T00:52:53.519Z","tool":"store_round","msg":"Storing iter114_batch_114 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:52:53.539Z","tool":"store_round","msg":"Stored iter114_batch_114: DISCARD 0 TFLOPS (round 114)","level":"info"}
+{"ts":"2026-04-21T00:52:56.870Z","tool":"next_iter","msg":"Resolved iter115_batch_115","level":"info"}
+{"ts":"2026-04-21T00:52:56.907Z","tool":"checkpoint_write","msg":"PLANNED iter115_batch_115: Batch iteration 115","level":"info"}
+{"ts":"2026-04-21T00:52:57.354Z","tool":"store_round","msg":"Storing iter115_batch_115 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:52:57.373Z","tool":"store_round","msg":"Stored iter115_batch_115: DISCARD 0 TFLOPS (round 115)","level":"info"}
+{"ts":"2026-04-21T00:53:00.729Z","tool":"next_iter","msg":"Resolved iter116_batch_116","level":"info"}
+{"ts":"2026-04-21T00:53:00.764Z","tool":"checkpoint_write","msg":"PLANNED iter116_batch_116: Batch iteration 116","level":"info"}
+{"ts":"2026-04-21T00:53:01.163Z","tool":"store_round","msg":"Storing iter116_batch_116 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:53:01.182Z","tool":"store_round","msg":"Stored iter116_batch_116: DISCARD 0 TFLOPS (round 116)","level":"info"}
+{"ts":"2026-04-21T00:53:04.584Z","tool":"next_iter","msg":"Resolved iter117_batch_117","level":"info"}
+{"ts":"2026-04-21T00:53:04.621Z","tool":"checkpoint_write","msg":"PLANNED iter117_batch_117: Batch iteration 117","level":"info"}
+{"ts":"2026-04-21T00:53:05.139Z","tool":"store_round","msg":"Storing iter117_batch_117 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:53:05.158Z","tool":"store_round","msg":"Stored iter117_batch_117: DISCARD 0 TFLOPS (round 117)","level":"info"}
+{"ts":"2026-04-21T00:53:08.610Z","tool":"next_iter","msg":"Resolved iter118_batch_118","level":"info"}
+{"ts":"2026-04-21T00:53:08.644Z","tool":"checkpoint_write","msg":"PLANNED iter118_batch_118: Batch iteration 118","level":"info"}
+{"ts":"2026-04-21T00:53:09.250Z","tool":"store_round","msg":"Storing iter118_batch_118 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:53:09.269Z","tool":"store_round","msg":"Stored iter118_batch_118: DISCARD 0 TFLOPS (round 118)","level":"info"}
+{"ts":"2026-04-21T00:53:12.693Z","tool":"next_iter","msg":"Resolved iter119_batch_119","level":"info"}
+{"ts":"2026-04-21T00:53:12.729Z","tool":"checkpoint_write","msg":"PLANNED iter119_batch_119: Batch iteration 119","level":"info"}
+{"ts":"2026-04-21T00:53:13.230Z","tool":"store_round","msg":"Storing iter119_batch_119 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:53:13.250Z","tool":"store_round","msg":"Stored iter119_batch_119: DISCARD 0 TFLOPS (round 119)","level":"info"}
+{"ts":"2026-04-21T00:53:16.722Z","tool":"next_iter","msg":"Resolved iter120_batch_120","level":"info"}
+{"ts":"2026-04-21T00:53:16.758Z","tool":"checkpoint_write","msg":"PLANNED iter120_batch_120: Batch iteration 120","level":"info"}
+{"ts":"2026-04-21T00:53:17.175Z","tool":"store_round","msg":"Storing iter120_batch_120 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:53:17.195Z","tool":"store_round","msg":"Stored iter120_batch_120: DISCARD 0 TFLOPS (round 120)","level":"info"}
+{"ts":"2026-04-21T00:53:20.724Z","tool":"next_iter","msg":"Resolved iter121_batch_121","level":"info"}
+{"ts":"2026-04-21T00:53:20.761Z","tool":"checkpoint_write","msg":"PLANNED iter121_batch_121: Batch iteration 121","level":"info"}
+{"ts":"2026-04-21T00:53:21.165Z","tool":"store_round","msg":"Storing iter121_batch_121 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:53:21.184Z","tool":"store_round","msg":"Stored iter121_batch_121: DISCARD 0 TFLOPS (round 121)","level":"info"}
+{"ts":"2026-04-21T00:53:24.723Z","tool":"next_iter","msg":"Resolved iter122_batch_122","level":"info"}
+{"ts":"2026-04-21T00:53:24.757Z","tool":"checkpoint_write","msg":"PLANNED iter122_batch_122: Batch iteration 122","level":"info"}
+{"ts":"2026-04-21T00:53:25.204Z","tool":"store_round","msg":"Storing iter122_batch_122 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:53:25.223Z","tool":"store_round","msg":"Stored iter122_batch_122: DISCARD 0 TFLOPS (round 122)","level":"info"}
+{"ts":"2026-04-21T00:53:28.810Z","tool":"next_iter","msg":"Resolved iter123_batch_123","level":"info"}
+{"ts":"2026-04-21T00:53:28.845Z","tool":"checkpoint_write","msg":"PLANNED iter123_batch_123: Batch iteration 123","level":"info"}
+{"ts":"2026-04-21T00:53:29.195Z","tool":"store_round","msg":"Storing iter123_batch_123 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:53:29.214Z","tool":"store_round","msg":"Stored iter123_batch_123: DISCARD 0 TFLOPS (round 123)","level":"info"}
+{"ts":"2026-04-21T00:53:32.814Z","tool":"next_iter","msg":"Resolved iter124_batch_124","level":"info"}
+{"ts":"2026-04-21T00:53:32.849Z","tool":"checkpoint_write","msg":"PLANNED iter124_batch_124: Batch iteration 124","level":"info"}
+{"ts":"2026-04-21T00:53:33.196Z","tool":"store_round","msg":"Storing iter124_batch_124 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:53:33.215Z","tool":"store_round","msg":"Stored iter124_batch_124: DISCARD 0 TFLOPS (round 124)","level":"info"}
+{"ts":"2026-04-21T00:53:36.860Z","tool":"next_iter","msg":"Resolved iter125_batch_125","level":"info"}
+{"ts":"2026-04-21T00:53:36.896Z","tool":"checkpoint_write","msg":"PLANNED iter125_batch_125: Batch iteration 125","level":"info"}
+{"ts":"2026-04-21T00:53:37.253Z","tool":"store_round","msg":"Storing iter125_batch_125 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:53:37.272Z","tool":"store_round","msg":"Stored iter125_batch_125: DISCARD 0 TFLOPS (round 125)","level":"info"}
+{"ts":"2026-04-21T00:53:40.921Z","tool":"next_iter","msg":"Resolved iter126_batch_126","level":"info"}
+{"ts":"2026-04-21T00:53:40.956Z","tool":"checkpoint_write","msg":"PLANNED iter126_batch_126: Batch iteration 126","level":"info"}
+{"ts":"2026-04-21T00:53:41.303Z","tool":"store_round","msg":"Storing iter126_batch_126 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:53:41.323Z","tool":"store_round","msg":"Stored iter126_batch_126: DISCARD 0 TFLOPS (round 126)","level":"info"}
+{"ts":"2026-04-21T00:53:45.014Z","tool":"next_iter","msg":"Resolved iter127_batch_127","level":"info"}
+{"ts":"2026-04-21T00:53:45.049Z","tool":"checkpoint_write","msg":"PLANNED iter127_batch_127: Batch iteration 127","level":"info"}
+{"ts":"2026-04-21T00:53:45.561Z","tool":"store_round","msg":"Storing iter127_batch_127 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:53:45.581Z","tool":"store_round","msg":"Stored iter127_batch_127: DISCARD 0 TFLOPS (round 127)","level":"info"}
+{"ts":"2026-04-21T00:53:49.302Z","tool":"next_iter","msg":"Resolved iter128_batch_128","level":"info"}
+{"ts":"2026-04-21T00:53:49.339Z","tool":"checkpoint_write","msg":"PLANNED iter128_batch_128: Batch iteration 128","level":"info"}
+{"ts":"2026-04-21T00:53:49.689Z","tool":"store_round","msg":"Storing iter128_batch_128 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:53:49.709Z","tool":"store_round","msg":"Stored iter128_batch_128: DISCARD 0 TFLOPS (round 128)","level":"info"}
+{"ts":"2026-04-21T00:53:53.425Z","tool":"next_iter","msg":"Resolved iter129_batch_129","level":"info"}
+{"ts":"2026-04-21T00:53:53.459Z","tool":"checkpoint_write","msg":"PLANNED iter129_batch_129: Batch iteration 129","level":"info"}
+{"ts":"2026-04-21T00:53:53.969Z","tool":"store_round","msg":"Storing iter129_batch_129 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:53:53.988Z","tool":"store_round","msg":"Stored iter129_batch_129: DISCARD 0 TFLOPS (round 129)","level":"info"}
+{"ts":"2026-04-21T00:53:57.660Z","tool":"next_iter","msg":"Resolved iter130_batch_130","level":"info"}
+{"ts":"2026-04-21T00:53:57.695Z","tool":"checkpoint_write","msg":"PLANNED iter130_batch_130: Batch iteration 130","level":"info"}
+{"ts":"2026-04-21T00:53:58.041Z","tool":"store_round","msg":"Storing iter130_batch_130 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:53:58.060Z","tool":"store_round","msg":"Stored iter130_batch_130: DISCARD 0 TFLOPS (round 130)","level":"info"}
+{"ts":"2026-04-21T00:54:01.802Z","tool":"next_iter","msg":"Resolved iter131_batch_131","level":"info"}
+{"ts":"2026-04-21T00:54:01.838Z","tool":"checkpoint_write","msg":"PLANNED iter131_batch_131: Batch iteration 131","level":"info"}
+{"ts":"2026-04-21T00:54:02.350Z","tool":"store_round","msg":"Storing iter131_batch_131 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:54:02.370Z","tool":"store_round","msg":"Stored iter131_batch_131: DISCARD 0 TFLOPS (round 131)","level":"info"}
+{"ts":"2026-04-21T00:54:06.149Z","tool":"next_iter","msg":"Resolved iter132_batch_132","level":"info"}
+{"ts":"2026-04-21T00:54:06.185Z","tool":"checkpoint_write","msg":"PLANNED iter132_batch_132: Batch iteration 132","level":"info"}
+{"ts":"2026-04-21T00:54:06.529Z","tool":"store_round","msg":"Storing iter132_batch_132 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:54:06.548Z","tool":"store_round","msg":"Stored iter132_batch_132: DISCARD 0 TFLOPS (round 132)","level":"info"}
+{"ts":"2026-04-21T00:54:10.349Z","tool":"next_iter","msg":"Resolved iter133_batch_133","level":"info"}
+{"ts":"2026-04-21T00:54:10.385Z","tool":"checkpoint_write","msg":"PLANNED iter133_batch_133: Batch iteration 133","level":"info"}
+{"ts":"2026-04-21T00:54:10.893Z","tool":"store_round","msg":"Storing iter133_batch_133 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:54:10.913Z","tool":"store_round","msg":"Stored iter133_batch_133: DISCARD 0 TFLOPS (round 133)","level":"info"}
+{"ts":"2026-04-21T00:54:14.736Z","tool":"next_iter","msg":"Resolved iter134_batch_134","level":"info"}
+{"ts":"2026-04-21T00:54:14.771Z","tool":"checkpoint_write","msg":"PLANNED iter134_batch_134: Batch iteration 134","level":"info"}
+{"ts":"2026-04-21T00:54:15.116Z","tool":"store_round","msg":"Storing iter134_batch_134 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:54:15.136Z","tool":"store_round","msg":"Stored iter134_batch_134: DISCARD 0 TFLOPS (round 134)","level":"info"}
+{"ts":"2026-04-21T00:54:18.983Z","tool":"next_iter","msg":"Resolved iter135_batch_135","level":"info"}
+{"ts":"2026-04-21T00:54:19.020Z","tool":"checkpoint_write","msg":"PLANNED iter135_batch_135: Batch iteration 135","level":"info"}
+{"ts":"2026-04-21T00:54:19.645Z","tool":"store_round","msg":"Storing iter135_batch_135 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:54:19.665Z","tool":"store_round","msg":"Stored iter135_batch_135: DISCARD 0 TFLOPS (round 135)","level":"info"}
+{"ts":"2026-04-21T00:54:23.556Z","tool":"next_iter","msg":"Resolved iter136_batch_136","level":"info"}
+{"ts":"2026-04-21T00:54:23.591Z","tool":"checkpoint_write","msg":"PLANNED iter136_batch_136: Batch iteration 136","level":"info"}
+{"ts":"2026-04-21T00:54:23.938Z","tool":"store_round","msg":"Storing iter136_batch_136 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:54:23.957Z","tool":"store_round","msg":"Stored iter136_batch_136: DISCARD 0 TFLOPS (round 136)","level":"info"}
+{"ts":"2026-04-21T00:54:27.893Z","tool":"next_iter","msg":"Resolved iter137_batch_137","level":"info"}
+{"ts":"2026-04-21T00:54:27.927Z","tool":"checkpoint_write","msg":"PLANNED iter137_batch_137: Batch iteration 137","level":"info"}
+{"ts":"2026-04-21T00:54:28.274Z","tool":"store_round","msg":"Storing iter137_batch_137 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:54:28.293Z","tool":"store_round","msg":"Stored iter137_batch_137: DISCARD 0 TFLOPS (round 137)","level":"info"}
+{"ts":"2026-04-21T00:54:32.263Z","tool":"next_iter","msg":"Resolved iter138_batch_138","level":"info"}
+{"ts":"2026-04-21T00:54:32.298Z","tool":"checkpoint_write","msg":"PLANNED iter138_batch_138: Batch iteration 138","level":"info"}
+{"ts":"2026-04-21T00:54:32.805Z","tool":"store_round","msg":"Storing iter138_batch_138 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:54:32.825Z","tool":"store_round","msg":"Stored iter138_batch_138: DISCARD 0 TFLOPS (round 138)","level":"info"}
+{"ts":"2026-04-21T00:54:36.789Z","tool":"next_iter","msg":"Resolved iter139_batch_139","level":"info"}
+{"ts":"2026-04-21T00:54:36.824Z","tool":"checkpoint_write","msg":"PLANNED iter139_batch_139: Batch iteration 139","level":"info"}
+{"ts":"2026-04-21T00:54:37.174Z","tool":"store_round","msg":"Storing iter139_batch_139 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:54:37.194Z","tool":"store_round","msg":"Stored iter139_batch_139: DISCARD 0 TFLOPS (round 139)","level":"info"}
+{"ts":"2026-04-21T00:54:41.198Z","tool":"next_iter","msg":"Resolved iter140_batch_140","level":"info"}
+{"ts":"2026-04-21T00:54:41.234Z","tool":"checkpoint_write","msg":"PLANNED iter140_batch_140: Batch iteration 140","level":"info"}
+{"ts":"2026-04-21T00:54:41.581Z","tool":"store_round","msg":"Storing iter140_batch_140 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:54:41.601Z","tool":"store_round","msg":"Stored iter140_batch_140: DISCARD 0 TFLOPS (round 140)","level":"info"}
+{"ts":"2026-04-21T00:54:45.616Z","tool":"next_iter","msg":"Resolved iter141_batch_141","level":"info"}
+{"ts":"2026-04-21T00:54:45.652Z","tool":"checkpoint_write","msg":"PLANNED iter141_batch_141: Batch iteration 141","level":"info"}
+{"ts":"2026-04-21T00:54:46.119Z","tool":"store_round","msg":"Storing iter141_batch_141 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:54:46.138Z","tool":"store_round","msg":"Stored iter141_batch_141: DISCARD 0 TFLOPS (round 141)","level":"info"}
+{"ts":"2026-04-21T00:54:50.190Z","tool":"next_iter","msg":"Resolved iter142_batch_142","level":"info"}
+{"ts":"2026-04-21T00:54:50.227Z","tool":"checkpoint_write","msg":"PLANNED iter142_batch_142: Batch iteration 142","level":"info"}
+{"ts":"2026-04-21T00:54:50.737Z","tool":"store_round","msg":"Storing iter142_batch_142 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:54:50.756Z","tool":"store_round","msg":"Stored iter142_batch_142: DISCARD 0 TFLOPS (round 142)","level":"info"}
+{"ts":"2026-04-21T00:54:54.845Z","tool":"next_iter","msg":"Resolved iter143_batch_143","level":"info"}
+{"ts":"2026-04-21T00:54:54.880Z","tool":"checkpoint_write","msg":"PLANNED iter143_batch_143: Batch iteration 143","level":"info"}
+{"ts":"2026-04-21T00:54:55.226Z","tool":"store_round","msg":"Storing iter143_batch_143 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:54:55.246Z","tool":"store_round","msg":"Stored iter143_batch_143: DISCARD 0 TFLOPS (round 143)","level":"info"}
+{"ts":"2026-04-21T00:54:59.348Z","tool":"next_iter","msg":"Resolved iter144_batch_144","level":"info"}
+{"ts":"2026-04-21T00:54:59.384Z","tool":"checkpoint_write","msg":"PLANNED iter144_batch_144: Batch iteration 144","level":"info"}
+{"ts":"2026-04-21T00:54:59.731Z","tool":"store_round","msg":"Storing iter144_batch_144 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:54:59.751Z","tool":"store_round","msg":"Stored iter144_batch_144: DISCARD 0 TFLOPS (round 144)","level":"info"}
+{"ts":"2026-04-21T00:55:03.875Z","tool":"next_iter","msg":"Resolved iter145_batch_145","level":"info"}
+{"ts":"2026-04-21T00:55:03.911Z","tool":"checkpoint_write","msg":"PLANNED iter145_batch_145: Batch iteration 145","level":"info"}
+{"ts":"2026-04-21T00:55:04.260Z","tool":"store_round","msg":"Storing iter145_batch_145 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:55:04.279Z","tool":"store_round","msg":"Stored iter145_batch_145: DISCARD 0 TFLOPS (round 145)","level":"info"}
+{"ts":"2026-04-21T00:55:08.446Z","tool":"next_iter","msg":"Resolved iter146_batch_146","level":"info"}
+{"ts":"2026-04-21T00:55:08.484Z","tool":"checkpoint_write","msg":"PLANNED iter146_batch_146: Batch iteration 146","level":"info"}
+{"ts":"2026-04-21T00:55:08.990Z","tool":"store_round","msg":"Storing iter146_batch_146 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:55:09.011Z","tool":"store_round","msg":"Stored iter146_batch_146: DISCARD 0 TFLOPS (round 146)","level":"info"}
+{"ts":"2026-04-21T00:55:13.239Z","tool":"next_iter","msg":"Resolved iter147_batch_147","level":"info"}
+{"ts":"2026-04-21T00:55:13.276Z","tool":"checkpoint_write","msg":"PLANNED iter147_batch_147: Batch iteration 147","level":"info"}
+{"ts":"2026-04-21T00:55:13.835Z","tool":"store_round","msg":"Storing iter147_batch_147 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:55:13.855Z","tool":"store_round","msg":"Stored iter147_batch_147: DISCARD 0 TFLOPS (round 147)","level":"info"}
+{"ts":"2026-04-21T00:55:18.087Z","tool":"next_iter","msg":"Resolved iter148_batch_148","level":"info"}
+{"ts":"2026-04-21T00:55:18.124Z","tool":"checkpoint_write","msg":"PLANNED iter148_batch_148: Batch iteration 148","level":"info"}
+{"ts":"2026-04-21T00:55:18.633Z","tool":"store_round","msg":"Storing iter148_batch_148 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:55:18.653Z","tool":"store_round","msg":"Stored iter148_batch_148: DISCARD 0 TFLOPS (round 148)","level":"info"}
+{"ts":"2026-04-21T00:55:22.933Z","tool":"next_iter","msg":"Resolved iter149_batch_149","level":"info"}
+{"ts":"2026-04-21T00:55:22.970Z","tool":"checkpoint_write","msg":"PLANNED iter149_batch_149: Batch iteration 149","level":"info"}
+{"ts":"2026-04-21T00:55:23.478Z","tool":"store_round","msg":"Storing iter149_batch_149 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:55:23.497Z","tool":"store_round","msg":"Stored iter149_batch_149: DISCARD 0 TFLOPS (round 149)","level":"info"}
+{"ts":"2026-04-21T00:55:27.758Z","tool":"next_iter","msg":"Resolved iter150_batch_150","level":"info"}
+{"ts":"2026-04-21T00:55:27.794Z","tool":"checkpoint_write","msg":"PLANNED iter150_batch_150: Batch iteration 150","level":"info"}
+{"ts":"2026-04-21T00:55:28.304Z","tool":"store_round","msg":"Storing iter150_batch_150 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:55:28.323Z","tool":"store_round","msg":"Stored iter150_batch_150: DISCARD 0 TFLOPS (round 150)","level":"info"}
+{"ts":"2026-04-21T00:55:43.604Z","tool":"next_iter","msg":"Resolved iter151_batch_151","level":"info"}
+{"ts":"2026-04-21T00:55:43.639Z","tool":"checkpoint_write","msg":"PLANNED iter151_batch_151: Batch iteration 151","level":"info"}
+{"ts":"2026-04-21T00:55:43.990Z","tool":"store_round","msg":"Storing iter151_batch_151 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:55:44.010Z","tool":"store_round","msg":"Stored iter151_batch_151: DISCARD 0 TFLOPS (round 151)","level":"info"}
+{"ts":"2026-04-21T00:55:48.295Z","tool":"next_iter","msg":"Resolved iter152_batch_152","level":"info"}
+{"ts":"2026-04-21T00:55:48.330Z","tool":"checkpoint_write","msg":"PLANNED iter152_batch_152: Batch iteration 152","level":"info"}
+{"ts":"2026-04-21T00:55:48.813Z","tool":"store_round","msg":"Storing iter152_batch_152 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:55:48.833Z","tool":"store_round","msg":"Stored iter152_batch_152: DISCARD 0 TFLOPS (round 152)","level":"info"}
+{"ts":"2026-04-21T00:55:53.168Z","tool":"next_iter","msg":"Resolved iter153_batch_153","level":"info"}
+{"ts":"2026-04-21T00:55:53.203Z","tool":"checkpoint_write","msg":"PLANNED iter153_batch_153: Batch iteration 153","level":"info"}
+{"ts":"2026-04-21T00:55:53.632Z","tool":"store_round","msg":"Storing iter153_batch_153 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:55:53.651Z","tool":"store_round","msg":"Stored iter153_batch_153: DISCARD 0 TFLOPS (round 153)","level":"info"}
+{"ts":"2026-04-21T00:55:58.004Z","tool":"next_iter","msg":"Resolved iter154_batch_154","level":"info"}
+{"ts":"2026-04-21T00:55:58.038Z","tool":"checkpoint_write","msg":"PLANNED iter154_batch_154: Batch iteration 154","level":"info"}
+{"ts":"2026-04-21T00:55:58.457Z","tool":"store_round","msg":"Storing iter154_batch_154 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:55:58.477Z","tool":"store_round","msg":"Stored iter154_batch_154: DISCARD 0 TFLOPS (round 154)","level":"info"}
+{"ts":"2026-04-21T00:56:02.852Z","tool":"next_iter","msg":"Resolved iter155_batch_155","level":"info"}
+{"ts":"2026-04-21T00:56:02.888Z","tool":"checkpoint_write","msg":"PLANNED iter155_batch_155: Batch iteration 155","level":"info"}
+{"ts":"2026-04-21T00:56:03.282Z","tool":"store_round","msg":"Storing iter155_batch_155 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:56:03.301Z","tool":"store_round","msg":"Stored iter155_batch_155: DISCARD 0 TFLOPS (round 155)","level":"info"}
+{"ts":"2026-04-21T00:56:07.656Z","tool":"next_iter","msg":"Resolved iter156_batch_156","level":"info"}
+{"ts":"2026-04-21T00:56:07.691Z","tool":"checkpoint_write","msg":"PLANNED iter156_batch_156: Batch iteration 156","level":"info"}
+{"ts":"2026-04-21T00:56:08.102Z","tool":"store_round","msg":"Storing iter156_batch_156 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:56:08.121Z","tool":"store_round","msg":"Stored iter156_batch_156: DISCARD 0 TFLOPS (round 156)","level":"info"}
+{"ts":"2026-04-21T00:56:12.472Z","tool":"next_iter","msg":"Resolved iter157_batch_157","level":"info"}
+{"ts":"2026-04-21T00:56:12.507Z","tool":"checkpoint_write","msg":"PLANNED iter157_batch_157: Batch iteration 157","level":"info"}
+{"ts":"2026-04-21T00:56:12.922Z","tool":"store_round","msg":"Storing iter157_batch_157 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:56:12.941Z","tool":"store_round","msg":"Stored iter157_batch_157: DISCARD 0 TFLOPS (round 157)","level":"info"}
+{"ts":"2026-04-21T00:56:17.365Z","tool":"next_iter","msg":"Resolved iter158_batch_158","level":"info"}
+{"ts":"2026-04-21T00:56:17.401Z","tool":"checkpoint_write","msg":"PLANNED iter158_batch_158: Batch iteration 158","level":"info"}
+{"ts":"2026-04-21T00:56:17.750Z","tool":"store_round","msg":"Storing iter158_batch_158 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:56:17.769Z","tool":"store_round","msg":"Stored iter158_batch_158: DISCARD 0 TFLOPS (round 158)","level":"info"}
+{"ts":"2026-04-21T00:56:22.256Z","tool":"next_iter","msg":"Resolved iter159_batch_159","level":"info"}
+{"ts":"2026-04-21T00:56:22.292Z","tool":"checkpoint_write","msg":"PLANNED iter159_batch_159: Batch iteration 159","level":"info"}
+{"ts":"2026-04-21T00:56:23.010Z","tool":"store_round","msg":"Storing iter159_batch_159 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:56:23.030Z","tool":"store_round","msg":"Stored iter159_batch_159: DISCARD 0 TFLOPS (round 159)","level":"info"}
+{"ts":"2026-04-21T00:56:27.500Z","tool":"next_iter","msg":"Resolved iter160_batch_160","level":"info"}
+{"ts":"2026-04-21T00:56:27.536Z","tool":"checkpoint_write","msg":"PLANNED iter160_batch_160: Batch iteration 160","level":"info"}
+{"ts":"2026-04-21T00:56:27.927Z","tool":"store_round","msg":"Storing iter160_batch_160 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:56:27.946Z","tool":"store_round","msg":"Stored iter160_batch_160: DISCARD 0 TFLOPS (round 160)","level":"info"}
+{"ts":"2026-04-21T00:56:32.426Z","tool":"next_iter","msg":"Resolved iter161_batch_161","level":"info"}
+{"ts":"2026-04-21T00:56:32.461Z","tool":"checkpoint_write","msg":"PLANNED iter161_batch_161: Batch iteration 161","level":"info"}
+{"ts":"2026-04-21T00:56:32.800Z","tool":"store_round","msg":"Storing iter161_batch_161 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:56:32.819Z","tool":"store_round","msg":"Stored iter161_batch_161: DISCARD 0 TFLOPS (round 161)","level":"info"}
+{"ts":"2026-04-21T00:56:37.346Z","tool":"next_iter","msg":"Resolved iter162_batch_162","level":"info"}
+{"ts":"2026-04-21T00:56:37.381Z","tool":"checkpoint_write","msg":"PLANNED iter162_batch_162: Batch iteration 162","level":"info"}
+{"ts":"2026-04-21T00:56:37.729Z","tool":"store_round","msg":"Storing iter162_batch_162 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:56:37.749Z","tool":"store_round","msg":"Stored iter162_batch_162: DISCARD 0 TFLOPS (round 162)","level":"info"}
+{"ts":"2026-04-21T00:56:42.409Z","tool":"next_iter","msg":"Resolved iter163_batch_163","level":"info"}
+{"ts":"2026-04-21T00:56:42.445Z","tool":"checkpoint_write","msg":"PLANNED iter163_batch_163: Batch iteration 163","level":"info"}
+{"ts":"2026-04-21T00:56:42.794Z","tool":"store_round","msg":"Storing iter163_batch_163 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:56:42.814Z","tool":"store_round","msg":"Stored iter163_batch_163: DISCARD 0 TFLOPS (round 163)","level":"info"}
+{"ts":"2026-04-21T00:56:47.411Z","tool":"next_iter","msg":"Resolved iter164_batch_164","level":"info"}
+{"ts":"2026-04-21T00:56:47.447Z","tool":"checkpoint_write","msg":"PLANNED iter164_batch_164: Batch iteration 164","level":"info"}
+{"ts":"2026-04-21T00:56:47.952Z","tool":"store_round","msg":"Storing iter164_batch_164 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:56:47.972Z","tool":"store_round","msg":"Stored iter164_batch_164: DISCARD 0 TFLOPS (round 164)","level":"info"}
+{"ts":"2026-04-21T00:56:52.591Z","tool":"next_iter","msg":"Resolved iter165_batch_165","level":"info"}
+{"ts":"2026-04-21T00:56:52.626Z","tool":"checkpoint_write","msg":"PLANNED iter165_batch_165: Batch iteration 165","level":"info"}
+{"ts":"2026-04-21T00:56:52.979Z","tool":"store_round","msg":"Storing iter165_batch_165 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:56:53.000Z","tool":"store_round","msg":"Stored iter165_batch_165: DISCARD 0 TFLOPS (round 165)","level":"info"}
+{"ts":"2026-04-21T00:56:57.689Z","tool":"next_iter","msg":"Resolved iter166_batch_166","level":"info"}
+{"ts":"2026-04-21T00:56:57.724Z","tool":"checkpoint_write","msg":"PLANNED iter166_batch_166: Batch iteration 166","level":"info"}
+{"ts":"2026-04-21T00:56:58.122Z","tool":"store_round","msg":"Storing iter166_batch_166 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:56:58.141Z","tool":"store_round","msg":"Stored iter166_batch_166: DISCARD 0 TFLOPS (round 166)","level":"info"}
+{"ts":"2026-04-21T00:57:02.843Z","tool":"next_iter","msg":"Resolved iter167_batch_167","level":"info"}
+{"ts":"2026-04-21T00:57:02.878Z","tool":"checkpoint_write","msg":"PLANNED iter167_batch_167: Batch iteration 167","level":"info"}
+{"ts":"2026-04-21T00:57:03.299Z","tool":"store_round","msg":"Storing iter167_batch_167 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:57:03.319Z","tool":"store_round","msg":"Stored iter167_batch_167: DISCARD 0 TFLOPS (round 167)","level":"info"}
+{"ts":"2026-04-21T00:57:08.057Z","tool":"next_iter","msg":"Resolved iter168_batch_168","level":"info"}
+{"ts":"2026-04-21T00:57:08.094Z","tool":"checkpoint_write","msg":"PLANNED iter168_batch_168: Batch iteration 168","level":"info"}
+{"ts":"2026-04-21T00:57:08.644Z","tool":"store_round","msg":"Storing iter168_batch_168 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:57:08.664Z","tool":"store_round","msg":"Stored iter168_batch_168: DISCARD 0 TFLOPS (round 168)","level":"info"}
+{"ts":"2026-04-21T00:57:13.382Z","tool":"next_iter","msg":"Resolved iter169_batch_169","level":"info"}
+{"ts":"2026-04-21T00:57:13.419Z","tool":"checkpoint_write","msg":"PLANNED iter169_batch_169: Batch iteration 169","level":"info"}
+{"ts":"2026-04-21T00:57:13.808Z","tool":"store_round","msg":"Storing iter169_batch_169 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:57:13.827Z","tool":"store_round","msg":"Stored iter169_batch_169: DISCARD 0 TFLOPS (round 169)","level":"info"}
+{"ts":"2026-04-21T00:57:18.562Z","tool":"next_iter","msg":"Resolved iter170_batch_170","level":"info"}
+{"ts":"2026-04-21T00:57:18.600Z","tool":"checkpoint_write","msg":"PLANNED iter170_batch_170: Batch iteration 170","level":"info"}
+{"ts":"2026-04-21T00:57:18.996Z","tool":"store_round","msg":"Storing iter170_batch_170 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:57:19.015Z","tool":"store_round","msg":"Stored iter170_batch_170: DISCARD 0 TFLOPS (round 170)","level":"info"}
+{"ts":"2026-04-21T00:57:23.817Z","tool":"next_iter","msg":"Resolved iter171_batch_171","level":"info"}
+{"ts":"2026-04-21T00:57:23.852Z","tool":"checkpoint_write","msg":"PLANNED iter171_batch_171: Batch iteration 171","level":"info"}
+{"ts":"2026-04-21T00:57:24.398Z","tool":"store_round","msg":"Storing iter171_batch_171 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:57:24.418Z","tool":"store_round","msg":"Stored iter171_batch_171: DISCARD 0 TFLOPS (round 171)","level":"info"}
+{"ts":"2026-04-21T00:57:29.191Z","tool":"next_iter","msg":"Resolved iter172_batch_172","level":"info"}
+{"ts":"2026-04-21T00:57:29.226Z","tool":"checkpoint_write","msg":"PLANNED iter172_batch_172: Batch iteration 172","level":"info"}
+{"ts":"2026-04-21T00:57:29.562Z","tool":"store_round","msg":"Storing iter172_batch_172 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:57:29.582Z","tool":"store_round","msg":"Stored iter172_batch_172: DISCARD 0 TFLOPS (round 172)","level":"info"}
+{"ts":"2026-04-21T00:57:34.450Z","tool":"next_iter","msg":"Resolved iter173_batch_173","level":"info"}
+{"ts":"2026-04-21T00:57:34.485Z","tool":"checkpoint_write","msg":"PLANNED iter173_batch_173: Batch iteration 173","level":"info"}
+{"ts":"2026-04-21T00:57:34.833Z","tool":"store_round","msg":"Storing iter173_batch_173 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:57:34.851Z","tool":"store_round","msg":"Stored iter173_batch_173: DISCARD 0 TFLOPS (round 173)","level":"info"}
+{"ts":"2026-04-21T00:57:39.750Z","tool":"next_iter","msg":"Resolved iter174_batch_174","level":"info"}
+{"ts":"2026-04-21T00:57:39.786Z","tool":"checkpoint_write","msg":"PLANNED iter174_batch_174: Batch iteration 174","level":"info"}
+{"ts":"2026-04-21T00:57:40.134Z","tool":"store_round","msg":"Storing iter174_batch_174 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:57:40.153Z","tool":"store_round","msg":"Stored iter174_batch_174: DISCARD 0 TFLOPS (round 174)","level":"info"}
+{"ts":"2026-04-21T00:57:45.073Z","tool":"next_iter","msg":"Resolved iter175_batch_175","level":"info"}
+{"ts":"2026-04-21T00:57:45.108Z","tool":"checkpoint_write","msg":"PLANNED iter175_batch_175: Batch iteration 175","level":"info"}
+{"ts":"2026-04-21T00:57:45.457Z","tool":"store_round","msg":"Storing iter175_batch_175 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:57:45.477Z","tool":"store_round","msg":"Stored iter175_batch_175: DISCARD 0 TFLOPS (round 175)","level":"info"}
+{"ts":"2026-04-21T00:57:50.463Z","tool":"next_iter","msg":"Resolved iter176_batch_176","level":"info"}
+{"ts":"2026-04-21T00:57:50.499Z","tool":"checkpoint_write","msg":"PLANNED iter176_batch_176: Batch iteration 176","level":"info"}
+{"ts":"2026-04-21T00:57:50.962Z","tool":"store_round","msg":"Storing iter176_batch_176 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:57:50.982Z","tool":"store_round","msg":"Stored iter176_batch_176: DISCARD 0 TFLOPS (round 176)","level":"info"}
+{"ts":"2026-04-21T00:57:55.953Z","tool":"next_iter","msg":"Resolved iter177_batch_177","level":"info"}
+{"ts":"2026-04-21T00:57:55.989Z","tool":"checkpoint_write","msg":"PLANNED iter177_batch_177: Batch iteration 177","level":"info"}
+{"ts":"2026-04-21T00:57:56.336Z","tool":"store_round","msg":"Storing iter177_batch_177 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:57:56.355Z","tool":"store_round","msg":"Stored iter177_batch_177: DISCARD 0 TFLOPS (round 177)","level":"info"}
+{"ts":"2026-04-21T00:58:01.352Z","tool":"next_iter","msg":"Resolved iter178_batch_178","level":"info"}
+{"ts":"2026-04-21T00:58:01.389Z","tool":"checkpoint_write","msg":"PLANNED iter178_batch_178: Batch iteration 178","level":"info"}
+{"ts":"2026-04-21T00:58:01.803Z","tool":"store_round","msg":"Storing iter178_batch_178 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:58:01.822Z","tool":"store_round","msg":"Stored iter178_batch_178: DISCARD 0 TFLOPS (round 178)","level":"info"}
+{"ts":"2026-04-21T00:58:06.832Z","tool":"next_iter","msg":"Resolved iter179_batch_179","level":"info"}
+{"ts":"2026-04-21T00:58:06.869Z","tool":"checkpoint_write","msg":"PLANNED iter179_batch_179: Batch iteration 179","level":"info"}
+{"ts":"2026-04-21T00:58:07.217Z","tool":"store_round","msg":"Storing iter179_batch_179 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:58:07.236Z","tool":"store_round","msg":"Stored iter179_batch_179: DISCARD 0 TFLOPS (round 179)","level":"info"}
+{"ts":"2026-04-21T00:58:12.260Z","tool":"next_iter","msg":"Resolved iter180_batch_180","level":"info"}
+{"ts":"2026-04-21T00:58:12.295Z","tool":"checkpoint_write","msg":"PLANNED iter180_batch_180: Batch iteration 180","level":"info"}
+{"ts":"2026-04-21T00:58:12.656Z","tool":"store_round","msg":"Storing iter180_batch_180 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:58:12.676Z","tool":"store_round","msg":"Stored iter180_batch_180: DISCARD 0 TFLOPS (round 180)","level":"info"}
+{"ts":"2026-04-21T00:58:17.726Z","tool":"next_iter","msg":"Resolved iter181_batch_181","level":"info"}
+{"ts":"2026-04-21T00:58:17.763Z","tool":"checkpoint_write","msg":"PLANNED iter181_batch_181: Batch iteration 181","level":"info"}
+{"ts":"2026-04-21T00:58:18.114Z","tool":"store_round","msg":"Storing iter181_batch_181 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:58:18.134Z","tool":"store_round","msg":"Stored iter181_batch_181: DISCARD 0 TFLOPS (round 181)","level":"info"}
+{"ts":"2026-04-21T00:58:23.265Z","tool":"next_iter","msg":"Resolved iter182_batch_182","level":"info"}
+{"ts":"2026-04-21T00:58:23.301Z","tool":"checkpoint_write","msg":"PLANNED iter182_batch_182: Batch iteration 182","level":"info"}
+{"ts":"2026-04-21T00:58:23.651Z","tool":"store_round","msg":"Storing iter182_batch_182 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:58:23.671Z","tool":"store_round","msg":"Stored iter182_batch_182: DISCARD 0 TFLOPS (round 182)","level":"info"}
+{"ts":"2026-04-21T00:58:28.839Z","tool":"next_iter","msg":"Resolved iter183_batch_183","level":"info"}
+{"ts":"2026-04-21T00:58:28.874Z","tool":"checkpoint_write","msg":"PLANNED iter183_batch_183: Batch iteration 183","level":"info"}
+{"ts":"2026-04-21T00:58:29.386Z","tool":"store_round","msg":"Storing iter183_batch_183 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:58:29.406Z","tool":"store_round","msg":"Stored iter183_batch_183: DISCARD 0 TFLOPS (round 183)","level":"info"}
+{"ts":"2026-04-21T00:58:34.607Z","tool":"next_iter","msg":"Resolved iter184_batch_184","level":"info"}
+{"ts":"2026-04-21T00:58:34.644Z","tool":"checkpoint_write","msg":"PLANNED iter184_batch_184: Batch iteration 184","level":"info"}
+{"ts":"2026-04-21T00:58:34.992Z","tool":"store_round","msg":"Storing iter184_batch_184 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:58:35.011Z","tool":"store_round","msg":"Stored iter184_batch_184: DISCARD 0 TFLOPS (round 184)","level":"info"}
+{"ts":"2026-04-21T00:58:40.227Z","tool":"next_iter","msg":"Resolved iter185_batch_185","level":"info"}
+{"ts":"2026-04-21T00:58:40.262Z","tool":"checkpoint_write","msg":"PLANNED iter185_batch_185: Batch iteration 185","level":"info"}
+{"ts":"2026-04-21T00:58:40.610Z","tool":"store_round","msg":"Storing iter185_batch_185 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:58:40.629Z","tool":"store_round","msg":"Stored iter185_batch_185: DISCARD 0 TFLOPS (round 185)","level":"info"}
+{"ts":"2026-04-21T00:58:45.747Z","tool":"next_iter","msg":"Resolved iter186_batch_186","level":"info"}
+{"ts":"2026-04-21T00:58:45.782Z","tool":"checkpoint_write","msg":"PLANNED iter186_batch_186: Batch iteration 186","level":"info"}
+{"ts":"2026-04-21T00:58:46.289Z","tool":"store_round","msg":"Storing iter186_batch_186 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:58:46.308Z","tool":"store_round","msg":"Stored iter186_batch_186: DISCARD 0 TFLOPS (round 186)","level":"info"}
+{"ts":"2026-04-21T00:58:51.429Z","tool":"next_iter","msg":"Resolved iter187_batch_187","level":"info"}
+{"ts":"2026-04-21T00:58:51.464Z","tool":"checkpoint_write","msg":"PLANNED iter187_batch_187: Batch iteration 187","level":"info"}
+{"ts":"2026-04-21T00:58:51.810Z","tool":"store_round","msg":"Storing iter187_batch_187 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:58:51.828Z","tool":"store_round","msg":"Stored iter187_batch_187: DISCARD 0 TFLOPS (round 187)","level":"info"}
+{"ts":"2026-04-21T00:58:56.952Z","tool":"next_iter","msg":"Resolved iter188_batch_188","level":"info"}
+{"ts":"2026-04-21T00:58:56.987Z","tool":"checkpoint_write","msg":"PLANNED iter188_batch_188: Batch iteration 188","level":"info"}
+{"ts":"2026-04-21T00:58:57.576Z","tool":"store_round","msg":"Storing iter188_batch_188 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:58:57.596Z","tool":"store_round","msg":"Stored iter188_batch_188: DISCARD 0 TFLOPS (round 188)","level":"info"}
+{"ts":"2026-04-21T00:59:02.848Z","tool":"next_iter","msg":"Resolved iter189_batch_189","level":"info"}
+{"ts":"2026-04-21T00:59:02.884Z","tool":"checkpoint_write","msg":"PLANNED iter189_batch_189: Batch iteration 189","level":"info"}
+{"ts":"2026-04-21T00:59:03.305Z","tool":"store_round","msg":"Storing iter189_batch_189 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:59:03.324Z","tool":"store_round","msg":"Stored iter189_batch_189: DISCARD 0 TFLOPS (round 189)","level":"info"}
+{"ts":"2026-04-21T00:59:08.624Z","tool":"next_iter","msg":"Resolved iter190_batch_190","level":"info"}
+{"ts":"2026-04-21T00:59:08.659Z","tool":"checkpoint_write","msg":"PLANNED iter190_batch_190: Batch iteration 190","level":"info"}
+{"ts":"2026-04-21T00:59:09.160Z","tool":"store_round","msg":"Storing iter190_batch_190 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:59:09.180Z","tool":"store_round","msg":"Stored iter190_batch_190: DISCARD 0 TFLOPS (round 190)","level":"info"}
+{"ts":"2026-04-21T00:59:14.462Z","tool":"next_iter","msg":"Resolved iter191_batch_191","level":"info"}
+{"ts":"2026-04-21T00:59:14.497Z","tool":"checkpoint_write","msg":"PLANNED iter191_batch_191: Batch iteration 191","level":"info"}
+{"ts":"2026-04-21T00:59:14.840Z","tool":"store_round","msg":"Storing iter191_batch_191 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:59:14.860Z","tool":"store_round","msg":"Stored iter191_batch_191: DISCARD 0 TFLOPS (round 191)","level":"info"}
+{"ts":"2026-04-21T00:59:20.170Z","tool":"next_iter","msg":"Resolved iter192_batch_192","level":"info"}
+{"ts":"2026-04-21T00:59:20.205Z","tool":"checkpoint_write","msg":"PLANNED iter192_batch_192: Batch iteration 192","level":"info"}
+{"ts":"2026-04-21T00:59:30.701Z","tool":"store_round","msg":"Storing iter192_batch_192 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:59:30.721Z","tool":"store_round","msg":"Stored iter192_batch_192: DISCARD 0 TFLOPS (round 192)","level":"info"}
+{"ts":"2026-04-21T00:59:36.110Z","tool":"next_iter","msg":"Resolved iter193_batch_193","level":"info"}
+{"ts":"2026-04-21T00:59:36.146Z","tool":"checkpoint_write","msg":"PLANNED iter193_batch_193: Batch iteration 193","level":"info"}
+{"ts":"2026-04-21T00:59:36.596Z","tool":"store_round","msg":"Storing iter193_batch_193 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:59:36.617Z","tool":"store_round","msg":"Stored iter193_batch_193: DISCARD 0 TFLOPS (round 193)","level":"info"}
+{"ts":"2026-04-21T00:59:42.088Z","tool":"next_iter","msg":"Resolved iter194_batch_194","level":"info"}
+{"ts":"2026-04-21T00:59:42.124Z","tool":"checkpoint_write","msg":"PLANNED iter194_batch_194: Batch iteration 194","level":"info"}
+{"ts":"2026-04-21T00:59:42.632Z","tool":"store_round","msg":"Storing iter194_batch_194 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:59:42.652Z","tool":"store_round","msg":"Stored iter194_batch_194: DISCARD 0 TFLOPS (round 194)","level":"info"}
+{"ts":"2026-04-21T00:59:48.053Z","tool":"next_iter","msg":"Resolved iter195_batch_195","level":"info"}
+{"ts":"2026-04-21T00:59:48.090Z","tool":"checkpoint_write","msg":"PLANNED iter195_batch_195: Batch iteration 195","level":"info"}
+{"ts":"2026-04-21T00:59:48.597Z","tool":"store_round","msg":"Storing iter195_batch_195 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:59:48.618Z","tool":"store_round","msg":"Stored iter195_batch_195: DISCARD 0 TFLOPS (round 195)","level":"info"}
+{"ts":"2026-04-21T00:59:54.102Z","tool":"next_iter","msg":"Resolved iter196_batch_196","level":"info"}
+{"ts":"2026-04-21T00:59:54.136Z","tool":"checkpoint_write","msg":"PLANNED iter196_batch_196: Batch iteration 196","level":"info"}
+{"ts":"2026-04-21T00:59:54.637Z","tool":"store_round","msg":"Storing iter196_batch_196 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T00:59:54.657Z","tool":"store_round","msg":"Stored iter196_batch_196: DISCARD 0 TFLOPS (round 196)","level":"info"}
+{"ts":"2026-04-21T01:00:00.146Z","tool":"next_iter","msg":"Resolved iter197_batch_197","level":"info"}
+{"ts":"2026-04-21T01:00:00.181Z","tool":"checkpoint_write","msg":"PLANNED iter197_batch_197: Batch iteration 197","level":"info"}
+{"ts":"2026-04-21T01:00:00.681Z","tool":"store_round","msg":"Storing iter197_batch_197 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:00:00.700Z","tool":"store_round","msg":"Stored iter197_batch_197: DISCARD 0 TFLOPS (round 197)","level":"info"}
+{"ts":"2026-04-21T01:00:06.106Z","tool":"next_iter","msg":"Resolved iter198_batch_198","level":"info"}
+{"ts":"2026-04-21T01:00:06.141Z","tool":"checkpoint_write","msg":"PLANNED iter198_batch_198: Batch iteration 198","level":"info"}
+{"ts":"2026-04-21T01:00:06.653Z","tool":"store_round","msg":"Storing iter198_batch_198 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:00:06.672Z","tool":"store_round","msg":"Stored iter198_batch_198: DISCARD 0 TFLOPS (round 198)","level":"info"}
+{"ts":"2026-04-21T01:00:12.104Z","tool":"next_iter","msg":"Resolved iter199_batch_199","level":"info"}
+{"ts":"2026-04-21T01:00:12.139Z","tool":"checkpoint_write","msg":"PLANNED iter199_batch_199: Batch iteration 199","level":"info"}
+{"ts":"2026-04-21T01:00:12.640Z","tool":"store_round","msg":"Storing iter199_batch_199 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:00:12.659Z","tool":"store_round","msg":"Stored iter199_batch_199: DISCARD 0 TFLOPS (round 199)","level":"info"}
+{"ts":"2026-04-21T01:00:18.125Z","tool":"next_iter","msg":"Resolved iter200_batch_200","level":"info"}
+{"ts":"2026-04-21T01:00:18.160Z","tool":"checkpoint_write","msg":"PLANNED iter200_batch_200: Batch iteration 200","level":"info"}
+{"ts":"2026-04-21T01:00:18.711Z","tool":"store_round","msg":"Storing iter200_batch_200 (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T01:00:18.731Z","tool":"store_round","msg":"Stored iter200_batch_200: DISCARD 0 TFLOPS (round 200)","level":"info"}

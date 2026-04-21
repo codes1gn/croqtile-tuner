@@ -1,0 +1,2 @@
+{"round": 0, "iter": "iter001_naive", "tflops": 0.27, "decision": "KEEP", "bottleneck": "compute_bound", "idea": "Naive per-element GEMM baseline - no tensor cores", "category": "baseline", "timestamp": "2026-04-21T10:45:00Z"}
+{"round": 1, "iter": "iter002_wmma_simple", "tflops": 23.78, "decision": "KEEP", "bottleneck": "compute_bound", "idea": "Use WMMA tensor core API with FP32 accumulation and col-major B for correct transposed GEMM", "category": "compute", "expected_gain": "+23.5 TFLOPS from tensor cores", "timestamp": "2026-04-21T10:50:00Z"}

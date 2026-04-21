@@ -1,0 +1,17 @@
+{
+  "task_uid": "croq-tune-croqtile-f16fp32-16320cube",
+  "dsl": "croqtile",
+  "model": "opus-4",
+  "device": "NVIDIA H800 PCIe",
+  "status": "running",
+  "task_id": 17,
+  "variant": "",
+  "agent_type": null,
+  "mode": "opencode",
+  "request_budget": 1,
+  "request_number": 0,
+  "max_iterations": 30,
+  "respawn_count": 0,
+  "opencode_session_id": null,
+  "sessions": []
+}

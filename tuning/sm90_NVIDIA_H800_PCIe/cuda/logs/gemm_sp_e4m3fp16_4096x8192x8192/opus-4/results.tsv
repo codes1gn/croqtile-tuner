@@ -1,0 +1,3 @@
+iter	tflops	decision	bottleneck	timestamp
+iter001_naive	0.27	KEEP	compute_bound	2026-04-21T02:34:33Z
+iter002_wmma_simple	23.78	KEEP	compute_bound	2026-04-21T02:46:21Z
