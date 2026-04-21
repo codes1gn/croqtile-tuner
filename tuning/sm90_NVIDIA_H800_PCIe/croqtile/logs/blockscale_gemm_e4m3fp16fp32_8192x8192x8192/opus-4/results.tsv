@@ -1,0 +1,8 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_cublas_f32acc	610.68	KEEP	baseline	cuBLAS reference baseline with f32 accumulator
+iter001	iter001_f32acc	400.19	KEEP	memory_bound	1p1c with f32 accumulator - 65.5% baseline
+iter003	iter003_f32acc	560.99	KEEP	memory_bound	1p2c 3 stages with f32 accumulator - 91.9% baseline
+iter004	iter004_f32acc	678.97	KEEP	compute_bound	1p3c 4 stages with f32 accumulator - 111.2% baseline
+iter012	iter012_f32acc	657.72	KEEP	compute_bound	1p3c no commit with f32 accumulator - 107.7% baseline
+iter020	iter020_ws1p4c_s2_nocommit_f32acc	711.34	KEEP	compute_bound	1p4c 2 stages with f32 accumulator - 116.5% baseline - BEST
+iter021	iter021_ws1p4c_s3_nocommit_f32acc	703.47	KEEP	compute_bound	1p4c 3 stages with f32 accumulator - 115.2% baseline
