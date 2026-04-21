@@ -1,0 +1,345 @@
+[
+  {
+    "iter": 111,
+    "tag": "iter111_BM128_BN256_BK128_W8_S3",
+    "tflops": 982.7982161184144,
+    "time_ms": 0.5593781153361003,
+    "decision": "KEEP"
+  },
+  {
+    "iter": 112,
+    "tag": "iter112_BM128_BN256_BK128_W8_S4",
+    "tflops": 975.7593791898703,
+    "time_ms": 0.5634133021036783,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 113,
+    "tag": "iter113_BM128_BN256_BK128_W8_S5",
+    "tflops": 0,
+    "time_ms": Infinity,
+    "decision": "COMPILE_FAIL"
+  },
+  {
+    "iter": 114,
+    "tag": "iter114_BM128_BN256_BK128_W8_S6",
+    "tflops": 0,
+    "time_ms": Infinity,
+    "decision": "COMPILE_FAIL"
+  },
+  {
+    "iter": 115,
+    "tag": "iter115_BM128_BN256_BK64_W8_S3",
+    "tflops": 767.8897215348924,
+    "time_ms": 0.715930684407552,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 116,
+    "tag": "iter116_BM128_BN256_BK64_W8_S4",
+    "tflops": 910.3251837199039,
+    "time_ms": 0.6039114634195963,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 117,
+    "tag": "iter117_BM64_BN256_BK128_W8_S3",
+    "tflops": 698.1851428481395,
+    "time_ms": 0.7874069213867188,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 118,
+    "tag": "iter118_BM64_BN256_BK128_W8_S4",
+    "tflops": 822.6172973782386,
+    "time_ms": 0.6683008193969726,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 119,
+    "tag": "iter119_BM64_BN256_BK256_W8_S2",
+    "tflops": 480.9737409423017,
+    "time_ms": 1.1430058797200522,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 120,
+    "tag": "iter120_BM64_BN256_BK256_W8_S3",
+    "tflops": 0,
+    "time_ms": Infinity,
+    "decision": "COMPILE_FAIL"
+  },
+  {
+    "iter": 121,
+    "tag": "iter121_BM256_BN128_BK128_W8_S3",
+    "tflops": 931.9798901262742,
+    "time_ms": 0.5898794809977214,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 122,
+    "tag": "iter122_BM256_BN128_BK128_W8_S4",
+    "tflops": 923.4602298273722,
+    "time_ms": 0.5953215916951498,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 123,
+    "tag": "iter123_BM256_BN128_BK256_W8_S2",
+    "tflops": 664.0700535087099,
+    "time_ms": 0.8278581619262695,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 124,
+    "tag": "iter124_BM256_BN128_BK256_W8_S3",
+    "tflops": 0,
+    "time_ms": Infinity,
+    "decision": "COMPILE_FAIL"
+  },
+  {
+    "iter": 125,
+    "tag": "iter125_BM128_BN256_BK128_W16_S2",
+    "tflops": 654.1547068341108,
+    "time_ms": 0.8404064178466797,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 126,
+    "tag": "iter126_BM128_BN256_BK128_W16_S3",
+    "tflops": 934.2639929051987,
+    "time_ms": 0.5884373346964519,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 127,
+    "tag": "iter127_BM128_BN128_BK128_W16_S3",
+    "tflops": 832.289434922071,
+    "time_ms": 0.660534413655599,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 128,
+    "tag": "iter128_BM128_BN128_BK128_W16_S4",
+    "tflops": 755.8490206511708,
+    "time_ms": 0.7273354848225911,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 129,
+    "tag": "iter129_BM128_BN256_BK128_W4_S3",
+    "tflops": 139.44117564471526,
+    "time_ms": 3.9425643920898437,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 130,
+    "tag": "iter130_BM128_BN256_BK128_W4_S4",
+    "tflops": 140.50740747558672,
+    "time_ms": 3.912646484375,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 131,
+    "tag": "iter131_BM128_BN256_BK256_W4_S2",
+    "tflops": 234.68527273469672,
+    "time_ms": 2.342523701985677,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 132,
+    "tag": "iter132_BM64_BN128_BK256_W8_S3",
+    "tflops": 581.2814355043481,
+    "time_ms": 0.9457653045654297,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 133,
+    "tag": "iter133_BM64_BN128_BK256_W8_S4",
+    "tflops": 638.4226969055379,
+    "time_ms": 0.8611157099405925,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 134,
+    "tag": "iter134_BM128_BN64_BK256_W8_S3",
+    "tflops": 545.634030127697,
+    "time_ms": 1.0075541178385417,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 135,
+    "tag": "iter135_BM256_BN64_BK128_W8_S4",
+    "tflops": 689.9028592567254,
+    "time_ms": 0.7968597412109375,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 136,
+    "tag": "iter136_BM128_BN128_BK128_W8_S3",
+    "tflops": 871.2166281214274,
+    "time_ms": 0.6310208002726237,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 137,
+    "tag": "iter137_BM128_BN128_BK128_W8_S4",
+    "tflops": 831.4743916867625,
+    "time_ms": 0.661181894938151,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 138,
+    "tag": "iter138_BM128_BN128_BK128_W8_S5",
+    "tflops": 817.1214241996439,
+    "time_ms": 0.6727957407633464,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 139,
+    "tag": "iter139_BM256_BN256_BK128_W4_S2",
+    "tflops": 69.90198459769796,
+    "time_ms": 7.864666748046875,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 140,
+    "tag": "iter140_BM64_BN512_BK64_W8_S3",
+    "tflops": 697.9610710621057,
+    "time_ms": 0.7876597086588542,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 141,
+    "tag": "iter141_BM128_BN512_BK32_W8_S4",
+    "tflops": 33.694750425412195,
+    "time_ms": 16.315770467122395,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 142,
+    "tag": "iter142_BM256_BN512_BK32_W4_S3",
+    "tflops": 9.529603208325042,
+    "time_ms": 57.689265950520834,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 143,
+    "tag": "iter143_BM512_BN128_BK32_W8_S4",
+    "tflops": 80.92353317316184,
+    "time_ms": 6.793522135416667,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 144,
+    "tag": "iter144_BM512_BN64_BK64_W8_S3",
+    "tflops": 651.0452809425377,
+    "time_ms": 0.8444202423095704,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 145,
+    "tag": "iter145_BM128_BN256_BK128_W8_S2",
+    "tflops": 757.1548482532418,
+    "time_ms": 0.7260810852050781,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 146,
+    "tag": "iter146_BM128_BN256_BK64_W8_S5",
+    "tflops": 901.7072949620828,
+    "time_ms": 0.6096832275390625,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 147,
+    "tag": "iter147_BM128_BN256_BK64_W8_S6",
+    "tflops": 898.0011335006413,
+    "time_ms": 0.6121994654337565,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 148,
+    "tag": "iter148_BM128_BN128_BK256_W8_S2",
+    "tflops": 532.4988867137395,
+    "time_ms": 1.0324074427286785,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 149,
+    "tag": "iter149_BM128_BN128_BK256_W8_S3",
+    "tflops": 805.0799496772247,
+    "time_ms": 0.682858657836914,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 150,
+    "tag": "iter150_BM64_BN256_BK64_W8_S3",
+    "tflops": 728.4132419549906,
+    "time_ms": 0.7547306696573893,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 151,
+    "tag": "iter151_BM64_BN256_BK64_W8_S4",
+    "tflops": 676.7004854381007,
+    "time_ms": 0.8124064127604167,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 152,
+    "tag": "iter152_BM64_BN256_BK64_W8_S5",
+    "tflops": 665.717798086833,
+    "time_ms": 0.825809097290039,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 153,
+    "tag": "iter153_BM64_BN256_BK64_W4_S4",
+    "tflops": 705.5455276180502,
+    "time_ms": 0.7791925430297851,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 154,
+    "tag": "iter154_BM64_BN256_BK64_W4_S5",
+    "tflops": 676.5423896494877,
+    "time_ms": 0.8125962575276693,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 155,
+    "tag": "iter155_BM256_BN256_BK64_W4_S2",
+    "tflops": 24.368393847356078,
+    "time_ms": 22.560198974609374,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 156,
+    "tag": "iter156_BM256_BN256_BK64_W4_S3",
+    "tflops": 24.57022852164164,
+    "time_ms": 22.374875895182292,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 157,
+    "tag": "iter157_BM256_BN256_BK64_W8_S2",
+    "tflops": 57.99652892244437,
+    "time_ms": 9.479115804036459,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 158,
+    "tag": "iter158_BM128_BN128_BK64_W4_S4",
+    "tflops": 763.4920849729718,
+    "time_ms": 0.7200543721516927,
+    "decision": "DISCARD"
+  },
+  {
+    "iter": 159,
+    "tag": "iter159_BM128_BN128_BK64_W8_S4",
+    "tflops": 774.6647781881253,
+    "time_ms": 0.7096693038940429,
+    "decision": "DISCARD"
+  }
+]

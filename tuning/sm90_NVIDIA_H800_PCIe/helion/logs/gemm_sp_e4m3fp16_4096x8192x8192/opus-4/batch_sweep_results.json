@@ -1,0 +1,1458 @@
+[
+  {
+    "iter": 7,
+    "tag": "iter007_BM64_BN64_BK32_W4_S2",
+    "tflops": 246.43232426572638,
+    "time_ms": 2.2308591842651366,
+    "decision": "KEEP",
+    "config": {
+      "bm": 64,
+      "bn": 64,
+      "bk": 32,
+      "warps": 4,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 8,
+    "tag": "iter008_BM64_BN64_BK32_W4_S3",
+    "tflops": 230.47094609124386,
+    "time_ms": 2.385358428955078,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 64,
+      "bk": 32,
+      "warps": 4,
+      "stages": 3
+    }
+  },
+  {
+    "iter": 9,
+    "tag": "iter009_BM64_BN64_BK32_W4_S4",
+    "tflops": 227.49053878929365,
+    "time_ms": 2.4166095733642576,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 64,
+      "bk": 32,
+      "warps": 4,
+      "stages": 4
+    }
+  },
+  {
+    "iter": 10,
+    "tag": "iter010_BM64_BN64_BK32_W4_S5",
+    "tflops": 226.4407788582473,
+    "time_ms": 2.4278127670288088,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 64,
+      "bk": 32,
+      "warps": 4,
+      "stages": 5
+    }
+  },
+  {
+    "iter": 11,
+    "tag": "iter011_BM64_BN64_BK32_W8_S2",
+    "tflops": 168.83040632159995,
+    "time_ms": 3.2562606811523436,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 64,
+      "bk": 32,
+      "warps": 8,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 12,
+    "tag": "iter012_BM64_BN64_BK32_W8_S3",
+    "tflops": 173.8608600716034,
+    "time_ms": 3.162044715881348,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 64,
+      "bk": 32,
+      "warps": 8,
+      "stages": 3
+    }
+  },
+  {
+    "iter": 13,
+    "tag": "iter013_BM64_BN64_BK32_W8_S4",
+    "tflops": 175.47328116508783,
+    "time_ms": 3.1329887390136717,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 64,
+      "bk": 32,
+      "warps": 8,
+      "stages": 4
+    }
+  },
+  {
+    "iter": 14,
+    "tag": "iter014_BM64_BN64_BK32_W8_S5",
+    "tflops": 171.4558662788229,
+    "time_ms": 3.2063983917236327,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 64,
+      "bk": 32,
+      "warps": 8,
+      "stages": 5
+    }
+  },
+  {
+    "iter": 15,
+    "tag": "iter015_BM64_BN64_BK64_W4_S2",
+    "tflops": 472.93069079854064,
+    "time_ms": 1.16244478225708,
+    "decision": "KEEP",
+    "config": {
+      "bm": 64,
+      "bn": 64,
+      "bk": 64,
+      "warps": 4,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 16,
+    "tag": "iter016_BM64_BN64_BK64_W4_S3",
+    "tflops": 417.14963724211196,
+    "time_ms": 1.3178863525390625,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 64,
+      "bk": 64,
+      "warps": 4,
+      "stages": 3
+    }
+  },
+  {
+    "iter": 17,
+    "tag": "iter017_BM64_BN64_BK64_W4_S4",
+    "tflops": 413.2304334816597,
+    "time_ms": 1.3303855895996093,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 64,
+      "bk": 64,
+      "warps": 4,
+      "stages": 4
+    }
+  },
+  {
+    "iter": 18,
+    "tag": "iter018_BM64_BN64_BK64_W4_S5",
+    "tflops": 411.06359932926364,
+    "time_ms": 1.3373984336853026,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 64,
+      "bk": 64,
+      "warps": 4,
+      "stages": 5
+    }
+  },
+  {
+    "iter": 19,
+    "tag": "iter019_BM64_BN64_BK64_W8_S2",
+    "tflops": 369.9058221130597,
+    "time_ms": 1.4862048149108886,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 64,
+      "bk": 64,
+      "warps": 8,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 20,
+    "tag": "iter020_BM64_BN64_BK64_W8_S3",
+    "tflops": 408.3571155057226,
+    "time_ms": 1.3462623596191405,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 64,
+      "bk": 64,
+      "warps": 8,
+      "stages": 3
+    }
+  },
+  {
+    "iter": 21,
+    "tag": "iter021_BM64_BN64_BK64_W8_S4",
+    "tflops": 399.6642953972064,
+    "time_ms": 1.375543975830078,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 64,
+      "bk": 64,
+      "warps": 8,
+      "stages": 4
+    }
+  },
+  {
+    "iter": 22,
+    "tag": "iter022_BM64_BN64_BK64_W8_S5",
+    "tflops": 408.33623093770404,
+    "time_ms": 1.3463312149047852,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 64,
+      "bk": 64,
+      "warps": 8,
+      "stages": 5
+    }
+  },
+  {
+    "iter": 23,
+    "tag": "iter023_BM64_BN64_BK128_W4_S2",
+    "tflops": 528.9906156304689,
+    "time_ms": 1.039254379272461,
+    "decision": "KEEP",
+    "config": {
+      "bm": 64,
+      "bn": 64,
+      "bk": 128,
+      "warps": 4,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 24,
+    "tag": "iter024_BM64_BN64_BK128_W4_S3",
+    "tflops": 525.2521835927595,
+    "time_ms": 1.0466511726379395,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 64,
+      "bk": 128,
+      "warps": 4,
+      "stages": 3
+    }
+  },
+  {
+    "iter": 25,
+    "tag": "iter025_BM64_BN64_BK128_W8_S2",
+    "tflops": 521.8934045505354,
+    "time_ms": 1.05338716506958,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 64,
+      "bk": 128,
+      "warps": 8,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 26,
+    "tag": "iter026_BM64_BN64_BK128_W8_S3",
+    "tflops": 502.046907788757,
+    "time_ms": 1.095028781890869,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 64,
+      "bk": 128,
+      "warps": 8,
+      "stages": 3
+    }
+  },
+  {
+    "iter": 27,
+    "tag": "iter027_BM64_BN128_BK32_W4_S2",
+    "tflops": 345.4858036741237,
+    "time_ms": 1.591254425048828,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 128,
+      "bk": 32,
+      "warps": 4,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 28,
+    "tag": "iter028_BM64_BN128_BK32_W4_S3",
+    "tflops": 307.7139298173499,
+    "time_ms": 1.7865808486938477,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 128,
+      "bk": 32,
+      "warps": 4,
+      "stages": 3
+    }
+  },
+  {
+    "iter": 29,
+    "tag": "iter029_BM64_BN128_BK32_W4_S4",
+    "tflops": 304.35263525207523,
+    "time_ms": 1.8063119888305663,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 128,
+      "bk": 32,
+      "warps": 4,
+      "stages": 4
+    }
+  },
+  {
+    "iter": 30,
+    "tag": "iter030_BM64_BN128_BK32_W4_S5",
+    "tflops": 304.1723854634766,
+    "time_ms": 1.8073823928833008,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 128,
+      "bk": 32,
+      "warps": 4,
+      "stages": 5
+    }
+  },
+  {
+    "iter": 31,
+    "tag": "iter031_BM64_BN128_BK32_W8_S2",
+    "tflops": 299.20649721624204,
+    "time_ms": 1.837379264831543,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 128,
+      "bk": 32,
+      "warps": 8,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 32,
+    "tag": "iter032_BM64_BN128_BK32_W8_S3",
+    "tflops": 302.96654785264525,
+    "time_ms": 1.8145759582519532,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 128,
+      "bk": 32,
+      "warps": 8,
+      "stages": 3
+    }
+  },
+  {
+    "iter": 33,
+    "tag": "iter033_BM64_BN128_BK32_W8_S4",
+    "tflops": 293.88070287358096,
+    "time_ms": 1.8706768035888672,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 128,
+      "bk": 32,
+      "warps": 8,
+      "stages": 4
+    }
+  },
+  {
+    "iter": 34,
+    "tag": "iter034_BM64_BN128_BK32_W8_S5",
+    "tflops": 293.35929403300844,
+    "time_ms": 1.874001693725586,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 128,
+      "bk": 32,
+      "warps": 8,
+      "stages": 5
+    }
+  },
+  {
+    "iter": 35,
+    "tag": "iter035_BM64_BN128_BK64_W4_S2",
+    "tflops": 584.4685559890291,
+    "time_ms": 0.940608024597168,
+    "decision": "KEEP",
+    "config": {
+      "bm": 64,
+      "bn": 128,
+      "bk": 64,
+      "warps": 4,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 36,
+    "tag": "iter036_BM64_BN128_BK64_W4_S3",
+    "tflops": 579.4974930160757,
+    "time_ms": 0.9486767768859863,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 128,
+      "bk": 64,
+      "warps": 4,
+      "stages": 3
+    }
+  },
+  {
+    "iter": 37,
+    "tag": "iter037_BM64_BN128_BK64_W4_S4",
+    "tflops": 563.6255334797036,
+    "time_ms": 0.975391960144043,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 128,
+      "bk": 64,
+      "warps": 4,
+      "stages": 4
+    }
+  },
+  {
+    "iter": 38,
+    "tag": "iter038_BM64_BN128_BK64_W8_S2",
+    "tflops": 553.9972177196071,
+    "time_ms": 0.9923439979553222,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 128,
+      "bk": 64,
+      "warps": 8,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 39,
+    "tag": "iter039_BM64_BN128_BK64_W8_S3",
+    "tflops": 567.0251141882624,
+    "time_ms": 0.9695440292358398,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 128,
+      "bk": 64,
+      "warps": 8,
+      "stages": 3
+    }
+  },
+  {
+    "iter": 40,
+    "tag": "iter040_BM64_BN128_BK64_W8_S4",
+    "tflops": 553.173104978123,
+    "time_ms": 0.9938223838806153,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 128,
+      "bk": 64,
+      "warps": 8,
+      "stages": 4
+    }
+  },
+  {
+    "iter": 41,
+    "tag": "iter041_BM64_BN128_BK128_W4_S2",
+    "tflops": 732.1736627184474,
+    "time_ms": 0.7508543968200684,
+    "decision": "KEEP",
+    "config": {
+      "bm": 64,
+      "bn": 128,
+      "bk": 128,
+      "warps": 4,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 42,
+    "tag": "iter042_BM64_BN128_BK128_W8_S2",
+    "tflops": 696.2389093045392,
+    "time_ms": 0.7896080017089844,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 128,
+      "bk": 128,
+      "warps": 8,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 43,
+    "tag": "iter043_BM64_BN256_BK32_W4_S2",
+    "tflops": 395.84768522756093,
+    "time_ms": 1.388806438446045,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 256,
+      "bk": 32,
+      "warps": 4,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 44,
+    "tag": "iter044_BM64_BN256_BK32_W4_S3",
+    "tflops": 378.4724849847632,
+    "time_ms": 1.452564811706543,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 256,
+      "bk": 32,
+      "warps": 4,
+      "stages": 3
+    }
+  },
+  {
+    "iter": 45,
+    "tag": "iter045_BM64_BN256_BK32_W4_S4",
+    "tflops": 366.7103985942194,
+    "time_ms": 1.4991552352905273,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 256,
+      "bk": 32,
+      "warps": 4,
+      "stages": 4
+    }
+  },
+  {
+    "iter": 46,
+    "tag": "iter046_BM64_BN256_BK32_W4_S5",
+    "tflops": 381.9170295865883,
+    "time_ms": 1.439463996887207,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 256,
+      "bk": 32,
+      "warps": 4,
+      "stages": 5
+    }
+  },
+  {
+    "iter": 47,
+    "tag": "iter047_BM64_BN256_BK32_W8_S2",
+    "tflops": 323.23791509934114,
+    "time_ms": 1.7007776260375977,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 256,
+      "bk": 32,
+      "warps": 8,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 48,
+    "tag": "iter048_BM64_BN256_BK32_W8_S3",
+    "tflops": 376.11517900871047,
+    "time_ms": 1.4616687774658204,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 256,
+      "bk": 32,
+      "warps": 8,
+      "stages": 3
+    }
+  },
+  {
+    "iter": 49,
+    "tag": "iter049_BM64_BN256_BK32_W8_S4",
+    "tflops": 371.0590968440215,
+    "time_ms": 1.4815855979919434,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 256,
+      "bk": 32,
+      "warps": 8,
+      "stages": 4
+    }
+  },
+  {
+    "iter": 50,
+    "tag": "iter050_BM64_BN256_BK32_W8_S5",
+    "tflops": 369.5362381415334,
+    "time_ms": 1.4876912117004395,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 256,
+      "bk": 32,
+      "warps": 8,
+      "stages": 5
+    }
+  },
+  {
+    "iter": 51,
+    "tag": "iter051_BM64_BN256_BK64_W4_S2",
+    "tflops": 695.8483180399322,
+    "time_ms": 0.7900512218475342,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 256,
+      "bk": 64,
+      "warps": 4,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 52,
+    "tag": "iter052_BM64_BN256_BK64_W8_S2",
+    "tflops": 491.4846321546989,
+    "time_ms": 1.1185615539550782,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 64,
+      "bn": 256,
+      "bk": 64,
+      "warps": 8,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 53,
+    "tag": "iter053_BM128_BN64_BK32_W4_S2",
+    "tflops": 322.5551826835349,
+    "time_ms": 1.7043775558471679,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 64,
+      "bk": 32,
+      "warps": 4,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 54,
+    "tag": "iter054_BM128_BN64_BK32_W4_S3",
+    "tflops": 297.0240095743686,
+    "time_ms": 1.8508800506591796,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 64,
+      "bk": 32,
+      "warps": 4,
+      "stages": 3
+    }
+  },
+  {
+    "iter": 55,
+    "tag": "iter055_BM128_BN64_BK32_W4_S4",
+    "tflops": 293.99937896546146,
+    "time_ms": 1.8699216842651367,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 64,
+      "bk": 32,
+      "warps": 4,
+      "stages": 4
+    }
+  },
+  {
+    "iter": 56,
+    "tag": "iter056_BM128_BN64_BK32_W4_S5",
+    "tflops": 291.89068534595,
+    "time_ms": 1.8834304809570312,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 64,
+      "bk": 32,
+      "warps": 4,
+      "stages": 5
+    }
+  },
+  {
+    "iter": 57,
+    "tag": "iter057_BM128_BN64_BK32_W8_S2",
+    "tflops": 305.80206882867634,
+    "time_ms": 1.797750473022461,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 64,
+      "bk": 32,
+      "warps": 8,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 58,
+    "tag": "iter058_BM128_BN64_BK32_W8_S3",
+    "tflops": 300.5504500343863,
+    "time_ms": 1.82916316986084,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 64,
+      "bk": 32,
+      "warps": 8,
+      "stages": 3
+    }
+  },
+  {
+    "iter": 59,
+    "tag": "iter059_BM128_BN64_BK32_W8_S4",
+    "tflops": 291.39141940859815,
+    "time_ms": 1.8866575241088868,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 64,
+      "bk": 32,
+      "warps": 8,
+      "stages": 4
+    }
+  },
+  {
+    "iter": 60,
+    "tag": "iter060_BM128_BN64_BK32_W8_S5",
+    "tflops": 287.98996213132455,
+    "time_ms": 1.908940887451172,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 64,
+      "bk": 32,
+      "warps": 8,
+      "stages": 5
+    }
+  },
+  {
+    "iter": 61,
+    "tag": "iter061_BM128_BN64_BK64_W4_S2",
+    "tflops": 563.9067225030276,
+    "time_ms": 0.9749055862426758,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 64,
+      "bk": 64,
+      "warps": 4,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 62,
+    "tag": "iter062_BM128_BN64_BK64_W4_S3",
+    "tflops": 558.073351517621,
+    "time_ms": 0.9850959777832031,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 64,
+      "bk": 64,
+      "warps": 4,
+      "stages": 3
+    }
+  },
+  {
+    "iter": 63,
+    "tag": "iter063_BM128_BN64_BK64_W4_S4",
+    "tflops": 524.2080121746607,
+    "time_ms": 1.048736000061035,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 64,
+      "bk": 64,
+      "warps": 4,
+      "stages": 4
+    }
+  },
+  {
+    "iter": 64,
+    "tag": "iter064_BM128_BN64_BK64_W8_S2",
+    "tflops": 550.3819493587623,
+    "time_ms": 0.998862361907959,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 64,
+      "bk": 64,
+      "warps": 8,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 65,
+    "tag": "iter065_BM128_BN64_BK64_W8_S3",
+    "tflops": 548.3292675604996,
+    "time_ms": 1.0026016235351562,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 64,
+      "bk": 64,
+      "warps": 8,
+      "stages": 3
+    }
+  },
+  {
+    "iter": 66,
+    "tag": "iter066_BM128_BN64_BK64_W8_S4",
+    "tflops": 505.16026089200415,
+    "time_ms": 1.0882800102233887,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 64,
+      "bk": 64,
+      "warps": 8,
+      "stages": 4
+    }
+  },
+  {
+    "iter": 67,
+    "tag": "iter067_BM128_BN64_BK128_W4_S2",
+    "tflops": 636.0711807183311,
+    "time_ms": 0.864299201965332,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 64,
+      "bk": 128,
+      "warps": 4,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 68,
+    "tag": "iter068_BM128_BN64_BK128_W8_S2",
+    "tflops": 621.0739873956207,
+    "time_ms": 0.8851696014404297,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 64,
+      "bk": 128,
+      "warps": 8,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 69,
+    "tag": "iter069_BM128_BN128_BK32_W4_S2",
+    "tflops": 466.5634564268643,
+    "time_ms": 1.1783087730407715,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 128,
+      "bk": 32,
+      "warps": 4,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 70,
+    "tag": "iter070_BM128_BN128_BK32_W4_S3",
+    "tflops": 483.2545729586561,
+    "time_ms": 1.137611198425293,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 128,
+      "bk": 32,
+      "warps": 4,
+      "stages": 3
+    }
+  },
+  {
+    "iter": 71,
+    "tag": "iter071_BM128_BN128_BK32_W4_S4",
+    "tflops": 444.316905696988,
+    "time_ms": 1.2373056411743164,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 128,
+      "bk": 32,
+      "warps": 4,
+      "stages": 4
+    }
+  },
+  {
+    "iter": 72,
+    "tag": "iter072_BM128_BN128_BK32_W4_S5",
+    "tflops": 442.29624564544355,
+    "time_ms": 1.2429583549499512,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 128,
+      "bk": 32,
+      "warps": 4,
+      "stages": 5
+    }
+  },
+  {
+    "iter": 73,
+    "tag": "iter073_BM128_BN128_BK32_W8_S2",
+    "tflops": 355.5844984602874,
+    "time_ms": 1.5460623741149901,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 128,
+      "bk": 32,
+      "warps": 8,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 74,
+    "tag": "iter074_BM128_BN128_BK32_W8_S3",
+    "tflops": 453.3850326848163,
+    "time_ms": 1.2125583648681642,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 128,
+      "bk": 32,
+      "warps": 8,
+      "stages": 3
+    }
+  },
+  {
+    "iter": 75,
+    "tag": "iter075_BM128_BN128_BK32_W8_S4",
+    "tflops": 438.38049645345683,
+    "time_ms": 1.2540608406066895,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 128,
+      "bk": 32,
+      "warps": 8,
+      "stages": 4
+    }
+  },
+  {
+    "iter": 76,
+    "tag": "iter076_BM128_BN128_BK32_W8_S5",
+    "tflops": 433.4508747945656,
+    "time_ms": 1.2683232307434082,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 128,
+      "bk": 32,
+      "warps": 8,
+      "stages": 5
+    }
+  },
+  {
+    "iter": 77,
+    "tag": "iter077_BM128_BN128_BK64_W4_S2",
+    "tflops": 737.0566656206826,
+    "time_ms": 0.7458799839019775,
+    "decision": "KEEP",
+    "config": {
+      "bm": 128,
+      "bn": 128,
+      "bk": 64,
+      "warps": 4,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 78,
+    "tag": "iter078_BM128_BN128_BK64_W4_S3",
+    "tflops": 804.5835104329742,
+    "time_ms": 0.6832799911499023,
+    "decision": "KEEP",
+    "config": {
+      "bm": 128,
+      "bn": 128,
+      "bk": 64,
+      "warps": 4,
+      "stages": 3
+    }
+  },
+  {
+    "iter": 79,
+    "tag": "iter079_BM128_BN128_BK64_W8_S2",
+    "tflops": 531.3679146075781,
+    "time_ms": 1.034604835510254,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 128,
+      "bk": 64,
+      "warps": 8,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 80,
+    "tag": "iter080_BM128_BN128_BK64_W8_S3",
+    "tflops": 788.7204507155693,
+    "time_ms": 0.6970223903656005,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 128,
+      "bk": 64,
+      "warps": 8,
+      "stages": 3
+    }
+  },
+  {
+    "iter": 81,
+    "tag": "iter081_BM128_BN256_BK32_W4_S2",
+    "tflops": 34.10408845186782,
+    "time_ms": 16.11993865966797,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 256,
+      "bk": 32,
+      "warps": 4,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 82,
+    "tag": "iter082_BM128_BN256_BK32_W4_S3",
+    "tflops": 33.109986186677425,
+    "time_ms": 16.603927612304688,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 256,
+      "bk": 32,
+      "warps": 4,
+      "stages": 3
+    }
+  },
+  {
+    "iter": 83,
+    "tag": "iter083_BM128_BN256_BK32_W4_S4",
+    "tflops": 33.07370451625267,
+    "time_ms": 16.622142028808593,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 256,
+      "bk": 32,
+      "warps": 4,
+      "stages": 4
+    }
+  },
+  {
+    "iter": 84,
+    "tag": "iter084_BM128_BN256_BK32_W8_S2",
+    "tflops": 308.7000611141481,
+    "time_ms": 1.780873680114746,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 256,
+      "bk": 32,
+      "warps": 8,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 85,
+    "tag": "iter085_BM128_BN256_BK32_W8_S3",
+    "tflops": 393.1855602770449,
+    "time_ms": 1.398209571838379,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 256,
+      "bk": 32,
+      "warps": 8,
+      "stages": 3
+    }
+  },
+  {
+    "iter": 86,
+    "tag": "iter086_BM128_BN256_BK32_W8_S4",
+    "tflops": 645.1418432833403,
+    "time_ms": 0.8521471977233886,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 256,
+      "bk": 32,
+      "warps": 8,
+      "stages": 4
+    }
+  },
+  {
+    "iter": 87,
+    "tag": "iter087_BM128_BN256_BK64_W4_S2",
+    "tflops": 62.97471885072801,
+    "time_ms": 8.729785919189453,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 256,
+      "bk": 64,
+      "warps": 4,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 88,
+    "tag": "iter088_BM128_BN256_BK64_W8_S2",
+    "tflops": 458.17383106725725,
+    "time_ms": 1.199884796142578,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 128,
+      "bn": 256,
+      "bk": 64,
+      "warps": 8,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 89,
+    "tag": "iter089_BM256_BN64_BK32_W4_S2",
+    "tflops": 374.79043939315284,
+    "time_ms": 1.4668352127075195,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 256,
+      "bn": 64,
+      "bk": 32,
+      "warps": 4,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 90,
+    "tag": "iter090_BM256_BN64_BK32_W4_S3",
+    "tflops": 379.68448429370744,
+    "time_ms": 1.4479280471801759,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 256,
+      "bn": 64,
+      "bk": 32,
+      "warps": 4,
+      "stages": 3
+    }
+  },
+  {
+    "iter": 91,
+    "tag": "iter091_BM256_BN64_BK32_W4_S4",
+    "tflops": 380.8582680699481,
+    "time_ms": 1.4434656143188476,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 256,
+      "bn": 64,
+      "bk": 32,
+      "warps": 4,
+      "stages": 4
+    }
+  },
+  {
+    "iter": 92,
+    "tag": "iter092_BM256_BN64_BK32_W4_S5",
+    "tflops": 381.2927440265572,
+    "time_ms": 1.4418208122253418,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 256,
+      "bn": 64,
+      "bk": 32,
+      "warps": 4,
+      "stages": 5
+    }
+  },
+  {
+    "iter": 93,
+    "tag": "iter093_BM256_BN64_BK32_W8_S2",
+    "tflops": 315.0859039516832,
+    "time_ms": 1.7447807312011718,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 256,
+      "bn": 64,
+      "bk": 32,
+      "warps": 8,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 94,
+    "tag": "iter094_BM256_BN64_BK32_W8_S3",
+    "tflops": 381.07791395939046,
+    "time_ms": 1.4426336288452148,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 256,
+      "bn": 64,
+      "bk": 32,
+      "warps": 8,
+      "stages": 3
+    }
+  },
+  {
+    "iter": 95,
+    "tag": "iter095_BM256_BN64_BK32_W8_S4",
+    "tflops": 356.7296808060198,
+    "time_ms": 1.5410991668701173,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 256,
+      "bn": 64,
+      "bk": 32,
+      "warps": 8,
+      "stages": 4
+    }
+  },
+  {
+    "iter": 96,
+    "tag": "iter096_BM256_BN64_BK32_W8_S5",
+    "tflops": 352.84583406891664,
+    "time_ms": 1.5580623626708985,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 256,
+      "bn": 64,
+      "bk": 32,
+      "warps": 8,
+      "stages": 5
+    }
+  },
+  {
+    "iter": 97,
+    "tag": "iter097_BM256_BN64_BK64_W4_S2",
+    "tflops": 672.8838664653327,
+    "time_ms": 0.8170144081115722,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 256,
+      "bn": 64,
+      "bk": 64,
+      "warps": 4,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 98,
+    "tag": "iter098_BM256_BN64_BK64_W8_S2",
+    "tflops": 502.53888974620406,
+    "time_ms": 1.093956756591797,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 256,
+      "bn": 64,
+      "bk": 64,
+      "warps": 8,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 99,
+    "tag": "iter099_BM256_BN128_BK32_W4_S2",
+    "tflops": 92.74433953995668,
+    "time_ms": 5.9276481628417965,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 256,
+      "bn": 128,
+      "bk": 32,
+      "warps": 4,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 100,
+    "tag": "iter100_BM256_BN128_BK32_W4_S3",
+    "tflops": 93.84124950022648,
+    "time_ms": 5.858359909057617,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 256,
+      "bn": 128,
+      "bk": 32,
+      "warps": 4,
+      "stages": 3
+    }
+  },
+  {
+    "iter": 101,
+    "tag": "iter101_BM256_BN128_BK32_W4_S4",
+    "tflops": 93.82187705737365,
+    "time_ms": 5.859569549560547,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 256,
+      "bn": 128,
+      "bk": 32,
+      "warps": 4,
+      "stages": 4
+    }
+  },
+  {
+    "iter": 102,
+    "tag": "iter102_BM256_BN128_BK32_W8_S2",
+    "tflops": 312.5408335716668,
+    "time_ms": 1.7589887619018554,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 256,
+      "bn": 128,
+      "bk": 32,
+      "warps": 8,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 103,
+    "tag": "iter103_BM256_BN128_BK32_W8_S3",
+    "tflops": 459.2301729136633,
+    "time_ms": 1.1971247673034668,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 256,
+      "bn": 128,
+      "bk": 32,
+      "warps": 8,
+      "stages": 3
+    }
+  },
+  {
+    "iter": 104,
+    "tag": "iter104_BM256_BN128_BK32_W8_S4",
+    "tflops": 590.1484186666094,
+    "time_ms": 0.93155517578125,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 256,
+      "bn": 128,
+      "bk": 32,
+      "warps": 8,
+      "stages": 4
+    }
+  },
+  {
+    "iter": 105,
+    "tag": "iter105_BM256_BN128_BK64_W4_S2",
+    "tflops": 183.4611343995777,
+    "time_ms": 2.996579170227051,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 256,
+      "bn": 128,
+      "bk": 64,
+      "warps": 4,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 106,
+    "tag": "iter106_BM256_BN128_BK64_W8_S2",
+    "tflops": 472.7575923587851,
+    "time_ms": 1.1628704071044922,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 256,
+      "bn": 128,
+      "bk": 64,
+      "warps": 8,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 107,
+    "tag": "iter107_BM256_BN256_BK32_W4_S2",
+    "tflops": 12.730960701595103,
+    "time_ms": 43.182586669921875,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 256,
+      "bn": 256,
+      "bk": 32,
+      "warps": 4,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 108,
+    "tag": "iter108_BM256_BN256_BK32_W4_S3",
+    "tflops": 12.851392640583866,
+    "time_ms": 42.77791748046875,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 256,
+      "bn": 256,
+      "bk": 32,
+      "warps": 4,
+      "stages": 3
+    }
+  },
+  {
+    "iter": 109,
+    "tag": "iter109_BM256_BN256_BK32_W8_S2",
+    "tflops": 38.53799426410133,
+    "time_ms": 14.265293884277344,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 256,
+      "bn": 256,
+      "bk": 32,
+      "warps": 8,
+      "stages": 2
+    }
+  },
+  {
+    "iter": 110,
+    "tag": "iter110_BM256_BN256_BK32_W8_S3",
+    "tflops": 36.69203116672433,
+    "time_ms": 14.98297576904297,
+    "decision": "DISCARD",
+    "config": {
+      "bm": 256,
+      "bn": 256,
+      "bk": 32,
+      "warps": 8,
+      "stages": 3
+    }
+  }
+]

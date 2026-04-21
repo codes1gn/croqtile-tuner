@@ -1,0 +1,23 @@
+======================================================================
+iter001: Baseline Sparse FP8 GEMM with Helion
+Shape: M=4096, N=8192, K=8192 (2:4 structured sparsity, e4m3→fp16)
+======================================================================
+
+Reference output range: [-456.86, 452.53]
+
+[1] Dense Helion FP8 GEMM (baseline)
+    Output shape: torch.Size([4096, 8192])
+VERIFY: FAIL max_abs_err=18.281229 mean_err=2.714079 (tol=0.01)
+    TFLOPS: 794.33   time_ms: 0.692
+
+[2] Reference: torch._scaled_mm (dense FP8)
+    TFLOPS: 941.34   time_ms: 0.584
+
+======================================================================
+SUMMARY
+======================================================================
+Helion Dense FP8:     794.33 TFLOPS
+torch._scaled_mm:     941.34 TFLOPS
+Helion vs cuBLAS:     84.4%
+
+TFLOPS: 794.33   time_ms: 0.692

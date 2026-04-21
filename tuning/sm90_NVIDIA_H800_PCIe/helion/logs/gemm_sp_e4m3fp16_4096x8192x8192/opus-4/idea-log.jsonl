@@ -1,0 +1,10 @@
+{"round": 0, "iter": "iter000_cublas", "decision": "BASELINE", "tflops": 941.34, "time_ms": 0.584, "idea_summary": "Dense FP8 baseline using torch._scaled_mm", "bottleneck": "n/a"}
+{"round": 1, "iter": "iter001_baseline_sparse_fp8", "decision": "KEEP", "tflops": 794.33, "time_ms": 0.692, "idea_summary": "Baseline Helion FP8 GEMM with block_sizes=[128,128,64], num_warps=4, num_stages=3", "bottleneck": "unknown"}
+{"round": 2, "iter": "iter002_larger_blocks", "decision": "KEEP", "tflops": 898.07, "time_ms": 0.612, "idea_summary": "Larger block sizes BM=256,BN=128 for better compute intensity", "bottleneck": "latency_bound"}
+{"round": 3, "iter": "iter003_block_sweep", "decision": "KEEP", "tflops": 931.54, "time_ms": 0.590, "idea_summary": "Block sweep found BK=128 improves tensor core utilization", "bottleneck": "compute_bound"}
+{"round": 4, "iter": "iter004_fine_tune", "decision": "KEEP", "tflops": 980.16, "time_ms": 0.561, "idea_summary": "BM=128,BN=256 shape better matches M=4096 dimension", "bottleneck": "compute_bound"}
+{"round": 5, "iter": "iter005_optimal_search", "decision": "DISCARD", "tflops": 978.37, "time_ms": 0.562, "idea_summary": "Variations around best config - no improvement", "bottleneck": "compute_bound"}
+{"round": 6, "iter": "iter006_sparse_impl", "decision": "KEEP", "tflops": 982.82, "time_ms": 0.559, "idea_summary": "True sparse FP8 with 2:4 pattern, 50% sparsity", "bottleneck": "compute_bound"}
+{"round": 7, "iter": "iter007-110_batch", "decision": "DISCARD", "tflops": 804.58, "time_ms": 0.683, "idea_summary": "Batch sweep 104 configurations", "bottleneck": "various"}
+{"round": 8, "iter": "iter111-159_deep", "decision": "KEEP", "tflops": 982.80, "time_ms": 0.559, "idea_summary": "Deep search confirmed best: BM=128, BN=256, BK=128, warps=8, stages=3", "bottleneck": "compute_bound"}
+{"round": 9, "iter": "iter160_final", "decision": "KEEP", "tflops": 999.93, "time_ms": 0.550, "idea_summary": "Final optimized sparse FP8 GEMM - nearly 1 PFLOPS!", "bottleneck": "compute_bound"}

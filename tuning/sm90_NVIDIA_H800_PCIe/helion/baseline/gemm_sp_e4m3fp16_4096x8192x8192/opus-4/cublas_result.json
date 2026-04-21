@@ -1,0 +1,18 @@
+{
+  "dense_fp8": {
+    "time_ms": 0.584,
+    "tflops": 941.34
+  },
+  "helion_dense_fp8": {
+    "time_ms": 0.692,
+    "tflops": 794.33
+  },
+  "summary": {
+    "shape": "4096x8192x8192",
+    "operator": "gemm_sp",
+    "dtype": "e4m3fp16",
+    "best_baseline": "dense_fp8",
+    "best_tflops": 941.34,
+    "target": "Beat 941.34 TFLOPS (dense FP8 + sparse benefit)"
+  }
+}

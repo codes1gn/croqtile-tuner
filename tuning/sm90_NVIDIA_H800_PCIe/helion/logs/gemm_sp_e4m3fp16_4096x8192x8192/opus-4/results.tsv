@@ -1,0 +1,11 @@
+iter	tflops	time_ms	decision	bottleneck	idea	timestamp
+iter000_cublas	941.34	0.584	BASELINE	n/a	Dense FP8 baseline (torch._scaled_mm)	2026-04-21T22:50:00+08:00
+iter001_baseline_sparse_fp8	794.33	0.692	KEEP	unknown	Baseline Helion FP8 GEMM (84.4% of cuBLAS)	2026-04-21T22:50:00+08:00
+iter002_larger_blocks	898.07	0.612	KEEP	unknown	BM=256,BN=128,BK=64,W=8,S=4 - 13% improvement	2026-04-21T23:00:00+08:00
+iter003_block_sweep	931.54	0.590	KEEP	unknown	BM=256,BN=128,BK=128,W=8,S=3 - 98.96% of cuBLAS	2026-04-21T23:02:00+08:00
+iter004_fine_tune	980.16	0.561	KEEP	unknown	BM=128,BN=256,BK=128,W=8,S=3 - 104.1% of cuBLAS!	2026-04-21T23:05:00+08:00
+iter005_optimal_search	978.37	0.562	DISCARD	unknown	Confirmed best config	2026-04-21T23:08:00+08:00
+iter006_sparse_impl	982.82	0.559	KEEP	compute_bound	Sparse FP8 with 2:4 pattern - 130.3% of cuSPARSELt	2026-04-21T23:10:00+08:00
+iter007-110_batch_sweep	804.58	0.683	DISCARD	various	Batch sweep 104 configs - best BM128_BN128_BK64_W4_S3	2026-04-21T23:15:00+08:00
+iter111-159_deep_search	982.80	0.559	KEEP	compute_bound	Deep search 49 configs - confirmed BM128_BN256_BK128_W8_S3	2026-04-21T23:20:00+08:00
+iter160_final_optimized	999.93	0.550	KEEP	compute_bound	Final optimized kernel - 109.9% of cuBLAS!	2026-04-21T23:25:00+08:00
