@@ -10,3 +10,7 @@ iter007	iter007_panel6	363.31	DISCARD	compute_bound	panel_size=6 instead of 10, 
 iter008	iter008_bk96	316.33	DISCARD	compute_bound	BLOCK_K=96 for better balance, measurement variance
 iter009	iter009_panel14	373.67	KEEP	compute_bound	panel_size=14 for best L2 locality
 iter010	iter010_panel11	365.11	DISCARD	compute_bound	panel_size=11 showed 390T best in sweep but variance
+iter011	iter011_panel12	377.62	KEEP	memory_bound	panel_size=12 from batch sweep
+iter012	iter012_panel11_refined	375.53	DISCARD	memory_bound	panel_size=11 refinement
+iter013	iter013_panel16	375.24	DISCARD	memory_bound	panel_size=16 from sweep peak
+iter014	iter014_panel10_s2	380.30	KEEP	memory_bound	panel_size=10 stages=2 peaked at 401.57T in sweep
