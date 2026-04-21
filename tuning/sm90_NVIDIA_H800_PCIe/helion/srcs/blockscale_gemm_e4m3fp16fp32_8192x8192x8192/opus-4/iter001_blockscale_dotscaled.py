@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-Helion blockscale GEMM — one hl.dot_scaled per output tile (full K reduction).
-Tile sizes capped so a[t_m,:] fits Triton max tensor numel (BM * K <= ~1M => BM<=128).
+Helion blockscale GEMM — hl.dot_scaled per output tile, full-K reduction.
+BM=128 so BM*K fits Triton max block numel. Large kernel is defined inside bench()
+to avoid slow top-level compile on import.
 """
 from __future__ import annotations
 
@@ -12,40 +13,7 @@ import helion.language as hl
 
 GROUP = 32
 
-_KERNEL_CFG = helion.Config(
-    block_sizes=[128, 128],
-    num_warps=8,
-    num_stages=3,
-    indexing="block_ptr",
-)
-
-
-@helion.kernel(
-    config=_KERNEL_CFG,
-    settings=helion.Settings(autotune_effort="none", static_shapes=True),
-)
-def blockscale_gemm_kernel(
-    a: torch.Tensor,
-    a_s: torch.Tensor,
-    b: torch.Tensor,
-    b_s: torch.Tensor,
-) -> torch.Tensor:
-    m, _k = a.shape
-    _k2, n = b.shape
-    out = torch.empty((m, n), dtype=torch.float16, device=a.device)
-    for t_m in hl.tile(m):
-        for t_n in hl.tile(n):
-            acc = hl.dot_scaled(
-                a[t_m, :],
-                a_s[t_m, :],
-                "e4m3",
-                b[:, t_n],
-                b_s[t_n, :],
-                "e4m3",
-                out_dtype=torch.float32,
-            )
-            out[t_m, t_n] = acc.to(torch.float16)
-    return out
+M, N, K = 8192, 8192, 8192
 
 
 def _ref_blockscale(
@@ -123,10 +91,41 @@ def verify() -> bool:
     return ok
 
 
-M, N, K = 8192, 8192, 8192
-
-
 def bench(warmup: int = 10, iters: int = 50) -> float:
+    cfg = helion.Config(
+        block_sizes=[128, 128],
+        num_warps=8,
+        num_stages=3,
+        indexing="block_ptr",
+    )
+
+    @helion.kernel(
+        config=cfg,
+        settings=helion.Settings(autotune_effort="none", static_shapes=True),
+    )
+    def blockscale_gemm_kernel(
+        a: torch.Tensor,
+        a_s: torch.Tensor,
+        b: torch.Tensor,
+        b_s: torch.Tensor,
+    ) -> torch.Tensor:
+        m, _k = a.shape
+        _k2, n = b.shape
+        out = torch.empty((m, n), dtype=torch.float16, device=a.device)
+        for t_m in hl.tile(m):
+            for t_n in hl.tile(n):
+                acc = hl.dot_scaled(
+                    a[t_m, :],
+                    a_s[t_m, :],
+                    "e4m3",
+                    b[:, t_n],
+                    b_s[t_n, :],
+                    "e4m3",
+                    out_dtype=torch.float32,
+                )
+                out[t_m, t_n] = acc.to(torch.float16)
+        return out
+
     torch.manual_seed(1)
     a = (torch.randn(M, K, device="cuda", dtype=torch.float32) * 0.1).to(torch.float8_e4m3fn)
     b = (torch.randn(K, N, device="cuda", dtype=torch.float32) * 0.1).to(torch.float8_e4m3fn)
