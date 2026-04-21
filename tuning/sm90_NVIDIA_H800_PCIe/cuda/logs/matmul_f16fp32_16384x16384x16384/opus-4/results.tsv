@@ -1,0 +1,94 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_cublas	416.244	KEEP	baseline	cuBLAS reference baseline
+iter001	iter001_wmma_base	24.403	KEEP	memory_bound	Initial WMMA kernel with BM=64,BN=64,BK=16 - baseline for optimization
+iter002	iter002_large_tiles	12.766	DISCARD	memory_bound	Larger tiles BM=128,BN=128,BK=32 with 2x2 fragments - warp mapping issue caused 
+iter003	iter003_mma_ptx	0	COMPILE_FAIL	memory_bound	PTX mma.sync with ldmatrix - incorrect register mapping, kernel runs but produce
+iter004	iter004_wmma_128_32	47.315	KEEP	memory_bound	WMMA with BM=BN=128, BK=32, 8 warps each computing 16x128 output with 2 K-steps 
+iter005	iter005_wmma_256_64	33.266	DISCARD	compute_bound	BM=256, BN=128, BK=32 with 8 warps each computing 32x128 - too many accumulators
+iter006	iter006_wmma_dbl_buf	46.883	DISCARD	memory_bound	Double buffering with synchronous loads - overhead exceeds latency hiding benefi
+iter007	iter007_wmma_cpasync	0	COMPILE_FAIL	memory_bound	cp.async per-element copies are inefficient, pipeline likely broken
+iter008	iter008_wmma_vec_load	89.349	KEEP	memory_bound	Vectorized float4 loads for global memory - 2x speedup from coalesced 128-bit ac
+iter009	iter009_wmma_swizzle	73.208	DISCARD	memory_bound	Swizzled shared memory - overhead exceeds bank conflict savings
+iter010	iter010_wmma_512t	0	COMPILE_FAIL	compute_bound	512 threads with incorrect warp-tile mapping caused verification failure
+iter011	iter011_wmma_bk64	68.821	DISCARD	compute_bound	BK=64 with BM=BN=64 - low occupancy from 4 warps hurts more than arithmetic inte
+iter012	iter012_wmma_128_64	89.213	DISCARD	memory_bound	BK=64 - marginal difference from BK=32, no improvement
+iter013	iter013_wmma_splitk	0	COMPILE_FAIL	compute_bound	Split-K with incorrect fragment store pattern - verification failed
+iter014	iter014_wmma_ldg	88.845	DISCARD	memory_bound	__ldg intrinsics - no improvement on Hopper unified L1 cache
+iter015	iter015_wmma_nosync	91.994	KEEP	latency_bound	Removed second __syncthreads() in K-loop - 3% speedup from reduced sync overhead
+iter016	iter016_wmma_2x8	60.877	DISCARD	compute_bound	2x8 WMMA tiles with 4 warps - low occupancy and register pressure hurt performan
+iter017	iter017_wmma_1x4	0	COMPILE_FAIL	compute_bound	BN=64 broke load pattern, reported inf TFLOPS
+iter018	iter018_wmma_unroll	91.158	DISCARD	latency_bound	--maxrregcount=128 - no improvement, slight regression
+iter019	iter019_wmma_persist	55.108	DISCARD	launch_bound	Persistent kernel with 132 blocks - insufficient parallelism for large grid
+iter020	iter020_wmma_tile_swiz	90.572	DISCARD	memory_bound	Tile swizzling - overhead exceeds L2 locality benefit
+iter021	iter021_wmma_prefetch	84.640	DISCARD	memory_bound	Double-buffered software pipelining - overhead exceeds benefit, increased SMEM p
+iter022	iter022_wmma_2x4warp	98.625	KEEP	compute_bound	2x4 warp tile (8 warps in 4x2 layout) - 7% speedup from better A-fragment reuse
+iter023	iter023_wmma_4x4warp	61.163	DISCARD	compute_bound	4x4 warp tiles with 4 warps - register pressure kills occupancy
+iter024	iter024_wmma_256_128	106.061	KEEP	memory_bound	BM=256 with 16 warps (8x2) - 7.5% speedup from better A-matrix reuse
+iter025	iter025_wmma_256_256	0	COMPILE_FAIL	memory_bound	BM=256 BN=256 with 32 warps - load pattern mapping failed
+iter026	iter026_wmma_bk64	102.601	DISCARD	memory_bound	BK=64 with BM=128 - had to reduce BM for SMEM, lost A-reuse benefit
+iter027	iter027_wmma_dyn_smem	56.888	DISCARD	latency_bound	Dynamic shared memory - high latency penalty, lower occupancy
+iter028	iter028_wmma_384_128	0	COMPILE_FAIL	memory_bound	BM=384 - verification failed, 16384 not divisible by 384
+iter029	iter029_wmma_512_128	0	COMPILE_FAIL	memory_bound	BM=512 with BK=16 - load pattern issue with 1024 threads
+iter030	iter030_wmma_pad4	0	COMPILE_FAIL	latency_bound	Padding +4 causes inf TFLOPS - likely memory alignment issue
+iter031	iter031_wmma_4x2warp	104.074	DISCARD	compute_bound	4x2 warp tiles (4Mx2N warps) - 2% slower than 2x4 layout
+iter032	iter032_wmma_3x4warp	60.146	DISCARD	compute_bound	3x4 warp tiles - register pressure kills performance
+iter033	iter033_wmma_fullunroll	106.076	DISCARD	latency_bound	Explicit unroll hint - no change, compiler already optimizes
+iter034	iter034_wmma_ldmatrix	101.015	DISCARD	memory_bound	Restructured loop order - interleaving hurts more than helps
+iter035	iter035_wmma_256_192	0	COMPILE_FAIL	memory_bound	BM=256 BN=256 BK=16 with 32 warps - B load pattern issue
+iter036	iter036_wmma_1x4_32w	0	COMPILE_FAIL	compute_bound	1x4 warp tiles with 32 warps - warp mapping error
+iter037	iter037_wmma_launch_bounds	0	COMPILE_FAIL	compute_bound	launch_bounds(512,2) causes register spilling and incorrect results
+38	iter038_wmma_nobounds	COMPILE_FAIL	-	register overflow (136 regs x 512 threads > 65536)
+39	iter039_wmma_3x4tiles	DISCARD	23.715	4x2 warp tiles -> poor B-matrix access pattern
+40	iter040_wmma_128_256	BEST	109.413	BM=128 BN=256 better B-locality
+41	iter041_wmma_128_384	COMPILE_FAIL	-	BN=384 doesn't divide N=16384
+42	iter042_wmma_64_256	DISCARD	87.926	BM=64 reduces arithmetic intensity
+43	iter043_wmma_128_512	COMPILE_FAIL	-	register overflow (119 regs x 1024 threads)
+44	iter044_wmma_pipeline	DISCARD	82.968	double-buffering requires smaller tiles
+45	iter045_wmma_192_256	COMPILE_FAIL	-	BM=192 doesn't divide M=16384
+46	iter046_wmma_128_128	DISCARD	98.433	smaller square tile
+47	iter047_wmma_2x2tiles	COMPILE_FAIL	-	register overflow
+48	iter048_wmma_swizzle	DISCARD	109.282	swizzling no improvement
+49	iter049_wmma_64_512	DISCARD	82.008	small BM poor A reuse
+50	iter050_wmma_ldcg	DISCARD	107.345	ldcg hint no improvement
+51	iter051_wmma_bk16	DISCARD	89.184	BK=16 more K iterations
+52	iter052_wmma_interleave	DISCARD	108.366	interleave slightly worse
+53	iter053_wmma_pad0	DISCARD	91.185	+16 padding worse
+54	iter054_wmma_aligned	DISCARD	108.299	smem alignment no change
+55	iter055_wmma_nfirst	DISCARD	107.918	loop order no change
+56	iter056_wmma_256_64	DISCARD	78.736	small BN poor B reuse
+57	iter057_wmma_coopgroups	DISCARD	108.651	coop_groups same perf
+58	iter058_wmma_cluster	DISCARD	108.228	no unroll same perf
+59	iter059_wmma_1x2tiles	DISCARD	79.198	1x2 tiles worse
+60	iter060_wmma_4x2tiles	COMPILE_FAIL	-	warp mapping error
+61	iter061_wmma_fence	DISCARD	107.482	fence no improvement
+62	iter062_wmma_fastmath	DISCARD	107.737	fast_math no improvement
+63	iter063_wmma_regcount	COMPILE_FAIL	-	register spilling
+64	iter064_wmma_bk64_bm64	COMPILE_FAIL	-	load pattern mismatch
+65	iter065_wmma_O2	DISCARD	107.818	O2 same as O3
+66	iter066_wmma_cacheall	DISCARD	107.713	dlcm=ca no improvement
+iter065	iter065_wmma_doublebuf	80.836	DISCARD	latency_bound	Double buffering with BM=64 BN=256 - arithmetic intensity too low
+iter066	iter066_wmma_cpasync	143.560	KEEP	latency_bound	cp.async for async global-to-shared memory transfers - 35% improvement
+iter067	iter067_cpasync_doublebuf	122.579	DISCARD	latency_bound	cp.async + double buffer BK=16 - reduced arithmetic intensity hurts more than pi
+iter068	iter068_cpasync_128_256	134.859	DISCARD	latency_bound	cp.async BM=128 BN=256 - BM=256 BN=128 config is better
+iter069	iter069_cpasync_bk64	0	COMPILE_FAIL	latency_bound	BK=64 exceeds 48KB shared memory limit
+iter070	iter070_cpasync_3x3tiles	142.229	DISCARD	latency_bound	3x3 warp tiles with BM=BN=192 - slight regression
+iter071	iter071_cpasync_nobounds	0	COMPILE_FAIL	latency_bound	Removing bounds checks caused verification failure
+iter072	iter072_cpasync_4x4warps	0	COMPILE_FAIL	latency_bound	4x4 warp layout with 1x1 tiles failed verification - warp mapping issue
+iter073	iter073_cpasync_pad4	0	COMPILE_FAIL	latency_bound	Padding +4 broke timing - likely alignment issue with WMMA stride
+iter074	iter074_cpasync_pad16	129.243	DISCARD	latency_bound	Padding +16 wastes smem bandwidth - regression from +8
+iter075	iter075_cpasync_8warps	138.522	DISCARD	latency_bound	8 warps with 4x4 tiles - register pressure hurts more than reduced warp overhead
+iter076	iter076_cpasync_highoccup	108.431	DISCARD	compute_bound	Smaller tiles BM=128 BN=128 BK=16 for higher occupancy - less compute per memory
+iter077	iter077_pipeline2stage	0	COMPILE_FAIL	compute_bound	2-stage pipeline with BK=16 - verification failed due to indexing bug
+iter078	iter078_cpasync_256x256	0	COMPILE_FAIL	compute_bound	256x256 tile with BK=16 - verification failed, warp indexing bug
+iter079	iter079_cpasync_swizzle	0	COMPILE_FAIL	compute_bound	XOR swizzle breaks WMMA load layout - inf TFLOPS timing error
+iter080	iter080_maxreg128	142.357	DISCARD	compute_bound	maxrregcount=128 capped registers but didnt improve - register spilling hurts
+iter081	iter081_bk48_bm192	129.286	DISCARD	compute_bound	BK=48 BM=192 - reduced parallelism hurts more than larger K helps
+iter082	iter082_unroll_inner	0	COMPILE_FAIL	compute_bound	Removing syncthreads broke correctness - need sync between K iterations
+iter083	iter083_bm128_bk48	0	COMPILE_FAIL	compute_bound	BM=128 BK=48 - load pattern bug with non-divisible thread distribution
+iter084	iter084_bm128_bk64	161.209	KEEP	compute_bound	BM=128 BK=64 - larger K tile increases compute density, 4 WMMA_K ops per iterati
+iter085	iter085_bm128_bk96	0	COMPILE_FAIL	compute_bound	BK=96 exceeds 48KB smem limit
+iter086	iter086_bm128_bk80	0	COMPILE_FAIL	compute_bound	BK=80 load pattern indexing bug - non-divisible row distribution
+iter087	iter087_bm64_bk64	105.800	DISCARD	compute_bound	BM=64 BK=64 - too few warps per block reduces compute efficiency
+iter088	iter088_warp1x8	134.686	DISCARD	compute_bound	Warp tile 1x8 - worse than 2x4, more B-matrix loads per warp
+iter089	iter089_warp4x2	161.552	KEEP	compute_bound	Warp tile 4x2 - better A-matrix reuse per warp, 0.3 TFLOPS improvement
+iter090	iter090_warp3x3	113.965	DISCARD	compute_bound	Warp tile 3x3 with only 4 warps - insufficient parallelism hurts

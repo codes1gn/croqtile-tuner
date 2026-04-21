@@ -1,0 +1,6 @@
+tuning/sm90_NVIDIA_H800_PCIe/cuda/srcs/matmul_f16fp32_16384x16384x16384/opus-4/iter049_wmma_64_512.cu(28): warning #177-D: variable "WARPS_M" was declared but never referenced
+  constexpr int WARPS_M = 2;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+

@@ -1,0 +1,7 @@
+{
+  "task_uid": "triton-f16fp32-16k-tuning-session",
+  "dsl": "triton",
+  "model": "opus-4",
+  "device": "sm90_NVIDIA_H800_PCIe",
+  "status": "running"
+}

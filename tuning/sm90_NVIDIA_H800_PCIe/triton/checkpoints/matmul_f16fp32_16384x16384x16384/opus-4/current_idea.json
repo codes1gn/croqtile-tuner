@@ -1,0 +1,14 @@
+{
+  "schema": "croq-checkpoint-v1",
+  "timestamp": "2026-04-21T06:10:23Z",
+  "dsl": "triton",
+  "shape_key": "matmul_f16fp32_16384x16384x16384",
+  "iter": "iter003_more_stages",
+  "bottleneck": "compute_bound",
+  "idea": "Increase num_stages from 3 to 5 to better hide memory latency with software pipelining",
+  "expected_gain": "+5-15 TFLOPS from better latency hiding",
+  "levers": [
+    "num_stages"
+  ],
+  "status": "PLANNED"
+}

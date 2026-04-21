@@ -1,0 +1,7 @@
+{
+  "task_uid": "croq-tune-cuda-f16fp32-16384x16384x16384-20260420234807",
+  "dsl": "cuda",
+  "model": "opus-4",
+  "device": "sm90_NVIDIA_H800_PCIe",
+  "status": "running"
+}

@@ -12,6 +12,8 @@
 {"ts":"2026-04-18T15:56:22.048Z","tool":"discover_baseline","msg":"Scanning for matmul (croqtile) candidates","level":"info"}
 {"ts":"2026-04-19T08:37:46.877Z","tool":"discover_baseline","msg":"Scanning for matmul (croqtile) candidates","level":"info"}
 {"ts":"2026-04-20T01:22:21.184Z","tool":"discover_baseline","msg":"Scanning for matmul (croqtile) candidates","level":"info"}
+{"ts":"2026-04-20T04:10:07.635Z","tool":"discover_baseline","msg":"Scanning for matmul (croqtile) candidates","level":"info"}
+{"ts":"2026-04-20T09:10:24.966Z","tool":"discover_baseline","msg":"Scanning for matmul (croqtile) candidates","level":"info"}
 {"ts":"2026-04-20T11:05:24.637Z","tool":"discover_baseline","msg":"Scanning for matmul (croqtile) candidates","level":"info"}
 {"ts":"2026-04-20T14:44:25.161Z","tool":"discover_baseline","msg":"Scanning for matmul (croqtile) candidates","level":"info"}
 {"ts":"2026-04-21T01:10:32.480Z","tool":"discover_baseline","msg":"Scanning for matmul (croqtile) candidates","level":"info"}

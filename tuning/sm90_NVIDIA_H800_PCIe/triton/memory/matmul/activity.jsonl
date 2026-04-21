@@ -1,0 +1,2 @@
+{"ts":"2026-04-21T06:05:53.181Z","tool":"discover_baseline","msg":"Scanning for matmul (triton) candidates","level":"info"}
+{"ts":"2026-04-21T06:05:53.201Z","tool":"discover_baseline","msg":"No candidates found — recommend from scratch","level":"info"}
