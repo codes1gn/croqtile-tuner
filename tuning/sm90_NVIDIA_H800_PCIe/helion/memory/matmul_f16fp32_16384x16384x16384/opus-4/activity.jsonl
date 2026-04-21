@@ -24,3 +24,9 @@
 {"ts":"2026-04-21T15:04:20.141Z","tool":"store_round","msg":"Stored iter003_b128_s2: DISCARD 118.34 TFLOPS (round 3)","level":"info"}
 {"ts":"2026-04-21T15:04:38.198Z","tool":"next_iter","msg":"Resolved iter004_b256x128","level":"info"}
 {"ts":"2026-04-21T15:04:38.232Z","tool":"checkpoint_write","msg":"PLANNED iter004_b256x128: Try larger M tile [256,128,64] for better A matrix reuse, keep good config otherwise","level":"info"}
+{"ts":"2026-04-21T15:05:32.926Z","tool":"store_round","msg":"Storing iter004_b256x128 (KEEP 216.06 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T15:05:32.945Z","tool":"store_round","msg":"Stored iter004_b256x128: KEEP 216.06 TFLOPS (round 4)","level":"info"}
+{"ts":"2026-04-21T15:06:24.428Z","tool":"store_round","msg":"Storing iter005_b256x256 (DISCARD 53.80 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T15:06:24.447Z","tool":"store_round","msg":"Stored iter005_b256x256: DISCARD 53.80 TFLOPS (round 5)","level":"info"}
+{"ts":"2026-04-21T15:07:10.234Z","tool":"store_round","msg":"Storing iter006_blockptr (DISCARD 215.85 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T15:07:10.253Z","tool":"store_round","msg":"Stored iter006_blockptr: DISCARD 215.85 TFLOPS (round 6)","level":"info"}

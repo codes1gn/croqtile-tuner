@@ -36,3 +36,8 @@ iter032	iter032_b192x128k128s2_p16	254.85	DISCARD	compute_bound	panel_size=16 si
 iter033	iter033_b192x128k128s2_noswz	193.12	DISCARD	memory_bound	No swizzle has high variance - swizzle is needed
 iter034	iter034_b256x128k128s2	59.35	DISCARD	memory_bound	256x128 with K=128 too much shared memory pressure
 iter035	iter035_b192x96k128s2	201.69	DISCARD	compute_bound	192x96 with K=128 worse than 192x128
+iter036	iter036_b128x128k128s3	234.78	DISCARD	compute_bound	128x128 with K=128 stages=3 worse than 192x128
+iter037	iter037_b192x128k64s5	238.58	DISCARD	compute_bound	stages=5 with K=64 not better than K=128s2
+iter038	iter038_b192x128k128s1	205.53	DISCARD	latency_bound	stages=1 with K=128 not enough pipelining
+iter039	iter039_b192x128k64s6	0	COMPILE_FAIL	memory_bound	stages=6 exceeds shared memory
+iter040	iter040_b192x160k128s2	48.41	DISCARD	memory_bound	160 N tile misaligned

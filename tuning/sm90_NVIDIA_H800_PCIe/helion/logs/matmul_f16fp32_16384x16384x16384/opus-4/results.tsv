@@ -3,3 +3,6 @@ iter000	iter000_cublas	391.6564	KEEP	baseline	cuBLAS reference baseline
 iter001	iter001_baseline	214.00	KEEP	unknown	Initial Helion kernel with block_sizes=[128,128,64], num_warps=8, num_stages=4
 iter002	iter002_small_blocks	65.08	DISCARD	memory_bound	Smaller block_sizes=[64,64,32] hurt compute intensity
 iter003	iter003_b128_s2	118.34	DISCARD	memory_bound	block_sizes=[128,128,32] num_stages=2 - less pipelining hurt
+iter004	iter004_b256x128	216.06	KEEP	memory_bound	Larger M tile [256,128,64] improves A matrix reuse
+iter005	iter005_b256x256	53.80	DISCARD	memory_bound	Too large tiles [256,256,64] hurt occupancy significantly
+iter006	iter006_blockptr	215.85	DISCARD	memory_bound	block_ptr indexing no improvement on this config
