@@ -1,3 +1,11 @@
 iter	tflops	decision	bottleneck	timestamp
 iter001_naive	0.27	KEEP	compute_bound	2026-04-21T02:34:33Z
 iter002_wmma_simple	23.78	KEEP	compute_bound	2026-04-21T02:46:21Z
+iter022	iter022_sparse_mma_f16	38.09	DISCARD	compute_bound	FP16 sparse mma.sp m16n8k32 - wrong fragment layout
+iter028	iter028_sparse_mma_fixed	29.05	DISCARD	compute_bound	mma.sp metadata per-row issue, need reorg
+iter029	iter029_sparse_aligned	29.68	DISCARD	compute_bound	aligned sparsity pattern, MMA fragment debug ongoing
+iter030	iter030_wgmma_sparse	0.93	DISCARD	compute_bound	scalar baseline verifies correctness, too slow for production
+iter031	iter031_cute_wgmma	1.26	DISCARD	compute_bound	scalar baseline, need TMA+warpgroup for WGMMA sparse
+iter032	iter032_smem_tiled	5.66	KEEP	memory_bound	shared memory tiled kernel, 4.5x faster than scalar
+iter033	iter033_big_tiles	2.99	DISCARD	compute_bound	128x128 tiles, too much register pressure
+iter034	iter034_vec_load	3.78	DISCARD	compute_bound	vectorized loads with boundary fallback

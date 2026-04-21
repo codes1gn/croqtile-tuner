@@ -2,3 +2,28 @@
 {"ts":"2026-04-21T02:11:51.948Z","tool":"resume_state","msg":"No tuning artifacts found for cuda/gemm_sp_e4m3fp16_4096x8192x8192","level":"error"}
 {"ts":"2026-04-21T04:36:20.711Z","tool":"next_iter","msg":"Resolved iter020_sparse_wgmma_correct","level":"info"}
 {"ts":"2026-04-21T05:11:05.618Z","tool":"resume_state","msg":"Loading tuning state for cuda/gemm_sp_e4m3fp16_4096x8192x8192","level":"info"}
+{"ts":"2026-04-21T05:22:05.784Z","tool":"store_round","msg":"Storing iter022_sparse_mma_f16 (DISCARD 38.09 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T05:22:05.804Z","tool":"store_round","msg":"Stored iter022_sparse_mma_f16: DISCARD 38.09 TFLOPS (round 22)","level":"info"}
+{"ts":"2026-04-21T05:33:05.658Z","tool":"store_round","msg":"Storing iter028_sparse_mma_fixed (DISCARD 29.05 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T05:33:05.677Z","tool":"store_round","msg":"Stored iter028_sparse_mma_fixed: DISCARD 29.05 TFLOPS (round 23)","level":"info"}
+{"ts":"2026-04-21T05:36:28.466Z","tool":"store_round","msg":"Storing iter029_sparse_aligned (DISCARD 29.68 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T05:36:28.486Z","tool":"store_round","msg":"Stored iter029_sparse_aligned: DISCARD 29.68 TFLOPS (round 24)","level":"info"}
+{"ts":"2026-04-21T05:38:33.575Z","tool":"next_iter","msg":"Resolved iter030_wgmma_sparse","level":"info"}
+{"ts":"2026-04-21T06:14:22.230Z","tool":"next_iter","msg":"Resolved iter031_wgmma_ptx","level":"info"}
+{"ts":"2026-04-21T06:15:00.153Z","tool":"store_round","msg":"Storing iter030_wgmma_sparse (DISCARD 0.93 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T06:15:00.173Z","tool":"store_round","msg":"Stored iter030_wgmma_sparse: DISCARD 0.93 TFLOPS (round 25)","level":"info"}
+{"ts":"2026-04-21T06:19:46.351Z","tool":"store_round","msg":"Storing iter031_cute_wgmma (DISCARD 1.26 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T06:19:46.371Z","tool":"store_round","msg":"Stored iter031_cute_wgmma: DISCARD 1.26 TFLOPS (round 26)","level":"info"}
+{"ts":"2026-04-21T06:20:14.527Z","tool":"next_iter","msg":"Resolved iter032_smem_tiled","level":"info"}
+{"ts":"2026-04-21T06:32:17.278Z","tool":"store_round","msg":"Storing iter032_smem_tiled (KEEP 5.66 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T06:32:17.297Z","tool":"store_round","msg":"Stored iter032_smem_tiled: KEEP 5.66 TFLOPS (round 27)","level":"info"}
+{"ts":"2026-04-21T06:32:44.503Z","tool":"ncu_profile","msg":"Capturing profile: ./tuning/sm90_NVIDIA_H800_PCIe/cuda/bin/gemm_sp_e4m3fp16_4096x8192x8192/opus-4/iter032_smem_tiled --skip-verify","level":"info"}
+{"ts":"2026-04-21T06:32:51.536Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/cuda/bin/gemm_sp_e4m3fp16_4096x8192x8192/opus-4/iter032_smem_tiled -- --skip-verify","level":"info"}
+{"ts":"2026-04-21T06:33:40.377Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/cuda/perf/gemm_sp_e4m3fp16_4096x8192x8192/opus-4/ncu_iter032.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/cuda/perf/gemm_sp_e4m3fp16_4096x8192x8192/opus-4/ncu_iter032.csv","level":"info"}
+{"ts":"2026-04-21T06:33:52.928Z","tool":"profile_extract","msg":"Analyzing iter032_smem_tiled from tuning/sm90_NVIDIA_H800_PCIe/cuda/perf/gemm_sp_e4m3fp16_4096x8192x8192/opus-4/ncu_iter032.csv","level":"info"}
+{"ts":"2026-04-21T06:34:03.113Z","tool":"next_iter","msg":"Resolved iter033_big_tiles","level":"info"}
+{"ts":"2026-04-21T06:36:06.601Z","tool":"store_round","msg":"Storing iter033_big_tiles (DISCARD 2.99 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T06:36:06.621Z","tool":"store_round","msg":"Stored iter033_big_tiles: DISCARD 2.99 TFLOPS (round 28)","level":"info"}
+{"ts":"2026-04-21T06:36:29.441Z","tool":"next_iter","msg":"Resolved iter034_vec_load","level":"info"}
+{"ts":"2026-04-21T06:38:17.118Z","tool":"store_round","msg":"Storing iter034_vec_load (DISCARD 3.78 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T06:38:17.137Z","tool":"store_round","msg":"Stored iter034_vec_load: DISCARD 3.78 TFLOPS (round 29)","level":"info"}
