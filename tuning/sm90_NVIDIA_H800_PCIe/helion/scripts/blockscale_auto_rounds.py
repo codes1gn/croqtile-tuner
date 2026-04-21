@@ -7,7 +7,7 @@ K inner tile BK must be a multiple of GROUP=32 (FP8 blockscale scale granularity
 Scale columns per dot = BK // 32.
 
 Usage (repo root):
-  HELION_AUTOTUNE_EFFORT=none PYTHONPATH=$PWD python3 tuning/.../blockscale_auto_rounds.py --from 251 --to 350
+  HELION_AUTOTUNE_EFFORT=none PYTHONPATH=$PWD python3 tuning/.../blockscale_auto_rounds.py --from 351 --to 500
 
 Round routing: 5–100 legacy GRID; 101–200 EXPANDED; 201–250 PHASE2;
 251–350 PHASE3; 351+ PHASE4 (structural: loop order, K-outer, deeper stages, odd tiles).
@@ -508,8 +508,12 @@ PHASE3_GRID = build_phase3_grid()
 
 def build_phase4_grid() -> list[tuple[int, int, int, int, str, int, str]]:
     """
-    Structural search past iter117 plateau: deeper stages, warps=2, odd tile sizes,
-    fused MN loop permutation (lo1), K-outer accumulation (kmn).
+    Structural search past iter117 plateau: deeper stages, warps=2,
+    fused MN loop permutation (lo1).
+
+    Helion requires each block_sizes entry to be a **power of two** (non-Po2 e.g. 96
+    fails InvalidConfig). K-outer ``kmn`` layout was removed from autogrid: it hits
+    LoopDependencyError on fp32 acc_buf between tile loops (needs a different design).
     """
     seen: set[tuple[int, int, int, int, str, int, str]] = set()
     out: list[tuple[int, int, int, int, str, int, str]] = []
@@ -519,15 +523,20 @@ def build_phase4_grid() -> list[tuple[int, int, int, int, str, int, str]]:
             seen.add(t)
             out.append(t)
 
-    layouts = ("mnk", "lo1", "kmn")
+    # Only mnk / lo1 — kmn template not safe for hl.tile lowering without host refactor
+    layouts = ("mnk", "lo1")
+    # Powers of two only (8192 divisible by each)
     blocks = [
         (128, 128),
-        (96, 96),
-        (160, 160),
-        (112, 112),
         (64, 128),
         (128, 64),
-        (80, 144),
+        (256, 128),
+        (128, 256),
+        (256, 256),
+        (64, 256),
+        (256, 64),
+        (512, 128),
+        (128, 512),
     ]
     warps = (2, 4, 8)
     stages = (3, 4, 5, 6)
@@ -540,18 +549,14 @@ def build_phase4_grid() -> list[tuple[int, int, int, int, str, int, str]]:
         (128, 128, 4, 5, "pointer", 64, "mnk"),
         (128, 128, 4, 6, "pointer", 64, "mnk"),
         (128, 128, 4, 4, "pointer", 64, "lo1"),
-        (128, 128, 4, 4, "pointer", 64, "kmn"),
-        (128, 128, 4, 3, "pointer", 64, "kmn"),
+        (128, 128, 4, 4, "block_ptr", 64, "lo1"),
         # warps=2, BK=64 (more registers / thread)
         (128, 128, 2, 3, "pointer", 64, "mnk"),
         (128, 128, 2, 3, "block_ptr", 64, "mnk"),
         (128, 128, 2, 4, "pointer", 64, "mnk"),
-        # 96² and BK=64 (user request)
-        (96, 96, 4, 3, "pointer", 64, "mnk"),
-        (96, 96, 4, 3, "pointer", 64, "lo1"),
-        # non-power-of-2 larger tiles
-        (160, 160, 4, 3, "pointer", 64, "mnk"),
-        (160, 160, 4, 3, "block_ptr", 64, "mnk"),
+        # larger Po2 tiles
+        (256, 256, 4, 3, "pointer", 64, "mnk"),
+        (256, 256, 4, 3, "block_ptr", 64, "mnk"),
     ]
     for t in priority:
         add(t)
@@ -592,8 +597,7 @@ def format_kernel(
         ncol=ncol,
         lo_line=lo_line,
     )
-    if layout == "kmn":
-        return KERNEL_TEMPLATE_K_OUTER.format(**common)
+    # layout "kmn" (K-outer) is not emitted by build_phase4_grid; legacy iter files may still say kmn.
     return KERNEL_TEMPLATE.format(**common)
 
 
