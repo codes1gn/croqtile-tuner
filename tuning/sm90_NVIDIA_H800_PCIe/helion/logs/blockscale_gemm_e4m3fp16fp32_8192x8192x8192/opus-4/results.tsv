@@ -102,3 +102,37 @@ iter097	iter097_m64n64_w4_s2_block	73.47	DISCARD	compute_bound	iter097_autogrid:
 iter098	iter098_m128n128_w4_s2_block	122.62	DISCARD	compute_bound	iter098_autogrid: BM=128 BN=128 warps=4 stages=2 indexing=block_ptr
 iter099	iter099_m256n256_w4_s2_block	14.03	DISCARD	compute_bound	iter099_autogrid: BM=256 BN=256 warps=4 stages=2 indexing=block_ptr
 iter100	iter100_m64n128_w4_s2_point	29.07	DISCARD	compute_bound	iter100_autogrid: BM=64 BN=128 warps=4 stages=2 indexing=pointer
+iter101	iter101_m128n128_w4_s1_bk32_block	114.93	DISCARD	compute_bound	iter101_autogrid: BM=128 BN=128 warps=4 stages=1 indexing=block_ptr Ktile=32 nco
+iter102	iter102_m128n128_w4_s1_bk64_block	144.58	KEEP	compute_bound	iter102_autogrid: BM=128 BN=128 warps=4 stages=1 indexing=block_ptr Ktile=64 nco
+iter103	iter103_m128n128_w4_s1_bk128_block	118.29	DISCARD	compute_bound	iter103_autogrid: BM=128 BN=128 warps=4 stages=1 indexing=block_ptr Ktile=128 nc
+iter104	iter104_m128n128_w4_s1_bk32_point	41.84	DISCARD	compute_bound	iter104_autogrid: BM=128 BN=128 warps=4 stages=1 indexing=pointer Ktile=32 ncol=
+iter105	iter105_m128n128_w4_s1_bk64_point	146.50	KEEP	compute_bound	iter105_autogrid: BM=128 BN=128 warps=4 stages=1 indexing=pointer Ktile=64 ncol=
+iter106	iter106_m128n128_w4_s1_bk128_point	106.00	DISCARD	compute_bound	iter106_autogrid: BM=128 BN=128 warps=4 stages=1 indexing=pointer Ktile=128 ncol
+iter107	iter107_m128n128_w4_s2_bk32_block	123.38	DISCARD	compute_bound	iter107_autogrid: BM=128 BN=128 warps=4 stages=2 indexing=block_ptr Ktile=32 nco
+iter108	iter108_m128n128_w4_s2_bk64_block	158.22	KEEP	compute_bound	iter108_autogrid: BM=128 BN=128 warps=4 stages=2 indexing=block_ptr Ktile=64 nco
+iter109	iter109_m128n128_w4_s2_bk128_block	119.40	DISCARD	compute_bound	iter109_autogrid: BM=128 BN=128 warps=4 stages=2 indexing=block_ptr Ktile=128 nc
+iter110	iter110_m128n128_w4_s2_bk32_point	125.88	DISCARD	compute_bound	iter110_autogrid: BM=128 BN=128 warps=4 stages=2 indexing=pointer Ktile=32 ncol=
+iter111	iter111_m128n128_w4_s2_bk64_point	157.14	DISCARD	compute_bound	iter111_autogrid: BM=128 BN=128 warps=4 stages=2 indexing=pointer Ktile=64 ncol=
+iter112	iter112_m128n128_w4_s2_bk128_point	122.82	DISCARD	compute_bound	iter112_autogrid: BM=128 BN=128 warps=4 stages=2 indexing=pointer Ktile=128 ncol
+iter113	iter113_m128n128_w4_s3_bk32_block	132.76	DISCARD	compute_bound	iter113_autogrid: BM=128 BN=128 warps=4 stages=3 indexing=block_ptr Ktile=32 nco
+iter114	iter114_m128n128_w4_s3_bk64_block	68.51	DISCARD	compute_bound	iter114_autogrid: BM=128 BN=128 warps=4 stages=3 indexing=block_ptr Ktile=64 nco
+iter115	iter115_m128n128_w4_s3_bk128_block	127.16	DISCARD	compute_bound	iter115_autogrid: BM=128 BN=128 warps=4 stages=3 indexing=block_ptr Ktile=128 nc
+iter116	iter116_m128n128_w4_s3_bk32_point	133.05	DISCARD	compute_bound	iter116_autogrid: BM=128 BN=128 warps=4 stages=3 indexing=pointer Ktile=32 ncol=
+iter117	iter117_m128n128_w4_s3_bk64_point	162.12	KEEP	compute_bound	iter117_autogrid: BM=128 BN=128 warps=4 stages=3 indexing=pointer Ktile=64 ncol=
+iter118	iter118_m128n128_w4_s3_bk128_point	128.57	DISCARD	compute_bound	iter118_autogrid: BM=128 BN=128 warps=4 stages=3 indexing=pointer Ktile=128 ncol
+iter119	iter119_m128n128_w4_s4_bk32_block	130.19	DISCARD	compute_bound	iter119_autogrid: BM=128 BN=128 warps=4 stages=4 indexing=block_ptr Ktile=32 nco
+iter120	iter120_m128n128_w4_s4_bk64_block	153.70	DISCARD	compute_bound	iter120_autogrid: BM=128 BN=128 warps=4 stages=4 indexing=block_ptr Ktile=64 nco
+iter121	iter121_m128n128_w4_s4_bk128_block	76.97	DISCARD	compute_bound	iter121_autogrid: BM=128 BN=128 warps=4 stages=4 indexing=block_ptr Ktile=128 nc
+iter122	iter122_m128n128_w4_s4_bk32_point	130.13	DISCARD	compute_bound	iter122_autogrid: BM=128 BN=128 warps=4 stages=4 indexing=pointer Ktile=32 ncol=
+iter123	iter123_m128n128_w4_s4_bk64_point	157.05	DISCARD	compute_bound	iter123_autogrid: BM=128 BN=128 warps=4 stages=4 indexing=pointer Ktile=64 ncol=
+iter124	iter124_m128n128_w4_s4_bk128_point	87.01	DISCARD	compute_bound	iter124_autogrid: BM=128 BN=128 warps=4 stages=4 indexing=pointer Ktile=128 ncol
+iter125	iter125_m128n128_w8_s1_bk32_block	88.51	DISCARD	compute_bound	iter125_autogrid: BM=128 BN=128 warps=8 stages=1 indexing=block_ptr Ktile=32 nco
+iter126	iter126_m128n128_w8_s1_bk64_block	89.51	DISCARD	compute_bound	iter126_autogrid: BM=128 BN=128 warps=8 stages=1 indexing=block_ptr Ktile=64 nco
+iter127	iter127_m128n128_w8_s1_bk128_block	106.15	DISCARD	compute_bound	iter127_autogrid: BM=128 BN=128 warps=8 stages=1 indexing=block_ptr Ktile=128 nc
+iter128	iter128_m128n128_w8_s1_bk32_point	87.85	DISCARD	compute_bound	iter128_autogrid: BM=128 BN=128 warps=8 stages=1 indexing=pointer Ktile=32 ncol=
+iter129	iter129_m128n128_w8_s1_bk64_point	34.32	DISCARD	compute_bound	iter129_autogrid: BM=128 BN=128 warps=8 stages=1 indexing=pointer Ktile=64 ncol=
+iter130	iter130_m128n128_w8_s1_bk128_point	109.82	DISCARD	compute_bound	iter130_autogrid: BM=128 BN=128 warps=8 stages=1 indexing=pointer Ktile=128 ncol
+iter131	iter131_m128n128_w8_s2_bk32_block	89.42	DISCARD	compute_bound	iter131_autogrid: BM=128 BN=128 warps=8 stages=2 indexing=block_ptr Ktile=32 nco
+iter132	iter132_m128n128_w8_s2_bk64_block	40.85	DISCARD	compute_bound	iter132_autogrid: BM=128 BN=128 warps=8 stages=2 indexing=block_ptr Ktile=64 nco
+iter133	iter133_m128n128_w8_s2_bk128_block	116.52	DISCARD	compute_bound	iter133_autogrid: BM=128 BN=128 warps=8 stages=2 indexing=block_ptr Ktile=128 nc
+iter134	iter134_m128n128_w8_s2_bk32_point	86.13	DISCARD	compute_bound	iter134_autogrid: BM=128 BN=128 warps=8 stages=2 indexing=pointer Ktile=32 ncol=

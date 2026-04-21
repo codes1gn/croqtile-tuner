@@ -74,3 +74,21 @@
 {"ts":"2026-04-21T12:28:54.787Z","tool":"next_iter","msg":"Resolved iter019_noswizzle","level":"info"}
 {"ts":"2026-04-21T12:29:32.181Z","tool":"store_round","msg":"Storing iter019_noswizzle (DISCARD 141.76 TFLOPS)","level":"info"}
 {"ts":"2026-04-21T12:29:32.200Z","tool":"store_round","msg":"Stored iter019_noswizzle: DISCARD 141.76 TFLOPS (round 19)","level":"info"}
+{"ts":"2026-04-21T12:29:53.422Z","tool":"next_iter","msg":"Resolved iter020_b64x192s4","level":"info"}
+{"ts":"2026-04-21T12:30:37.898Z","tool":"store_round","msg":"Storing iter020_b64x192s4 (DISCARD 252.47 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:30:37.917Z","tool":"store_round","msg":"Stored iter020_b64x192s4: DISCARD 252.47 TFLOPS (round 20)","level":"info"}
+{"ts":"2026-04-21T12:30:38.587Z","tool":"next_iter","msg":"Resolved iter021_panel9","level":"info"}
+{"ts":"2026-04-21T12:31:14.549Z","tool":"store_round","msg":"Storing iter021_panel9 (DISCARD 211.38 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:31:14.568Z","tool":"store_round","msg":"Stored iter021_panel9: DISCARD 211.38 TFLOPS (round 21)","level":"info"}
+{"ts":"2026-04-21T12:31:37.550Z","tool":"next_iter","msg":"Resolved iter022_b192x192","level":"info"}
+{"ts":"2026-04-21T12:32:16.509Z","tool":"store_round","msg":"Storing iter022_b192x192 (DISCARD 131.52 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:32:16.528Z","tool":"store_round","msg":"Stored iter022_b192x192: DISCARD 131.52 TFLOPS (round 22)","level":"info"}
+{"ts":"2026-04-21T12:32:17.234Z","tool":"next_iter","msg":"Resolved iter023_k64s3","level":"info"}
+{"ts":"2026-04-21T12:32:48.877Z","tool":"store_round","msg":"Storing iter023_k64s3 (DISCARD 336.37 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:32:48.895Z","tool":"store_round","msg":"Stored iter023_k64s3: DISCARD 336.37 TFLOPS (round 23)","level":"info"}
+{"ts":"2026-04-21T12:32:49.653Z","tool":"next_iter","msg":"Resolved iter024_threads192","level":"info"}
+{"ts":"2026-04-21T12:33:27.203Z","tool":"store_round","msg":"Storing iter024_threads192 (DISCARD 239.11 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:33:27.222Z","tool":"store_round","msg":"Stored iter024_threads192: DISCARD 239.11 TFLOPS (round 24)","level":"info"}
+{"ts":"2026-04-21T12:33:27.995Z","tool":"next_iter","msg":"Resolved iter025_k32s5","level":"info"}
+{"ts":"2026-04-21T12:34:04.032Z","tool":"store_round","msg":"Storing iter025_k32s5 (DISCARD 259.91 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:34:04.050Z","tool":"store_round","msg":"Stored iter025_k32s5: DISCARD 259.91 TFLOPS (round 25)","level":"info"}

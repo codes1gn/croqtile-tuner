@@ -14,3 +14,12 @@ iter011	iter011_b128x256_no_swizzle	218.27	DISCARD	memory_bound	Disabling swizzl
 iter012	iter012_b128x256_k32_s5	299.43	DISCARD	compute_bound	5 stages worse than 4 stages for this tile configuration
 iter013	iter013_b128x256_k32_s3	162.44	DISCARD	memory_bound	3 stages much worse than 4 stages for 128x256 tiles
 iter014	iter014_panel12	310.86	DISCARD	compute_bound	panel_size=12 slightly worse than panel_size=10
+iter015	iter015_t128	67.05	DISCARD	latency_bound	128 threads severely limits parallelism - 256 is optimal
+iter016	iter016_b256x128	299.26	DISCARD	compute_bound	256x128 tall tiles worse than 128x256 wide tiles
+iter017	iter017_k48	77.66	DISCARD	memory_bound	K=48 triggers TMA fallback warning and bad performance
+iter018	iter018_k16	130.44	DISCARD	latency_bound	K=16 with 6 stages worse than K=32 with 4 stages
+iter019	iter019_parallel_copy	261.09	DISCARD	compute_bound	T.Parallel copy worse than T.copy
+iter020	iter020_b96x256	0	COMPILE_FAIL	compute_bound	96x256 fails MMA layout constraint (warp_col_tiles % 8)
+iter021	iter021_b160x256	0	COMPILE_FAIL	compute_bound	160x256 fails MMA layout constraint (warp_row_tiles % 16)
+iter022	iter022_b144x256	0	COMPILE_FAIL	compute_bound	144x256 fails WGMMA warp_row_tiles constraint
+iter023	iter023_b128x192	217.51	DISCARD	compute_bound	128x192 tiles worse than 128x256

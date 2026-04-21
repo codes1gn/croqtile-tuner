@@ -19,3 +19,9 @@ iter016	iter016_b128x224	154.46	DISCARD	compute_bound	128x224 severe occupancy d
 iter017	iter017_panel4	318.85	DISCARD	compute_bound	panel_size=4 reduces L2 locality
 iter018	iter018_b128x128k128	226.82	DISCARD	compute_bound	128x128 square tiles less efficient
 iter019	iter019_noswizzle	141.76	DISCARD	memory_bound	No swizzle hurts L2 locality badly
+iter020	iter020_b64x192s4	252.47	DISCARD	compute_bound	64x192 with stages=4 insufficient compute density
+iter021	iter021_panel9	211.38	DISCARD	memory_bound	panel_size=9 worsens L2 locality
+iter022	iter022_b192x192	131.52	DISCARD	compute_bound	192x192 severe occupancy drop
+iter023	iter023_k64s3	336.37	DISCARD	compute_bound	BLOCK_K=64 stages=3 close but lower than k128s2
+iter024	iter024_threads192	239.11	DISCARD	compute_bound	threads=192 causes work imbalance
+iter025	iter025_k32s5	259.91	DISCARD	compute_bound	BLOCK_K=32 too many inner loop iterations

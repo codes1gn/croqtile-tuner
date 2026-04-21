@@ -3,10 +3,11 @@
 Autonomous STORE rounds for Helion blockscale GEMM (8192^3).
 Generates iterNNN_<tag>.py from a template, VERIFY+bench, then calls store_round.sh.
 
-Usage (repo root):
-  HELION_AUTOTUNE_EFFORT=none PYTHONPATH=$PWD python3 tuning/.../blockscale_auto_rounds.py --from 5 --to 100
+K inner tile BK must be a multiple of GROUP=32 (FP8 blockscale scale granularity).
+Scale columns per dot = BK // 32.
 
-Requires: helion, CUDA; store_round.sh + detect_gpu.
+Usage (repo root):
+  HELION_AUTOTUNE_EFFORT=none PYTHONPATH=$PWD python3 tuning/.../blockscale_auto_rounds.py --from 101 --to 200
 """
 from __future__ import annotations
 
@@ -91,14 +92,14 @@ def verify() -> bool:
         out = torch.empty((m, n), dtype=torch.float16, device=a.device)
         for t_m, t_n in hl.tile([m, n]):
             acc = hl.zeros([t_m, t_n], dtype=torch.float32)
-            for t_k in hl.tile(kd, block_size=32):
-                kb = t_k.begin // 32
+            for t_k in hl.tile(kd, block_size={bk}):
+                kb0 = t_k.begin // 32
                 acc = hl.dot_scaled(
                     a[t_m, t_k],
-                    a_s[t_m, kb : kb + 1],
+                    a_s[t_m, kb0 : kb0 + {ncol}],
                     "e4m3",
                     b[t_k, t_n],
-                    b_s[t_n, kb : kb + 1],
+                    b_s[t_n, kb0 : kb0 + {ncol}],
                     "e4m3",
                     acc=acc,
                     out_dtype=torch.float32,
@@ -137,14 +138,14 @@ def bench(warmup: int = 3, iters: int = 12) -> float:
         out = torch.empty((m, n), dtype=torch.float16, device=a.device)
         for t_m, t_n in hl.tile([m, n]):
             acc = hl.zeros([t_m, t_n], dtype=torch.float32)
-            for t_k in hl.tile(kd, block_size=32):
-                kb = t_k.begin // 32
+            for t_k in hl.tile(kd, block_size={bk}):
+                kb0 = t_k.begin // 32
                 acc = hl.dot_scaled(
                     a[t_m, t_k],
-                    a_s[t_m, kb : kb + 1],
+                    a_s[t_m, kb0 : kb0 + {ncol}],
                     "e4m3",
                     b[t_k, t_n],
-                    b_s[t_n, kb : kb + 1],
+                    b_s[t_n, kb0 : kb0 + {ncol}],
                     "e4m3",
                     acc=acc,
                     out_dtype=torch.float32,
@@ -182,49 +183,83 @@ if __name__ == "__main__":
         bench()
 '''
 
-# Deterministic search grid (BM, BN, warps, stages, indexing, short_tag)
+# Legacy grid (rounds 5–100): BK always 32 → ncol=1
 GRID = [
-    (64, 64, 4, 1, "pointer"),
-    (64, 128, 4, 1, "pointer"),
-    (128, 64, 4, 1, "pointer"),
-    (128, 128, 4, 1, "pointer"),
-    (128, 256, 4, 1, "pointer"),
-    (256, 128, 4, 1, "pointer"),
-    (256, 256, 4, 1, "pointer"),
-    (64, 256, 4, 1, "pointer"),
-    (256, 64, 4, 1, "pointer"),
-    (64, 64, 8, 1, "pointer"),
-    (64, 128, 8, 1, "pointer"),
-    (128, 64, 8, 1, "pointer"),
-    (128, 128, 8, 1, "pointer"),
-    (128, 256, 8, 1, "pointer"),
-    (256, 128, 8, 1, "pointer"),
-    (256, 256, 8, 1, "pointer"),
-    (64, 64, 4, 1, "block_ptr"),
-    (64, 128, 4, 1, "block_ptr"),
-    (128, 64, 4, 1, "block_ptr"),
-    (128, 128, 4, 1, "block_ptr"),
-    (128, 256, 4, 1, "block_ptr"),
-    (256, 128, 4, 1, "block_ptr"),
-    (256, 256, 4, 1, "block_ptr"),
-    (64, 64, 8, 1, "block_ptr"),
-    (128, 128, 8, 1, "block_ptr"),
-    (256, 256, 8, 1, "block_ptr"),
-    (64, 64, 4, 2, "block_ptr"),
-    (128, 128, 4, 2, "block_ptr"),
-    (256, 256, 4, 2, "block_ptr"),
-    (64, 128, 4, 2, "pointer"),
-    (128, 64, 4, 2, "pointer"),
-    (128, 256, 4, 2, "pointer"),
-    (256, 128, 4, 2, "pointer"),
+    (64, 64, 4, 1, "pointer", 32),
+    (64, 128, 4, 1, "pointer", 32),
+    (128, 64, 4, 1, "pointer", 32),
+    (128, 128, 4, 1, "pointer", 32),
+    (128, 256, 4, 1, "pointer", 32),
+    (256, 128, 4, 1, "pointer", 32),
+    (256, 256, 4, 1, "pointer", 32),
+    (64, 256, 4, 1, "pointer", 32),
+    (256, 64, 4, 1, "pointer", 32),
+    (64, 64, 8, 1, "pointer", 32),
+    (64, 128, 8, 1, "pointer", 32),
+    (128, 64, 8, 1, "pointer", 32),
+    (128, 128, 8, 1, "pointer", 32),
+    (128, 256, 8, 1, "pointer", 32),
+    (256, 128, 8, 1, "pointer", 32),
+    (256, 256, 8, 1, "pointer", 32),
+    (64, 64, 4, 1, "block_ptr", 32),
+    (64, 128, 4, 1, "block_ptr", 32),
+    (128, 64, 4, 1, "block_ptr", 32),
+    (128, 128, 4, 1, "block_ptr", 32),
+    (128, 256, 4, 1, "block_ptr", 32),
+    (256, 128, 4, 1, "block_ptr", 32),
+    (256, 256, 4, 1, "block_ptr", 32),
+    (64, 64, 8, 1, "block_ptr", 32),
+    (128, 128, 8, 1, "block_ptr", 32),
+    (256, 256, 8, 1, "block_ptr", 32),
+    (64, 64, 4, 2, "block_ptr", 32),
+    (128, 128, 4, 2, "block_ptr", 32),
+    (256, 256, 4, 2, "block_ptr", 32),
+    (64, 128, 4, 2, "pointer", 32),
+    (128, 64, 4, 2, "pointer", 32),
+    (128, 256, 4, 2, "pointer", 32),
+    (256, 128, 4, 2, "pointer", 32),
 ]
 
 
-def spec_for_round(r: int) -> tuple[int, int, int, int, str, str]:
-    g = GRID[(r - 5) % len(GRID)]
-    bm, bn, nw, st, ix = g
-    tag = f"m{bm}n{bn}_w{nw}_s{st}_{ix[:5]}"
-    return bm, bn, nw, st, ix, tag
+def build_expanded_grid() -> list[tuple[int, int, int, int, str, int]]:
+    """Rich search for rounds >= 101: asymmetric MN, warps through 16, stages 1–4, BK 32|64|128."""
+    blocks = [
+        (128, 128),  # near current best
+        (64, 256),
+        (256, 64),
+        (128, 256),
+        (256, 128),
+        (64, 128),
+        (128, 64),
+        (256, 256),
+    ]
+    warps = [4, 8, 16]
+    stages = [1, 2, 3, 4]
+    idxs = ["block_ptr", "pointer"]
+    bks = [32, 64, 128]
+    grid: list[tuple[int, int, int, int, str, int]] = []
+    for bm, bn in blocks:
+        for nw in warps:
+            for st in stages:
+                for ix in idxs:
+                    for bk in bks:
+                        grid.append((bm, bn, nw, st, ix, bk))
+    return grid
+
+
+EXPANDED_GRID = build_expanded_grid()
+
+
+def spec_for_round(r: int) -> tuple[int, int, int, int, str, int, int, str]:
+    if r < 101:
+        g = GRID[(r - 5) % len(GRID)]
+    else:
+        g = EXPANDED_GRID[(r - 101) % len(EXPANDED_GRID)]
+    bm, bn, nw, st, ix, bk = g
+    assert bk in (32, 64, 128) and bk % 32 == 0
+    ncol = bk // 32
+    tag = f"m{bm}n{bn}_w{nw}_s{st}_bk{bk}_{ix[:5]}"
+    return bm, bn, nw, st, ix, bk, ncol, tag
 
 
 def run_one(
@@ -234,8 +269,11 @@ def run_one(
     shape_key: str,
     model: str,
 ) -> None:
-    bm, bn, nw, st, ix, tag = spec_for_round(rnd)
-    doc = f"iter{rnd:03d}_autogrid: BM={bm} BN={bn} warps={nw} stages={st} indexing={ix}"
+    bm, bn, nw, st, ix, bk, ncol, tag = spec_for_round(rnd)
+    doc = (
+        f"iter{rnd:03d}_autogrid: BM={bm} BN={bn} warps={nw} stages={st} "
+        f"indexing={ix} Ktile={bk} ncol={ncol}"
+    )
     src = KERNEL_TEMPLATE.format(
         doc=doc,
         bm=bm,
@@ -243,6 +281,8 @@ def run_one(
         nw=nw,
         st=st,
         ix=ix,
+        bk=bk,
+        ncol=ncol,
     )
     fname = f"iter{rnd:03d}_{tag}.py"
     path = out_dir / fname
@@ -257,7 +297,7 @@ def run_one(
         env=env,
         capture_output=True,
         text=True,
-        timeout=600,
+        timeout=900,
     )
     out = proc.stdout + proc.stderr
     print(out[-2000:] if len(out) > 2000 else out)
@@ -330,7 +370,6 @@ def run_one(
         )
         return
     tflops = float(tf.group(1))
-    # Compare to current best from results.tsv (simple read)
     tsv = REPO / f"tuning/{gpu}/helion/logs/{shape_key}/{model}/results.tsv"
     best = 0.0
     if tsv.exists():
@@ -410,6 +449,11 @@ def main() -> None:
         [str(REPO / ".cursor/skills/cursor-croq-tune/tools/detect_gpu.sh")],
         text=True,
     ).strip()
+    print(
+        f"[blockscale_auto_rounds] EXPANDED_GRID size = {len(EXPANDED_GRID)} "
+        f"(rounds>=101 cycle this list)",
+        flush=True,
+    )
     for rnd in range(args.from_r, args.to_r + 1):
         print(f"\n=== ROUND {rnd} ===", flush=True)
         run_one(rnd, out_dir, gpu, args.shape_key, args.model)
