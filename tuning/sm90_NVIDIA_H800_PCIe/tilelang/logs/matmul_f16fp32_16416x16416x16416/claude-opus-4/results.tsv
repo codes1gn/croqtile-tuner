@@ -30,3 +30,8 @@ iter027	iter027_panel9	318.41	KEEP	compute_bound	panel_size=9 beats panel_size=1
 iter028	iter028_panel11	309.51	DISCARD	compute_bound	panel_size=11 worse than panel_size=9
 iter029	iter029_panel7	317.94	DISCARD	compute_bound	panel_size=7 slightly worse than panel_size=9
 iter030	iter030_panel9_k64	312.88	DISCARD	compute_bound	K=64 with 3 stages worse than K=32 with 4 stages
+iter031	iter031_b256x128_panel9	296.73	DISCARD	compute_bound	256x128 with panel_size=9 worse than 128x256
+iter032	iter032_panel9_s5	309.78	DISCARD	compute_bound	5 stages with panel_size=9 worse than 4 stages
+iter033	iter033_panel6	329.07	KEEP	compute_bound	panel_size=6 with 4 stages - new best
+iter034	iter033_panel5	265.59	DISCARD	compute_bound	panel_size=5 worse than panel_size=6
+iter035	iter035_panel4	268.98	DISCARD	compute_bound	panel_size=4 worse than panel_size=6
