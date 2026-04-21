@@ -4,3 +4,5 @@ iter001	iter001_base_blockscale	100.21	KEEP	memory_bound	Initial TileLang blocks
 iter002	iter002_tcore_gemm	317.01	KEEP	memory_bound	Optimal 128x128x64 tile config with WGMMA, 3-stage pipeline, 2D rasterization sw
 iter003	iter003_occupancy_tune	338.57	KEEP	compute_bound	128x192x64 tiles with 3 stages for better WGMMA utilization
 iter004	iter004_panel_tune	360.17	KEEP	compute_bound	128x192x64 tiles, 4 stages, panel_size=10 for better L2 locality
+iter005	iter005_bk128_tune	363.89	KEEP	compute_bound	Larger BLOCK_K=128 reduces K loop iterations, 2 stages, panel=8
+iter006	iter006_best_sweep	364.56	KEEP	compute_bound	128x192x128 s=2 p=10 from comprehensive 162-config sweep

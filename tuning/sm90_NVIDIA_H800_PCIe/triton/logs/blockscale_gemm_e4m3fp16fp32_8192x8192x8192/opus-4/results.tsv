@@ -12,3 +12,24 @@ iter018	iter018_evict_last	0.0	COMPILE_FAIL	compute_bound	evict_last policy caus
 iter019	iter019_nomask	0.0	COMPILE_FAIL	compute_bound	no-mask version fails verification
 iter020	iter020_num_ctas	0.0	COMPILE_FAIL	compute_bound	num_ctas parameter causes verification failure
 iter021	iter021_splitk	0.0	COMPILE_FAIL	compute_bound	split-K has scaling correctness issue
+iter024	iter024_stg2	208.08	DISCARD	pipeline_bound	2-stage pipeline variant vs 3-stage baseline
+iter025	iter025_swaptile	71.26	DISCARD	memory_bound	swapped 128x256 tile dimension
+iter026	iter026_bigtile	0.0	COMPILE_FAIL	unknown	256x256 tile too big - register spill
+iter027	iter027_bk64s4	196.61	DISCARD	compute_bound	smaller BLOCK_K=64 with 4 stages
+iter028	iter028_smalltile	104.67	DISCARD	compute_bound	128x128 tile for more CTAs
+iter029	iter029_gm16	228.09	DISCARD	compute_bound	GROUP_M=16 for larger swizzle
+iter030	iter030_s5	230.69	DISCARD	compute_bound	5 stages for deeper pipeline
+iter031	iter031_w32	217.58	DISCARD	compute_bound	32 warps for more parallelism
+iter032	iter032_bk256	233.28	KEEP	compute_bound	BLOCK_K=256 for larger K-tile
+iter033	iter033_bk256s3	242.20	KEEP	compute_bound	BLOCK_K=256 with 3 stages
+iter034	iter034_bk256w8	236.56	DISCARD	compute_bound	BLOCK_K=256 with 8 warps
+iter035	iter035_smallbk256	143.48	DISCARD	compute_bound	128x128 tile with BLOCK_K=256
+iter036	iter036_asymbk256	82.17	DISCARD	memory_bound	128x256 tile with BLOCK_K=256
+iter037	iter037_bk256s4	0.0	COMPILE_FAIL	unknown	BLOCK_K=256 with 4 stages exceeds smem
+iter038	iter038_bk256gm4	243.99	KEEP	compute_bound	BLOCK_K=256 GROUP_M=4
+iter039	iter039_bk256w8	244.29	KEEP	compute_bound	BLOCK_K=256 8 warps 3 stages
+iter040	iter040_bk256gm16	229.90	DISCARD	memory_bound	BLOCK_K=256 GROUP_M=16
+iter041	iter041_w8gm4	244.38	DISCARD	compute_bound	8 warps + GROUP_M=4
+iter042	iter042_w4	156.52	DISCARD	compute_bound	4 warps too few
+iter044	iter044_w12	0.0	COMPILE_FAIL	unknown	12 warps compilation error
+iter043	iter043_narrowtile	295.84	KEEP	compute_bound	256x64 tile with BLOCK_K=256

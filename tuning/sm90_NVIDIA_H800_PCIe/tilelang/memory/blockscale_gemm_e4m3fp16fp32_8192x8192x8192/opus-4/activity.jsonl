@@ -21,3 +21,7 @@
 {"ts":"2026-04-21T10:56:32.989Z","tool":"store_round","msg":"Stored iter003_occupancy_tune: KEEP 338.57 TFLOPS (round 3)","level":"info"}
 {"ts":"2026-04-21T10:59:16.305Z","tool":"store_round","msg":"Storing iter004_panel_tune (KEEP 360.17 TFLOPS)","level":"info"}
 {"ts":"2026-04-21T10:59:16.325Z","tool":"store_round","msg":"Stored iter004_panel_tune: KEEP 360.17 TFLOPS (round 4)","level":"info"}
+{"ts":"2026-04-21T11:01:55.534Z","tool":"store_round","msg":"Storing iter005_bk128_tune (KEEP 363.89 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T11:01:55.553Z","tool":"store_round","msg":"Stored iter005_bk128_tune: KEEP 363.89 TFLOPS (round 5)","level":"info"}
+{"ts":"2026-04-21T11:12:46.660Z","tool":"store_round","msg":"Storing iter006_best_sweep (KEEP 364.56 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T11:12:46.678Z","tool":"store_round","msg":"Stored iter006_best_sweep: KEEP 364.56 TFLOPS (round 6)","level":"info"}

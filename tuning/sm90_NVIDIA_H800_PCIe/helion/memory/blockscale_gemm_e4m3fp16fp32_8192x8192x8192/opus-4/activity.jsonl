@@ -7,3 +7,4 @@
 {"ts":"2026-04-21T10:52:13.685Z","tool":"store_round","msg":"Storing iter000_cublas (KEEP 453.5948 TFLOPS)","level":"info"}
 {"ts":"2026-04-21T10:52:13.704Z","tool":"store_round","msg":"Stored iter000_cublas: KEEP 453.5948 TFLOPS (round 0)","level":"info"}
 {"ts":"2026-04-21T10:52:13.715Z","tool":"store_baseline","msg":"Stored iter000_cublas: 453.5948 TFLOPS (baseline)","level":"info"}
+{"ts":"2026-04-21T11:11:10.105Z","tool":"resume_state","msg":"Loading tuning state for helion/blockscale_gemm_e4m3fp16fp32_8192x8192x8192","level":"info"}
