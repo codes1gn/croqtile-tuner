@@ -112,25 +112,63 @@ async def _run_scan() -> None:
 
 
 class TuningDirWatcher:
-    """Manages a watchdog Observer on the tuning directory."""
+    """Manages a watchdog Observer on the tuning directory.
+    
+    Also runs an internal periodic scanner that triggers every PERIODIC_SCAN_INTERVAL_SEC
+    to catch changes that watchdog might miss (e.g., git checkout, bulk cp operations).
+    This internal scanner is always enabled and cannot be disabled by the user.
+    """
+
+    PERIODIC_SCAN_INTERVAL_SEC: float = 30.0  # Full scan every 30 seconds
 
     def __init__(self, tuning_dir: Path) -> None:
         self._tuning_dir = tuning_dir
         self._observer: Observer | None = None
+        self._loop: asyncio.AbstractEventLoop | None = None
+        self._periodic_task: asyncio.Task | None = None
+        self._stop_event: asyncio.Event | None = None
 
     def start(self, loop: asyncio.AbstractEventLoop) -> None:
+        self._loop = loop
+        
         if not self._tuning_dir.exists():
-            logger.info("File watcher: tuning dir %s does not exist, skipping", self._tuning_dir)
-            return
+            logger.info("File watcher: tuning dir %s does not exist, skipping watchdog", self._tuning_dir)
+        else:
+            handler = _TuningDirHandler(loop, debounce_sec=2.0)
+            self._observer = Observer()
+            self._observer.schedule(handler, str(self._tuning_dir), recursive=True)
+            self._observer.daemon = True
+            self._observer.start()
+            logger.info("File watcher started on %s", self._tuning_dir)
 
-        handler = _TuningDirHandler(loop, debounce_sec=2.0)
-        self._observer = Observer()
-        self._observer.schedule(handler, str(self._tuning_dir), recursive=True)
-        self._observer.daemon = True
-        self._observer.start()
-        logger.info("File watcher started on %s", self._tuning_dir)
+        # Start the internal periodic scanner (always enabled)
+        self._stop_event = asyncio.Event()
+        self._periodic_task = loop.create_task(self._periodic_scan_loop())
+        logger.info("Internal periodic scanner started (interval=%ds)", int(self.PERIODIC_SCAN_INTERVAL_SEC))
+
+    async def _periodic_scan_loop(self) -> None:
+        """Internal periodic scanner that runs independently of scheduler settings."""
+        while not self._stop_event.is_set():
+            try:
+                await asyncio.sleep(self.PERIODIC_SCAN_INTERVAL_SEC)
+                if self._stop_event.is_set():
+                    break
+                await _run_scan()
+            except asyncio.CancelledError:
+                break
+            except Exception:
+                logger.exception("Periodic scan error")
 
     def stop(self) -> None:
+        # Stop periodic scanner
+        if self._stop_event is not None:
+            self._stop_event.set()
+        if self._periodic_task is not None:
+            self._periodic_task.cancel()
+            self._periodic_task = None
+            logger.info("Internal periodic scanner stopped")
+        
+        # Stop watchdog observer
         if self._observer is not None:
             self._observer.stop()
             self._observer.join(timeout=5)
