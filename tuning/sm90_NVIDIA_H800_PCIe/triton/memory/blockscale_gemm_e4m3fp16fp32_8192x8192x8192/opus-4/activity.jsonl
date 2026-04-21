@@ -103,3 +103,7 @@
 {"ts":"2026-04-21T11:20:50.659Z","tool":"store_round","msg":"Stored iter057_smallm: DISCARD 227.86 TFLOPS (round 57)","level":"info"}
 {"ts":"2026-04-21T11:20:51.038Z","tool":"store_round","msg":"Storing iter058_tall (COMPILE_FAIL 0.0 TFLOPS)","level":"info"}
 {"ts":"2026-04-21T11:20:51.058Z","tool":"store_round","msg":"Stored iter058_tall: COMPILE_FAIL 0.0 TFLOPS (round 58)","level":"info"}
+{"ts":"2026-04-21T11:22:04.345Z","tool":"store_round","msg":"Storing iter059_s2 (DISCARD 256.30 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T11:22:04.364Z","tool":"store_round","msg":"Stored iter059_s2: DISCARD 256.30 TFLOPS (round 59)","level":"info"}
+{"ts":"2026-04-21T11:22:04.742Z","tool":"store_round","msg":"Storing iter060_gm8 (DISCARD 296.56 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T11:22:04.761Z","tool":"store_round","msg":"Stored iter060_gm8: DISCARD 296.56 TFLOPS (round 60)","level":"info"}
