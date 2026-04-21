@@ -71,3 +71,32 @@ iter068	iter068_b176x192k128	0	COMPILE_FAIL	unknown	BLOCK_M not divisible by 64 
 iter069	iter069_b192x192k64s3	66.39	DISCARD	memory_bound	192x192 square tiles poor register efficiency
 iter070	iter070_b256x128k64	65.80	DISCARD	memory_bound	256x128 tall tiles poor B reuse
 iter071	iter071_b64x256k64	137.58	DISCARD	compute_bound	64x256 wide tiles small M poor A reuse
+iter072	iter072_k32s4	142.36	DISCARD	compute_bound	K=32 stages=4 too many loop iterations
+iter073	iter073_k48s3	97.54	DISCARD	memory_bound	K=48 stages=3 TMA fallback
+iter074	iter074_k64s3	166.48	DISCARD	compute_bound	K=64 stages=3 lower than K=128 stages=2
+iter075	iter075_b128x192k128s3	0	COMPILE_FAIL	unknown	K=128 stages=3 exceeds shared memory
+iter076	iter076_b128x192k256s2	0	COMPILE_FAIL	unknown	K=256 exceeds shared memory
+iter077	iter077_b128x256k64s2	42.24	DISCARD	latency_bound	N=256 causes severe occupancy drop
+iter078	iter078_b64x128k64s3	125.62	DISCARD	compute_bound	Tiling variation
+iter079	iter079_b64x128k128s2	129.57	DISCARD	compute_bound	Tiling variation
+iter080	iter080_b128x128k64s3	160.78	DISCARD	compute_bound	Tiling variation
+iter081	iter081_b128x128k64s4	160.44	DISCARD	compute_bound	Tiling variation
+iter082	iter082_b256x192k64s2	52.42	DISCARD	compute_bound	Tiling variation
+iter083	iter083_b64x192k64s3	144.11	DISCARD	compute_bound	Parameter exploration
+iter084	iter084_b64x192k128s2	134.02	DISCARD	compute_bound	Parameter exploration
+iter085	iter085_b128x64k64s3	89.20	DISCARD	compute_bound	Parameter exploration
+iter086	iter086_b128x64k128s2	118.32	DISCARD	compute_bound	Parameter exploration
+iter087	iter087_b64x64k64s4	64.16	DISCARD	compute_bound	Parameter exploration
+iter088	iter088_b64x64k128s3	109.33	DISCARD	compute_bound	Parameter exploration
+iter089	iter089_b128x192k64s2	171.43	DISCARD	compute_bound	Parameter exploration
+iter090	iter090_b128x192k128s2_v2	178.17	DISCARD	compute_bound	Final exploration batch
+iter091	iter091_b256x128k128s2_v2	59.90	DISCARD	compute_bound	Final exploration batch
+iter092	iter092_b64x256k128s2_v2	160.18	DISCARD	compute_bound	Final exploration batch
+iter093	iter093_b192x128k64s3_v2	166.22	DISCARD	compute_bound	Final exploration batch
+iter094	iter094_b192x128k128s2_v2	120.77	DISCARD	compute_bound	Final exploration batch
+iter095	iter095_b128x256k128s2_v2	48.67	DISCARD	compute_bound	Final exploration batch
+iter096	iter096_b256x256k64s2_v2	11.73	DISCARD	compute_bound	Final exploration batch
+iter97	iter097_b128x128k128s2_final	171.15	DISCARD	compute_bound	Final batch
+iter98	iter098_b64x128k128s3_final	140.58	DISCARD	compute_bound	Final batch
+iter99	iter099_b192x192k128s2_final	54.84	DISCARD	compute_bound	Final batch
+iter100	iter100_b128x192k64s4_final	113.14	DISCARD	compute_bound	Final batch
