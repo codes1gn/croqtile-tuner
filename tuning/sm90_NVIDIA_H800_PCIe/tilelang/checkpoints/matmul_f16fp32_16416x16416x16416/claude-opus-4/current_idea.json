@@ -1,15 +1,14 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-21T12:21:03Z",
+  "timestamp": "2026-04-21T12:23:04Z",
   "dsl": "tilelang",
   "shape_key": "matmul_f16fp32_16416x16416x16416",
-  "iter": "iter005_b128x256_k64_s5",
+  "iter": "iter007_swizzle_panel8",
   "bottleneck": "compute_bound",
-  "idea": "Increase BLOCK_K=64 and NUM_STAGES=5 for deeper pipeline and better compute-to-memory ratio",
-  "expected_gain": "+15 TFLOPS",
+  "idea": "Different swizzle panel_size=8 for potentially better L2 locality on this shape",
+  "expected_gain": "+10 TFLOPS",
   "levers": [
-    "BLOCK_K",
-    "NUM_STAGES"
+    "panel_size"
   ],
   "status": "PLANNED"
 }

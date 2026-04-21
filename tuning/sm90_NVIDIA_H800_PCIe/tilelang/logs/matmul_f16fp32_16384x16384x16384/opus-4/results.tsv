@@ -9,3 +9,13 @@ iter006	iter006_panel6	342.46	DISCARD	compute_bound	panel_size=6 for different L
 iter007	iter007_blockm256	89.13	DISCARD	compute_bound	BLOCK_M=256 caused severe occupancy drop
 iter008	iter008_blockn256	259.41	DISCARD	compute_bound	64x256x64 too small BLOCK_M hurts perf
 iter009	iter009_threads256	267.91	DISCARD	compute_bound	threads=256 caused register pressure
+iter010	iter010_stages4	312.44	DISCARD	compute_bound	stages=4 with BLOCK_K=64 increases overhead
+iter011	iter011_b128x256	54.92	DISCARD	compute_bound	128x256 severe occupancy drop
+iter012	iter012_blockk96	338.11	DISCARD	compute_bound	BLOCK_K=96 less efficient than 128
+iter013	iter013_b96x192	0	COMPILE_FAIL	compute_bound	BLOCK_M=96 not divisible by 16 for WGMMA
+iter014	iter014_b64x192k128	232.92	DISCARD	compute_bound	64x192x128 insufficient compute density
+iter015	iter015_b128x160	274.24	DISCARD	compute_bound	BLOCK_N=160 causes grid inefficiency
+iter016	iter016_b128x224	154.46	DISCARD	compute_bound	128x224 severe occupancy drop
+iter017	iter017_panel4	318.85	DISCARD	compute_bound	panel_size=4 reduces L2 locality
+iter018	iter018_b128x128k128	226.82	DISCARD	compute_bound	128x128 square tiles less efficient
+iter019	iter019_noswizzle	141.76	DISCARD	memory_bound	No swizzle hurts L2 locality badly

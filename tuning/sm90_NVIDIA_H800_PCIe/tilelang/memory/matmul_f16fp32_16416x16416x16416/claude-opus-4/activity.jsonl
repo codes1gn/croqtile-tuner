@@ -25,3 +25,31 @@
 {"ts":"2026-04-21T12:21:03.321Z","tool":"next_iter","msg":"Resolved iter005_b128x256_k64_s5","level":"info"}
 {"ts":"2026-04-21T12:21:03.357Z","tool":"checkpoint_write","msg":"PLANNED iter005_b128x256_k64_s5: Increase BLOCK_K=64 and NUM_STAGES=5 for deeper pipeline and better compute-to-memory ratio","level":"info"}
 {"ts":"2026-04-21T12:21:50.391Z","tool":"next_iter","msg":"Resolved iter006_b128x256_k64_s3","level":"info"}
+{"ts":"2026-04-21T12:22:35.528Z","tool":"store_round","msg":"Storing iter005_b128x256_k64_s5 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:22:35.547Z","tool":"store_round","msg":"Stored iter005_b128x256_k64_s5: COMPILE_FAIL 0 TFLOPS (round 5)","level":"info"}
+{"ts":"2026-04-21T12:22:35.890Z","tool":"store_round","msg":"Storing iter006_b128x256_k64_s3 (DISCARD 310.96 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:22:35.909Z","tool":"store_round","msg":"Stored iter006_b128x256_k64_s3: DISCARD 310.96 TFLOPS (round 6)","level":"info"}
+{"ts":"2026-04-21T12:23:04.843Z","tool":"next_iter","msg":"Resolved iter007_swizzle_panel8","level":"info"}
+{"ts":"2026-04-21T12:23:04.877Z","tool":"checkpoint_write","msg":"PLANNED iter007_swizzle_panel8: Different swizzle panel_size=8 for potentially better L2 locality on this shape","level":"info"}
+{"ts":"2026-04-21T12:23:52.990Z","tool":"store_round","msg":"Storing iter007_swizzle_panel8 (DISCARD 146.12 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:23:53.010Z","tool":"store_round","msg":"Stored iter007_swizzle_panel8: DISCARD 146.12 TFLOPS (round 7)","level":"info"}
+{"ts":"2026-04-21T12:24:01.472Z","tool":"next_iter","msg":"Resolved iter008_b64x256_more_ctas","level":"info"}
+{"ts":"2026-04-21T12:24:43.591Z","tool":"store_round","msg":"Storing iter008_b64x256_more_ctas (DISCARD 249.63 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:24:43.918Z","tool":"next_iter","msg":"Resolved iter009_b192x128_k32","level":"info"}
+{"ts":"2026-04-21T12:24:50.434Z","tool":"store_round","msg":"Storing iter008_b64x256_more_ctas (DISCARD 249.63 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:24:50.454Z","tool":"store_round","msg":"Stored iter008_b64x256_more_ctas: DISCARD 249.63 TFLOPS (round 8)","level":"info"}
+{"ts":"2026-04-21T12:25:32.317Z","tool":"store_round","msg":"Storing iter009_b192x128_k32 (DISCARD 229.61 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:25:32.336Z","tool":"store_round","msg":"Stored iter009_b192x128_k32: DISCARD 229.61 TFLOPS (round 9)","level":"info"}
+{"ts":"2026-04-21T12:25:48.128Z","tool":"next_iter","msg":"Resolved iter010_b128x128_k32_s6","level":"info"}
+{"ts":"2026-04-21T12:26:27.714Z","tool":"store_round","msg":"Storing iter010_b128x128_k32_s6 (DISCARD 238.62 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:26:27.733Z","tool":"store_round","msg":"Stored iter010_b128x128_k32_s6: DISCARD 238.62 TFLOPS (round 10)","level":"info"}
+{"ts":"2026-04-21T12:26:35.923Z","tool":"next_iter","msg":"Resolved iter011_b128x256_no_swizzle","level":"info"}
+{"ts":"2026-04-21T12:27:16.718Z","tool":"store_round","msg":"Storing iter011_b128x256_no_swizzle (DISCARD 218.27 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:27:16.737Z","tool":"store_round","msg":"Stored iter011_b128x256_no_swizzle: DISCARD 218.27 TFLOPS (round 11)","level":"info"}
+{"ts":"2026-04-21T12:27:17.132Z","tool":"next_iter","msg":"Resolved iter012_b128x256_k32_s5","level":"info"}
+{"ts":"2026-04-21T12:28:06.440Z","tool":"store_round","msg":"Storing iter012_b128x256_k32_s5 (DISCARD 299.43 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:28:06.459Z","tool":"store_round","msg":"Stored iter012_b128x256_k32_s5: DISCARD 299.43 TFLOPS (round 12)","level":"info"}
+{"ts":"2026-04-21T12:28:51.008Z","tool":"store_round","msg":"Storing iter013_b128x256_k32_s3 (DISCARD 162.44 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:28:51.027Z","tool":"store_round","msg":"Stored iter013_b128x256_k32_s3: DISCARD 162.44 TFLOPS (round 13)","level":"info"}
+{"ts":"2026-04-21T12:29:16.134Z","tool":"store_round","msg":"Storing iter014_panel12 (DISCARD 310.86 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:29:16.153Z","tool":"store_round","msg":"Stored iter014_panel12: DISCARD 310.86 TFLOPS (round 14)","level":"info"}

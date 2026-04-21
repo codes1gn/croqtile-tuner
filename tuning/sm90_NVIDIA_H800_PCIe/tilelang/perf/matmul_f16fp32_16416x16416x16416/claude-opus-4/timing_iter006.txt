@@ -1,0 +1,7 @@
+TileLang matmul: 16416x16416x16416, dtype=float16, accum=float
+Tiles: BLOCK_M=128, BLOCK_N=256, BLOCK_K=64, stages=3
+2026-04-21 20:22:16  [TileLang:tilelang.jit.kernel:INFO]: TileLang begins to compile kernel `main` with `out_idx=[2]`
+2026-04-21 20:22:19  [TileLang:tilelang.jit.kernel:INFO]: TileLang completes to compile kernel `main`
+VERIFY: PASS max_abs_err=0.019470 rel_err=0.000025
+2026-04-21 20:22:20  [TileLang:tilelang.cache.kernel_cache:WARNING]: Found kernel 'main' in memory cache. For better performance, consider using `@tilelang.jit` instead of direct kernel caching.
+TFLOPS: 310.96   time_ms: 28.453

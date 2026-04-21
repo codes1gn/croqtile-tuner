@@ -44,3 +44,33 @@
 {"ts":"2026-04-21T12:22:05.032Z","tool":"store_round","msg":"Storing iter009_threads256 (DISCARD 267.91 TFLOPS)","level":"info"}
 {"ts":"2026-04-21T12:22:05.051Z","tool":"store_round","msg":"Stored iter009_threads256: DISCARD 267.91 TFLOPS (round 9)","level":"info"}
 {"ts":"2026-04-21T12:22:05.384Z","tool":"next_iter","msg":"Resolved iter010_stages4","level":"info"}
+{"ts":"2026-04-21T12:23:00.967Z","tool":"store_round","msg":"Storing iter010_stages4 (DISCARD 312.44 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:23:00.986Z","tool":"store_round","msg":"Stored iter010_stages4: DISCARD 312.44 TFLOPS (round 10)","level":"info"}
+{"ts":"2026-04-21T12:23:08.822Z","tool":"next_iter","msg":"Resolved iter011_b128x256","level":"info"}
+{"ts":"2026-04-21T12:23:53.116Z","tool":"store_round","msg":"Storing iter011_b128x256 (DISCARD 54.92 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:23:53.136Z","tool":"store_round","msg":"Stored iter011_b128x256: DISCARD 54.92 TFLOPS (round 11)","level":"info"}
+{"ts":"2026-04-21T12:23:53.525Z","tool":"next_iter","msg":"Resolved iter012_blockk96","level":"info"}
+{"ts":"2026-04-21T12:24:30.031Z","tool":"store_round","msg":"Storing iter012_blockk96 (DISCARD 338.11 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:24:30.050Z","tool":"store_round","msg":"Stored iter012_blockk96: DISCARD 338.11 TFLOPS (round 12)","level":"info"}
+{"ts":"2026-04-21T12:24:30.452Z","tool":"next_iter","msg":"Resolved iter013_b96x192","level":"info"}
+{"ts":"2026-04-21T12:25:01.738Z","tool":"store_round","msg":"Storing iter013_b96x192 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:25:01.757Z","tool":"store_round","msg":"Stored iter013_b96x192: COMPILE_FAIL 0 TFLOPS (round 13)","level":"info"}
+{"ts":"2026-04-21T12:25:02.213Z","tool":"next_iter","msg":"Resolved iter014_b64x192k128","level":"info"}
+{"ts":"2026-04-21T12:25:37.671Z","tool":"store_round","msg":"Storing iter014_b64x192k128 (DISCARD 232.92 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:25:37.690Z","tool":"store_round","msg":"Stored iter014_b64x192k128: DISCARD 232.92 TFLOPS (round 14)","level":"info"}
+{"ts":"2026-04-21T12:25:38.173Z","tool":"next_iter","msg":"Resolved iter015_b128x160","level":"info"}
+{"ts":"2026-04-21T12:26:12.905Z","tool":"store_round","msg":"Storing iter015_b128x160 (DISCARD 274.24 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:26:19.043Z","tool":"store_round","msg":"Storing iter015_b128x160 (DISCARD 274.24 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:26:19.062Z","tool":"store_round","msg":"Stored iter015_b128x160: DISCARD 274.24 TFLOPS (round 15)","level":"info"}
+{"ts":"2026-04-21T12:26:27.733Z","tool":"next_iter","msg":"Resolved iter016_b128x224","level":"info"}
+{"ts":"2026-04-21T12:27:04.822Z","tool":"store_round","msg":"Storing iter016_b128x224 (DISCARD 154.46 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:27:04.841Z","tool":"store_round","msg":"Stored iter016_b128x224: DISCARD 154.46 TFLOPS (round 16)","level":"info"}
+{"ts":"2026-04-21T12:27:05.361Z","tool":"next_iter","msg":"Resolved iter017_panel4","level":"info"}
+{"ts":"2026-04-21T12:27:39.694Z","tool":"store_round","msg":"Storing iter017_panel4 (DISCARD 318.85 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:27:39.714Z","tool":"store_round","msg":"Stored iter017_panel4: DISCARD 318.85 TFLOPS (round 17)","level":"info"}
+{"ts":"2026-04-21T12:28:02.379Z","tool":"next_iter","msg":"Resolved iter018_b128x128k128","level":"info"}
+{"ts":"2026-04-21T12:28:54.176Z","tool":"store_round","msg":"Storing iter018_b128x128k128 (DISCARD 226.82 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:28:54.194Z","tool":"store_round","msg":"Stored iter018_b128x128k128: DISCARD 226.82 TFLOPS (round 18)","level":"info"}
+{"ts":"2026-04-21T12:28:54.787Z","tool":"next_iter","msg":"Resolved iter019_noswizzle","level":"info"}
+{"ts":"2026-04-21T12:29:32.181Z","tool":"store_round","msg":"Storing iter019_noswizzle (DISCARD 141.76 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:29:32.200Z","tool":"store_round","msg":"Stored iter019_noswizzle: DISCARD 141.76 TFLOPS (round 19)","level":"info"}
