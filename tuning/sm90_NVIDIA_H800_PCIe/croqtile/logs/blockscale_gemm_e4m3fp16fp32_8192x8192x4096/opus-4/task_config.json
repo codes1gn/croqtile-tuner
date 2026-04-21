@@ -12,9 +12,9 @@
   "request_number": 175,
   "max_iterations": 200,
   "respawn_count": 0,
-  "best_tflops": 608.6,
+  "best_tflops": 683.7,
   "baseline_tflops": 688.6,
-  "best_kernel": "iter129_raw_mbar",
+  "best_kernel": "iter177_btune_1p4c_m128_n256_stg3_best",
   "opencode_session_id": null,
   "sessions": []
 }

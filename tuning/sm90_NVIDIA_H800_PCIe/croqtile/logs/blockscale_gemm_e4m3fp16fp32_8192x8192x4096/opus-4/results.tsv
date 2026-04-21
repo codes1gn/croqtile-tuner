@@ -153,3 +153,6 @@ iter171	iter171_phase_pipe	583.6	DISCARD	persistent_mbar	MATMUL_STAGES-based par
 iter172	iter172_skip_first_sync	586.1	DISCARD	persistent_mbar	no leading loop __syncthreads; sync only before re-init path
 iter173	iter173_reinit_stride	585.5	DISCARD	persistent_mbar	inval only when k_tile even; init always
 iter174	iter174_best_flags	577.3	DISCARD	persistent_mbar	iter170+172 + nvcc -lineinfo (iter174 build_flags)
+iter175	iter175_btune_2p2c_m128_n256	662.9	KEEP	btune_import	from btune-f32acc: 1p3c with M128xN256 tile covering 3 of 4 quadrants
+iter176	iter176_btune_1p3c_m128_n256_stg2	667.8	KEEP	btune_import	from btune-f32acc: 1p3c M128xN256 with 2 stages
+iter177	iter177_btune_1p4c_m128_n256_stg3_best	683.7	KEEP	btune_import	from btune-f32acc: 1p4c M128xN256 3-stg BEST - matches baseline!
