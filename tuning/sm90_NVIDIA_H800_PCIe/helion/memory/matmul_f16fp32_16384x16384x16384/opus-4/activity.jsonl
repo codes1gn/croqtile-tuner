@@ -1,0 +1,11 @@
+{"ts":"2026-04-21T14:56:25.382Z","tool":"store_baseline","msg":"Measuring cuBLAS baseline for f16fp32 16384x16384x16384","level":"info"}
+{"ts":"2026-04-21T14:56:27.571Z","tool":"store_baseline","msg":"cuBLAS baseline measurement failed","level":"error"}
+{"ts":"2026-04-21T14:56:53.920Z","tool":"store_baseline","msg":"Measuring cuBLAS baseline for f16fp32 16384x16384x16384","level":"info"}
+{"ts":"2026-04-21T14:56:55.813Z","tool":"store_baseline","msg":"cuBLAS baseline measurement failed","level":"error"}
+{"ts":"2026-04-21T14:57:43.542Z","tool":"store_baseline","msg":"Measuring cuBLAS baseline for f16fp32 16384x16384x16384","level":"info"}
+{"ts":"2026-04-21T14:57:46.798Z","tool":"store_baseline","msg":"cuBLAS baseline: 391.6564 TFLOPS (saved to tuning/sm90_NVIDIA_H800_PCIe/helion/baseline/matmul_f16fp32_16384x16384x16384/opus-4/cublas_result.json)","level":"info"}
+{"ts":"2026-04-21T14:57:47.279Z","tool":"store_round","msg":"Storing iter000_cublas (KEEP 391.6564 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T14:57:47.298Z","tool":"store_round","msg":"Stored iter000_cublas: KEEP 391.6564 TFLOPS (round 0)","level":"info"}
+{"ts":"2026-04-21T14:57:47.309Z","tool":"store_baseline","msg":"Stored iter000_cublas: 391.6564 TFLOPS (baseline)","level":"info"}
+{"ts":"2026-04-21T14:59:28.627Z","tool":"store_round","msg":"Storing iter001_baseline (KEEP 214.00 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T14:59:28.645Z","tool":"store_round","msg":"Stored iter001_baseline: KEEP 214.00 TFLOPS (round 1)","level":"info"}

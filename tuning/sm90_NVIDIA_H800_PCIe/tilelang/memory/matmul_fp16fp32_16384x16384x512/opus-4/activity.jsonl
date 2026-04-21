@@ -77,3 +77,24 @@
 {"ts":"2026-04-21T14:53:03.655Z","tool":"next_iter","msg":"Resolved iter022_b256x64k64s3","level":"info"}
 {"ts":"2026-04-21T14:53:38.801Z","tool":"store_round","msg":"Storing iter022_b256x64k64s3 (DISCARD 220.46 TFLOPS)","level":"info"}
 {"ts":"2026-04-21T14:53:38.820Z","tool":"store_round","msg":"Stored iter022_b256x64k64s3: DISCARD 220.46 TFLOPS (round 22)","level":"info"}
+{"ts":"2026-04-21T14:53:55.796Z","tool":"next_iter","msg":"Resolved iter023_b192x128k64s3_t64","level":"info"}
+{"ts":"2026-04-21T14:54:30.663Z","tool":"store_round","msg":"Storing iter023_b192x128k64s3_t64 (DISCARD 41.07 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T14:54:30.684Z","tool":"store_round","msg":"Stored iter023_b192x128k64s3_t64: DISCARD 41.07 TFLOPS (round 23)","level":"info"}
+{"ts":"2026-04-21T14:54:37.878Z","tool":"next_iter","msg":"Resolved iter024_b192x128k64s3_t256","level":"info"}
+{"ts":"2026-04-21T14:55:29.325Z","tool":"store_round","msg":"Storing iter024_b192x128k64s3_t256 (DISCARD 252.44 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T14:55:29.343Z","tool":"store_round","msg":"Stored iter024_b192x128k64s3_t256: DISCARD 252.44 TFLOPS (round 24)","level":"info"}
+{"ts":"2026-04-21T14:55:38.371Z","tool":"next_iter","msg":"Resolved iter025_b192x128k128s2","level":"info"}
+{"ts":"2026-04-21T14:56:29.803Z","tool":"store_round","msg":"Storing iter025_b192x128k128s2 (KEEP 254.79 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T14:56:29.824Z","tool":"store_round","msg":"Stored iter025_b192x128k128s2: KEEP 254.79 TFLOPS (round 25)","level":"info"}
+{"ts":"2026-04-21T14:56:37.805Z","tool":"next_iter","msg":"Resolved iter026_b192x128k128s3","level":"info"}
+{"ts":"2026-04-21T14:57:13.966Z","tool":"store_round","msg":"Storing iter026_b192x128k128s3 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T14:57:13.985Z","tool":"store_round","msg":"Stored iter026_b192x128k128s3: COMPILE_FAIL 0 TFLOPS (round 26)","level":"info"}
+{"ts":"2026-04-21T14:57:21.516Z","tool":"next_iter","msg":"Resolved iter027_b192x128k256s2","level":"info"}
+{"ts":"2026-04-21T14:57:55.498Z","tool":"store_round","msg":"Storing iter027_b192x128k256s2 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T14:57:55.517Z","tool":"store_round","msg":"Stored iter027_b192x128k256s2: COMPILE_FAIL 0 TFLOPS (round 27)","level":"info"}
+{"ts":"2026-04-21T14:58:03.442Z","tool":"next_iter","msg":"Resolved iter028_b128x128k128s2","level":"info"}
+{"ts":"2026-04-21T14:58:38.121Z","tool":"store_round","msg":"Storing iter028_b128x128k128s2 (DISCARD 213.70 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T14:58:38.140Z","tool":"store_round","msg":"Stored iter028_b128x128k128s2: DISCARD 213.70 TFLOPS (round 28)","level":"info"}
+{"ts":"2026-04-21T14:58:45.461Z","tool":"next_iter","msg":"Resolved iter029_b128x192k128s2","level":"info"}
+{"ts":"2026-04-21T14:59:21.549Z","tool":"store_round","msg":"Storing iter029_b128x192k128s2 (DISCARD 247.40 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T14:59:21.570Z","tool":"store_round","msg":"Stored iter029_b128x192k128s2: DISCARD 247.40 TFLOPS (round 29)","level":"info"}

@@ -1,0 +1,2 @@
+{"round": 0, "iter": "iter000", "bottleneck": "baseline", "idea": "cuBLAS reference baseline", "category": "baseline", "expected_gain": "baseline reference", "decision": "KEEP", "tflops": 391.6564, "timestamp": "2026-04-21T14:57:47Z"}
+{"round": 1, "iter": "iter001", "bottleneck": "unknown", "idea": "Initial Helion kernel with block_sizes=[128,128,64], num_warps=8, num_stages=4", "category": "tiling", "expected_gain": "baseline", "decision": "KEEP", "tflops": 214.0, "timestamp": "2026-04-21T14:59:28Z"}

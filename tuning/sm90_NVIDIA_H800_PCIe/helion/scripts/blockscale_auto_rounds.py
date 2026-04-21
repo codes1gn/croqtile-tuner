@@ -19,11 +19,22 @@ import os
 import re
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[4]
 if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
+
+
+def _transient_cuda_failure(log: str) -> bool:
+    t = log.lower()
+    return (
+        "busy or unavailable" in t
+        or "cudaerrordevicesunavailable" in t
+        or "cuda error: cuda-capable device" in t
+        or ("acceleratorerror" in t and "cuda" in t)
+    )
 
 KERNEL_TEMPLATE = '''#!/usr/bin/env python3
 """{doc}"""
@@ -648,17 +659,38 @@ def run_one(
     env["PYTHONPATH"] = f"{REPO}:{env.get('PYTHONPATH', '')}"
     env["HELION_AUTOTUNE_EFFORT"] = "none"
     env["PYTHONUNBUFFERED"] = "1"
-    proc = subprocess.run(
-        [sys.executable, "-u", str(path)],
-        cwd=str(REPO),
-        env=env,
-        capture_output=True,
-        text=True,
-        timeout=900,
-    )
-    out = proc.stdout + proc.stderr
+    if "CUDA_VISIBLE_DEVICES" not in env:
+        env["CUDA_VISIBLE_DEVICES"] = os.environ.get("CUDA_VISIBLE_DEVICES", "0")
+
+    proc: subprocess.CompletedProcess[str] | None = None
+    out = ""
+    for attempt in range(8):
+        proc = subprocess.run(
+            [sys.executable, "-u", str(path)],
+            cwd=str(REPO),
+            env=env,
+            capture_output=True,
+            text=True,
+            timeout=900,
+        )
+        out = proc.stdout + proc.stderr
+        ok = proc.returncode == 0 and not _transient_cuda_failure(out)
+        if ok:
+            break
+        if _transient_cuda_failure(out) and attempt < 7:
+            wait_s = 5 + attempt * 5
+            print(
+                f"[blockscale_auto_rounds] transient CUDA failure, "
+                f"retry {attempt + 1}/8 in {wait_s}s...",
+                flush=True,
+            )
+            time.sleep(wait_s)
+            continue
+        break
+
+    assert proc is not None
     print(out[-2000:] if len(out) > 2000 else out)
-    if proc.returncode != 0:
+    if proc.returncode != 0 or _transient_cuda_failure(out):
         subprocess.run(
             [
                 str(REPO / ".cursor/skills/cursor-croq-tune/tools/store_round.sh"),
