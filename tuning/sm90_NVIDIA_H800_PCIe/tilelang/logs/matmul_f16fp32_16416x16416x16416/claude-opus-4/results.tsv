@@ -84,3 +84,19 @@ iter081	iter081_b128x256_s3_p6	160.33	DISCARD	latency_bound	s=3 not enough laten
 iter082	iter082_k32_s4_p10	174.65	DISCARD	memory_bound	p=10 worse than p=6
 iter083	iter083_b128x128_k64	145.39	DISCARD	compute_bound	128x128 too small
 iter084	iter084_b128x256_k32_s4_p7	170.11	DISCARD	memory_bound	p=7 worse than p=6
+iter085	iter085_k32_s4_p6_verif	173.94	DISCARD	memory_bound	Verification re-run
+iter086	iter086_b128x256_k32_s5_p6	158.58	DISCARD	memory_bound	s=5 worse
+iter087	iter087_b64x256_k32_s4_p6	115.02	DISCARD	compute_bound	64x256 too narrow
+iter088	iter088_b128x192_s4_p6	101.69	DISCARD	compute_bound	128x192 bad tile
+iter089	iter089_b256x128_s4_p6	157.79	DISCARD	compute_bound	256x128 worse
+iter090	iter090_b128x256_k64_s4_p6	180.13	DISCARD	memory_bound	K=64 s=4
+iter091	iter091_k32_s3_p8	157.44	DISCARD	latency_bound	s=3 p=8
+iter092	iter092_b128x256_k16_s6	118.69	DISCARD	latency_bound	K=16 s=6
+iter093	iter093_b128x320	142.00	DISCARD	memory_bound	128x320
+iter094	iter094_b128x448	86.44	DISCARD	memory_bound	128x448 too wide
+iter095	iter095_b128x256_k64_s3_p8	184.83	DISCARD	memory_bound	K=64 s=3 p=8
+iter096	iter096_b192x192	154.79	DISCARD	compute_bound	192x192 square
+iter097	iter097_b64x256_k64	136.38	DISCARD	compute_bound	64x256 K=64
+iter098	iter098_b256x192	157.70	DISCARD	compute_bound	256x192
+iter099	iter099_b128x256_k128	186.60	DISCARD	latency_bound	K=128 s=2 big K
+iter100	iter100_final_best	175.59	DISCARD	memory_bound	Final retest best config

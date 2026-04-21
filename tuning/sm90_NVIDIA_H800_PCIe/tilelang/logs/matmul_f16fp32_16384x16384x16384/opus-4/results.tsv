@@ -64,3 +64,10 @@ iter061	iter061_b64x192k128s3	136.47	DISCARD	compute_bound	M=64 tiles too small 
 iter062	iter062_s1_verify	128.84	DISCARD	memory_bound	stages=1 no pipelining much worse than stages=2
 iter063	iter063_best_repro	176.72	DISCARD	compute_bound	Reproduced best config - measurement lower than recorded 343.47
 iter064	iter064_panel12	122.32	DISCARD	memory_bound	panel_size=12 worse L2 locality than 8
+iter065	iter065_b128x192k256s1	90.20	DISCARD	memory_bound	K=256 stages=1 no pipelining bad
+iter066	iter066_b144x192k128	0	COMPILE_FAIL	unknown	BLOCK_M not divisible by 64 fails WGMMA
+iter067	iter067_b160x192k128	0	COMPILE_FAIL	unknown	BLOCK_M not divisible by 64 fails WGMMA
+iter068	iter068_b176x192k128	0	COMPILE_FAIL	unknown	BLOCK_M not divisible by 64 fails WGMMA
+iter069	iter069_b192x192k64s3	66.39	DISCARD	memory_bound	192x192 square tiles poor register efficiency
+iter070	iter070_b256x128k64	65.80	DISCARD	memory_bound	256x128 tall tiles poor B reuse
+iter071	iter071_b64x256k64	137.58	DISCARD	compute_bound	64x256 wide tiles small M poor A reuse
