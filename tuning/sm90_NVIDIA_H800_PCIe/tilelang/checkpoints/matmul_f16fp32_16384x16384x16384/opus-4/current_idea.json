@@ -1,0 +1,14 @@
+{
+  "schema": "croq-checkpoint-v1",
+  "timestamp": "2026-04-21T12:18:42Z",
+  "dsl": "tilelang",
+  "shape_key": "matmul_f16fp32_16384x16384x16384",
+  "iter": "iter005_panel10",
+  "bottleneck": "compute_bound",
+  "idea": "Increase panel_size to 10 for better L2 cache locality",
+  "expected_gain": "+5-10 TFLOPS",
+  "levers": [
+    "panel_size"
+  ],
+  "status": "PLANNED"
+}

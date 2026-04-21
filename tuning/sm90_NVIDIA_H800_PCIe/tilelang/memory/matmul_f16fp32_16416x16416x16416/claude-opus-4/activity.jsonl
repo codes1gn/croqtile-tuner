@@ -1,0 +1,27 @@
+{"ts":"2026-04-21T12:13:08.532Z","tool":"store_baseline","msg":"Measuring cuBLAS baseline for f16fp32 16416x16416x16416","level":"info"}
+{"ts":"2026-04-21T12:13:11.929Z","tool":"store_baseline","msg":"cuBLAS baseline: 413.9151 TFLOPS (saved to tuning/sm90_NVIDIA_H800_PCIe/tilelang/baseline/matmul_f16fp32_16416x16416x16416/claude-opus-4/cublas_result.json)","level":"info"}
+{"ts":"2026-04-21T12:13:12.257Z","tool":"store_round","msg":"Storing iter000_cublas (KEEP 413.9151 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:13:12.277Z","tool":"store_round","msg":"Stored iter000_cublas: KEEP 413.9151 TFLOPS (round 0)","level":"info"}
+{"ts":"2026-04-21T12:13:12.287Z","tool":"store_baseline","msg":"Stored iter000_cublas: 413.9151 TFLOPS (baseline)","level":"info"}
+{"ts":"2026-04-21T12:15:11.386Z","tool":"store_round","msg":"Storing iter001_base_pipelined (KEEP 169.57 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:15:11.405Z","tool":"store_round","msg":"Stored iter001_base_pipelined: KEEP 169.57 TFLOPS (round 1)","level":"info"}
+{"ts":"2026-04-21T12:15:26.609Z","tool":"ncu_profile","msg":"Capturing profile: python3 tuning/sm90_NVIDIA_H800_PCIe/tilelang/srcs/matmul_f16fp32_16416x16416x16416/claude-opus-4/iter001_base_pipelined.py","level":"info"}
+{"ts":"2026-04-21T12:15:34.187Z","tool":"ncu_profile","msg":"Capturing profile: /usr/bin/python3 /home/albert/workspace/croqtile-tuner/tuning/sm90_NVIDIA_H800_PCIe/tilelang/srcs/matmul_f16fp32_16416x16416x16416/claude-opus-4/iter001_base_pipelined.py","level":"info"}
+{"ts":"2026-04-21T12:16:13.145Z","tool":"profile_extract","msg":"Analyzing iter001_base_pipelined from tuning/sm90_NVIDIA_H800_PCIe/tilelang/perf/matmul_f16fp32_16416x16416x16416/claude-opus-4/ncu_iter001_round2.csv","level":"info"}
+{"ts":"2026-04-21T12:16:47.810Z","tool":"next_iter","msg":"Resolved iter002_larger_tiles","level":"info"}
+{"ts":"2026-04-21T12:16:47.845Z","tool":"checkpoint_write","msg":"PLANNED iter002_larger_tiles: Increase BLOCK_M=256, BLOCK_K=64, num_stages=4 for better tensor core utilization and occupancy","level":"info"}
+{"ts":"2026-04-21T12:17:33.930Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter002_larger_tiles (drift=1)","level":"info"}
+{"ts":"2026-04-21T12:17:41.195Z","tool":"store_round","msg":"Storing iter002_larger_tiles (KEEP 276.87 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:17:41.213Z","tool":"store_round","msg":"Stored iter002_larger_tiles: KEEP 276.87 TFLOPS (round 2)","level":"info"}
+{"ts":"2026-04-21T12:18:16.470Z","tool":"profile_extract","msg":"Analyzing iter002_larger_tiles from tuning/sm90_NVIDIA_H800_PCIe/tilelang/perf/matmul_f16fp32_16416x16416x16416/claude-opus-4/ncu_iter002_round3.csv","level":"info"}
+{"ts":"2026-04-21T12:18:25.318Z","tool":"next_iter","msg":"Resolved iter003_b256x256","level":"info"}
+{"ts":"2026-04-21T12:18:25.351Z","tool":"checkpoint_write","msg":"PLANNED iter003_b256x256: Larger square tiles BLOCK_M=256, BLOCK_N=256, BLOCK_K=64, 4 stages for max arithmetic intensity","level":"info"}
+{"ts":"2026-04-21T12:19:13.527Z","tool":"next_iter","msg":"Resolved iter004_b128x256_k32","level":"info"}
+{"ts":"2026-04-21T12:20:06.410Z","tool":"store_round","msg":"Storing iter003_b256x256 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:20:06.429Z","tool":"store_round","msg":"Stored iter003_b256x256: COMPILE_FAIL 0 TFLOPS (round 3)","level":"info"}
+{"ts":"2026-04-21T12:20:14.725Z","tool":"store_round","msg":"Storing iter004_b128x256_k32 (KEEP 316.73 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:20:14.744Z","tool":"store_round","msg":"Stored iter004_b128x256_k32: KEEP 316.73 TFLOPS (round 4)","level":"info"}
+{"ts":"2026-04-21T12:20:53.457Z","tool":"profile_extract","msg":"Analyzing iter004_b128x256_k32 from tuning/sm90_NVIDIA_H800_PCIe/tilelang/perf/matmul_f16fp32_16416x16416x16416/claude-opus-4/ncu_iter004_round5.csv","level":"info"}
+{"ts":"2026-04-21T12:21:03.321Z","tool":"next_iter","msg":"Resolved iter005_b128x256_k64_s5","level":"info"}
+{"ts":"2026-04-21T12:21:03.357Z","tool":"checkpoint_write","msg":"PLANNED iter005_b128x256_k64_s5: Increase BLOCK_K=64 and NUM_STAGES=5 for deeper pipeline and better compute-to-memory ratio","level":"info"}
+{"ts":"2026-04-21T12:21:50.391Z","tool":"next_iter","msg":"Resolved iter006_b128x256_k64_s3","level":"info"}

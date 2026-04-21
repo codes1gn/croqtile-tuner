@@ -1,0 +1,6 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_cublas	413.9151	KEEP	baseline	cuBLAS reference baseline
+iter001	iter001_base_pipelined	169.57	KEEP	memory_bound	Initial pipelined kernel: BLOCK_M=128, BLOCK_N=128, BLOCK_K=32, 3 stages
+iter002	iter002_larger_tiles	276.87	KEEP	compute_bound	Larger tiles: BLOCK_M=256, BLOCK_K=64, num_stages=4
+iter003	iter003_b256x256	0	COMPILE_FAIL	compute_bound	256x256 tiles exceeded shared memory limit (262KB)
+iter004	iter004_b128x256_k32	316.73	KEEP	compute_bound	Wide tiles 128x256 with BLOCK_K=32 fits smem, improves N-reuse

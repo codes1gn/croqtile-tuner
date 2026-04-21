@@ -1,0 +1,18 @@
+TileLang matmul: 16416x16416x16416, dtype=float16, accum=float
+Tiles: BLOCK_M=128, BLOCK_N=256, BLOCK_K=64, stages=5
+2026-04-21 20:21:37  [TileLang:tilelang.jit.kernel:INFO]: TileLang begins to compile kernel `main` with `out_idx=[2]`
+2026-04-21 20:21:41  [TileLang:tilelang.jit.kernel:INFO]: TileLang completes to compile kernel `main`
+Traceback (most recent call last):
+  File "/home/albert/workspace/croqtile-tuner/tuning/sm90_NVIDIA_H800_PCIe/tilelang/srcs/matmul_f16fp32_16416x16416x16416/claude-opus-4/iter005_b128x256_k64_s5.py", line 109, in <module>
+    if verify():
+  File "/home/albert/workspace/croqtile-tuner/tuning/sm90_NVIDIA_H800_PCIe/tilelang/srcs/matmul_f16fp32_16416x16416x16416/claude-opus-4/iter005_b128x256_k64_s5.py", line 58, in verify
+    c = jit_kernel(a, b)
+  File "/home/albert/.local/lib/python3.10/site-packages/tilelang/jit/kernel.py", line 207, in __call__
+    return self.torch_function(*args, **kwds)
+  File "/home/albert/.local/lib/python3.10/site-packages/tilelang/jit/adapter/tvm_ffi.py", line 244, in func
+    executable(*tensor_list)
+  File "/home/albert/.local/lib/python3.10/site-packages/tilelang/3rdparty/tvm/python/tvm/runtime/executable.py", line 42, in __call__
+    return self.jit().main(*args, **kwargs)
+  File "python/tvm_ffi/cython/function.pxi", line 929, in tvm_ffi.core.Function.__call__
+  File "<unknown>", line 0, in tvm::runtime::detail::LogFatal::Entry::Finalize()
+tvm.error.InternalError: Failed to set the allowed dynamic shared memory size to 245760

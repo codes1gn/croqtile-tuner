@@ -60,7 +60,17 @@
       "agent_type": "cursor_cli",
       "model": "opus-4",
       "request_number": 0,
-      "started_at": "2026-04-21T12:12:13.834860+00:00",
+      "started_at": "2026-04-21T12:12:13.834860",
+      "ended_at": null
+    },
+    {
+      "id": 44,
+      "task_id": 1,
+      "session_id": "c9d85669-d402-4b25-880c-9c8277b40b5e",
+      "agent_type": "cursor_cli",
+      "model": "opus-4",
+      "request_number": 0,
+      "started_at": "2026-04-21T12:12:57.836836+00:00",
       "ended_at": null
     }
   ]

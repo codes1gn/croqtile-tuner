@@ -1,0 +1,46 @@
+{"ts":"2026-04-21T12:12:41.538Z","tool":"resume_state","msg":"Loading tuning state for tilelang/matmul_f16fp32_16384x16384x16384","level":"info"}
+{"ts":"2026-04-21T12:12:41.540Z","tool":"resume_state","msg":"No tuning artifacts found for tilelang/matmul_f16fp32_16384x16384x16384","level":"error"}
+{"ts":"2026-04-21T12:12:49.270Z","tool":"store_baseline","msg":"Measuring cuBLAS baseline for f16fp32 16384x16384x16384","level":"info"}
+{"ts":"2026-04-21T12:12:52.753Z","tool":"store_baseline","msg":"cuBLAS baseline: 415.6494 TFLOPS (saved to tuning/sm90_NVIDIA_H800_PCIe/tilelang/baseline/matmul_f16fp32_16384x16384x16384/opus-4/cublas_result.json)","level":"info"}
+{"ts":"2026-04-21T12:12:53.082Z","tool":"store_round","msg":"Storing iter000_cublas (KEEP 415.6494 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:12:53.101Z","tool":"store_round","msg":"Stored iter000_cublas: KEEP 415.6494 TFLOPS (round 0)","level":"info"}
+{"ts":"2026-04-21T12:12:53.112Z","tool":"store_baseline","msg":"Stored iter000_cublas: 415.6494 TFLOPS (baseline)","level":"info"}
+{"ts":"2026-04-21T12:14:08.726Z","tool":"store_round","msg":"Storing iter001_baseline_tcore (KEEP 316.84 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:14:08.745Z","tool":"store_round","msg":"Stored iter001_baseline_tcore: KEEP 316.84 TFLOPS (round 1)","level":"info"}
+{"ts":"2026-04-21T12:14:24.989Z","tool":"ncu_profile","msg":"Capturing profile: python3 tuning/sm90_NVIDIA_H800_PCIe/tilelang/srcs/matmul_f16fp32_16384x16384x16384/opus-4/iter001_baseline_tcore.py","level":"info"}
+{"ts":"2026-04-21T12:14:39.945Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/tilelang/perf/matmul_f16fp32_16384x16384x16384/opus-4/ncu_iter001_baseline_tcore_round2.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/tilelang/perf/matmul_f16fp32_16384x16384x16384/opus-4/ncu_iter001_baseline_tcore_round2.csv","level":"info"}
+{"ts":"2026-04-21T12:14:45.015Z","tool":"profile_extract","msg":"Analyzing iter001_baseline_tcore_round2 from tuning/sm90_NVIDIA_H800_PCIe/tilelang/perf/matmul_f16fp32_16384x16384x16384/opus-4/ncu_iter001_baseline_tcore_round2.csv","level":"info"}
+{"ts":"2026-04-21T12:15:17.520Z","tool":"next_iter","msg":"Resolved iter002_blockn192","level":"info"}
+{"ts":"2026-04-21T12:15:23.000Z","tool":"checkpoint_write","msg":"PLANNED iter002_blockn192: Increase BLOCK_N to 192 to improve compute intensity and better utilize WGMMA","level":"info"}
+{"ts":"2026-04-21T12:16:04.471Z","tool":"store_round","msg":"Storing iter002_blockn192 (KEEP 335.55 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:16:04.490Z","tool":"store_round","msg":"Stored iter002_blockn192: KEEP 335.55 TFLOPS (round 2)","level":"info"}
+{"ts":"2026-04-21T12:16:21.139Z","tool":"ncu_profile","msg":"Capturing profile: python3 tuning/sm90_NVIDIA_H800_PCIe/tilelang/srcs/matmul_f16fp32_16384x16384x16384/opus-4/iter002_blockn192.py","level":"info"}
+{"ts":"2026-04-21T12:16:31.804Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/tilelang/perf/matmul_f16fp32_16384x16384x16384/opus-4/ncu_iter002_blockn192_round3.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/tilelang/perf/matmul_f16fp32_16384x16384x16384/opus-4/ncu_iter002_blockn192_round3.csv","level":"info"}
+{"ts":"2026-04-21T12:16:37.635Z","tool":"profile_extract","msg":"Analyzing iter002_blockn192_round3 from tuning/sm90_NVIDIA_H800_PCIe/tilelang/perf/matmul_f16fp32_16384x16384x16384/opus-4/ncu_iter002_blockn192_round3.csv","level":"info"}
+{"ts":"2026-04-21T12:16:45.641Z","tool":"next_iter","msg":"Resolved iter003_blockk128","level":"info"}
+{"ts":"2026-04-21T12:16:45.674Z","tool":"checkpoint_write","msg":"PLANNED iter003_blockk128: Increase BLOCK_K to 128 to improve K-dimension tiling and memory access coalescing","level":"info"}
+{"ts":"2026-04-21T12:17:23.274Z","tool":"next_iter","msg":"Resolved iter004_blockk128_s2","level":"info"}
+{"ts":"2026-04-21T12:18:00.177Z","tool":"store_round","msg":"Storing iter003_blockk128 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:18:00.195Z","tool":"store_round","msg":"Stored iter003_blockk128: COMPILE_FAIL 0 TFLOPS (round 3)","level":"info"}
+{"ts":"2026-04-21T12:18:00.547Z","tool":"store_round","msg":"Storing iter004_blockk128_s2 (KEEP 343.47 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:18:00.565Z","tool":"store_round","msg":"Stored iter004_blockk128_s2: KEEP 343.47 TFLOPS (round 4)","level":"info"}
+{"ts":"2026-04-21T12:18:16.885Z","tool":"ncu_profile","msg":"Capturing profile: python3 tuning/sm90_NVIDIA_H800_PCIe/tilelang/srcs/matmul_f16fp32_16384x16384x16384/opus-4/iter004_blockk128_s2.py","level":"info"}
+{"ts":"2026-04-21T12:18:27.532Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/tilelang/perf/matmul_f16fp32_16384x16384x16384/opus-4/ncu_iter004_blockk128_s2_round5.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/tilelang/perf/matmul_f16fp32_16384x16384x16384/opus-4/ncu_iter004_blockk128_s2_round5.csv","level":"info"}
+{"ts":"2026-04-21T12:18:33.373Z","tool":"profile_extract","msg":"Analyzing iter004_blockk128_s2_round5 from tuning/sm90_NVIDIA_H800_PCIe/tilelang/perf/matmul_f16fp32_16384x16384x16384/opus-4/ncu_iter004_blockk128_s2_round5.csv","level":"info"}
+{"ts":"2026-04-21T12:18:42.020Z","tool":"next_iter","msg":"Resolved iter005_panel10","level":"info"}
+{"ts":"2026-04-21T12:18:42.057Z","tool":"checkpoint_write","msg":"PLANNED iter005_panel10: Increase panel_size to 10 for better L2 cache locality","level":"info"}
+{"ts":"2026-04-21T12:19:23.378Z","tool":"store_round","msg":"Storing iter005_panel10 (DISCARD 341.19 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:19:23.398Z","tool":"store_round","msg":"Stored iter005_panel10: DISCARD 341.19 TFLOPS (round 5)","level":"info"}
+{"ts":"2026-04-21T12:19:34.247Z","tool":"next_iter","msg":"Resolved iter006_panel6","level":"info"}
+{"ts":"2026-04-21T12:20:10.388Z","tool":"store_round","msg":"Storing iter006_panel6 (DISCARD 342.46 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:20:10.408Z","tool":"store_round","msg":"Stored iter006_panel6: DISCARD 342.46 TFLOPS (round 6)","level":"info"}
+{"ts":"2026-04-21T12:20:10.649Z","tool":"next_iter","msg":"Resolved iter007_blockm256","level":"info"}
+{"ts":"2026-04-21T12:20:50.693Z","tool":"store_round","msg":"Storing iter007_blockm256 (DISCARD 89.13 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:20:50.713Z","tool":"store_round","msg":"Stored iter007_blockm256: DISCARD 89.13 TFLOPS (round 7)","level":"info"}
+{"ts":"2026-04-21T12:20:50.979Z","tool":"next_iter","msg":"Resolved iter008_blockn256","level":"info"}
+{"ts":"2026-04-21T12:21:27.370Z","tool":"store_round","msg":"Storing iter008_blockn256 (DISCARD 259.41 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:21:27.389Z","tool":"store_round","msg":"Stored iter008_blockn256: DISCARD 259.41 TFLOPS (round 8)","level":"info"}
+{"ts":"2026-04-21T12:21:27.689Z","tool":"next_iter","msg":"Resolved iter009_threads256","level":"info"}
+{"ts":"2026-04-21T12:22:05.032Z","tool":"store_round","msg":"Storing iter009_threads256 (DISCARD 267.91 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:22:05.051Z","tool":"store_round","msg":"Stored iter009_threads256: DISCARD 267.91 TFLOPS (round 9)","level":"info"}
+{"ts":"2026-04-21T12:22:05.384Z","tool":"next_iter","msg":"Resolved iter010_stages4","level":"info"}

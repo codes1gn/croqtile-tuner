@@ -1,0 +1,11 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_cublas	415.6494	KEEP	baseline	cuBLAS reference baseline
+iter001	iter001_baseline_tcore	316.84	KEEP	memory_bound	Baseline TileLang matmul with tensor cores: 128x128x64 tiles, 3 stages, panel_si
+iter002	iter002_blockn192	335.55	KEEP	compute_bound	Increase BLOCK_N to 192 for better compute intensity
+iter003	iter003_blockk128	0	COMPILE_FAIL	compute_bound	BLOCK_K=128 exceeded shared memory limit
+iter004	iter004_blockk128_s2	343.47	KEEP	compute_bound	BLOCK_K=128 with stages=2 to fit shared memory
+iter005	iter005_panel10	341.19	DISCARD	compute_bound	Increase panel_size to 10 for L2 locality
+iter006	iter006_panel6	342.46	DISCARD	compute_bound	panel_size=6 for different L2 pattern
+iter007	iter007_blockm256	89.13	DISCARD	compute_bound	BLOCK_M=256 caused severe occupancy drop
+iter008	iter008_blockn256	259.41	DISCARD	compute_bound	64x256x64 too small BLOCK_M hurts perf
+iter009	iter009_threads256	267.91	DISCARD	compute_bound	threads=256 caused register pressure
