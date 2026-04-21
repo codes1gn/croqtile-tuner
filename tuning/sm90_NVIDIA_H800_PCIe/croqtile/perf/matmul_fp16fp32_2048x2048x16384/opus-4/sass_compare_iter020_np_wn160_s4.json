@@ -1,0 +1,97 @@
+{
+  "iter": "iter020_np_wn160_s4",
+  "baseline": {
+    "total_instructions": 1271,
+    "estimated_registers": 187,
+    "tensor_ops": {},
+    "top_instructions": {
+      "FFMA": 320,
+      "UIADD3": 162,
+      "F2FP": 80,
+      "ULDC": 77,
+      "UIMAD": 60,
+      "BRA": 58,
+      "UMOV": 57,
+      "WARPGROUP": 55,
+      "UISETP": 46,
+      "HGMMA": 40
+    },
+    "memory_ops": {
+      "LDS": 3,
+      "STS": 1
+    }
+  },
+  "custom": {
+    "total_instructions": 664,
+    "estimated_registers": 166,
+    "tensor_ops": {},
+    "top_instructions": {
+      "IMAD": 122,
+      "LEA": 90,
+      "LOP3": 55,
+      "IADD3": 46,
+      "CS2R": 44,
+      "ST": 40,
+      "R2UR": 22,
+      "SYNCS": 21,
+      "VIADD": 21,
+      "SHF": 19
+    },
+    "memory_ops": {}
+  },
+  "divergences": [
+    {
+      "category": "register_pressure",
+      "severity": "medium",
+      "detail": "Custom uses 166 regs vs baseline 187 (-21)"
+    },
+    {
+      "category": "memory_pattern",
+      "severity": "medium",
+      "detail": "Baseline has STS (1x) but custom does not"
+    },
+    {
+      "category": "memory_pattern",
+      "severity": "medium",
+      "detail": "Baseline has LDS (3x) but custom does not"
+    },
+    {
+      "category": "synchronization",
+      "severity": "medium",
+      "detail": "Barrier density: baseline 0.002 vs custom 0.039"
+    },
+    {
+      "category": "instruction_mix",
+      "severity": "low",
+      "detail": "FFMA: baseline 25.2% vs custom 0.0% (diff 25.2%)"
+    },
+    {
+      "category": "instruction_mix",
+      "severity": "low",
+      "detail": "IMAD: baseline 1.3% vs custom 18.4% (diff 17.0%)"
+    },
+    {
+      "category": "instruction_mix",
+      "severity": "low",
+      "detail": "LEA: baseline 0.3% vs custom 13.6% (diff 13.2%)"
+    },
+    {
+      "category": "instruction_mix",
+      "severity": "low",
+      "detail": "UIADD3: baseline 12.7% vs custom 2.3% (diff 10.5%)"
+    },
+    {
+      "category": "instruction_mix",
+      "severity": "low",
+      "detail": "CS2R: baseline 0.0% vs custom 6.6% (diff 6.6%)"
+    }
+  ],
+  "summary": [
+    "[MEDIUM] register_pressure: Custom uses 166 regs vs baseline 187 (-21)",
+    "[MEDIUM] memory_pattern: Baseline has STS (1x) but custom does not",
+    "[MEDIUM] memory_pattern: Baseline has LDS (3x) but custom does not",
+    "[MEDIUM] synchronization: Barrier density: baseline 0.002 vs custom 0.039",
+    "[LOW] instruction_mix: FFMA: baseline 25.2% vs custom 0.0% (diff 25.2%)"
+  ],
+  "actionable_insights": "Use the divergences above to guide your next IDEA. High-severity items (tensor_core, register_pressure) usually have the biggest impact. Focus on matching the baseline's instruction patterns where feasible."
+}

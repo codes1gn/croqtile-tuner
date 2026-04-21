@@ -1,0 +1,9 @@
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/opus-4/iter081_wn112s4.co:24.12: info: In the current kernel `__choreo_device_matmul_fp16fp32_np_wn112_1p1c`, cudaFuncAttributeMaxDynamicSharedMemorySize is set to `180224` bytes, cause shared memory usage has exceeded the default limit 48KB.
+    parallel {block_m, block_n} by [cdiv(M, MATMUL_TILE_M), cdiv(N, MATMUL_WARP_N)] : block {
+             ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/opus-4/iter081_wn112s4.co:41.29: warning: The implicit type conversion may lose precision: 'f64' to 'f32'
+          mc0 = mma.fill.f32 0.0;
+                              ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/opus-4/iter081_wn112s4.co:42.29: warning: The implicit type conversion may lose precision: 'f64' to 'f32'
+          mc1 = mma.fill.f32 0.0;
+                              ^

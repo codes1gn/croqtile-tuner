@@ -1,17 +1,15 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-20T15:11:30Z",
+  "timestamp": "2026-04-20T17:45:27Z",
   "dsl": "croqtile",
   "shape_key": "matmul_fp16fp32_2048x2048x16384",
-  "iter": "iter020_np_wn160_s4",
+  "iter": "iter086_wn176s3_1p1c",
   "bottleneck": "compute_bound",
-  "idea": "Non-persistent WARP_N=160, 4 stages with launch_bounds - compare to persistent iter016",
-  "expected_gain": "+5 TFLOPS from less persistent overhead",
+  "idea": "WARP_N=176 (between 160 and 192) with 3 stages. 2048/176=11.6 - partial tiles, but may find a sweet spot",
+  "expected_gain": "+0-2% (speculative)",
   "levers": [
-    "non-persistent",
-    "WARP_N=160",
-    "STAGES=4",
-    "__launch_bounds__"
+    "WARP_N",
+    "STAGES"
   ],
   "status": "PLANNED"
 }

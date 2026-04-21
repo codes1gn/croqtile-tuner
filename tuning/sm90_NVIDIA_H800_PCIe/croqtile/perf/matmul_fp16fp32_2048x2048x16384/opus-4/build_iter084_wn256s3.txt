@@ -1,0 +1,73 @@
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/opus-4/iter084_wn256s3.co:32.9: error: shared memory OUT OF BOUND!
+	In the scope ::matmul_fp16fp32_np_wn256_1p1c::paraby_0::paraby_1::paraby_2::paraby_3::inthreads_0::within_0::foreach_0::, compile-time shared memory:
+	Used: 278528 bytes, Limit: 233472 bytes. With variables:
+		::matmul_fp16fp32_np_wn256_1p1c::paraby_0::anon_1
+          foreach {iv_k} in [cdiv(K, MATMUL_TILE_K)] {
+          ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/opus-4/iter084_wn256s3.co:32.9: error: shared memory OUT OF BOUND!
+	In the scope ::matmul_fp16fp32_np_wn256_1p1c::paraby_0::paraby_1::paraby_2::paraby_3::inthreads_0::within_0::, compile-time shared memory:
+	Used: 278528 bytes, Limit: 233472 bytes. With variables:
+		::matmul_fp16fp32_np_wn256_1p1c::paraby_0::anon_1
+          foreach {iv_k} in [cdiv(K, MATMUL_TILE_K)] {
+          ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/opus-4/iter084_wn256s3.co:43.9: error: shared memory OUT OF BOUND!
+	In the scope ::matmul_fp16fp32_np_wn256_1p1c::paraby_0::paraby_1::paraby_2::paraby_3::inthreads_1::within_1::foreach_1::, compile-time shared memory:
+	Used: 278528 bytes, Limit: 233472 bytes. With variables:
+		::matmul_fp16fp32_np_wn256_1p1c::paraby_0::anon_1
+          foreach {s} in [MATMUL_STAGES] {
+          ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/opus-4/iter084_wn256s3.co:43.9: error: shared memory OUT OF BOUND!
+	In the scope ::matmul_fp16fp32_np_wn256_1p1c::paraby_0::paraby_1::paraby_2::paraby_3::inthreads_1::within_1::, compile-time shared memory:
+	Used: 278528 bytes, Limit: 233472 bytes. With variables:
+		::matmul_fp16fp32_np_wn256_1p1c::paraby_0::anon_1
+          foreach {s} in [MATMUL_STAGES] {
+          ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/opus-4/iter084_wn256s3.co:49.11: error: shared memory OUT OF BOUND!
+	In the scope ::matmul_fp16fp32_np_wn256_1p1c::paraby_0::paraby_1::paraby_2::paraby_3::inthreads_1::within_2::foreach_2::within_3::foreach_3::, compile-time shared memory:
+	Used: 278528 bytes, Limit: 233472 bytes. With variables:
+		::matmul_fp16fp32_np_wn256_1p1c::paraby_0::anon_1
+            foreach {iv_warp} in [cdiv(MATMUL_TILE_K, MATMUL_WARP_K)] {
+            ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/opus-4/iter084_wn256s3.co:49.11: error: shared memory OUT OF BOUND!
+	In the scope ::matmul_fp16fp32_np_wn256_1p1c::paraby_0::paraby_1::paraby_2::paraby_3::inthreads_1::within_2::foreach_2::within_3::, compile-time shared memory:
+	Used: 278528 bytes, Limit: 233472 bytes. With variables:
+		::matmul_fp16fp32_np_wn256_1p1c::paraby_0::anon_1
+            foreach {iv_warp} in [cdiv(MATMUL_TILE_K, MATMUL_WARP_K)] {
+            ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/opus-4/iter084_wn256s3.co:46.9: error: shared memory OUT OF BOUND!
+	In the scope ::matmul_fp16fp32_np_wn256_1p1c::paraby_0::paraby_1::paraby_2::paraby_3::inthreads_1::within_2::foreach_2::, compile-time shared memory:
+	Used: 278528 bytes, Limit: 233472 bytes. With variables:
+		::matmul_fp16fp32_np_wn256_1p1c::paraby_0::anon_1
+          foreach {iv_k} in [cdiv(K, MATMUL_TILE_K)] {
+          ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/opus-4/iter084_wn256s3.co:46.9: error: shared memory OUT OF BOUND!
+	In the scope ::matmul_fp16fp32_np_wn256_1p1c::paraby_0::paraby_1::paraby_2::paraby_3::inthreads_1::within_2::, compile-time shared memory:
+	Used: 278528 bytes, Limit: 233472 bytes. With variables:
+		::matmul_fp16fp32_np_wn256_1p1c::paraby_0::anon_1
+          foreach {iv_k} in [cdiv(K, MATMUL_TILE_K)] {
+          ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/opus-4/iter084_wn256s3.co:30.33: error: shared memory OUT OF BOUND!
+	In the scope ::matmul_fp16fp32_np_wn256_1p1c::paraby_0::paraby_1::paraby_2::paraby_3::, compile-time shared memory:
+	Used: 278528 bytes, Limit: 233472 bytes. With variables:
+		::matmul_fp16fp32_np_wn256_1p1c::paraby_0::anon_1
+      parallel p1 by 2 : group-4, t by 128 : thread {
+                                  ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/opus-4/iter084_wn256s3.co:30.33: error: shared memory OUT OF BOUND!
+	In the scope ::matmul_fp16fp32_np_wn256_1p1c::paraby_0::paraby_1::paraby_2::, compile-time shared memory:
+	Used: 278528 bytes, Limit: 233472 bytes. With variables:
+		::matmul_fp16fp32_np_wn256_1p1c::paraby_0::anon_1
+      parallel p1 by 2 : group-4, t by 128 : thread {
+                                  ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/opus-4/iter084_wn256s3.co:30.14: error: shared memory OUT OF BOUND!
+	In the scope ::matmul_fp16fp32_np_wn256_1p1c::paraby_0::paraby_1::, compile-time shared memory:
+	Used: 278528 bytes, Limit: 233472 bytes. With variables:
+		::matmul_fp16fp32_np_wn256_1p1c::paraby_0::anon_1
+      parallel p1 by 2 : group-4, t by 128 : thread {
+               ^
+tuning/sm90_NVIDIA_H800_PCIe/croqtile/srcs/matmul_fp16fp32_2048x2048x16384/opus-4/iter084_wn256s3.co:24.12: error: shared memory OUT OF BOUND!
+	In the scope ::matmul_fp16fp32_np_wn256_1p1c::paraby_0::, compile-time shared memory:
+	Used: 278528 bytes, Limit: 233472 bytes. With variables:
+		::matmul_fp16fp32_np_wn256_1p1c::paraby_0::anon_1
+    parallel {block_m, block_n} by [cdiv(M, MATMUL_TILE_M), cdiv(N, MATMUL_WARP_N)] : block {
+             ^
+Totally 12 errors have been detected.

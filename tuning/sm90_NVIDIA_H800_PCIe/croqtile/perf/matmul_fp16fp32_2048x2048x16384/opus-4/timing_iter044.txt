@@ -1,0 +1,5 @@
+Verification passed (sampled 1000 elements)
+M=2048 N=2048 K=16384
+Warmup: 5, Timed: 20
+Avg time: 0.433091 ms
+TFLOPS: 317.344
