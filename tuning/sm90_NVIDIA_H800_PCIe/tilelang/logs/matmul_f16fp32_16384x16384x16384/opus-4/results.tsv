@@ -45,3 +45,8 @@ iter042	iter042_b256x128k128	164.34	DISCARD	memory_bound	256x128 tall tiles hurt
 iter043	iter043_b128x192k64s4	307.31	DISCARD	compute_bound	K=64 stages=4 shared memory overhead vs iter004
 iter044	iter044_b128x192k96	330.41	DISCARD	compute_bound	K=96 approaching optimal but still below K=128
 iter045	iter045_b128x192k112	207.20	DISCARD	memory_bound	K=112 triggers TMA fallback losing efficiency
+iter046	iter046_b128x256k64s3	34.95	DISCARD	latency_bound	256 N-tile causes severe occupancy drop
+iter047	iter047_b64x192k64s2	120.58	DISCARD	memory_bound	64x192 small M-tile poor A matrix reuse
+iter048	iter048_panel4_v2	179.95	DISCARD	latency_bound	panel_size=4 worse L2 locality than 8
+iter049	iter049_s3_k128	166.07	DISCARD	latency_bound	128x128x128 stages=3 excessive shared memory
+iter050	iter050_b192x192k128s2	81.88	DISCARD	latency_bound	192x192 square tiles high register pressure

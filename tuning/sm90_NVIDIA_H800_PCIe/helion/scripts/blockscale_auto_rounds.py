@@ -250,11 +250,35 @@ def build_expanded_grid() -> list[tuple[int, int, int, int, str, int]]:
 EXPANDED_GRID = build_expanded_grid()
 
 
+def build_phase2_grid() -> list[tuple[int, int, int, int, str, int]]:
+    """Narrow search near current best (128², BK 64, stages 3): fine-tune stages/warps/indexing/BK."""
+    out: list[tuple[int, int, int, int, str, int]] = []
+    base = (128, 128)
+    # Priority: BK 64/128, stages 3–4, warps 4/8/16, both indexings
+    for bk in (32, 64, 128):
+        for st in (3, 4):
+            for nw in (4, 8, 16):
+                for ix in ("pointer", "block_ptr"):
+                    out.append((*base, nw, st, ix, bk))
+    # Asymmetric + stages3 BK64 (user request)
+    for bm, bn in ((64, 256), (256, 64), (96, 192), (192, 96)):
+        for nw in (4, 8, 16):
+            for ix in ("pointer", "block_ptr"):
+                out.append((bm, bn, nw, 3, ix, 64))
+                out.append((bm, bn, nw, 2, ix, 64))
+    return out
+
+
+PHASE2_GRID = build_phase2_grid()
+
+
 def spec_for_round(r: int) -> tuple[int, int, int, int, str, int, int, str]:
     if r < 101:
         g = GRID[(r - 5) % len(GRID)]
-    else:
+    elif r < 201:
         g = EXPANDED_GRID[(r - 101) % len(EXPANDED_GRID)]
+    else:
+        g = PHASE2_GRID[(r - 201) % len(PHASE2_GRID)]
     bm, bn, nw, st, ix, bk = g
     assert bk in (32, 64, 128) and bk % 32 == 0
     ncol = bk // 32
@@ -450,8 +474,9 @@ def main() -> None:
         text=True,
     ).strip()
     print(
-        f"[blockscale_auto_rounds] EXPANDED_GRID size = {len(EXPANDED_GRID)} "
-        f"(rounds>=101 cycle this list)",
+        f"[blockscale_auto_rounds] grids: legacy={len(GRID)} "
+        f"expanded(101-200)={len(EXPANDED_GRID)} "
+        f"phase2(201+)={len(PHASE2_GRID)}",
         flush=True,
     )
     for rnd in range(args.from_r, args.to_r + 1):

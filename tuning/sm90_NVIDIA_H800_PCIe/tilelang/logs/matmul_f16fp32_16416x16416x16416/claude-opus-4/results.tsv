@@ -50,3 +50,5 @@ iter047	iter047_b128x512	57.40	DISCARD	memory_bound	128x512 too wide for registe
 iter048	iter048_mma_explicit	0.00	COMPILE_FAIL	compute_bound	T.mma does not exist in TileLang - use T.gemm only
 iter049	iter049_bt_layout	38.71	DISCARD	memory_bound	Transposed B explicit copy very slow
 iter050	iter050_panel3	299.92	DISCARD	memory_bound	panel_size=3 worse L2 locality than 6
+iter051	iter051_k128_s2	297.92	DISCARD	latency_bound	K=128 with 2 stages - less latency hiding
+iter052	iter052_b256x128_t512	0.00	HANG	compute_bound	512 threads hung during compile - WGMMA constraint

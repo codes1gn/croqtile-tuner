@@ -127,3 +127,7 @@
 {"ts":"2026-04-21T12:48:38.357Z","tool":"store_round","msg":"Stored iter049_bt_layout: DISCARD 38.71 TFLOPS (round 49)","level":"info"}
 {"ts":"2026-04-21T12:48:38.723Z","tool":"store_round","msg":"Storing iter050_panel3 (DISCARD 299.92 TFLOPS)","level":"info"}
 {"ts":"2026-04-21T12:48:38.742Z","tool":"store_round","msg":"Stored iter050_panel3: DISCARD 299.92 TFLOPS (round 50)","level":"info"}
+{"ts":"2026-04-21T12:52:29.310Z","tool":"store_round","msg":"Storing iter051_k128_s2 (DISCARD 297.92 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:52:29.329Z","tool":"store_round","msg":"Stored iter051_k128_s2: DISCARD 297.92 TFLOPS (round 51)","level":"info"}
+{"ts":"2026-04-21T12:52:29.719Z","tool":"store_round","msg":"Storing iter052_b256x128_t512 (HANG 0.00 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:52:29.738Z","tool":"store_round","msg":"Stored iter052_b256x128_t512: HANG 0.00 TFLOPS (round 52)","level":"info"}
