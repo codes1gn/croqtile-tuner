@@ -1,0 +1,10 @@
+{
+  "task_uid": "croqtune-fp16fp32-2048x2048x16384-20260420222853",
+  "dsl": "croqtile",
+  "model": "opus-4",
+  "device": "sm90_NVIDIA_H800_PCIe",
+  "status": "completed",
+  "best_tflops": 371.64,
+  "baseline_tflops": 476.7218,
+  "best_kernel": "iter053_np_wn160_s4_1p1c"
+}

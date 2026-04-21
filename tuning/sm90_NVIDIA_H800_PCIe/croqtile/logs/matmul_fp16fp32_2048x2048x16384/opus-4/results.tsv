@@ -1,0 +1,86 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_cublas	476.7218	KEEP	baseline	cuBLAS reference baseline
+iter001	iter001_ws1p2c_base	270.237	KEEP	memory_bound	1p2c warp-specialized baseline from prior tuning
+iter002	iter002_wn128_s3	275.565	KEEP	memory_bound	Increase WARP_N 64->128 for better compute/mem ratio
+iter003	iter003_wn128_s4	292.611	KEEP	memory_bound	Increase pipeline stages 3->4 to hide memory latency
+iter004	iter004_ws1p1c	249.727	DISCARD	compute_bound	1p1c topology hurt K-heavy shape - need 2 consumers
+iter005	iter005_wn192_s4	329.233	KEEP	compute_bound	WARP_N=192 with 3 stages for larger tiles
+iter006	iter006_wn256_s2	258.258	DISCARD	memory_bound	WARP_N=256 with 2 stages - not enough pipeline depth
+iter007	iter007_persis_wn192	343.229	KEEP	compute_bound	Persistent kernel WARP_N=192, 3 stages - new best
+iter008	iter008_persis_wn128_s4	233.956	DISCARD	memory_bound	Persistent WARP_N=128 4 stages - smaller tiles hurt
+iter009	iter009_persis_1p3c	0.0	COMPILE_FAIL	compute_bound	Persistent 1p3c with TILE_M=192 - barrier sync bug causes verification failure
+iter010	iter010_transp_store	0.0	COMPILE_FAIL	compute_bound	mma.store.transp for bank-conflict-free epilogue - layout mismatch with TMA
+iter011	iter011_swiz64	0.0	COMPILE_FAIL	compute_bound	SWIZ=64 - TMA invalid argument error
+iter012	iter012_np_1p3c	302.68	DISCARD	compute_bound	Non-persistent 1p3c with TILE_M=192 and WARP_N=128 - slower than persistent 1p2c
+iter013	iter013_persis_1p1c_wn192	267.27	DISCARD	compute_bound	Persistent 1p1c TILE_M=64 WARP_N=192 - K-heavy shape needs more consumers
+iter014	iter014_launch_bounds	344.52	KEEP	compute_bound	Phase 2: __launch_bounds__(384,1) on iter007 - improved occupancy
+iter015	iter015_unroll_warp	341.13	DISCARD	compute_bound	Phase 2: #pragma unroll on iv_warp loop - increased register pressure
+iter016	iter016_persis_wn160_s4	358.87	KEEP	compute_bound	Persistent WARP_N=160 4 stages with launch_bounds - deeper pipeline helps K-heav
+iter017	iter017_persis_wn164_s4	0.0	COMPILE_FAIL	compute_bound	WARP_N=164 - MMA shape not supported by SM90
+iter018	iter018_persis_tm64_wn192_s4	267.34	DISCARD	compute_bound	TILE_M=64 1p1c - too small tile, K-heavy shape needs more consumers
+iter019	iter019_persis_wn192_lb2	0.0	COMPILE_FAIL	compute_bound	launch_bounds(384,2) - kernel needs 122+ regs, insufficient for minBlocks=2
+iter020	iter020_np_wn160_s4	368.96	KEEP	compute_bound	Non-persistent WARP_N=160, 4 stages, launch_bounds - beats persistent iter016
+iter021	iter021_np_wn192_s3	329.64	DISCARD	compute_bound	Non-persistent WARP_N=192, 3 stages - 4 stages better for K-heavy
+iter022	iter022_np_wn128_s5	278.94	DISCARD	compute_bound	Non-persistent WARP_N=128, 5 stages - smaller WARP_N hurts performance
+iter023	iter023_np_wn160_s4_fastmath	0	COMPILE_FAIL	compute_bound	nvcc --use_fast_math breaks CuTe GMMA namespace resolution
+iter024	iter024_np_tm192_wn128_s3	47.95	DISCARD	unknown	Non-persistent TILE_M=192, WARP_N=128, 3 stages, 1p3c - catastrophic perf drop
+iter025	iter025_np_tk32_wn192_s5	0	SEGFAULT	unknown	Non-persistent TILE_K=32, WARP_N=192, 5 stages - illegal memory access (TMA alig
+iter026	iter026_np_wn160_s4_swiz64	0	SEGFAULT	unknown	Non-persistent WARP_N=160, 4 stages, SWIZ=64 - TMA invalid argument (SWIZ not co
+iter027	iter027_np_tm64_wn192_s5	257.12	DISCARD	compute_bound	Non-persistent TILE_M=64, WARP_N=192, 5 stages (1p1c) - 1p1c bad for K-heavy sha
+iter028	iter028_np_wn160_s4_maxreg128	367.51	DISCARD	compute_bound	Non-persistent WARP_N=160, 4 stages, maxrregcount=128 - reg limit hurts slightly
+iter028	iter028_np_wn160_s4_maxreg128	367.51	DISCARD	compute_bound	Non-persistent WARP_N=144, 4 stages - m64n144k16 less efficient
+iter029	iter029_np_wn144_s4	272.01	DISCARD	compute_bound	Non-persistent WARP_N=144, 4 stages - m64n144k16 less efficient
+iter030	iter030_np_wn160_s4_o2	367.71	DISCARD	compute_bound	Non-persistent WARP_N=160, 4 stages, -O2 - no difference vs O3
+iter031	iter031_np_wn96_s5	242.24	DISCARD	compute_bound	Non-persistent WARP_N=96, 5 stages - smaller N hurts more than bank conflicts
+iter032	iter032_np_wn224_s2	285.88	DISCARD	latency	Non-persistent WARP_N=224, 2 stages - 2 stages too shallow for K=16384
+iter033	iter033_np_wn160_wk32_s4	0	COMPILE_FAIL	unknown	Non-persistent WARP_N=160, WARP_K=32, 4 stages - K=32 MMA shape not supported
+iter034	iter034_np_wn160_tk32_s6	0	SEGFAULT	unknown	Non-persistent WARP_N=160, TILE_K=32, 6 stages - illegal memory access (TMA+smal
+iter035	iter035_np_wn160_s4_swiz32	0	SEGFAULT	unknown	Non-persistent WARP_N=160, 4 stages, SWIZ=32 - TMA invalid argument
+iter036	iter036_persis_wn256_s2	265.49	DISCARD	latency	Persistent WARP_N=256, 2 stages - pipeline too shallow
+iter037	iter037_np_wn160_s4_unroll2	329.41	DISCARD	compute_bound	Non-persistent WARP_N=160, 4 stages, unroll 2 - WGMMA serialization hurt perf
+iter038	iter038_np_tm64_wn160_s6	280.65	DISCARD	compute_bound	Non-persistent TILE_M=64, WARP_N=160, 6 stages (1p1c) - small TILE_M hurts more
+iter039	iter039_np_tm256_wn160_s3	272.13	DISCARD	compute_bound	TILE_M=192 WARP_N=160 STAGES=2 1p3c - larger tile hurts with shallow pipeline
+iter040	iter040_np_1p1c_wn160_s5	365.69	DISCARD	compute_bound	1p1c topology TILE_M=128 WARP_N=160 4 stages - close but 1p2c still better
+iter042	iter042_np_wn176_s4	350.56	DISCARD	compute_bound	WARP_N=176 3 stages - 3 stages too shallow, m64n176k16 less efficient than n160
+iter043	iter043_np_wn160_s4_epilog	0.0	SEGFAULT	compute_bound	Persistent WARP_N=160 4 stages 114 SMs - verification failed (barrier sync in pe
+iter044	iter044_np_wn128_1p3c_s4	317.34	DISCARD	compute_bound	1p3c TILE_M=192 WARP_N=128 3 stages - 3 stages + smaller N hurt vs 1p2c wn160 s4
+iter045	iter045_np_wn160_s4_wb	49.28	DISCARD	compute_bound	launch_bounds(384,1) forces minBlocks=1 killing occupancy
+iter046	iter046_np_tm64_wn192_s4	256.42	DISCARD	memory_bound	Non-persistent TILE_M=64 WARP_N=192 4-stage 1p1c
+iter047	iter047_np_wn144_s5	268.37	DISCARD	low_occupancy	Non-persistent WARP_N=144 4-stage 1p2c
+iter048	iter048_np_tm64_wn160_s4_1p1c	270.34	DISCARD	workload_imbalance	Non-persistent TILE_M=64 WARP_N=160 4-stage 1p1c
+iter049	iter049_np_wn160_s3_softsync	359.34	DISCARD	barrier_overhead	Non-persistent WARP_N=160 3-stage with soft sync (commit at end only)
+iter050	iter050_np_wn160_tk128_s2	0	SEGFAULT	k_tile_granularity	Non-persistent WARP_N=160 TILE_K=128 2-stage (TMA invalid arg)
+iter051	iter051_np_wn192_1p3c_s3	0	COMPILE_FAIL	consumer_parallelism	Non-persistent WARP_N=192 TILE_M=192 1p3c (shared mem overflow)
+iter052	iter052_np_wn160_s5_1p2c	0	COMPILE_FAIL	pipeline_depth	Non-persistent TILE_M=128 WARP_N=160 5-stage 1p2c (smem overflow - not attempted
+iter053	iter053_np_wn160_s4_1p1c	371.64	KEEP	topology_simplification	Non-persistent TILE_M=128 WARP_N=160 4-stage 1p1c - simpler topology, fewer barr
+iter054	iter054_np_wn160_s3_1p1c	361.67	DISCARD	smem_reduction	Non-persistent TILE_M=128 WARP_N=160 3-stage 1p1c - reduce smem
+iter055	iter055_np_tm64_wn192_s4_1p1c	257.91	DISCARD	tile_warp_balance	Non-persistent TILE_M=64 WARP_N=192 4-stage 1p1c
+iter056	iter056_np_wn128_s5_1p1c	283.99	DISCARD	latency_hiding	Non-persistent TILE_M=128 WARP_N=128 5-stage 1p1c
+iter057	iter057_persis_wn160_s4_1p1c	0	DISCARD	persistence	Persistent TILE_M=128 WARP_N=160 4-stage 1p1c - RUNTIME ERROR
+iter058	iter058_np_tm192_wn128_s3_1p1c	333.81	DISCARD	tile_aspect	Non-persistent TILE_M=192 WARP_N=128 3-stage 1p1c
+iter059	iter059_np_wn160_s4_1p1c_lb256	370.16	DISCARD	occupancy	Non-persistent TILE_M=128 WARP_N=160 4-stage 1p1c with launch_bounds(256)
+iter060	iter060_np_wn160_s4_1p1c_maxreg96	29.27	DISCARD	register_pressure	Non-persistent TILE_M=128 WARP_N=160 4-stage 1p1c with maxrregcount=160 - serial
+iter061	iter061_np_wn160_s4_1p2c_revisit	365.10	DISCARD	topology_revisit	iter020 1p2c revisit: 365 TFLOPS vs iter053 1p1c 370 TFLOPS - 1p1c wins
+iter062	iter062_np_wn168_s3_1p1c	360.49	DISCARD	warp_n_sweep	Non-persistent TILE_M=128 WARP_N=168 3-stage 1p1c
+iter063	iter063_compilero1	370.45	DISCARD	compiler_flags	Non-persistent 1p1c with -O1 - same as -O3
+iter064	iter064_tm256wn96	0	DISCARD	tile_m_big	Non-persistent TILE_M=256 WARP_N=96 3-stage 1p1c - VERIFICATION_FAIL
+iter065	iter065_wn136s4	279.96	DISCARD	warp_n_sweep	WARP_N=136 between 128 and 144 - worse than 160
+iter066	iter066_wn152s4	359.41	DISCARD	warp_n_sweep	WARP_N=152 - still below optimal 160
+iter067	iter067_tk32wk8	0.0	COMPILE_FAIL	structural_change	TILE_K=32 WARP_K=8 - MMA K=8 not supported on SM90
+iter068	iter068_tm128wn128s5	284.95	DISCARD	tiling_balance	TILE_M=128 WARP_N=128 5 stages - square tile worse than 128x160
+iter069	iter069_tm64wn192s3	250.77	DISCARD	structural_change	TILE_M=64 single warp row WARP_N=192 - less efficient
+iter070	iter070_wn160s6	0.0	COMPILE_FAIL	pipeline_depth	6 stages with WARP_N=160 - shared mem overflow 303KB > 233KB
+iter071	iter071_tk48s5	0.0	SEGFAULT	memory_balance	TILE_K=48 s5 - illegal mem access (K not divisible by 48)
+iter072	iter072_wn184s3	345.42	DISCARD	warp_n_sweep	WARP_N=184 3 stages - better than some but below 160
+iter073	iter073_tm64wn160s4	269.64	DISCARD	tile_aspect	TILE_M=64 single warp row with 4 stages - still worse than 128
+iter074	iter074_wn156s4	0.0	COMPILE_FAIL	warp_n_sweep	WARP_N=156 - MMA shape not supported (not multiple of 8)
+iter075	iter075_tm192wn104s3	349.24	DISCARD	tiling_aspect	TILE_M=192 (3 rows) WARP_N=104 - better than some but below optimal
+iter076	iter076_tk128s2	0	SEGFAULT	k_tile_size	TILE_K=128 2 stages - TMA invalid argument, larger K tile incompatible
+iter077	iter077_tm64wn80s4	182.95	DISCARD	occupancy_limited	TILE_M=64 WARP_N=80 4 stages - smaller tiles hurt efficiency despite more blocks
+iter078	iter078_wn200s3	235.80	DISCARD	compute_bound	WARP_N=200 3 stages - wider N tile hurt performance
+iter079	iter079_maxreg180	10.1	DISCARD	register_pressure	maxrregcount=180 caused WGMMA serialization - 220:270T, 240:258T, all worse
+iter080	iter080_tk32wk16s5	0	SEGFAULT	latency_bound	TILE_K=32 WARP_K=16 5 stages - TMA/SWIZ incompatibility with small K
+iter081	iter081_wn112s4	211.94	DISCARD	compute_bound	WARP_N=112 4 stages - N=112 worse than N=160
+iter082	iter082_wn168s4	0	COMPILE_FAIL	compute_bound	WARP_N=168 4 stages - smem overflow (237KB > 233KB)
+iter083	iter083_wn120s4	2.03	DISCARD	compute_bound	WARP_N=120 4 stages - N dim partial tiles killed perf
+iter084	iter084_wn256s3	0	COMPILE_FAIL	compute_bound	WARP_N=256 3 stages - smem overflow (278KB > 233KB)

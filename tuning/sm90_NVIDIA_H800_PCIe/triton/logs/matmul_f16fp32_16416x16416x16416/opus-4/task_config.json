@@ -1,0 +1,10 @@
+{
+  "task_uid": "triton-f16fp32-16416-1776751736",
+  "dsl": "triton",
+  "model": "opus-4",
+  "device": "sm90_NVIDIA_H800_PCIe",
+  "status": "completed",
+  "best_tflops": 344.93,
+  "baseline_tflops": 415.8495,
+  "best_kernel": "iter063_ef_gm12"
+}

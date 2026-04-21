@@ -1,0 +1,96 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_cublas	395.8035	KEEP	baseline	cuBLAS reference baseline
+iter001	iter001_base128x256x64	329.58	KEEP	memory_bound	Initial baseline adapted from prior 16416^3 tuning
+iter002	iter002_bk32_s5_w4	52.46	DISCARD	compute_bound	BLOCK_K=32 reduced tensor core utilization, performance dropped significantly
+iter003	iter003_bm256bn128w8	321.33	DISCARD	compute_bound	256x128 tile worse than 128x256 for this shape
+iter004	iter004_w16s4	314.93	DISCARD	compute_bound	num_warps=16 too many, reduces efficiency
+iter005	iter005_gm16_evict	341.32	KEEP	memory_bound	GROUP_M=16 and evict_last improved L2 cache performance
+iter006	iter006_gm32_evict	353.36	KEEP	memory_bound	GROUP_M=32 further improved L2 locality
+iter007	iter007_gm64_evict	341.03	DISCARD	memory_bound	GROUP_M=64 too large, imbalanced workload
+iter008	iter008_gm32_s5	0	COMPILE_FAIL	memory_bound	num_stages=5 exceeded shared memory limit
+iter009	iter009_gm32_s4	340.09	DISCARD	memory_bound	num_stages=4 worse than 3, more stages hurt for short K
+iter010	iter010_bm128bn128	261.93	DISCARD	compute_bound	128x128x128 square tiles inefficient for this shape
+iter011	iter011_bm256bn256	54.41	DISCARD	memory_bound	256x256 tiles too large, very poor performance
+iter012	iter012_gm32_s2	300.40	DISCARD	memory_bound	num_stages=2 too few, insufficient latency hiding
+iter013	iter013_gm48_evict	343.71	DISCARD	memory_bound	GROUP_M=48 slightly worse than 32
+iter014	iter014_gm24_evict	339.54	DISCARD	memory_bound	GROUP_M=24 worse than 32
+iter015	iter015_gm32_w4	63.47	DISCARD	compute_bound	num_warps=4 too few, very poor performance
+iter016	iter016_gm32_bk128	301.05	DISCARD	memory_bound	BLOCK_K=128 fewer iterations, less latency hiding
+iter017	iter017_gm32_noevict	340.09	DISCARD	memory_bound	Without evict_last, worse L2 behavior
+iter018	iter018_gm32_ef	355.39	KEEP	memory_bound	evict_first better than evict_last for thin-K
+iter019	iter019_gm16_ef	349.21	DISCARD	memory_bound	GROUP_M=16 with evict_first worse than 32
+iter020	iter020_ef_s4	330.88	DISCARD	memory_bound	num_stages=4 with evict_first worse
+iter021	iter021_ef_s2	301.00	DISCARD	memory_bound	num_stages=2 with evict_first worse
+iter022	iter022_ef_w16	326.86	DISCARD	compute_bound	num_warps=16 reduces efficiency
+iter023	iter023_gm40_ef	344.32	DISCARD	memory_bound	GROUP_M=40 worse than 32
+iter024	iter024_bm64bn256_ef	268.29	DISCARD	compute_bound	64x256 tiles too small for compute efficiency
+iter025	iter025_bm128bn128_ef	330.31	DISCARD	compute_bound	128x128 tiles less efficient than 128x256
+iter026	iter026_gm28_ef	334.78	DISCARD	memory_bound	GROUP_M=28 worse than 32
+iter027	iter027_gm36_ef	334.09	DISCARD	memory_bound	GROUP_M=36 worse than 32
+iter028	iter028_splitk2	0	DISCARD	compute_bound	Split-K with atomic_add has precision issues
+iter029	iter029_gm12_ef	333.47	DISCARD	memory_bound	GROUP_M tuning
+iter031	iter031_gm20_ef	344.17	DISCARD	memory_bound	GROUP_M tuning
+iter032	iter032_gm24_ef	342.42	DISCARD	memory_bound	GROUP_M tuning
+iter034	iter034_bm64bn128_ef	244.85	DISCARD	compute_bound	BLOCK size tuning
+iter036	iter036_bm64bn256_ef	269.72	DISCARD	compute_bound	BLOCK size tuning
+iter043	iter043_bm256bn128_ef	320.12	DISCARD	compute_bound	BLOCK size tuning
+iter044	iter044_bk32_ef	335.12	DISCARD	memory_bound	BLOCK_K=32 worse than 64
+iter045	iter045_bk48_ef	0	COMPILE_FAIL	memory_bound	BLOCK_K=48 not power of 2
+iter046	iter046_gm30s2w4	57.59	DISCARD	memory_bound	Parameter sweep
+iter047	iter047_gm30s2w8	275.40	DISCARD	memory_bound	Parameter sweep
+iter048	iter048_gm30s3w4	63.50	DISCARD	memory_bound	Parameter sweep
+iter049	iter049_gm30s3w8	339.77	DISCARD	memory_bound	Parameter sweep
+iter050	iter050_gm30s4w4	63.05	DISCARD	memory_bound	Parameter sweep
+iter051	iter051_gm30s4w8	333.37	DISCARD	memory_bound	Parameter sweep
+iter052	iter052_gm32s2w4	57.14	DISCARD	memory_bound	Parameter sweep
+iter053	iter053_gm32s2w8	303.11	DISCARD	memory_bound	Parameter sweep
+iter054	iter054_gm32s3w4	63.82	DISCARD	memory_bound	Parameter sweep
+iter055	iter055_gm32s3w8	340.63	DISCARD	memory_bound	Parameter sweep
+iter056	iter056_gm32s4w4	63.61	DISCARD	memory_bound	Parameter sweep
+iter057	iter057_gm32s4w8	330.91	DISCARD	memory_bound	Parameter sweep
+iter058	iter058_gm34s2w4	57.32	DISCARD	memory_bound	Parameter sweep
+iter059	iter059_gm34s2w8	309.84	DISCARD	memory_bound	Parameter sweep
+iter060	iter060_gm34s3w4	63.63	DISCARD	memory_bound	Parameter sweep
+iter061	iter061_gm34s3w8	340.19	DISCARD	memory_bound	Parameter sweep
+iter062	iter062_gm34s4w4	63.38	DISCARD	memory_bound	Parameter sweep
+iter063	iter063_gm34s4w8	332.55	DISCARD	memory_bound	Parameter sweep
+iter064	iter064_bm128bn256bk32	326.45	DISCARD	compute_bound	Tile size testing
+iter065	iter065_bm128bn192bk64	0	COMPILE_FAIL	compute_bound	Tile size testing
+iter066	iter066_bm192bn256bk64	0	COMPILE_FAIL	compute_bound	Tile size testing
+iter067	iter067_bm96bn256bk64	0	COMPILE_FAIL	compute_bound	Tile size testing
+iter068	iter068_gm16s3w8_ef	347.18	DISCARD	memory_bound	GROUP_M testing with evict_first
+iter069	iter069_gm16s2w8_ef	290.50	DISCARD	memory_bound	GROUP_M testing with evict_first
+iter070	iter070_gm24s3w8_ef	337.68	DISCARD	memory_bound	GROUP_M testing with evict_first
+iter071	iter071_gm24s2w8_ef	281.33	DISCARD	memory_bound	GROUP_M testing with evict_first
+iter072	iter072_gm32s3w8_ef	343.50	DISCARD	memory_bound	GROUP_M testing with evict_first
+iter073	iter073_gm32s2w8_ef	301.68	DISCARD	memory_bound	GROUP_M testing with evict_first
+iter074	iter074_gm40s3w8_ef	341.86	DISCARD	memory_bound	GROUP_M testing with evict_first
+iter075	iter075_gm40s2w8_ef	280.13	DISCARD	memory_bound	GROUP_M testing with evict_first
+iter076	iter076_gm26_ef_final	352.55	DISCARD	memory_bound	Final parameter sweep
+iter077	iter077_gm28_ef_final	338.10	DISCARD	memory_bound	Final parameter sweep
+iter078	iter078_gm30_ef_final	337.82	DISCARD	memory_bound	Final parameter sweep
+iter079	iter079_gm34_ef_final	335.01	DISCARD	memory_bound	Final parameter sweep
+iter080	iter080_gm36_ef_final	345.48	DISCARD	memory_bound	Final parameter sweep
+iter081	iter081_gm38_ef_final	327.50	DISCARD	memory_bound	Final parameter sweep
+iter082	iter082_gm32s3w4_final	63.39	DISCARD	memory_bound	Final parameter sweep
+iter083	iter083_gm32s4w4_final	63.09	DISCARD	memory_bound	Final parameter sweep
+iter084	iter084_gm32s4w8_final	334.85	DISCARD	memory_bound	Final parameter sweep
+iter085	iter085_gm18_ef	336.75	DISCARD	memory_bound	GROUP_M sweep
+iter086	iter086_gm22_ef	352.25	DISCARD	memory_bound	GROUP_M sweep
+iter087	iter087_gm42_ef	337.50	DISCARD	memory_bound	GROUP_M sweep
+iter088	iter088_gm44_ef	338.23	DISCARD	memory_bound	GROUP_M sweep
+iter089	iter089_gm46_ef	338.75	DISCARD	memory_bound	GROUP_M sweep
+iter090	iter090_gm48_ef	337.75	DISCARD	memory_bound	GROUP_M sweep
+iter091	iter091_gm8_ef	341.42	DISCARD	memory_bound	Final GROUP_M sweep
+iter092	iter092_gm10_ef	332.83	DISCARD	memory_bound	Final GROUP_M sweep
+iter093	iter093_gm12_ef	340.19	DISCARD	memory_bound	Final GROUP_M sweep
+iter094	iter094_gm14_ef	334.59	DISCARD	memory_bound	Final GROUP_M sweep
+iter095	iter095_gm50_ef	337.73	DISCARD	memory_bound	Final GROUP_M sweep
+iter096	iter096_gm52_ef	341.53	DISCARD	memory_bound	Final GROUP_M sweep
+iter097	iter097_gm54_ef	350.04	DISCARD	memory_bound	Final GROUP_M sweep
+iter098	iter098_gm56_ef	331.86	DISCARD	memory_bound	Final GROUP_M sweep
+iter099	iter099_gm58_ef	337.30	DISCARD	memory_bound	Final GROUP_M sweep
+iter100	iter100_gm60_ef	338.69	DISCARD	memory_bound	Final GROUP_M sweep
+iter101	iter101_gm62_ef	331.31	DISCARD	memory_bound	Final GROUP_M sweep
+iter102	iter102_gm64_ef	336.05	DISCARD	memory_bound	Final GROUP_M sweep
+iter103	iter103_gm128_ef	325.04	DISCARD	memory_bound	Final GROUP_M sweep

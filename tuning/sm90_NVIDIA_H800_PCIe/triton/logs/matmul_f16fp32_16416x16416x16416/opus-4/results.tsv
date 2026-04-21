@@ -1,0 +1,126 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_cublas	415.8495	KEEP	baseline	cuBLAS reference baseline
+iter001	iter001_base_matmul	321.99	KEEP	memory_bound	Initial baseline Triton matmul with BM128_BN256_BK64
+iter002	iter002_smaller_tile	177.36	DISCARD	compute_bound	Smaller tiles BM64_BN128_BK32 hurt arithmetic intensity
+iter003	iter003_more_stages	315.88	DISCARD	compute_bound	num_stages=4 with large tiles causes shared memory pressure
+iter004	iter004_balanced_tile	247.27	DISCARD	compute_bound	BM128_BN128 reduces arithmetic intensity vs BM128_BN256
+iter005	iter005_swizzle_l2	315.00	DISCARD	compute_bound	GROUP_M=16 for L2 locality did not help
+iter006	iter006_persistent	266.12	DISCARD	launch_bound	Persistent kernel overhead hurts large matrix performance
+iter007	iter007_larger_bk	288.29	DISCARD	compute_bound	BLOCK_K=128 with num_stages=2 reduces pipelining benefit
+iter008	iter008_medium_4stage	255.61	DISCARD	compute_bound	BM128_BN128 reduces arithmetic intensity vs BM128_BN256
+iter009	iter009_warp4	65.59	DISCARD	compute_bound	num_warps=4 too few for BM128_BN256 tile size
+iter010	iter010_warp16	338.13	KEEP	compute_bound	num_warps=16 improves parallelism within thread block
+iter011	iter011_w16_bk32	323.23	DISCARD	compute_bound	BLOCK_K=32 reduces arithmetic intensity per iteration
+iter012	iter012_w16_s4	333.95	DISCARD	compute_bound	num_stages=4 increases SMEM pressure without benefit
+iter013	iter013_bm256bn128	315.36	DISCARD	compute_bound	BM256_BN128 poor for B matrix access patterns
+iter014	iter014_bm64bn256	238.29	DISCARD	compute_bound	BM64_BN256 reduces A matrix reuse
+iter015	iter015_allow_tf32	337.38	DISCARD	compute_bound	allow_tf32 no effect on fp16 inputs
+iter016	iter016_num_ctas2	241.82	DISCARD	compute_bound	num_ctas=2 adds overhead without benefit
+iter017	iter017_warp12	0	COMPILE_FAIL	compute_bound	num_warps=12 not power of 2
+iter018	iter018_warp10	0	COMPILE_FAIL	compute_bound	num_warps=10 not power of 2
+iter019	iter019_warp14	0	COMPILE_FAIL	compute_bound	num_warps=14 not power of 2
+iter020	iter020_warp32	301.90	DISCARD	compute_bound	num_warps=32 increases register pressure too much
+iter021	iter021_evict_last	340.00	KEEP	memory_bound	eviction_policy=evict_last improves L2 caching
+iter022	iter022_gm4	319.92	DISCARD	memory_bound	GROUP_M=4 reduces L2 locality
+iter023	iter023_gm16	336.58	DISCARD	memory_bound	GROUP_M=16 too large for this shape
+iter024	iter024_gm32	314.85	DISCARD	memory_bound	GROUP_M=32 way too large
+iter025	iter025_bk32	322.84	DISCARD	compute_bound	BLOCK_K=32 with evict_last
+iter026	iter026_bk48	0	COMPILE_FAIL	compute_bound	BLOCK_K=48 not power of 2
+iter027	iter027_bk96	0	COMPILE_FAIL	compute_bound	BLOCK_K=96 not power of 2
+iter028	iter028_bk128_s2	270.27	DISCARD	compute_bound	BLOCK_K=128 needs num_stages=2 which hurts pipelining
+iter029	iter029_bm256bn256	0	COMPILE_FAIL	compute_bound	BM256_BN256 exceeds resource limits
+iter030	iter030_mixed_evict	335.45	DISCARD	memory_bound	Mixed eviction policies not better than all evict_last
+iter031	iter031_s2_evict	25.08	DISCARD	memory_bound	num_stages=2 severely hurts performance
+iter032	iter032_s4_evict	322.04	DISCARD	compute_bound	num_stages=4 with evict_last
+iter033	iter033_s5_evict	0	DISCARD	compute_bound	num_stages=5 with evict_last
+iter034	iter034_s6_evict	0	DISCARD	compute_bound	num_stages=6 with evict_last
+iter035	iter035_out_f32	0	COMPILE_FAIL	compute_bound	float32 output exceeds shared memory limit
+iter036	iter036_grid2d	276.39	DISCARD	memory_bound	2D grid without grouping loses L2 locality
+iter037	iter037_gm5_evict	326.93	DISCARD	memory_bound	GROUP_M=5 fine-tuning
+iter038	iter038_gm6_evict	332.84	DISCARD	memory_bound	GROUP_M=6 fine-tuning
+iter039	iter039_gm7_evict	338.01	DISCARD	memory_bound	GROUP_M=7 fine-tuning
+iter040	iter040_gm9_ev	173.45	DISCARD	memory_bound	GROUP_M=9 fine-tuning
+iter041	iter041_gm10_ev	340.35	KEEP	memory_bound	GROUP_M=10 fine-tuning
+iter042	iter042_bm192	0	DISCARD	compute_bound	BLOCK_M=192 not power of 2
+iter043	iter043_gm11_ev	336.43	DISCARD	memory_bound	GROUP_M=11 based on 10
+iter044	iter044_gm12_ev	339.46	DISCARD	memory_bound	GROUP_M=12 based on 10
+iter045	iter045_bn128_gm10	227.32	DISCARD	compute_bound	BLOCK_N=128 with GROUP_M=10
+iter046	iter046_bn192_gm10	0	DISCARD	compute_bound	BLOCK_N=192 with GROUP_M=10
+iter047	iter047_bm64_gm10	238.22	DISCARD	compute_bound	BLOCK_M=64 with GROUP_M=10
+iter048	iter048_bm256_gm10	0	DISCARD	compute_bound	BLOCK_M=256 with GROUP_M=10
+iter049	iter049_bk32_s4	326.17	DISCARD	compute_bound	bk32_s4 variation
+iter050	iter050_bk128_s3	0	DISCARD	compute_bound	bk128_s3 variation
+iter051	iter051_w8_gm10	321.41	DISCARD	compute_bound	w8_gm10 variation
+iter052	iter052_gm14	338.73	DISCARD	compute_bound	gm14 variation
+iter053	iter053_gm15	176.76	DISCARD	compute_bound	gm15 variation
+iter054	iter054_gm13	338.36	DISCARD	compute_bound	gm13 variation
+iter055	iter055_bm96	0	DISCARD	compute_bound	bm96 variation
+iter056	iter056_w32_gm10	305.43	DISCARD	compute_bound	w32_gm10 variation
+iter057	iter057_s4_gm10	330.64	DISCARD	compute_bound	s4_gm10 variation
+iter058	iter058_evict_first	342.75	KEEP	compute_bound	evict_first variation
+iter059	iter059_bn384	0	DISCARD	compute_bound	bn384 variation
+iter060	iter060_bn512	0	DISCARD	compute_bound	bn512 variation
+iter061	iter061_bk64_s5	0	DISCARD	compute_bound	bk64_s5 variation
+iter062	iter062_ef_gm8	337.00	DISCARD	compute_bound	ef_gm8 variation on evict_first
+iter063	iter063_ef_gm12	344.93	KEEP	compute_bound	ef_gm12 variation on evict_first
+iter064	iter064_ef_gm6	334.66	DISCARD	compute_bound	ef_gm6 variation on evict_first
+iter065	iter065_ef_bm256	320.24	DISCARD	compute_bound	ef_bm256 variation on evict_first
+iter066	iter066_ef_bm64	238.03	DISCARD	compute_bound	ef_bm64 variation on evict_first
+iter067	iter067_ef_w8	322.90	DISCARD	compute_bound	ef_w8 variation on evict_first
+iter068	iter068_ef_bk32	327.52	DISCARD	compute_bound	ef_bk32 variation on evict_first
+iter069	iter069_ef_bk128_s2	266.80	DISCARD	compute_bound	ef_bk128_s2 variation on evict_first
+iter070	iter070_efg12_gm14	335.71	DISCARD	compute_bound	efg12_gm14 variation
+iter071	iter071_efg12_gm16	333.16	DISCARD	compute_bound	efg12_gm16 variation
+iter072	iter072_efg12_gm11	338.75	DISCARD	compute_bound	efg12_gm11 variation
+iter073	iter073_efg12_w8	318.65	DISCARD	compute_bound	efg12_w8 variation
+iter074	iter074_efg12_s2	269.09	DISCARD	compute_bound	efg12_s2 variation
+iter075	iter075_efg12_s4	327.93	DISCARD	compute_bound	efg12_s4 variation
+iter076	iter076_efg12_bk32	322.20	DISCARD	compute_bound	efg12_bk32 variation
+iter077	iter077_efg12_bn128	218.81	DISCARD	compute_bound	efg12_bn128 variation
+iter078	iter078_mixed_evict	339.96	DISCARD	compute_bound	mixed_evict variation
+iter079	iter079_bm192_bn192	0	DISCARD	compute_bound	bm192_bn192 variation
+iter080	iter080_gm13_ef	335.31	DISCARD	compute_bound	gm13_ef variation
+iter081	iter081_bk48_ef	0	DISCARD	compute_bound	bk48_ef variation
+iter082	iter082_bn320_ef	0	DISCARD	compute_bound	bn320_ef variation
+iter083	iter083_w4_ef	65.32	DISCARD	compute_bound	w4_ef variation
+iter084	iter084_gm20_ef	330.95	DISCARD	compute_bound	gm20_ef variation
+iter085	iter085_s5_bk32_ef	302.19	DISCARD	compute_bound	s5_bk32_ef variation
+iter086	iter086_bm96_bn320_s2	0	DISCARD	compute_bound	bm96_bn320_s2 variation
+iter087	iter087_bm160_bn160	0	DISCARD	compute_bound	bm160_bn160 variation
+iter088	iter088_gm9_ef	337.65	DISCARD	compute_bound	gm9_ef variation
+iter089	iter089_gm15_ef	333.22	DISCARD	compute_bound	gm15_ef variation
+iter090	iter090_bm256_bn128_s2	264.39	DISCARD	compute_bound	bm256_bn128_s2 variation
+iter091	iter091_bk96_s2	0	DISCARD	compute_bound	bk96_s2 variation
+iter092	iter092_bm128_bn320_s2	0	DISCARD	compute_bound	bm128_bn320_s2 variation
+iter093	iter093_swizzle_xor	338.24	DISCARD	compute_bound	swizzle_xor variation
+iter094	iter094_dot_f32acc	337.84	DISCARD	compute_bound	dot_f32acc variation
+iter095	iter095_transpose_b	341.97	DISCARD	compute_bound	transpose_b variation
+iter096	iter096_w32_s2	250.00	DISCARD	compute_bound	w32_s2 variation
+iter097	iter097_bm64_bn512_s2	213.84	DISCARD	compute_bound	bm64_bn512_s2 variation
+iter098	iter098_bm128_bn128_gm12	221.08	DISCARD	compute_bound	bm128_bn128_gm12 variation
+iter099	iter099_bk128_s1	222.86	DISCARD	compute_bound	bk128_s1 variation
+iter100	iter100_persistent_v2	314.80	DISCARD	compute_bound	persistent_v2 variation
+iter101	iter101_ef_gm10_w8	191.31	DISCARD	compute_bound	ef_gm10_w8 variation
+iter102	iter102_ef_gm10_s4	329.32	DISCARD	compute_bound	ef_gm10_s4 variation
+iter103	iter103_bm256_bn64_gm12	125.56	DISCARD	compute_bound	bm256_bn64_gm12 variation
+iter104	iter104_bm96_bn256_gm12	0	DISCARD	compute_bound	bm96_bn256_gm12 variation
+iter105	iter105_ef_bk48_s4	0	DISCARD	compute_bound	ef_bk48_s4 variation
+iter106	iter106_split_k2	23.11	DISCARD	compute_bound	split_k2 variation
+iter107	iter107_w16_s4_gm10	22.67	DISCARD	compute_bound	w16_s4_gm10 variation
+iter108	iter108_prefetch_v2	295.15	DISCARD	compute_bound	prefetch_v2 variation
+iter109	iter109_ef_gm12_bk32_s4	199.73	DISCARD	compute_bound	ef_gm12_bk32_s4 variation
+iter110	iter110_ef_gm12_bm160	0	DISCARD	compute_bound	ef_gm12_bm160 variation
+iter111	iter111_ef_gm12_bn320_s2	0	DISCARD	compute_bound	ef_gm12_bn320_s2 variation
+iter112	iter112_ef_gm8_w16	19.71	DISCARD	compute_bound	ef_gm8_w16 variation
+iter113	iter113_ef_gm7	89.76	DISCARD	compute_bound	ef_gm7 variation
+iter114	iter114_ef_gm18	266.31	DISCARD	compute_bound	ef_gm18 variation
+iter115	iter115_ef_bm192_bn128	0	DISCARD	compute_bound	ef_bm192_bn128 variation
+iter116	iter116_ef_gm12_w32_s1	91.93	DISCARD	compute_bound	ef_gm12_w32_s1 variation
+iter117	iter117_base_evict_last	202.92	DISCARD	compute_bound	base_evict_last variation
+iter118	iter118_base_gm12	266.71	DISCARD	compute_bound	base_gm12 variation
+iter119	iter119_base_w16_gm10	226.51	DISCARD	compute_bound	base_w16_gm10 variation
+iter120	iter120_base_s3_ef	264.94	DISCARD	compute_bound	base_s3_ef variation
+iter121	iter121_base_gm14_w16	262.91	DISCARD	compute_bound	base_gm14_w16 variation
+iter122	iter122_ef_bn192_s2	0	DISCARD	compute_bound	ef_bn192_s2 variation
+iter123	iter123_ef_bk128_s1_bm64	28.84	DISCARD	compute_bound	ef_bk128_s1_bm64 variation
+iter124	iter124_ef_s2_gm12	121.19	DISCARD	compute_bound	ef_s2_gm12 variation
