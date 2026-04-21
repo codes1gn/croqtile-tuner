@@ -32,3 +32,4 @@ iter029	iter029_b128x176	146.74	DISCARD	memory_bound	BLOCK_N=176 causes TMA fall
 iter030	iter030_panel12	340.48	DISCARD	compute_bound	panel_size=12 close but less than panel_size=8
 iter031	iter031_panel16	341.77	DISCARD	compute_bound	panel_size=16 slightly worse than 8
 iter032	iter032_s1	232.96	DISCARD	memory_bound	stages=1 no pipelining hurts perf significantly
+iter033	iter033_bm192	321.66	DISCARD	compute_bound	192x128 transposed tiles less efficient than 128x192

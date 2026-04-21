@@ -420,3 +420,5 @@
 {"ts":"2026-04-21T12:40:24.289Z","tool":"store_round","msg":"Stored iter198_m64n256_w8_s1_bk64_block: DISCARD 27.54 TFLOPS (round 198)","level":"info"}
 {"ts":"2026-04-21T12:40:30.784Z","tool":"store_round","msg":"Storing iter199_m64n256_w8_s1_bk128_block (DISCARD 36.29 TFLOPS)","level":"info"}
 {"ts":"2026-04-21T12:40:30.804Z","tool":"store_round","msg":"Stored iter199_m64n256_w8_s1_bk128_block: DISCARD 36.29 TFLOPS (round 199)","level":"info"}
+{"ts":"2026-04-21T12:40:36.340Z","tool":"store_round","msg":"Storing iter200_m64n256_w8_s1_bk32_point (DISCARD 107.48 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T12:40:36.359Z","tool":"store_round","msg":"Stored iter200_m64n256_w8_s1_bk32_point: DISCARD 107.48 TFLOPS (round 200)","level":"info"}

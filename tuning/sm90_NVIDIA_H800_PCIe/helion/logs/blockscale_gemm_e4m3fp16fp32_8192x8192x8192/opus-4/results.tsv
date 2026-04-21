@@ -201,3 +201,4 @@ iter196	iter196_m64n256_w4_s4_bk128_point	78.14	DISCARD	compute_bound	iter196_au
 iter197	iter197_m64n256_w8_s1_bk32_block	106.39	DISCARD	compute_bound	iter197_autogrid: BM=64 BN=256 warps=8 stages=1 indexing=block_ptr Ktile=32 ncol
 iter198	iter198_m64n256_w8_s1_bk64_block	27.54	DISCARD	compute_bound	iter198_autogrid: BM=64 BN=256 warps=8 stages=1 indexing=block_ptr Ktile=64 ncol
 iter199	iter199_m64n256_w8_s1_bk128_block	36.29	DISCARD	compute_bound	iter199_autogrid: BM=64 BN=256 warps=8 stages=1 indexing=block_ptr Ktile=128 nco
+iter200	iter200_m64n256_w8_s1_bk32_point	107.48	DISCARD	compute_bound	iter200_autogrid: BM=64 BN=256 warps=8 stages=1 indexing=pointer Ktile=32 ncol=1
