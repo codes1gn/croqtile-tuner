@@ -33,3 +33,15 @@ iter030	iter030_panel12	340.48	DISCARD	compute_bound	panel_size=12 close but les
 iter031	iter031_panel16	341.77	DISCARD	compute_bound	panel_size=16 slightly worse than 8
 iter032	iter032_s1	232.96	DISCARD	memory_bound	stages=1 no pipelining hurts perf significantly
 iter033	iter033_bm192	321.66	DISCARD	compute_bound	192x128 transposed tiles less efficient than 128x192
+iter034	iter034_k80	212.57	DISCARD	memory_bound	BLOCK_K=80 triggers TMA fallback
+iter035	iter035_panel2	288.24	DISCARD	memory_bound	panel_size=2 too aggressive L2 thrashing
+iter036	iter036_b64x128k64s5	233.05	DISCARD	compute_bound	64x128 small tiles high pipeline depth not enough compute density
+iter037	iter037_b128x256k64	81.82	DISCARD	latency_bound	128x256 tiles too large causing register pressure
+iter038	iter038_b192x192k64	77.45	DISCARD	latency_bound	192x192 square tiles reduced register locality
+iter039	iter039_b128x128k32s4	274.70	DISCARD	compute_bound	128x128 with K=32 not enough GEMM ops per tile
+iter040	iter040_b128x192k64s3	239.02	DISCARD	memory_bound	K=64 with stages=3 insufficient compute hiding
+iter041	iter041_b64x256k128	278.42	DISCARD	compute_bound	64x256 wide tiles imbalanced warp utilization
+iter042	iter042_b256x128k128	164.34	DISCARD	memory_bound	256x128 tall tiles hurt B matrix reuse
+iter043	iter043_b128x192k64s4	307.31	DISCARD	compute_bound	K=64 stages=4 shared memory overhead vs iter004
+iter044	iter044_b128x192k96	330.41	DISCARD	compute_bound	K=96 approaching optimal but still below K=128
+iter045	iter045_b128x192k112	207.20	DISCARD	memory_bound	K=112 triggers TMA fallback losing efficiency

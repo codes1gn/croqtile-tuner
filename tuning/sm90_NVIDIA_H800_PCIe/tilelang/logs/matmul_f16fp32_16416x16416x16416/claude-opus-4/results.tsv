@@ -35,3 +35,18 @@ iter032	iter032_panel9_s5	309.78	DISCARD	compute_bound	5 stages with panel_size=
 iter033	iter033_panel6	329.07	KEEP	compute_bound	panel_size=6 with 4 stages - new best
 iter034	iter033_panel5	265.59	DISCARD	compute_bound	panel_size=5 worse than panel_size=6
 iter035	iter035_panel4	268.98	DISCARD	compute_bound	panel_size=4 worse than panel_size=6
+iter036	iter036_panel6_k64	319.65	DISCARD	compute_bound	K=64 with panel_size=6 worse than K=32
+iter037	iter037_panel6_s5	313.83	DISCARD	compute_bound	5 stages with panel_size=6 worse than 4 stages
+iter038	iter038_panel6_s3	323.03	DISCARD	compute_bound	3 stages with panel_size=6 worse than 4 stages
+iter039	iter039_b256x128_p6	311.14	DISCARD	compute_bound	256x128 with panel_size=6 worse than 128x256
+iter040	iter040_b256x256_k16	48.40	DISCARD	latency_bound	256x256 with K=16 catastrophically slow
+iter041	iter041_panel5_retest	316.72	DISCARD	memory_bound	panel_size=5 retest from best config - worse
+iter042	iter042_panel7_retest	178.42	DISCARD	memory_bound	panel_size=7 retest from best config - much worse
+iter043	iter043_b64x256_p6	216.19	DISCARD	compute_bound	64x256 more CTAs but less per-CTA work - worse
+iter044	iter044_k64_s3_p6	314.42	DISCARD	memory_bound	K=64 with 3 stages - worse than K=32 4 stages
+iter045	iter045_b128x128_p6	149.70	DISCARD	compute_bound	Square 128x128 tiles catastrophic - too few warps
+iter046	iter046_b256x256_s2	80.49	DISCARD	latency_bound	256x256 2 stages too few stages for latency hiding
+iter047	iter047_b128x512	57.40	DISCARD	memory_bound	128x512 too wide for register file - catastrophic
+iter048	iter048_mma_explicit	0.00	COMPILE_FAIL	compute_bound	T.mma does not exist in TileLang - use T.gemm only
+iter049	iter049_bt_layout	38.71	DISCARD	memory_bound	Transposed B explicit copy very slow
+iter050	iter050_panel3	299.92	DISCARD	memory_bound	panel_size=3 worse L2 locality than 6
