@@ -69,3 +69,18 @@ iter066	iter066_b128x384	163.76	DISCARD	latency_bound	128x384 with 2 stages - no
 iter067	iter067_b64x384	121.29	DISCARD	compute_bound	64x384 too wide and shallow
 iter068	iter068_b96x256	0.00	COMPILE_FAIL	compute_bound	96x256 WGMMA constraint - warp_row_tiles not div 16
 iter069	iter069_b128x256_s6	161.83	DISCARD	memory_bound	6 stages with same tile - too much smem
+iter070	iter070_b128x256_k16_s8	129.91	DISCARD	latency_bound	K=16 s=8 not efficient
+iter071	iter071_b64x128_s4	86.26	DISCARD	compute_bound	64x128 too small tile
+iter072	iter072_b128x256_p4	161.13	DISCARD	memory_bound	panel_size=4 worse L2
+iter073	iter073_b128x256_p5	114.01	DISCARD	memory_bound	panel_size=5 much worse
+iter074	iter074_b128x256_p8	175.06	DISCARD	memory_bound	panel_size=8 worse than 6
+iter075	iter075_b128x256_k64_p6_s2	169.59	DISCARD	latency_bound	K=64 s=2 not enough stages
+iter076	iter076_b256x256_s3	42.03	DISCARD	latency_bound	256x256 s=3 catastrophic
+iter077	iter077_k64_s4_p8	179.26	DISCARD	memory_bound	K=64 s=4 p=8
+iter078	iter078_k64_s3_p4	181.10	DISCARD	memory_bound	K=64 s=3 p=4
+iter079	iter079_b256x128_k64	179.79	DISCARD	memory_bound	256x128 K=64 s=3
+iter080	iter080_b64x512	135.67	DISCARD	memory_bound	64x512 very wide
+iter081	iter081_b128x256_s3_p6	160.33	DISCARD	latency_bound	s=3 not enough latency
+iter082	iter082_k32_s4_p10	174.65	DISCARD	memory_bound	p=10 worse than p=6
+iter083	iter083_b128x128_k64	145.39	DISCARD	compute_bound	128x128 too small
+iter084	iter084_b128x256_k32_s4_p7	170.11	DISCARD	memory_bound	p=7 worse than p=6

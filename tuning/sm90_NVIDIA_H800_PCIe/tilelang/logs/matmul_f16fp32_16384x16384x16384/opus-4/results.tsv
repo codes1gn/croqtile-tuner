@@ -58,3 +58,9 @@ iter055	iter055_b128x160k128	137.14	DISCARD	compute_bound	N=160 grid imbalance v
 iter056	iter056_b192x128k128s2	162.39	DISCARD	compute_bound	192x128 worse B reuse pattern than 128x192
 iter057	iter057_b128x192k64s2	173.90	DISCARD	memory_bound	K=64 stages=2 lower compute intensity per tile
 iter058	iter058_b128x192k64s5	166.87	DISCARD	memory_bound	K=64 stages=5 shared memory overhead too high
+iter059	iter059_b64x128k256s2	92.36	DISCARD	memory_bound	K=256 shared memory too large
+iter060	iter060_b96x192k128s2	0	COMPILE_FAIL	unknown	M=96 fails WGMMA divisibility check
+iter061	iter061_b64x192k128s3	136.47	DISCARD	compute_bound	M=64 tiles too small for compute density
+iter062	iter062_s1_verify	128.84	DISCARD	memory_bound	stages=1 no pipelining much worse than stages=2
+iter063	iter063_best_repro	176.72	DISCARD	compute_bound	Reproduced best config - measurement lower than recorded 343.47
+iter064	iter064_panel12	122.32	DISCARD	memory_bound	panel_size=12 worse L2 locality than 8
