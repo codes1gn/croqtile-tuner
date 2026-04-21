@@ -8,3 +8,7 @@
 {"ts":"2026-04-21T10:52:13.704Z","tool":"store_round","msg":"Stored iter000_cublas: KEEP 453.5948 TFLOPS (round 0)","level":"info"}
 {"ts":"2026-04-21T10:52:13.715Z","tool":"store_baseline","msg":"Stored iter000_cublas: 453.5948 TFLOPS (baseline)","level":"info"}
 {"ts":"2026-04-21T11:11:10.105Z","tool":"resume_state","msg":"Loading tuning state for helion/blockscale_gemm_e4m3fp16fp32_8192x8192x8192","level":"info"}
+{"ts":"2026-04-21T12:11:00.558Z","tool":"ncu_profile","msg":"Capturing profile: bash tuning/sm90_NVIDIA_H800_PCIe/helion/cmd/blockscale_gemm_e4m3fp16fp32_8192x8192x8192/opus-4/ncu_iter001.sh","level":"info"}
+{"ts":"2026-04-21T12:11:40.516Z","tool":"ncu_profile","msg":"Capturing profile: bash tuning/sm90_NVIDIA_H800_PCIe/helion/cmd/blockscale_gemm_e4m3fp16fp32_8192x8192x8192/opus-4/ncu_iter001.sh","level":"info"}
+{"ts":"2026-04-21T12:11:50.933Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/helion/perf/blockscale_gemm_e4m3fp16fp32_8192x8192x8192/opus-4/ncu_iter001_tilek.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/helion/perf/blockscale_gemm_e4m3fp16fp32_8192x8192x8192/opus-4/ncu_iter001_tilek.csv","level":"info"}
+{"ts":"2026-04-21T12:12:10.895Z","tool":"ncu_profile","msg":"Capturing profile: bash tuning/sm90_NVIDIA_H800_PCIe/helion/cmd/blockscale_gemm_e4m3fp16fp32_8192x8192x8192/opus-4/ncu_iter001.sh","level":"info"}

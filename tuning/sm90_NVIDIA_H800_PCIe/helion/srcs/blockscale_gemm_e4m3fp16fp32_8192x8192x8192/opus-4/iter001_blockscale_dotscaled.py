@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """
-Helion blockscale GEMM — hl.dot_scaled per output tile, full-K reduction.
-BM=128 so BM*K fits Triton max block numel. Large kernel is defined inside bench()
-to avoid slow top-level compile on import.
+Helion blockscale GEMM — K-blocked hl.dot_scaled (GROUP=32) via hl.tile(k, block_size=32).
 """
 from __future__ import annotations
 
@@ -40,6 +38,7 @@ def _ref_blockscale(
 def verify() -> bool:
     torch.manual_seed(0)
     vm, vn, vk = 256, 256, 256
+
     a = (torch.randn(vm, vk, device="cuda", dtype=torch.float32) * 0.02).to(
         torch.float8_e4m3fn
     )
@@ -50,10 +49,10 @@ def verify() -> bool:
     b_s = torch.randint(124, 128, (vn, vk // GROUP), device="cuda", dtype=torch.uint8)
 
     cfg_v = helion.Config(
-        block_sizes=[128, 128],
+        block_sizes=[64, 64],
         num_warps=4,
-        num_stages=2,
-        indexing="block_ptr",
+        num_stages=1,
+        indexing="pointer",
     )
 
     @helion.kernel(
@@ -66,21 +65,24 @@ def verify() -> bool:
         b: torch.Tensor,
         b_s: torch.Tensor,
     ) -> torch.Tensor:
-        m, _k = a.shape
+        m, kd = a.shape
         _k2, n = b.shape
         out = torch.empty((m, n), dtype=torch.float16, device=a.device)
-        for t_m in hl.tile(m):
-            for t_n in hl.tile(n):
+        for t_m, t_n in hl.tile([m, n]):
+            acc = hl.zeros([t_m, t_n], dtype=torch.float32)
+            for t_k in hl.tile(kd, block_size=32):
+                kb = t_k.begin // 32
                 acc = hl.dot_scaled(
-                    a[t_m, :],
-                    a_s[t_m, :],
+                    a[t_m, t_k],
+                    a_s[t_m, kb : kb + 1],
                     "e4m3",
-                    b[:, t_n],
-                    b_s[t_n, :],
+                    b[t_k, t_n],
+                    b_s[t_n, kb : kb + 1],
                     "e4m3",
+                    acc=acc,
                     out_dtype=torch.float32,
                 )
-                out[t_m, t_n] = acc.to(torch.float16)
+            out[t_m, t_n] = acc.to(torch.float16)
         return out
 
     out = k_small(a, a_s, b, b_s)
@@ -92,12 +94,11 @@ def verify() -> bool:
 
 
 def bench(warmup: int = 10, iters: int = 50) -> float:
-    # dot_scaled full-K tiles need modest stages — num_stages=3 exceeded SMEM (H800).
     cfg = helion.Config(
-        block_sizes=[128, 128],
+        block_sizes=[64, 64],
         num_warps=4,
         num_stages=1,
-        indexing="block_ptr",
+        indexing="pointer",
     )
 
     @helion.kernel(
@@ -110,21 +111,24 @@ def bench(warmup: int = 10, iters: int = 50) -> float:
         b: torch.Tensor,
         b_s: torch.Tensor,
     ) -> torch.Tensor:
-        m, _k = a.shape
+        m, kd = a.shape
         _k2, n = b.shape
         out = torch.empty((m, n), dtype=torch.float16, device=a.device)
-        for t_m in hl.tile(m):
-            for t_n in hl.tile(n):
+        for t_m, t_n in hl.tile([m, n]):
+            acc = hl.zeros([t_m, t_n], dtype=torch.float32)
+            for t_k in hl.tile(kd, block_size=32):
+                kb = t_k.begin // 32
                 acc = hl.dot_scaled(
-                    a[t_m, :],
-                    a_s[t_m, :],
+                    a[t_m, t_k],
+                    a_s[t_m, kb : kb + 1],
                     "e4m3",
-                    b[:, t_n],
-                    b_s[t_n, :],
+                    b[t_k, t_n],
+                    b_s[t_n, kb : kb + 1],
                     "e4m3",
+                    acc=acc,
                     out_dtype=torch.float32,
                 )
-                out[t_m, t_n] = acc.to(torch.float16)
+            out[t_m, t_n] = acc.to(torch.float16)
         return out
 
     torch.manual_seed(1)

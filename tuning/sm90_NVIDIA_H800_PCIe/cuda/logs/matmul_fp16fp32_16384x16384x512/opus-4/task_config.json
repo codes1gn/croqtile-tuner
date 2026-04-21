@@ -52,6 +52,16 @@
       "request_number": 0,
       "started_at": "2026-04-21T10:40:01.198806",
       "ended_at": null
+    },
+    {
+      "id": 43,
+      "task_id": 1,
+      "session_id": "5e7683be-600b-48ea-9eb4-34c9a66ebbc8",
+      "agent_type": "cursor_cli",
+      "model": "opus-4",
+      "request_number": 0,
+      "started_at": "2026-04-21T12:12:13.834860+00:00",
+      "ended_at": null
     }
   ]
 }
