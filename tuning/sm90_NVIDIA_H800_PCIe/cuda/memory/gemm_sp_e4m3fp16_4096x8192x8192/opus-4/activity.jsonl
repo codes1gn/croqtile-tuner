@@ -27,3 +27,26 @@
 {"ts":"2026-04-21T06:36:29.441Z","tool":"next_iter","msg":"Resolved iter034_vec_load","level":"info"}
 {"ts":"2026-04-21T06:38:17.118Z","tool":"store_round","msg":"Storing iter034_vec_load (DISCARD 3.78 TFLOPS)","level":"info"}
 {"ts":"2026-04-21T06:38:17.137Z","tool":"store_round","msg":"Stored iter034_vec_load: DISCARD 3.78 TFLOPS (round 29)","level":"info"}
+{"ts":"2026-04-21T06:38:49.248Z","tool":"next_iter","msg":"Resolved iter035_double_buf","level":"info"}
+{"ts":"2026-04-21T06:59:37.611Z","tool":"next_iter","msg":"Resolved iter036_unroll_fma","level":"info"}
+{"ts":"2026-04-21T07:01:29.298Z","tool":"next_iter","msg":"Resolved iter037_more_threads","level":"info"}
+{"ts":"2026-04-21T07:03:19.678Z","tool":"next_iter","msg":"Resolved iter038_reg_prefetch","level":"info"}
+{"ts":"2026-04-21T07:05:01.749Z","tool":"next_iter","msg":"Resolved iter039_small_tile","level":"info"}
+{"ts":"2026-04-21T07:06:47.026Z","tool":"next_iter","msg":"Resolved iter040_larger_k","level":"info"}
+{"ts":"2026-04-21T07:08:39.787Z","tool":"next_iter","msg":"Resolved iter041_warp_shuffle","level":"info"}
+{"ts":"2026-04-21T07:20:37.673Z","tool":"next_iter","msg":"Resolved iter042_bank_opt","level":"info"}
+{"ts":"2026-04-21T07:22:37.904Z","tool":"next_iter","msg":"Resolved iter043_out2x2","level":"info"}
+{"ts":"2026-04-21T07:23:55.367Z","tool":"next_iter","msg":"Resolved iter044_areg_reuse","level":"info"}
+{"ts":"2026-04-21T07:25:09.242Z","tool":"next_iter","msg":"Resolved iter045_breg_reuse","level":"info"}
+{"ts":"2026-04-21T07:26:24.506Z","tool":"next_iter","msg":"Resolved iter046_areg_dbuf","level":"info"}
+{"ts":"2026-04-21T07:27:35.254Z","tool":"next_iter","msg":"Resolved iter047_areg_big","level":"info"}
+{"ts":"2026-04-21T07:28:43.420Z","tool":"next_iter","msg":"Resolved iter048_areg_widen","level":"info"}
+{"ts":"2026-04-21T07:29:58.977Z","tool":"next_iter","msg":"Resolved iter049_areg_512th","level":"info"}
+{"ts":"2026-04-21T07:31:07.192Z","tool":"next_iter","msg":"Resolved iter050_ldg_cache","level":"info"}
+{"ts":"2026-04-21T07:32:15.575Z","tool":"next_iter","msg":"Resolved iter051_ilp2","level":"info"}
+{"ts":"2026-04-21T07:33:37.040Z","tool":"next_iter","msg":"Resolved iter052_ilp4","level":"info"}
+{"ts":"2026-04-21T07:35:02.605Z","tool":"next_iter","msg":"Resolved iter053_ilp4_dbuf","level":"info"}
+{"ts":"2026-04-21T07:36:27.864Z","tool":"next_iter","msg":"Resolved iter054_half2","level":"info"}
+{"ts":"2026-04-21T07:37:46.196Z","tool":"next_iter","msg":"Resolved iter055_ilp4_occu","level":"info"}
+{"ts":"2026-04-21T07:40:10.668Z","tool":"next_iter","msg":"Resolved iter056_ilp8","level":"info"}
+{"ts":"2026-04-21T07:41:55.185Z","tool":"next_iter","msg":"Resolved iter057_tile96","level":"info"}
