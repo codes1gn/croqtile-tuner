@@ -1,5 +1,5 @@
 iter	kernel	tflops	decision	bottleneck	idea_summary
-iter000	iter000_cublas	914.2985	KEEP	baseline	cuBLAS/scaled_mm FP8 reference baseline
+iter000	iter000_cutlass	688.6	KEEP	baseline	cuBLAS/scaled_mm FP8 reference baseline
 iter001	iter001_warpspec_1p1c	328.511	KEEP	memory_bound	Warp-specialized 1p1c blockscale GEMM adapted from prior 16K tuning session
 iter002	iter002_launch_bounds	435.097	KEEP	launch_bound	Add launch_bounds(256,2) to force 2 blocks/SM, reduce register pressure from 153
 iter003	iter003_swiz_group4	420.053	DISCARD	memory_bound	Block ID swizzle with group_size=4 for L2 cache reuse

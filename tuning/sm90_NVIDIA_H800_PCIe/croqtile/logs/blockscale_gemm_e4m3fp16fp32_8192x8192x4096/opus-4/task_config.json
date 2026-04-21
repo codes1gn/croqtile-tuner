@@ -4,7 +4,7 @@
   "model": "opus-4",
   "device": "NVIDIA H800 PCIe",
   "status": "completed",
-  "task_id": 103,
+  "task_id": 11,
   "variant": "",
   "agent_type": "cursor_cli",
   "mode": "cursor_cli",
@@ -13,7 +13,7 @@
   "max_iterations": 200,
   "respawn_count": 0,
   "best_tflops": 608.6,
-  "baseline_tflops": 914.2985,
+  "baseline_tflops": 688.6,
   "best_kernel": "iter129_raw_mbar",
   "opencode_session_id": null,
   "sessions": []
