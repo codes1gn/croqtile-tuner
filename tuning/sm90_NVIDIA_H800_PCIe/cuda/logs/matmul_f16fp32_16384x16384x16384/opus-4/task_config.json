@@ -1,7 +1,20 @@
 {
-  "task_uid": "croq-tune-cuda-f16fp32-16384x16384x16384-20260420234807",
+  "task_uid": "cuda-matmul-f16fp32-16384-opus4",
   "dsl": "cuda",
   "model": "opus-4",
-  "device": "sm90_NVIDIA_H800_PCIe",
-  "status": "running"
+  "device": "NVIDIA H800 PCIe",
+  "status": "completed",
+  "task_id": 105,
+  "variant": "",
+  "agent_type": "cursor_cli",
+  "mode": "cursor_cli",
+  "request_budget": 0,
+  "request_number": 95,
+  "max_iterations": 100,
+  "respawn_count": 0,
+  "best_tflops": 161.552,
+  "baseline_tflops": 416.244,
+  "best_kernel": "iter089_warp4x2",
+  "opencode_session_id": null,
+  "sessions": []
 }

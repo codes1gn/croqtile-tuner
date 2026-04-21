@@ -1,7 +1,20 @@
 {
-  "task_uid": "triton-f16fp32-16k-tuning-session",
+  "task_uid": "triton-matmul-f16fp32-16384-opus4",
   "dsl": "triton",
   "model": "opus-4",
-  "device": "sm90_NVIDIA_H800_PCIe",
-  "status": "running"
+  "device": "NVIDIA H800 PCIe",
+  "status": "completed",
+  "task_id": 106,
+  "variant": "",
+  "agent_type": "cursor_cli",
+  "mode": "cursor_cli",
+  "request_budget": 0,
+  "request_number": 30,
+  "max_iterations": 50,
+  "respawn_count": 0,
+  "best_tflops": 384.27,
+  "baseline_tflops": 419.6983,
+  "best_kernel": "iter001_baseline_tiled",
+  "opencode_session_id": null,
+  "sessions": []
 }

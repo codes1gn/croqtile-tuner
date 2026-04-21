@@ -1,7 +1,20 @@
 {
-  "task_uid": "4f8c2362c2494a5d",
+  "task_uid": "matmul-e4m3fp16-8192x8192x4096-opus4",
   "dsl": "croqtile",
   "model": "opus-4",
-  "device": "sm90_NVIDIA_H800_PCIe",
-  "status": "running"
+  "device": "NVIDIA H800 PCIe",
+  "status": "completed",
+  "task_id": 103,
+  "variant": "",
+  "agent_type": "cursor_cli",
+  "mode": "cursor_cli",
+  "request_budget": 0,
+  "request_number": 175,
+  "max_iterations": 200,
+  "respawn_count": 0,
+  "best_tflops": 608.6,
+  "baseline_tflops": 914.2985,
+  "best_kernel": "iter129_raw_mbar",
+  "opencode_session_id": null,
+  "sessions": []
 }

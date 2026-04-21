@@ -1,28 +1,20 @@
 {
-  "task_uid": "1776658147-e4m3-8192",
+  "task_uid": "matmul-e4m3fp16fp32-8192-opus4",
   "dsl": "croqtile",
   "model": "opus-4",
   "device": "NVIDIA H800 PCIe",
-  "status": "running",
-  "task_id": 16,
+  "status": "completed",
+  "task_id": 104,
   "variant": "",
-  "agent_type": null,
-  "mode": "opencode",
-  "request_budget": 1,
-  "request_number": 0,
+  "agent_type": "cursor_cli",
+  "mode": "cursor_cli",
+  "request_budget": 0,
+  "request_number": 24,
   "max_iterations": 30,
   "respawn_count": 0,
-  "opencode_session_id": "cdbbb1c0-8d72-45ca-ac05-efc1743da51b",
-  "sessions": [
-    {
-      "id": 54,
-      "task_id": 16,
-      "session_id": "cdbbb1c0-8d72-45ca-ac05-efc1743da51b",
-      "agent_type": "cursor_cli",
-      "model": "opus-4",
-      "request_number": 0,
-      "started_at": "2026-04-21T09:34:11.767173",
-      "ended_at": null
-    }
-  ]
+  "best_tflops": 765.81,
+  "baseline_tflops": 456.9654,
+  "best_kernel": "iter021_ws1p4c_s3_nocommit",
+  "opencode_session_id": null,
+  "sessions": []
 }
