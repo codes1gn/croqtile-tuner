@@ -14,3 +14,89 @@ iter011	iter011_panel12	377.62	KEEP	memory_bound	panel_size=12 from batch sweep
 iter012	iter012_panel11_refined	375.53	DISCARD	memory_bound	panel_size=11 refinement
 iter013	iter013_panel16	375.24	DISCARD	memory_bound	panel_size=16 from sweep peak
 iter014	iter014_panel10_s2	380.30	KEEP	memory_bound	panel_size=10 stages=2 peaked at 401.57T in sweep
+iter015	iter015_p10_repeat	370.34	DISCARD	memory_bound	repeat measurement of panel10 s2
+iter016	iter016_bk64_s3	360.87	DISCARD	memory_bound	BLOCK_K=64 stages=3
+iter017	iter017_bk128_s3	0	COMPILE_FAIL	memory_bound	BLOCK_K=128 stages=3 - exceeded smem
+iter018	iter018_panel6	389.69	KEEP	memory_bound	panel_size=6 peaked at 395.61T
+iter019	iter019_panel4	372.16	DISCARD	memory_bound	panel_size=4 sweep
+iter020	iter020_panel18	367.63	DISCARD	memory_bound	panel_size=18
+iter021	iter021_panel15	376.09	DISCARD	memory_bound	panel_size=15
+iter022	iter022_panel17	385.15	DISCARD	memory_bound	panel_size=17
+iter023	iter023_panel19	392.79	KEEP	memory_bound	panel_size=19 peaked at 392.79T
+iter024	iter024_panel21	371.64	DISCARD	memory_bound	panel_size=21
+iter025	iter025_panel23	369.23	DISCARD	memory_bound	panel_size=23
+iter026	iter026_panel20	389.14	DISCARD	memory_bound	panel_size=20
+iter027	iter027_panel16	370.02	DISCARD	memory_bound	panel_size=16
+iter028	iter028_panel13	374.29	DISCARD	memory_bound	panel_size=13
+iter029	iter029_bk64_p19	366.08	DISCARD	memory_bound	BK=64 stages=3 panel=19
+iter030	iter030_bk64_p17	348.95	DISCARD	memory_bound	BK=64 stages=3 panel=17
+iter031	iter031_bk64_p21	369.88	DISCARD	memory_bound	BK=64 stages=3 panel=21
+iter032	iter032_bk64_s4_p17	372.94	DISCARD	memory_bound	BK=64 stages=4 panel=17
+iter033	iter033_bk64_s4_p19	376.94	DISCARD	memory_bound	BK=64 stages=4 panel=19
+iter034	iter034_panel25	384.54	DISCARD	memory_bound	panel_size=25
+iter035	iter035_panel27	376.34	DISCARD	memory_bound	panel_size=27
+iter036	iter036_p3_bk128	377.48	DISCARD	memory_bound	panel_size=3 BK=128
+iter037	iter037_p5_bk128	369.68	DISCARD	memory_bound	panel_size=5 BK=128
+iter038	iter038_p7_bk128	367.76	DISCARD	memory_bound	panel_size=7 BK=128
+iter039	iter039_p9_bk128	369.65	DISCARD	memory_bound	panel_size=9 BK=128
+iter040	iter040_p11_bk128	368.12	DISCARD	memory_bound	panel_size=11 BK=128
+iter041	iter041_p19_bk64	345.04	DISCARD	memory_bound	panel_size=19 BK=64
+iter042	iter042_p17_bk64	359.80	DISCARD	memory_bound	panel_size=17 BK=64
+iter043	iter043_p15_bk64	347.13	DISCARD	memory_bound	panel_size=15 BK=64
+iter044	iter044_p21_bk64	348.70	DISCARD	memory_bound	panel_size=21 BK=64
+iter045	iter045_p23_bk64	347.61	DISCARD	memory_bound	panel_size=23 BK=64
+iter046	iter046_config	318.76	DISCARD	memory_bound	config exploration round 46
+iter047	iter047_config	161.12	DISCARD	memory_bound	config exploration round 47
+iter048	iter048_config	127.79	DISCARD	memory_bound	config exploration round 48
+iter049	iter049_config	346.43	DISCARD	memory_bound	config exploration round 49
+iter050	iter050_config	0	COMPILE_FAIL	memory_bound	config exploration round 50
+iter051	iter051_config	324.50	DISCARD	memory_bound	config exploration round 51
+iter052	iter052_config	385.73	DISCARD	memory_bound	config exploration round 52
+iter053	iter053_config	275.00	DISCARD	memory_bound	config exploration round 53
+iter054	iter054_config	364.35	DISCARD	memory_bound	config exploration round 54
+iter055	iter055_config	361.73	DISCARD	memory_bound	config exploration round 55
+iter056	iter056_panel17	389.83	DISCARD	memory_bound	panel_size=17 fine-tune
+iter057	iter057_panel18	365.88	DISCARD	memory_bound	panel_size=18 fine-tune
+iter058	iter058_panel19	372.84	DISCARD	memory_bound	panel_size=19 fine-tune
+iter059	iter059_panel20	353.53	DISCARD	memory_bound	panel_size=20 fine-tune
+iter060	iter060_panel21	350.89	DISCARD	memory_bound	panel_size=21 fine-tune
+iter061	iter061_config	383.17	DISCARD	memory_bound	config exploration iter61
+iter062	iter062_config	373.84	DISCARD	memory_bound	config exploration iter62
+iter063	iter063_config	380.86	DISCARD	memory_bound	config exploration iter63
+iter064	iter064_config	0	COMPILE_FAIL	memory_bound	config exploration iter64
+iter065	iter065_config	374.87	DISCARD	memory_bound	config exploration iter65
+iter066	iter066_config	374.93	DISCARD	memory_bound	config exploration iter66
+iter067	iter067_config	0	COMPILE_FAIL	memory_bound	config exploration iter67
+iter068	iter068_config	379.69	DISCARD	memory_bound	config exploration iter68
+iter069	iter069_config	384.23	DISCARD	memory_bound	config exploration iter69
+iter070	iter070_config	0	COMPILE_FAIL	memory_bound	config exploration iter70
+iter071	iter071_config	0	COMPILE_FAIL	memory_bound	config exploration iter71
+iter072	iter072_config	0	COMPILE_FAIL	memory_bound	config exploration iter72
+iter073	iter073_config	0	COMPILE_FAIL	memory_bound	config exploration iter73
+iter074	iter074_config	0	COMPILE_FAIL	memory_bound	config exploration iter74
+iter075	iter075_config	0	COMPILE_FAIL	memory_bound	config exploration iter75
+iter076	iter076_config	0	COMPILE_FAIL	memory_bound	config exploration iter76
+iter077	iter077_config	380.21	DISCARD	memory_bound	config exploration iter77
+iter078	iter078_config	369.46	DISCARD	memory_bound	config exploration iter78
+iter079	iter079_config	377.77	DISCARD	memory_bound	config exploration iter79
+iter080	iter080_config	375.66	DISCARD	memory_bound	config exploration iter80
+iter81	iter81_config	407.77	KEEP	memory_bound	config exploration iter81
+iter82	iter82_config	378.10	DISCARD	memory_bound	config exploration iter82
+iter83	iter83_config	371.87	DISCARD	memory_bound	config exploration iter83
+iter84	iter84_config	0	COMPILE_FAIL	memory_bound	config exploration iter84
+iter85	iter85_config	389.33	DISCARD	memory_bound	config exploration iter85
+iter86	iter86_config	365.10	DISCARD	memory_bound	config exploration iter86
+iter87	iter87_config	381.49	DISCARD	memory_bound	config exploration iter87
+iter88	iter88_config	393.52	KEEP	memory_bound	config exploration iter88
+iter89	iter89_config	375.97	DISCARD	memory_bound	config exploration iter89
+iter90	iter90_config	368.86	DISCARD	memory_bound	config exploration iter90
+iter91	iter91_config	0	COMPILE_FAIL	memory_bound	config exploration iter91
+iter92	iter92_config	0	COMPILE_FAIL	memory_bound	config exploration iter92
+iter93	iter93_config	0	COMPILE_FAIL	memory_bound	config exploration iter93
+iter94	iter94_config	0	COMPILE_FAIL	memory_bound	config exploration iter94
+iter95	iter95_config	0	COMPILE_FAIL	memory_bound	config exploration iter95
+iter96	iter96_config	0	COMPILE_FAIL	memory_bound	config exploration iter96
+iter97	iter97_config	0	COMPILE_FAIL	memory_bound	config exploration iter97
+iter98	iter98_config	356.40	DISCARD	memory_bound	config exploration iter98
+iter99	iter99_config	366.13	DISCARD	memory_bound	config exploration iter99
+iter100	iter100_config	338.78	DISCARD	memory_bound	config exploration iter100
