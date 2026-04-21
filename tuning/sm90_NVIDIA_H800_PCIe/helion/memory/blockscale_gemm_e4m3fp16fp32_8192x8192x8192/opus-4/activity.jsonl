@@ -1876,3 +1876,5 @@
 {"ts":"2026-04-21T14:24:55.092Z","tool":"store_round","msg":"Stored iter826_m256n128_w2_s6_bk128_point_lo1: COMPILE_FAIL 0 TFLOPS (round 826)","level":"info"}
 {"ts":"2026-04-21T14:25:16.644Z","tool":"store_round","msg":"Storing iter827_m256n128_w2_s6_bk32_block_mnk (DISCARD 1.23 TFLOPS)","level":"info"}
 {"ts":"2026-04-21T14:25:16.663Z","tool":"store_round","msg":"Stored iter827_m256n128_w2_s6_bk32_block_mnk: DISCARD 1.23 TFLOPS (round 827)","level":"info"}
+{"ts":"2026-04-21T14:25:37.950Z","tool":"store_round","msg":"Storing iter828_m256n128_w2_s6_bk32_block_lo1 (DISCARD 1.28 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T14:25:37.969Z","tool":"store_round","msg":"Stored iter828_m256n128_w2_s6_bk32_block_lo1: DISCARD 1.28 TFLOPS (round 828)","level":"info"}

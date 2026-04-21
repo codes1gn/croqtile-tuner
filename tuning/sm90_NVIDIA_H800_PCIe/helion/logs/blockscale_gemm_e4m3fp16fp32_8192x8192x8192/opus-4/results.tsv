@@ -929,3 +929,4 @@ iter824	iter824_m256n128_w2_s6_bk64_point_lo1	0.83	DISCARD	compute_bound	iter824
 iter825	iter825_m256n128_w2_s6_bk128_point_mnk	0	COMPILE_FAIL	compile	iter825_autogrid: BM=256 BN=128 warps=2 stages=6 indexing=pointer Ktile=128 ncol
 iter826	iter826_m256n128_w2_s6_bk128_point_lo1	0	COMPILE_FAIL	compile	iter826_autogrid: BM=256 BN=128 warps=2 stages=6 indexing=pointer Ktile=128 ncol
 iter827	iter827_m256n128_w2_s6_bk32_block_mnk	1.23	DISCARD	compute_bound	iter827_autogrid: BM=256 BN=128 warps=2 stages=6 indexing=block_ptr Ktile=32 nco
+iter828	iter828_m256n128_w2_s6_bk32_block_lo1	1.28	DISCARD	compute_bound	iter828_autogrid: BM=256 BN=128 warps=2 stages=6 indexing=block_ptr Ktile=32 nco
