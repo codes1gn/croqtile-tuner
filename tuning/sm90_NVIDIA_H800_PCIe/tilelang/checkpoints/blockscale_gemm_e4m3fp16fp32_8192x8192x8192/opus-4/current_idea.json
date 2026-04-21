@@ -1,0 +1,17 @@
+{
+  "schema": "croq-checkpoint-v1",
+  "timestamp": "2026-04-21T10:53:25Z",
+  "dsl": "tilelang",
+  "shape_key": "blockscale_gemm_e4m3fp16fp32_8192x8192x8192",
+  "iter": "iter003_occupancy_tune",
+  "bottleneck": "compute_bound",
+  "idea": "Increase occupancy by reducing register pressure: smaller accum fragment (64x64), more stages, 256 threads",
+  "expected_gain": "+30 TFLOPS",
+  "levers": [
+    "threads",
+    "block_M",
+    "block_N",
+    "num_stages"
+  ],
+  "status": "PLANNED"
+}

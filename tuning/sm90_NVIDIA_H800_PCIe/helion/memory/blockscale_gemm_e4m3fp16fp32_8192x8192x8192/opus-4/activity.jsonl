@@ -1,0 +1,9 @@
+{"ts":"2026-04-21T10:49:38.936Z","tool":"resume_state","msg":"Loading tuning state for helion/blockscale_gemm_e4m3fp16fp32_8192x8192x8192","level":"info"}
+{"ts":"2026-04-21T10:49:38.938Z","tool":"resume_state","msg":"No tuning artifacts found for helion/blockscale_gemm_e4m3fp16fp32_8192x8192x8192","level":"error"}
+{"ts":"2026-04-21T10:51:05.330Z","tool":"store_baseline","msg":"Measuring cuBLAS baseline for e4m3 8192x8192x8192","level":"info"}
+{"ts":"2026-04-21T10:51:07.427Z","tool":"store_baseline","msg":"cuBLAS baseline measurement failed","level":"error"}
+{"ts":"2026-04-21T10:52:10.321Z","tool":"store_baseline","msg":"Measuring cuBLAS baseline for e4m3 8192x8192x8192","level":"info"}
+{"ts":"2026-04-21T10:52:13.056Z","tool":"store_baseline","msg":"cuBLAS baseline: 453.5948 TFLOPS (saved to tuning/sm90_NVIDIA_H800_PCIe/helion/baseline/blockscale_gemm_e4m3fp16fp32_8192x8192x8192/opus-4/cublas_result.json)","level":"info"}
+{"ts":"2026-04-21T10:52:13.685Z","tool":"store_round","msg":"Storing iter000_cublas (KEEP 453.5948 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T10:52:13.704Z","tool":"store_round","msg":"Stored iter000_cublas: KEEP 453.5948 TFLOPS (round 0)","level":"info"}
+{"ts":"2026-04-21T10:52:13.715Z","tool":"store_baseline","msg":"Stored iter000_cublas: 453.5948 TFLOPS (baseline)","level":"info"}

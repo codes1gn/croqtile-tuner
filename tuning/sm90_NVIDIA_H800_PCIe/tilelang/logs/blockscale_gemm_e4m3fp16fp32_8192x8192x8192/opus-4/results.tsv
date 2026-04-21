@@ -1,0 +1,6 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_cublas	443.0376	KEEP	baseline	cuBLAS reference baseline
+iter001	iter001_base_blockscale	100.21	KEEP	memory_bound	Initial TileLang blockscale kernel with per-element scaling in shared memory
+iter002	iter002_tcore_gemm	317.01	KEEP	memory_bound	Optimal 128x128x64 tile config with WGMMA, 3-stage pipeline, 2D rasterization sw
+iter003	iter003_occupancy_tune	338.57	KEEP	compute_bound	128x192x64 tiles with 3 stages for better WGMMA utilization
+iter004	iter004_panel_tune	360.17	KEEP	compute_bound	128x192x64 tiles, 4 stages, panel_size=10 for better L2 locality

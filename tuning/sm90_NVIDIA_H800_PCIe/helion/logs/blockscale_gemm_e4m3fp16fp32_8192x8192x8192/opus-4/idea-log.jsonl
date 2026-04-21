@@ -1,0 +1,1 @@
+{"round": 0, "iter": "iter000", "bottleneck": "baseline", "idea": "cuBLAS reference baseline", "category": "baseline", "expected_gain": "baseline reference", "decision": "KEEP", "tflops": 453.5948, "timestamp": "2026-04-21T10:52:13Z"}

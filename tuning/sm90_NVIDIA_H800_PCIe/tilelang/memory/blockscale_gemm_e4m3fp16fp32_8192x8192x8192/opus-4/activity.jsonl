@@ -1,0 +1,23 @@
+{"ts":"2026-04-21T10:40:35.760Z","tool":"resume_state","msg":"Loading tuning state for tilelang/blockscale_gemm_e4m3fp16fp32_8192x8192x8192","level":"info"}
+{"ts":"2026-04-21T10:40:35.762Z","tool":"resume_state","msg":"No tuning artifacts found for tilelang/blockscale_gemm_e4m3fp16fp32_8192x8192x8192","level":"error"}
+{"ts":"2026-04-21T10:40:54.318Z","tool":"store_baseline","msg":"Measuring cuBLAS baseline for e4m3fp16fp32 8192x8192x8192","level":"info"}
+{"ts":"2026-04-21T10:40:56.800Z","tool":"store_baseline","msg":"cuBLAS baseline: 443.0376 TFLOPS (saved to tuning/sm90_NVIDIA_H800_PCIe/tilelang/baseline/blockscale_gemm_e4m3fp16fp32_8192x8192x8192/opus-4/cublas_result.json)","level":"info"}
+{"ts":"2026-04-21T10:40:57.164Z","tool":"store_round","msg":"Storing iter000_cublas (KEEP 443.0376 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T10:40:57.184Z","tool":"store_round","msg":"Stored iter000_cublas: KEEP 443.0376 TFLOPS (round 0)","level":"info"}
+{"ts":"2026-04-21T10:40:57.195Z","tool":"store_baseline","msg":"Stored iter000_cublas: 443.0376 TFLOPS (baseline)","level":"info"}
+{"ts":"2026-04-21T10:41:39.704Z","tool":"next_iter","msg":"Resolved iter001_base_blockscale","level":"info"}
+{"ts":"2026-04-21T10:42:34.930Z","tool":"store_round","msg":"Storing iter001_base_blockscale (KEEP 100.21 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T10:42:34.949Z","tool":"store_round","msg":"Stored iter001_base_blockscale: KEEP 100.21 TFLOPS (round 1)","level":"info"}
+{"ts":"2026-04-21T10:42:51.891Z","tool":"ncu_profile","msg":"Capturing profile: python3 tuning/sm90_NVIDIA_H800_PCIe/tilelang/srcs/blockscale_gemm_e4m3fp16fp32_8192x8192x8192/opus-4/iter001_base_blockscale.py","level":"info"}
+{"ts":"2026-04-21T10:42:59.854Z","tool":"ncu_profile","msg":"Capturing profile: /usr/bin/python3 /home/albert/workspace/croqtile-tuner/tuning/sm90_NVIDIA_H800_PCIe/tilelang/srcs/blockscale_gemm_e4m3fp16fp32_8192x8192x8192/opus-4/iter001_base_blockscale.py","level":"info"}
+{"ts":"2026-04-21T10:43:24.258Z","tool":"profile_extract","msg":"Analyzing iter001_base_blockscale from tuning/sm90_NVIDIA_H800_PCIe/tilelang/perf/blockscale_gemm_e4m3fp16fp32_8192x8192x8192/opus-4/ncu_iter001_base_blockscale.csv","level":"info"}
+{"ts":"2026-04-21T10:45:19.956Z","tool":"checkpoint_write","msg":"PLANNED iter002_tcore_gemm: Rewrite kernel to use T.gemm for tensor core MMA, apply scales after tile accumulation, larger tiles 128x256","level":"info"}
+{"ts":"2026-04-21T10:45:25.604Z","tool":"next_iter","msg":"Resolved iter002_tcore_gemm","level":"info"}
+{"ts":"2026-04-21T10:51:18.203Z","tool":"checkpoint_write","msg":"VERIFY minor drift: iter002_tcore_gemm (drift=1)","level":"info"}
+{"ts":"2026-04-21T10:51:35.975Z","tool":"store_round","msg":"Storing iter002_tcore_gemm (KEEP 317.01 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T10:51:35.994Z","tool":"store_round","msg":"Stored iter002_tcore_gemm: KEEP 317.01 TFLOPS (round 2)","level":"info"}
+{"ts":"2026-04-21T10:53:25.902Z","tool":"checkpoint_write","msg":"PLANNED iter003_occupancy_tune: Increase occupancy by reducing register pressure: smaller accum fragment (64x64), more stages, 256 threads","level":"info"}
+{"ts":"2026-04-21T10:56:32.970Z","tool":"store_round","msg":"Storing iter003_occupancy_tune (KEEP 338.57 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T10:56:32.989Z","tool":"store_round","msg":"Stored iter003_occupancy_tune: KEEP 338.57 TFLOPS (round 3)","level":"info"}
+{"ts":"2026-04-21T10:59:16.305Z","tool":"store_round","msg":"Storing iter004_panel_tune (KEEP 360.17 TFLOPS)","level":"info"}
+{"ts":"2026-04-21T10:59:16.325Z","tool":"store_round","msg":"Stored iter004_panel_tune: KEEP 360.17 TFLOPS (round 4)","level":"info"}

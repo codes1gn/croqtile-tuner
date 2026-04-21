@@ -1,2 +1,14 @@
 iter	kernel	tflops	decision	bottleneck	idea_summary
 iter000	iter000_cublas	460.2319	KEEP	baseline	cuBLAS reference baseline
+iter001	iter001_base_blockscale	138.49	DISCARD	memory_bound	Initial naive blockscale with per-subblock loads
+iter002	iter002_fused_scale	174.91	DISCARD	memory_bound	Fused scale application single load per tile
+iter008	iter008_large_tiles	190.89	KEEP	memory_bound	Large 256x128x64 tiles with row/col scale
+iter012	iter012_bm256bn128s4w16	196.63	KEEP	compute_bound	256x128 tiles with 4 stages and 16 warps
+iter014	iter014_bk128w16s3	232.88	KEEP	compute_bound	256x128 with BLOCK_K=128 for larger K-tile
+iter015	iter015_bk128w8s3	228.02	DISCARD	compute_bound	256x128 bk128 with 8 warps 3 stages
+iter016	iter016_gm4	230.23	DISCARD	compute_bound	GROUP_M=4 variant
+iter017	iter017_evict_first	0.0	COMPILE_FAIL	compute_bound	evict_first policy causes FP8 verification failure
+iter018	iter018_evict_last	0.0	COMPILE_FAIL	compute_bound	evict_last policy causes FP8 verification failure
+iter019	iter019_nomask	0.0	COMPILE_FAIL	compute_bound	no-mask version fails verification
+iter020	iter020_num_ctas	0.0	COMPILE_FAIL	compute_bound	num_ctas parameter causes verification failure
+iter021	iter021_splitk	0.0	COMPILE_FAIL	compute_bound	split-K has scaling correctness issue

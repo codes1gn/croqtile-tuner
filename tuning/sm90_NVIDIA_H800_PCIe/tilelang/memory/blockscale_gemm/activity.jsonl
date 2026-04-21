@@ -1,0 +1,2 @@
+{"ts":"2026-04-21T10:41:03.113Z","tool":"discover_baseline","msg":"Scanning for blockscale_gemm (tilelang) candidates","level":"info"}
+{"ts":"2026-04-21T10:41:03.126Z","tool":"discover_baseline","msg":"No candidates found — recommend from scratch","level":"info"}

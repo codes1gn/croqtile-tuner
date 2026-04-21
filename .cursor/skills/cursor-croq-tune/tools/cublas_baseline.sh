@@ -98,42 +98,53 @@ dtype_map = {
 
 input_dtype, out_dtype = dtype_map.get(dtype_arg, (torch.float16, torch.float16))
 
-try:
-    A = torch.randn(M, K, device="cuda", dtype=torch.float32).to(input_dtype)
-    B = torch.randn(K, N, device="cuda", dtype=torch.float32).to(input_dtype)
+method = "cublas_torch_mm"
+A = torch.randn(M, K, device="cuda", dtype=torch.float32).to(input_dtype)
+B = torch.randn(K, N, device="cuda", dtype=torch.float32).to(input_dtype)
 
+try:
     for _ in range(WARMUP):
         torch.mm(A, B)
-    torch.cuda.synchronize()
+except Exception as exc:
+    # FP8 (e4m3) matmul via torch.mm is not implemented on all PyTorch builds;
+    # use same-shape FP16 GEMM as a hardware throughput proxy for ceiling context.
+    if input_dtype == getattr(torch, "float8_e4m3fn", None):
+        method = "fp16_proxy_same_shape"
+        A = torch.randn(M, K, device="cuda", dtype=torch.float16)
+        B = torch.randn(K, N, device="cuda", dtype=torch.float16)
+        for _ in range(WARMUP):
+            torch.mm(A, B)
+    else:
+        print(json.dumps({"status": "error", "error": str(exc)}))
+        sys.exit(2)
 
-    start_event = torch.cuda.Event(enable_timing=True)
-    end_event = torch.cuda.Event(enable_timing=True)
+torch.cuda.synchronize()
 
-    start_event.record()
-    for _ in range(ITERS):
-        torch.mm(A, B)
-    end_event.record()
-    torch.cuda.synchronize()
+start_event = torch.cuda.Event(enable_timing=True)
+end_event = torch.cuda.Event(enable_timing=True)
 
-    elapsed_ms = start_event.elapsed_time(end_event)
-    avg_ms = elapsed_ms / ITERS
-    flops = 2.0 * M * N * K
-    tflops = (flops / (avg_ms * 1e-3)) / 1e12
+start_event.record()
+for _ in range(ITERS):
+    torch.mm(A, B)
+end_event.record()
+torch.cuda.synchronize()
 
-    result = {
-        "tflops": round(tflops, 4),
-        "dtype": dtype_arg,
-        "m": M,
-        "n": N,
-        "k": K,
-        "warmup": WARMUP,
-        "iters": ITERS,
-        "avg_ms": round(avg_ms, 4),
-        "status": "ok",
-    }
-    print(json.dumps(result))
+elapsed_ms = start_event.elapsed_time(end_event)
+avg_ms = elapsed_ms / ITERS
+flops = 2.0 * M * N * K
+tflops = (flops / (avg_ms * 1e-3)) / 1e12
 
-except Exception as e:
-    print(json.dumps({"status": "error", "error": str(e)}))
-    sys.exit(2)
+result = {
+    "tflops": round(tflops, 4),
+    "dtype": dtype_arg,
+    "m": M,
+    "n": N,
+    "k": K,
+    "warmup": WARMUP,
+    "iters": ITERS,
+    "avg_ms": round(avg_ms, 4),
+    "status": "ok",
+    "method": method,
+}
+print(json.dumps(result))
 PYEOF

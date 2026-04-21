@@ -1,0 +1,2 @@
+{"ts":"2026-04-21T10:52:18.755Z","tool":"discover_baseline","msg":"Scanning for blockscale_gemm (helion) candidates","level":"info"}
+{"ts":"2026-04-21T10:52:18.760Z","tool":"discover_baseline","msg":"No candidates found — recommend from scratch","level":"info"}
