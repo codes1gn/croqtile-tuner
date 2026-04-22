@@ -99,3 +99,4 @@ iter094	iter094_bk128	146.242	DISCARD	memory_bound	BK=128 with dynamic shared me
 iter095	iter095_wgmma_basic	0	COMPILE_FAIL	compute_bound	WGMMA requires CUTLASS/CuTe headers and complex PTX - pivoting to choreo DSL for
 iter096	iter096_vec_store	0	COMPILE_FAIL	memory_bound	Vectorized stores via shared memory staging - smem overflow (128KB needed)
 iter097	iter097_bn192	0	COMPILE_FAIL	memory_bound	BN=192 tile - verification failed due to load pattern bug
+iter098	iter098_bm64_bn256	85.370	DISCARD	memory_bound	BM=64 BN=256 - too wide N tile reduces M parallelism significantly

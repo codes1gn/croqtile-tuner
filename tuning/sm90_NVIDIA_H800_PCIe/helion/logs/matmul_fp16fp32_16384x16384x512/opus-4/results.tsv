@@ -7,3 +7,31 @@ iter004	iter004_b64x256_s5	198.65	DISCARD	memory_bound	64x256x64 with 5 stages
 iter005	iter005_b128x256_w16	233.84	DISCARD	memory_bound	128x256x64 with 16 warps
 iter006	iter006_b128x256_s4_verified	246.38	KEEP	memory_bound	Best config from comprehensive sweep: 128x256x64 w8 s4
 iter007	iter007_b128x256_l2g16	287.84	KEEP	memory_bound	L2 cache groupings swizzle: l2_groupings=[16] for better L2 reuse
+iter008	iter008_sweep	264.82	DISCARD	memory_bound	128x256x32 w8 s4 l2=16
+iter009	iter009_sweep	263.66	DISCARD	memory_bound	256x128x64 w8 s4 l2=16
+iter010	iter010_sweep	257.26	DISCARD	memory_bound	128x256x32 w8 s4 l2=8
+iter011	iter011_sweep	256.81	DISCARD	memory_bound	128x256x64 w8 s4 l2=8
+iter012	iter012_sweep	253.01	DISCARD	memory_bound	256x128x64 w8 s4 l2=8
+iter013	iter013_sweep	251.35	DISCARD	memory_bound	64x512x32 w8 s4 l2=16
+iter014	iter014_sweep	249.73	DISCARD	memory_bound	128x128x64 w8 s3 l2=16
+iter015	iter015_sweep	245.39	DISCARD	memory_bound	128x256x32 w8 s3 l2=16
+iter016	iter016_explore	112.13	DISCARD	mixed	persistent_interleaved + l2=16
+iter017	iter017_explore	90.20	DISCARD	mixed	persistent_blocked + l2=16
+iter018	iter018_explore	253.08	DISCARD	mixed	persistent_interleaved + l2=8
+iter019	iter019_explore	199.65	DISCARD	mixed	64x256 persistent_interleaved
+iter020	iter020_explore	224.12	DISCARD	mixed	256x128 persistent_interleaved
+iter021	iter021_explore	239.75	DISCARD	mixed	128x256x64 l2=4
+iter022	iter022_explore	96.56	DISCARD	mixed	128x256x128 s2 l2=16
+iter023	iter023_explore	80.04	DISCARD	mixed	64x128x64 l2=16
+iter024	iter024_explore	73.92	DISCARD	mixed	64x128x128 l2=16
+iter025	iter025_explore	49.45	DISCARD	mixed	256x256x64 l2=16
+iter026	iter026_explore	128.21	DISCARD	memory_bound	l2=32 (variance test)
+iter027	iter027_explore	284.17	DISCARD	memory_bound	128x256x64 s4 l2=16 (k-tile test)
+iter028	iter028_explore	114.94	DISCARD	memory_bound	128x256x128 s2 l2=16
+iter029	iter029_explore	241.62	DISCARD	memory_bound	l2=1 test
+iter030	iter030_explore	229.54	DISCARD	memory_bound	l2=2 test
+iter031	iter031_explore	236.47	DISCARD	memory_bound	l2=4 test
+iter032	iter032_explore	259.51	DISCARD	memory_bound	l2=8 final test
+iter033	iter033_explore	263.84	DISCARD	memory_bound	l2=64 test
+iter034	iter034_explore	235.08	DISCARD	memory_bound	l2=128 test
+iter035	iter035_explore	281.85	DISCARD	memory_bound	l2=32 sweep result (variance)

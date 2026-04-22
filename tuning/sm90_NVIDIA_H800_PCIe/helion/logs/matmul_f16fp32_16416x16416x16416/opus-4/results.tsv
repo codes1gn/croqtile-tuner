@@ -18,3 +18,4 @@ iter020	iter020_b128x256_w8_s4	248.46	DISCARD	compute_bound	block_sizes=[128,256
 iter027	iter027_b128x256x64_w16_s4	267.98	KEEP	compute_bound	block_sizes=[128,256,64] num_warps=16 num_stages=4 - new best
 iter034	iter034_b128x256_w8_s4v2	276.82	KEEP	compute_bound	block_sizes=[128,256,64] num_warps=8 num_stages=4 - new best! 8 warps better tha
 iter039	iter039_b128x256_w8_s3	277.48	KEEP	compute_bound	block_sizes=[128,256,64] num_warps=8 num_stages=3 - stages=3 slightly better
+iter044	iter044_b128x256_blkptr	277.65	KEEP	compute_bound	block_sizes=[128,256,64] num_warps=8 num_stages=3 indexing=block_ptr - TMA index

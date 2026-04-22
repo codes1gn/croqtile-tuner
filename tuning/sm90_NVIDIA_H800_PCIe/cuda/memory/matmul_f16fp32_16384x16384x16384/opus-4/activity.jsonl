@@ -289,3 +289,5 @@
 {"ts":"2026-04-22T00:51:47.792Z","tool":"store_round","msg":"Storing iter097_bn192 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
 {"ts":"2026-04-22T00:51:47.811Z","tool":"store_round","msg":"Stored iter097_bn192: COMPILE_FAIL 0 TFLOPS (round 100)","level":"info"}
 {"ts":"2026-04-22T00:52:21.009Z","tool":"checkpoint_write","msg":"PLANNED iter098_bm64_bn256: BM=64 BN=256 - tall and wide tile for better memory coalescing on N dimension","level":"info"}
+{"ts":"2026-04-22T00:53:41.906Z","tool":"store_round","msg":"Storing iter098_bm64_bn256 (DISCARD 85.370 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T00:53:41.925Z","tool":"store_round","msg":"Stored iter098_bm64_bn256: DISCARD 85.370 TFLOPS (round 101)","level":"info"}

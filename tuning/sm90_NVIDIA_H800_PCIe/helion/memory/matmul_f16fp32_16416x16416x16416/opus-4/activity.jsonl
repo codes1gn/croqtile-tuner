@@ -53,3 +53,5 @@
 {"ts":"2026-04-22T00:49:42.811Z","tool":"store_round","msg":"Stored iter034_b128x256_w8_s4v2: KEEP 276.82 TFLOPS (round 34)","level":"info"}
 {"ts":"2026-04-22T00:52:03.768Z","tool":"store_round","msg":"Storing iter039_b128x256_w8_s3 (KEEP 277.48 TFLOPS)","level":"info"}
 {"ts":"2026-04-22T00:52:03.788Z","tool":"store_round","msg":"Stored iter039_b128x256_w8_s3: KEEP 277.48 TFLOPS (round 39)","level":"info"}
+{"ts":"2026-04-22T00:53:23.727Z","tool":"store_round","msg":"Storing iter044_b128x256_blkptr (KEEP 277.65 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T00:53:23.747Z","tool":"store_round","msg":"Stored iter044_b128x256_blkptr: KEEP 277.65 TFLOPS (round 44)","level":"info"}
