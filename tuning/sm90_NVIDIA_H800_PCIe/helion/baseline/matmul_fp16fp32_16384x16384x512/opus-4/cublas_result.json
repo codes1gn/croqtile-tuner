@@ -1,0 +1,15 @@
+{
+  "tflops": 403.4371,
+  "dtype": "fp16fp32",
+  "m": 16384,
+  "n": 16384,
+  "k": 512,
+  "warmup": 10,
+  "iters": 50,
+  "avg_ms": 0.6813,
+  "status": "ok",
+  "gpu": "sm90_NVIDIA_H800_PCIe",
+  "dsl": "helion",
+  "shape_key": "matmul_fp16fp32_16384x16384x512",
+  "model": "opus-4"
+}

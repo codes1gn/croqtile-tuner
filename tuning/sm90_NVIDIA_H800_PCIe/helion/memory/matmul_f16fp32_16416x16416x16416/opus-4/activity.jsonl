@@ -1,0 +1,55 @@
+{"ts":"2026-04-22T00:31:01.574Z","tool":"store_baseline","msg":"Measuring cuBLAS baseline for f16fp32 16416x16416x16416","level":"info"}
+{"ts":"2026-04-22T00:31:03.407Z","tool":"store_baseline","msg":"cuBLAS baseline measurement failed","level":"error"}
+{"ts":"2026-04-22T00:31:40.112Z","tool":"store_baseline","msg":"Measuring cuBLAS baseline for f16fp32 16416x16416x16416","level":"info"}
+{"ts":"2026-04-22T00:31:43.657Z","tool":"store_baseline","msg":"cuBLAS baseline: 411.852 TFLOPS (saved to tuning/sm90_NVIDIA_H800_PCIe/helion/baseline/matmul_f16fp32_16416x16416x16416/opus-4/cublas_result.json)","level":"info"}
+{"ts":"2026-04-22T00:31:43.997Z","tool":"store_round","msg":"Storing iter000_cublas (KEEP 411.852 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T00:31:44.015Z","tool":"store_round","msg":"Stored iter000_cublas: KEEP 411.852 TFLOPS (round 0)","level":"info"}
+{"ts":"2026-04-22T00:31:44.026Z","tool":"store_baseline","msg":"Stored iter000_cublas: 411.852 TFLOPS (baseline)","level":"info"}
+{"ts":"2026-04-22T00:32:47.310Z","tool":"store_round","msg":"Storing iter001_baseline (KEEP 228.88 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T00:32:47.329Z","tool":"store_round","msg":"Stored iter001_baseline: KEEP 228.88 TFLOPS (round 1)","level":"info"}
+{"ts":"2026-04-22T00:33:03.362Z","tool":"ncu_profile","msg":"Capturing profile: python3 tuning/sm90_NVIDIA_H800_PCIe/helion/srcs/matmul_f16fp32_16416x16416x16416/opus-4/iter001_baseline.py","level":"info"}
+{"ts":"2026-04-22T00:33:08.721Z","tool":"ncu_profile","msg":"Capturing profile: /usr/bin/python3 /home/albert/workspace/croqtile-tuner/tuning/sm90_NVIDIA_H800_PCIe/helion/srcs/matmul_f16fp32_16416x16416x16416/opus-4/iter001_baseline.py","level":"info"}
+{"ts":"2026-04-22T00:33:50.520Z","tool":"profile_extract","msg":"Analyzing iter001_baseline from tuning/sm90_NVIDIA_H800_PCIe/helion/perf/matmul_f16fp32_16416x16416x16416/opus-4/ncu_iter001.csv","level":"info"}
+{"ts":"2026-04-22T00:34:21.557Z","tool":"next_iter","msg":"Resolved iter002_b128_persist","level":"info"}
+{"ts":"2026-04-22T00:34:21.591Z","tool":"checkpoint_write","msg":"PLANNED iter002_b128_persist: Increase block_sizes to [128,256,64], add indexing=block_ptr for TMA, use persistent kernel pid_type","level":"info"}
+{"ts":"2026-04-22T00:35:32.335Z","tool":"store_round","msg":"Storing iter002_b128_persist (DISCARD 119.23 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T00:35:32.355Z","tool":"store_round","msg":"Stored iter002_b128_persist: DISCARD 119.23 TFLOPS (round 2)","level":"info"}
+{"ts":"2026-04-22T00:35:44.927Z","tool":"next_iter","msg":"Resolved iter003_b128x128_s4","level":"info"}
+{"ts":"2026-04-22T00:35:44.963Z","tool":"checkpoint_write","msg":"PLANNED iter003_b128x128_s4: Square block_sizes [128,128,64], increase num_stages=4 for better pipelining","level":"info"}
+{"ts":"2026-04-22T00:36:24.403Z","tool":"store_round","msg":"Storing iter003_b128x128_s4 (DISCARD 193.15 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T00:36:24.422Z","tool":"store_round","msg":"Stored iter003_b128x128_s4: DISCARD 193.15 TFLOPS (round 3)","level":"info"}
+{"ts":"2026-04-22T00:36:35.191Z","tool":"next_iter","msg":"Resolved iter004_b64x512_w16","level":"info"}
+{"ts":"2026-04-22T00:37:13.026Z","tool":"store_round","msg":"Storing iter004_b64x512_w16 (KEEP 252.30 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T00:37:13.045Z","tool":"store_round","msg":"Stored iter004_b64x512_w16: KEEP 252.30 TFLOPS (round 4)","level":"info"}
+{"ts":"2026-04-22T00:37:35.186Z","tool":"next_iter","msg":"Resolved iter005_b128x512_s5","level":"info"}
+{"ts":"2026-04-22T00:38:06.745Z","tool":"next_iter","msg":"Resolved iter006_b64x256_w16_s4","level":"info"}
+{"ts":"2026-04-22T00:38:28.542Z","tool":"next_iter","msg":"Resolved iter007_b64x256_w16_s2","level":"info"}
+{"ts":"2026-04-22T00:38:49.160Z","tool":"store_round","msg":"Storing iter005_b128x512_s5 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T00:38:49.179Z","tool":"store_round","msg":"Stored iter005_b128x512_s5: COMPILE_FAIL 0 TFLOPS (round 5)","level":"info"}
+{"ts":"2026-04-22T00:38:49.529Z","tool":"store_round","msg":"Storing iter006_b64x256_w16_s4 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T00:38:49.549Z","tool":"store_round","msg":"Stored iter006_b64x256_w16_s4: COMPILE_FAIL 0 TFLOPS (round 6)","level":"info"}
+{"ts":"2026-04-22T00:38:49.903Z","tool":"store_round","msg":"Storing iter007_b64x256_w16_s2 (DISCARD 180.06 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T00:38:49.922Z","tool":"store_round","msg":"Stored iter007_b64x256_w16_s2: DISCARD 180.06 TFLOPS (round 7)","level":"info"}
+{"ts":"2026-04-22T00:41:16.478Z","tool":"store_round","msg":"Storing iter008_b64x512_s4 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T00:41:16.498Z","tool":"store_round","msg":"Stored iter008_b64x512_s4: COMPILE_FAIL 0 TFLOPS (round 8)","level":"info"}
+{"ts":"2026-04-22T00:41:16.837Z","tool":"store_round","msg":"Storing iter009_b64x512x32_s4 (DISCARD 244.54 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T00:41:17.229Z","tool":"store_round","msg":"Storing iter010_b64x512_w32 (DISCARD 238.23 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T00:41:17.247Z","tool":"store_round","msg":"Stored iter010_b64x512_w32: DISCARD 238.23 TFLOPS (round 10)","level":"info"}
+{"ts":"2026-04-22T00:41:17.587Z","tool":"store_round","msg":"Storing iter011_b32x1024_w16 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T00:41:17.606Z","tool":"store_round","msg":"Stored iter011_b32x1024_w16: COMPILE_FAIL 0 TFLOPS (round 11)","level":"info"}
+{"ts":"2026-04-22T00:41:17.943Z","tool":"store_round","msg":"Storing iter012_b32x1024_s2 (DISCARD 128.21 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T00:41:17.962Z","tool":"store_round","msg":"Stored iter012_b32x1024_s2: DISCARD 128.21 TFLOPS (round 12)","level":"info"}
+{"ts":"2026-04-22T00:41:18.310Z","tool":"store_round","msg":"Storing iter013_b128x256x32_s3 (DISCARD 241.49 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T00:41:18.329Z","tool":"store_round","msg":"Stored iter013_b128x256x32_s3: DISCARD 241.49 TFLOPS (round 13)","level":"info"}
+{"ts":"2026-04-22T00:44:02.794Z","tool":"store_round","msg":"Storing iter016_b64x512_w8_s4 (DISCARD 197.76 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T00:44:02.813Z","tool":"store_round","msg":"Stored iter016_b64x512_w8_s4: DISCARD 197.76 TFLOPS (round 16)","level":"info"}
+{"ts":"2026-04-22T00:44:03.226Z","tool":"store_round","msg":"Storing iter018_b32x512_w16 (DISCARD 110.71 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T00:44:03.246Z","tool":"store_round","msg":"Stored iter018_b32x512_w16: DISCARD 110.71 TFLOPS (round 18)","level":"info"}
+{"ts":"2026-04-22T00:44:03.632Z","tool":"store_round","msg":"Storing iter020_b128x256_w8_s4 (DISCARD 248.46 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T00:44:03.651Z","tool":"store_round","msg":"Stored iter020_b128x256_w8_s4: DISCARD 248.46 TFLOPS (round 20)","level":"info"}
+{"ts":"2026-04-22T00:47:01.981Z","tool":"store_round","msg":"Storing iter027_b128x256x64_w16_s4 (KEEP 267.98 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T00:47:02.000Z","tool":"store_round","msg":"Stored iter027_b128x256x64_w16_s4: KEEP 267.98 TFLOPS (round 27)","level":"info"}
+{"ts":"2026-04-22T00:49:42.791Z","tool":"store_round","msg":"Storing iter034_b128x256_w8_s4v2 (KEEP 276.82 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T00:49:42.811Z","tool":"store_round","msg":"Stored iter034_b128x256_w8_s4v2: KEEP 276.82 TFLOPS (round 34)","level":"info"}
+{"ts":"2026-04-22T00:52:03.768Z","tool":"store_round","msg":"Storing iter039_b128x256_w8_s3 (KEEP 277.48 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T00:52:03.788Z","tool":"store_round","msg":"Stored iter039_b128x256_w8_s3: KEEP 277.48 TFLOPS (round 39)","level":"info"}

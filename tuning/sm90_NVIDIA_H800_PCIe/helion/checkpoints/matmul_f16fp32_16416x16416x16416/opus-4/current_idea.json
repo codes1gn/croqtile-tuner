@@ -1,0 +1,15 @@
+{
+  "schema": "croq-checkpoint-v1",
+  "timestamp": "2026-04-22T00:35:44Z",
+  "dsl": "helion",
+  "shape_key": "matmul_f16fp32_16416x16416x16416",
+  "iter": "iter003_b128x128_s4",
+  "bottleneck": "compute_bound",
+  "idea": "Square block_sizes [128,128,64], increase num_stages=4 for better pipelining",
+  "expected_gain": "+20-50 TFLOPS",
+  "levers": [
+    "block_sizes",
+    "num_stages"
+  ],
+  "status": "PLANNED"
+}

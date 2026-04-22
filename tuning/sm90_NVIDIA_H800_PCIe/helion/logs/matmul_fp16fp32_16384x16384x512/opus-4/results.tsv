@@ -1,0 +1,9 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_cublas	403.4371	KEEP	baseline	cuBLAS reference baseline
+iter001	iter001_baseline	230.77	KEEP	unknown	Initial baseline kernel adapted from matmul_f16fp32_16384x16384x16384
+iter002	iter002_b256x128_s5	204.08	DISCARD	latency_bound	Larger block_sizes 256x128x32 with 4 stages - too small K block
+iter003	iter003_b128x256_s4	245.20	KEEP	latency_bound	128x256x64 with 4 stages - better N-parallelism
+iter004	iter004_b64x256_s5	198.65	DISCARD	memory_bound	64x256x64 with 5 stages
+iter005	iter005_b128x256_w16	233.84	DISCARD	memory_bound	128x256x64 with 16 warps
+iter006	iter006_b128x256_s4_verified	246.38	KEEP	memory_bound	Best config from comprehensive sweep: 128x256x64 w8 s4
+iter007	iter007_b128x256_l2g16	287.84	KEEP	memory_bound	L2 cache groupings swizzle: l2_groupings=[16] for better L2 reuse

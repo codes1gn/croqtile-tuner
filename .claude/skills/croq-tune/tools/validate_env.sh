@@ -176,8 +176,8 @@ case "$DSL" in
     fi
     ;;
   helion)
-    if python3 -c "import helion; print(helion.__version__)" &>/dev/null; then
-      HELION_VER=$(python3 -c "import helion; print(helion.__version__)" 2>/dev/null)
+    if python3 -c "import helion" &>/dev/null; then
+      HELION_VER=$(pip show helion 2>/dev/null | grep "^Version:" | cut -d' ' -f2 || echo "unknown")
       echo "[validate_env] OK: helion $HELION_VER" >&2
     else
       ERRORS+=("python3 'import helion' failed")

@@ -1,0 +1,2 @@
+{"ts":"2026-04-22T00:32:03.201Z","tool":"discover_baseline","msg":"Scanning for matmul (cute) candidates","level":"info"}
+{"ts":"2026-04-22T00:32:03.225Z","tool":"discover_baseline","msg":"No candidates found — recommend from scratch","level":"info"}

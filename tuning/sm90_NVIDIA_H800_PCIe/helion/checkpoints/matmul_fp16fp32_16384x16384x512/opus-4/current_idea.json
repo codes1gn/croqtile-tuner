@@ -1,0 +1,14 @@
+{
+  "schema": "croq-checkpoint-v1",
+  "timestamp": "2026-04-22T00:41:26Z",
+  "dsl": "helion",
+  "shape_key": "matmul_fp16fp32_16384x16384x512",
+  "iter": "iter005_b128x256_w16",
+  "bottleneck": "memory_bound",
+  "idea": "Try 128x256x64 with 16 warps for better parallelism",
+  "expected_gain": "+5-15 TFLOPS",
+  "levers": [
+    "num_warps"
+  ],
+  "status": "PLANNED"
+}

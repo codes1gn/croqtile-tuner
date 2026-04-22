@@ -257,3 +257,34 @@
 {"ts":"2026-04-21T02:04:36.107Z","tool":"checkpoint_write","msg":"PLANNED iter090_warp3x3: Warp tile 3x3 - 48x48 per warp, balanced locality for both A and B","level":"info"}
 {"ts":"2026-04-21T02:07:01.225Z","tool":"store_round","msg":"Storing iter090_warp3x3 (DISCARD 113.965 TFLOPS)","level":"info"}
 {"ts":"2026-04-21T02:07:01.245Z","tool":"store_round","msg":"Stored iter090_warp3x3: DISCARD 113.965 TFLOPS (round 93)","level":"info"}
+{"ts":"2026-04-22T00:33:36.162Z","tool":"resume_state","msg":"Loading tuning state for cuda/matmul_f16fp32_16384x16384x16384","level":"info"}
+{"ts":"2026-04-22T00:34:00.965Z","tool":"ncu_profile","msg":"Capturing profile: tuning/sm90_NVIDIA_H800_PCIe/cuda/bin/matmul_f16fp32_16384x16384x16384/opus-4/iter089_warp4x2","level":"info"}
+{"ts":"2026-04-22T00:34:23.799Z","tool":"ncu_profile","msg":"Profile complete: tuning/sm90_NVIDIA_H800_PCIe/cuda/perf/matmul_f16fp32_16384x16384x16384/opus-4/ncu_iter089_round94.ncu-rep + tuning/sm90_NVIDIA_H800_PCIe/cuda/perf/matmul_f16fp32_16384x16384x16384/opus-4/ncu_iter089_round94.csv","level":"info"}
+{"ts":"2026-04-22T00:35:38.647Z","tool":"profile_extract","msg":"Analyzing iter089_warp4x2 from tuning/sm90_NVIDIA_H800_PCIe/cuda/perf/matmul_f16fp32_16384x16384x16384/opus-4/ncu_iter089_round94b.csv","level":"info"}
+{"ts":"2026-04-22T00:36:06.413Z","tool":"checkpoint_write","msg":"PLANNED iter091_maxreg64: Reduce register pressure to 64 regs to double occupancy - current 128 regs limits to 4 warps/scheduler","level":"info"}
+{"ts":"2026-04-22T00:39:14.000Z","tool":"store_round","msg":"Storing iter091_maxreg64 (DISCARD 105.612 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T00:39:14.019Z","tool":"store_round","msg":"Stored iter091_maxreg64: DISCARD 105.612 TFLOPS (round 94)","level":"info"}
+{"ts":"2026-04-22T00:39:34.691Z","tool":"checkpoint_write","msg":"PLANNED iter092_doublebuf_3stage: 3-stage software pipelining with double-buffered shared memory to hide L1TEX latency stalls (34.2% of cycles)","level":"info"}
+{"ts":"2026-04-22T00:42:53.753Z","tool":"store_round","msg":"Storing iter092_doublebuf_2stage (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T00:42:53.772Z","tool":"store_round","msg":"Stored iter092_doublebuf_2stage: COMPILE_FAIL 0 TFLOPS (round 95)","level":"info"}
+{"ts":"2026-04-22T00:43:11.824Z","tool":"checkpoint_write","msg":"PLANNED iter093_bm256bn64: Increase M tile to 256 to improve A matrix reuse, reduce B tile to 64 to keep smem reasonable","level":"info"}
+{"ts":"2026-04-22T00:44:27.180Z","tool":"store_round","msg":"Storing iter093_bm256bn64 (DISCARD 133.814 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T00:44:27.200Z","tool":"store_round","msg":"Stored iter093_bm256bn64: DISCARD 133.814 TFLOPS (round 96)","level":"info"}
+{"ts":"2026-04-22T00:44:40.648Z","tool":"checkpoint_write","msg":"PLANNED iter094_bk128: Double K tile to BK=128 for more compute work per memory load, fewer K iterations","level":"info"}
+{"ts":"2026-04-22T00:46:01.098Z","tool":"store_round","msg":"Storing iter094_bk128 (DISCARD 146.242 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T00:46:01.118Z","tool":"store_round","msg":"Stored iter094_bk128: DISCARD 146.242 TFLOPS (round 97)","level":"info"}
+{"ts":"2026-04-22T00:46:17.052Z","tool":"sass_compare","msg":"Extracting baseline SASS for f16fp32 16384x16384x16384","level":"info"}
+{"ts":"2026-04-22T00:46:22.009Z","tool":"sass_compare","msg":"Baseline SASS extracted via ncu (1290 lines)","level":"info"}
+{"ts":"2026-04-22T00:46:27.127Z","tool":"sass_compare","msg":"Extracting custom SASS for iter089_warp4x2","level":"info"}
+{"ts":"2026-04-22T00:46:27.750Z","tool":"sass_compare","msg":"Custom SASS extracted for iter089_warp4x2 (1636 lines)","level":"info"}
+{"ts":"2026-04-22T00:46:32.554Z","tool":"sass_compare","msg":"Comparing baseline vs iter089_warp4x2 SASS","level":"info"}
+{"ts":"2026-04-22T00:46:32.583Z","tool":"sass_compare","msg":"SASS comparison complete for iter089_warp4x2 (saved to tuning/sm90_NVIDIA_H800_PCIe/cuda/perf/matmul_f16fp32_16384x16384x16384/opus-4/sass_compare_iter089_warp4x2.json)","level":"info"}
+{"ts":"2026-04-22T00:47:08.600Z","tool":"checkpoint_write","msg":"PLANNED iter095_wgmma_basic: Switch from WMMA to WGMMA - cuBLAS uses HGMMA.64x96x16 warpgroup ops, my kernel uses HMMA.16816","level":"info"}
+{"ts":"2026-04-22T00:47:50.177Z","tool":"store_round","msg":"Storing iter095_wgmma_basic (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T00:47:50.196Z","tool":"store_round","msg":"Stored iter095_wgmma_basic: COMPILE_FAIL 0 TFLOPS (round 98)","level":"info"}
+{"ts":"2026-04-22T00:48:11.831Z","tool":"checkpoint_write","msg":"PLANNED iter096_vec_store: Use vectorized float4 stores instead of wmma::store_matrix_sync to reduce store latency","level":"info"}
+{"ts":"2026-04-22T00:50:18.812Z","tool":"store_round","msg":"Storing iter096_vec_store (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T00:50:18.831Z","tool":"store_round","msg":"Stored iter096_vec_store: COMPILE_FAIL 0 TFLOPS (round 99)","level":"info"}
+{"ts":"2026-04-22T00:50:31.059Z","tool":"checkpoint_write","msg":"PLANNED iter097_bn192: BN=192 with 4 warps in N (each 48 wide) - wider N tile for better B-matrix reuse","level":"info"}
+{"ts":"2026-04-22T00:51:47.792Z","tool":"store_round","msg":"Storing iter097_bn192 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T00:51:47.811Z","tool":"store_round","msg":"Stored iter097_bn192: COMPILE_FAIL 0 TFLOPS (round 100)","level":"info"}

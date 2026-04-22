@@ -1,0 +1,77 @@
+{
+  "task_id": 39,
+  "task_uid": "croqtune-cute-f16fp32-16384x16384x16384",
+  "model": "opus-4",
+  "variant": "",
+  "agent_type": null,
+  "device": "NVIDIA H800 PCIe",
+  "mode": "opencode",
+  "status": "waiting",
+  "request_budget": 1,
+  "request_number": 0,
+  "max_iterations": 30,
+  "respawn_count": 0,
+  "opencode_session_id": "38ae1aac-ea1f-439e-966b-7ce10f5d0b57",
+  "sessions": [
+    {
+      "id": 51,
+      "task_id": 39,
+      "session_id": "38ae1aac-ea1f-439e-966b-7ce10f5d0b57",
+      "agent_type": "cursor_cli",
+      "model": "opus-4",
+      "request_number": 0,
+      "started_at": "2026-04-22T00:31:19.485997",
+      "ended_at": null
+    },
+    {
+      "id": 52,
+      "task_id": 39,
+      "session_id": "3151a2d8-ff1a-4bcf-9cfc-b79cb89d6ee4",
+      "agent_type": "cursor_cli",
+      "model": "opus-4",
+      "request_number": 0,
+      "started_at": "2026-04-22T00:31:19.485999",
+      "ended_at": null
+    },
+    {
+      "id": 53,
+      "task_id": 39,
+      "session_id": "02024a48-f96e-457a-a07a-d655896f0c22",
+      "agent_type": "cursor_cli",
+      "model": "opus-4",
+      "request_number": 0,
+      "started_at": "2026-04-22T00:31:19.485999",
+      "ended_at": null
+    },
+    {
+      "id": 54,
+      "task_id": 39,
+      "session_id": "a8e94253-ddee-4b09-85a2-62678b3c9cfd",
+      "agent_type": "cursor_cli",
+      "model": "opus-4",
+      "request_number": 0,
+      "started_at": "2026-04-22T00:31:19.486000",
+      "ended_at": null
+    },
+    {
+      "id": 55,
+      "task_id": 39,
+      "session_id": "aa95e93f-5353-4a29-9095-7aeb61bc0cc0",
+      "agent_type": "cursor_cli",
+      "model": "opus-4",
+      "request_number": 0,
+      "started_at": "2026-04-22T00:31:19.486001",
+      "ended_at": null
+    },
+    {
+      "id": 56,
+      "task_id": 39,
+      "session_id": "1c47c8a6-f6b3-43b1-aad9-9125d7e15cb9",
+      "agent_type": "cursor_cli",
+      "model": "opus-4",
+      "request_number": 0,
+      "started_at": "2026-04-22T00:31:19.486001",
+      "ended_at": null
+    }
+  ]
+}

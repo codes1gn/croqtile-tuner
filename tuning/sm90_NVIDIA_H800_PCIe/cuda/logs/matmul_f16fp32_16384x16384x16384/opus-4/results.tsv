@@ -92,3 +92,10 @@ iter087	iter087_bm64_bk64	105.800	DISCARD	compute_bound	BM=64 BK=64 - too few wa
 iter088	iter088_warp1x8	134.686	DISCARD	compute_bound	Warp tile 1x8 - worse than 2x4, more B-matrix loads per warp
 iter089	iter089_warp4x2	161.552	KEEP	compute_bound	Warp tile 4x2 - better A-matrix reuse per warp, 0.3 TFLOPS improvement
 iter090	iter090_warp3x3	113.965	DISCARD	compute_bound	Warp tile 3x3 with only 4 warps - insufficient parallelism hurts
+iter091	iter091_maxreg64	105.612	DISCARD	memory_bound	Reduced register pressure with maxrregcount=64, smaller BM=64 - occupancy improv
+iter092	iter092_doublebuf_2stage	0	COMPILE_FAIL	memory_bound	3-stage double-buffered pipeline - verification failed due to incorrect pipeline
+iter093	iter093_bm256bn64	133.814	DISCARD	memory_bound	BM=256 BN=64 for improved A matrix reuse - worse due to reduced parallelism in N
+iter094	iter094_bk128	146.242	DISCARD	memory_bound	BK=128 with dynamic shared memory - more compute per K iteration but higher smem
+iter095	iter095_wgmma_basic	0	COMPILE_FAIL	compute_bound	WGMMA requires CUTLASS/CuTe headers and complex PTX - pivoting to choreo DSL for
+iter096	iter096_vec_store	0	COMPILE_FAIL	memory_bound	Vectorized stores via shared memory staging - smem overflow (128KB needed)
+iter097	iter097_bn192	0	COMPILE_FAIL	memory_bound	BN=192 tile - verification failed due to load pattern bug

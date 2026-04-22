@@ -1,0 +1,20 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_cublas	411.852	KEEP	baseline	cuBLAS reference baseline
+iter001	iter001_baseline	228.88	KEEP	compute_bound	Initial baseline from prior tuning session, adapted for 16416³ with power-of-2 b
+iter002	iter002_b128_persist	119.23	DISCARD	compute_bound	block_sizes=[128,256,64], indexing=block_ptr, pid_type=persistent_blocked - perf
+iter003	iter003_b128x128_s4	193.15	DISCARD	compute_bound	block_sizes=[128,128,64] num_stages=4 - square tiles worse
+iter004	iter004_b64x512_w16	252.30	KEEP	compute_bound	block_sizes=[64,512,64] num_warps=16 - wider N tile with more warps
+iter005	iter005_b128x512_s5	0	COMPILE_FAIL	compute_bound	block_sizes=[128,512,64] num_stages=5 - register pressure exceeded
+iter006	iter006_b64x256_w16_s4	0	COMPILE_FAIL	compute_bound	block_sizes=[64,256,128] num_stages=4 - shared memory exceeded
+iter007	iter007_b64x256_w16_s2	180.06	DISCARD	compute_bound	block_sizes=[64,256,128] num_stages=2 - worse performance
+iter008	iter008_b64x512_s4	0	COMPILE_FAIL	compute_bound	block_sizes=[64,512,64] num_stages=4 - shared mem exceeded
+iter010	iter010_b64x512_w32	238.23	DISCARD	compute_bound	block_sizes=[64,512,64] num_warps=32 - too many warps
+iter011	iter011_b32x1024_w16	0	COMPILE_FAIL	compute_bound	block_sizes=[32,1024,64] - shared mem exceeded
+iter012	iter012_b32x1024_s2	128.21	DISCARD	compute_bound	block_sizes=[32,1024,64] num_stages=2 - too wide N tile
+iter013	iter013_b128x256x32_s3	241.49	DISCARD	compute_bound	block_sizes=[128,256,32] - balanced but not better
+iter016	iter016_b64x512_w8_s4	197.76	DISCARD	compute_bound	block_sizes=[64,512,32] 8 warps worse
+iter018	iter018_b32x512_w16	110.71	DISCARD	compute_bound	block_sizes=[32,512,64] M=32 too small
+iter020	iter020_b128x256_w8_s4	248.46	DISCARD	compute_bound	block_sizes=[128,256,64] 8 warps same
+iter027	iter027_b128x256x64_w16_s4	267.98	KEEP	compute_bound	block_sizes=[128,256,64] num_warps=16 num_stages=4 - new best
+iter034	iter034_b128x256_w8_s4v2	276.82	KEEP	compute_bound	block_sizes=[128,256,64] num_warps=8 num_stages=4 - new best! 8 warps better tha
+iter039	iter039_b128x256_w8_s3	277.48	KEEP	compute_bound	block_sizes=[128,256,64] num_warps=8 num_stages=3 - stages=3 slightly better

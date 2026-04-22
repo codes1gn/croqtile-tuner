@@ -1,0 +1,2 @@
+VERIFY: PASS max_abs_err=0.019165
+TFLOPS: 119.23   time_ms: 74.209
