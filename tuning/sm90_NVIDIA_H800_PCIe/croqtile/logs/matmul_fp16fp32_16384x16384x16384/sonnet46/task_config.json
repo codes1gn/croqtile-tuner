@@ -4,7 +4,7 @@
   "model": "opencode/claude-sonnet-4.6",
   "device": "NVIDIA H800 PCIe",
   "status": "completed",
-  "task_id": 25,
+  "task_id": 28,
   "variant": "high",
   "agent_type": "opencode",
   "mode": "opencode",
@@ -18,13 +18,13 @@
   "opencode_session_id": "ses_25eb5c906ffeijkLC3JQ4cOAqT",
   "sessions": [
     {
-      "id": 41,
-      "task_id": 25,
+      "id": 45,
+      "task_id": 28,
       "session_id": "ses_25ec6a47affe8lmx7ntKX6v62R",
       "agent_type": "opencode",
       "model": "github-copilot/gpt-5.3-codex",
       "request_number": 1,
-      "started_at": "2026-04-21T14:40:38.204066",
+      "started_at": "2026-04-22T02:29:39.883216",
       "ended_at": null
     }
   ]

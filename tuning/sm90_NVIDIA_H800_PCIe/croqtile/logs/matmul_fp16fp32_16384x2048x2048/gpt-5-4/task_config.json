@@ -4,7 +4,7 @@
   "model": "gpt-5-4",
   "device": "NVIDIA H800 PCIe",
   "status": "waiting",
-  "task_id": 33,
+  "task_id": 36,
   "variant": "high",
   "agent_type": "opencode",
   "mode": "opencode",
@@ -15,23 +15,23 @@
   "opencode_session_id": "ses_25ecf3100ffeSqEassvDxTjgbk",
   "sessions": [
     {
-      "id": 43,
-      "task_id": 33,
+      "id": 47,
+      "task_id": 36,
       "session_id": "ses_25ecf6973ffeL9xKCyxh3BafKP",
       "agent_type": "opencode",
       "model": "github-copilot/gpt-5.4",
       "request_number": 1,
-      "started_at": "2026-04-21T14:40:38.478966",
+      "started_at": "2026-04-22T02:29:40.192690",
       "ended_at": null
     },
     {
-      "id": 44,
-      "task_id": 33,
+      "id": 48,
+      "task_id": 36,
       "session_id": "ses_25ecf3100ffeSqEassvDxTjgbk",
       "agent_type": "opencode",
       "model": "github-copilot/gpt-5.4",
       "request_number": 2,
-      "started_at": "2026-04-21T14:40:38.478967",
+      "started_at": "2026-04-22T02:29:40.192692",
       "ended_at": null
     }
   ],

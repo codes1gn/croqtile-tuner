@@ -7,7 +7,7 @@
   "best_tflops": 371.64,
   "baseline_tflops": 476.7218,
   "best_kernel": "iter053_np_wn160_s4_1p1c",
-  "task_id": 31,
+  "task_id": 34,
   "variant": "",
   "agent_type": null,
   "mode": "opencode",

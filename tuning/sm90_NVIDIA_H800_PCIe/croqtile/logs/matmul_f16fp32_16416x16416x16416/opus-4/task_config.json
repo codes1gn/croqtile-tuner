@@ -4,7 +4,7 @@
   "model": "opus-4",
   "device": "NVIDIA H800 PCIe",
   "status": "waiting",
-  "task_id": 26,
+  "task_id": 29,
   "variant": "",
   "agent_type": "cursor",
   "mode": "opencode",

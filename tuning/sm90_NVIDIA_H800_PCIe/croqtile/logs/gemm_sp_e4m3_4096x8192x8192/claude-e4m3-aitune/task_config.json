@@ -18,7 +18,7 @@
   "total_iterations": 68,
   "migration_date": "2026-04-20",
   "notes": "Migrated from croqtile repo branch ai-tune/2026-03-21/gemm_sp_e4m3. Performance data reconstructed from commit messages and README.",
-  "task_id": 29,
+  "task_id": 32,
   "variant": "",
   "agent_type": null,
   "mode": "opencode",
