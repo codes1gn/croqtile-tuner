@@ -1,16 +1,16 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-22T00:50:31Z",
+  "timestamp": "2026-04-22T00:52:20Z",
   "dsl": "cuda",
   "shape_key": "matmul_f16fp32_16384x16384x16384",
-  "iter": "iter097_bn192",
+  "iter": "iter098_bm64_bn256",
   "bottleneck": "memory_bound",
-  "idea": "BN=192 with 4 warps in N (each 48 wide) - wider N tile for better B-matrix reuse",
-  "expected_gain": "+8 TFLOPS",
+  "idea": "BM=64 BN=256 - tall and wide tile for better memory coalescing on N dimension",
+  "expected_gain": "+10 TFLOPS",
   "levers": [
+    "BM",
     "BN",
-    "WARPS_N",
-    "WARP_TILES_N"
+    "WARPS_N"
   ],
   "status": "PLANNED"
 }
