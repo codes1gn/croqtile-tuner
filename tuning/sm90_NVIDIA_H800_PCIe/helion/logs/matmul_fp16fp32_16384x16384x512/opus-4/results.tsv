@@ -35,3 +35,78 @@ iter032	iter032_explore	259.51	DISCARD	memory_bound	l2=8 final test
 iter033	iter033_explore	263.84	DISCARD	memory_bound	l2=64 test
 iter034	iter034_explore	235.08	DISCARD	memory_bound	l2=128 test
 iter035	iter035_explore	281.85	DISCARD	memory_bound	l2=32 sweep result (variance)
+iter036	iter036_b64x256_s2_l216	227.42	DISCARD	memory_bound	64x256x64 s2 l2=16
+iter037	iter037_b128x128_s4_l28	225.99	DISCARD	memory_bound	batch sweep b128x128_s4_l28
+iter038	iter038_b256x64_s4_l216	221.56	DISCARD	memory_bound	batch sweep b256x64_s4_l216
+iter039	iter039_b64x512_s2_l216	220.95	DISCARD	memory_bound	batch sweep b64x512_s2_l216
+iter040	iter040_b256x64x32_s4_l216	219.65	DISCARD	memory_bound	batch sweep b256x64x32_s4_l216
+iter041	iter041_b128x64_s4_l216	217.04	DISCARD	memory_bound	batch sweep b128x64_s4_l216
+iter042	iter042_b64x256_s3_l216	215.69	DISCARD	memory_bound	batch sweep b64x256_s3_l216
+iter043	iter043_b64x512x32_s3_l28	215.37	DISCARD	memory_bound	batch sweep b64x512x32_s3_l28
+iter044	iter044_b256x64_s3_l216	210.34	DISCARD	memory_bound	batch sweep b256x64_s3_l216
+iter045	iter045_b128x64_s4_l28	209.04	DISCARD	memory_bound	batch sweep b128x64_s4_l28
+iter046	iter046_b256x64x32_s4_l28	208.52	DISCARD	memory_bound	batch sweep b256x64x32_s4_l28
+iter047	iter047_b256x64_s2_l216	208.26	DISCARD	memory_bound	batch sweep b256x64_s2_l216
+iter048	iter048_b256x64_s4_l28	207.60	DISCARD	memory_bound	batch sweep b256x64_s4_l28
+iter049	iter049_b256x64_s2_l28	206.34	DISCARD	memory_bound	batch sweep b256x64_s2_l28
+iter050	iter050_b64x256_s4_l28	206.01	DISCARD	memory_bound	batch sweep b64x256_s4_l28
+iter051	iter051_b64x512_s2_l28	201.27	DISCARD	memory_bound	batch sweep b64x512_s2_l28
+iter052	iter052_b256x64_s3_l28	197.54	DISCARD	memory_bound	batch sweep b256x64_s3_l28
+iter053	iter053_b64x256_s3_l28	196.66	DISCARD	memory_bound	batch sweep b64x256_s3_l28
+iter054	iter054_b128x128x32_s2_l216	191.79	DISCARD	memory_bound	batch sweep b128x128x32_s2_l216
+iter055	iter055_b256x128x32_s2_l216	181.48	DISCARD	memory_bound	batch sweep b256x128x32_s2_l216
+iter056	iter056_b64x512x32_s2_l216	176.95	DISCARD	memory_bound	batch sweep b64x512x32_s2_l216
+iter057	iter057_b256x128x32_s2_l28	175.97	DISCARD	memory_bound	batch sweep b256x128x32_s2_l28
+iter058	iter058_b128x256x32_s2_l28	174.93	DISCARD	memory_bound	batch sweep b128x256x32_s2_l28
+iter059	iter059_b128x128x32_s2_l28	174.40	DISCARD	memory_bound	batch sweep b128x128x32_s2_l28
+iter060	iter060_b64x512x32_s2_l28	162.82	DISCARD	memory_bound	batch sweep b64x512x32_s2_l28
+iter061	iter061_b64x256_s2_l28	146.13	DISCARD	memory_bound	batch b64x256_s2_l28
+iter062	iter062_b256x128x32_s4_l216	125.56	DISCARD	memory_bound	batch b256x128x32_s4_l216
+iter063	iter063_b128x256x32_s4_l216	111.90	DISCARD	memory_bound	batch b128x256x32_s4_l216
+iter064	iter064_b128x256x32_s4_l28	105.91	DISCARD	memory_bound	batch b128x256x32_s4_l28
+iter065	iter065_b64x256x32_s3_l216	105.02	DISCARD	memory_bound	batch b64x256x32_s3_l216
+iter066	iter066_b128x256x32_s3_l216	104.96	DISCARD	memory_bound	batch b128x256x32_s3_l216
+iter067	iter067_b128x256_s3_l28	104.43	DISCARD	memory_bound	batch b128x256_s3_l28
+iter068	iter068_b64x256x32_s4_l216	104.20	DISCARD	memory_bound	batch b64x256x32_s4_l216
+iter069	iter069_b64x512_s3_l28	104.20	DISCARD	memory_bound	batch b64x512_s3_l28
+iter070	iter070_b64x256x32_s4_l28	104.06	DISCARD	memory_bound	batch b64x256x32_s4_l28
+iter071	iter071_b256x128_s3_l28	103.84	DISCARD	memory_bound	batch b256x128_s3_l28
+iter072	iter072_b64x512_s3_l216	102.83	DISCARD	memory_bound	batch b64x512_s3_l216
+iter073	iter073_b64x128_s2_l216	98.15	DISCARD	memory_bound	batch b64x128_s2_l216
+iter074	iter074_b64x128_s3_l216	98.05	DISCARD	memory_bound	batch b64x128_s3_l216
+iter075	iter075_b128x256_s2_l216	97.50	DISCARD	memory_bound	batch b128x256_s2_l216
+iter076	iter076_b64x256x32_s3_l28	97.45	DISCARD	memory_bound	batch b64x256x32_s3_l28
+iter077	iter077_b64x128x32_s3_l216	97.40	DISCARD	memory_bound	batch b64x128x32_s3_l216
+iter078	iter078_b64x128x32_s4_l216	97.30	DISCARD	memory_bound	batch b64x128x32_s4_l216
+iter079	iter079_b128x256x32_s3_l28	97.18	DISCARD	memory_bound	batch b128x256x32_s3_l28
+iter080	iter080_b64x128_s3_l28	96.39	DISCARD	memory_bound	batch b64x128_s3_l28
+iter081	iter081_b64x128_s2_l28	95.91	DISCARD	memory_bound	batch b64x128_s2_l28
+iter082	iter082_b64x128x32_s4_l28	95.59	DISCARD	memory_bound	batch b64x128x32_s4_l28
+iter083	iter083_b64x128x32_s3_l28	95.21	DISCARD	memory_bound	batch b64x128x32_s3_l28
+iter084	iter084_b128x64_s3_l28	94.55	DISCARD	memory_bound	batch b128x64_s3_l28
+iter085	iter085_b256x128_s3_l216	93.43	DISCARD	memory_bound	batch b256x128_s3_l216
+iter086	iter086_b64x128_s4_l216	90.78	DISCARD	memory_bound	batch b64x128_s4_l216
+iter087	iter087_b256x128_s2_l28	90.16	DISCARD	memory_bound	batch b256x128_s2_l28
+iter088	iter088_b128x256_s2_l28	89.60	DISCARD	memory_bound	batch b128x256_s2_l28
+iter089	iter089_b128x64_s2_l28	88.97	DISCARD	memory_bound	batch b128x64_s2_l28
+iter090	iter090_b256x128_s2_l216	88.83	DISCARD	memory_bound	batch b256x128_s2_l216
+iter091	iter091_b64x128_s4_l28	88.47	DISCARD	memory_bound	batch b64x128_s4_l28
+iter092	iter092_b128x64x32_s3_l28	88.22	DISCARD	memory_bound	batch b128x64x32_s3_l28
+iter093	iter093_b128x64_s2_l216	87.45	DISCARD	memory_bound	batch b128x64_s2_l216
+iter094	iter094_b128x64x32_s4_l216	87.37	DISCARD	memory_bound	batch b128x64x32_s4_l216
+iter095	iter095_b128x64x32_s3_l216	87.07	DISCARD	memory_bound	batch b128x64x32_s3_l216
+iter096	iter096_b128x256x32_s2_l216	84.15	DISCARD	memory_bound	batch b128x256x32_s2_l216
+iter097	iter097_b64x256x32_s2_l216	83.09	DISCARD	memory_bound	batch b64x256x32_s2_l216
+iter098	iter098_b64x128x32_s2_l216	82.72	DISCARD	memory_bound	batch b64x128x32_s2_l216
+iter099	iter099_b64x64_s2_l216	82.45	DISCARD	memory_bound	batch b64x64_s2_l216
+iter100	iter100_b128x64x32_s4_l28	81.74	DISCARD	memory_bound	batch b128x64x32_s4_l28
+iter101	iter101_b128x256_best	281.40	DISCARD	memory_bound	final batch b128x256_best
+iter102	iter102_b128x256_w4	58.71	DISCARD	memory_bound	final batch b128x256_w4
+iter103	iter103_b64x128_w4	218.27	DISCARD	memory_bound	final batch b64x128_w4
+iter104	iter104_b256x256x32_s3	27.88	DISCARD	memory_bound	final batch b256x256x32_s3
+iter105	iter105_b64x64_s4	167.90	DISCARD	memory_bound	final batch b64x64_s4
+iter106	iter106_b32x256_s4	139.95	DISCARD	memory_bound	final batch b32x256_s4
+iter107	iter107_b128x128_l24	234.18	DISCARD	memory_bound	final batch b128x128_l24
+iter108	iter108_b256x256_s2	20.54	DISCARD	memory_bound	final batch b256x256_s2
+iter109	iter109_b128x256_repeat	114.22	DISCARD	memory_bound	final batch b128x256_repeat
+iter110	iter110_final_best	280.00	DISCARD	memory_bound	final batch final_best

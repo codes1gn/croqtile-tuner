@@ -89,3 +89,153 @@
 {"ts":"2026-04-22T00:59:25.266Z","tool":"store_round","msg":"Stored iter034_explore: DISCARD 235.08 TFLOPS (round 34)","level":"info"}
 {"ts":"2026-04-22T00:59:25.634Z","tool":"store_round","msg":"Storing iter035_explore (DISCARD 281.85 TFLOPS)","level":"info"}
 {"ts":"2026-04-22T00:59:25.653Z","tool":"store_round","msg":"Stored iter035_explore: DISCARD 281.85 TFLOPS (round 35)","level":"info"}
+{"ts":"2026-04-22T01:02:49.475Z","tool":"store_round","msg":"Storing iter036_b64x256_s2_l216 (DISCARD 227.42 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:02:49.494Z","tool":"store_round","msg":"Stored iter036_b64x256_s2_l216: DISCARD 227.42 TFLOPS (round 36)","level":"info"}
+{"ts":"2026-04-22T01:03:05.538Z","tool":"store_round","msg":"Storing iter037_b128x128_s4_l28 (DISCARD 225.99 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:05.557Z","tool":"store_round","msg":"Stored iter037_b128x128_s4_l28: DISCARD 225.99 TFLOPS (round 37)","level":"info"}
+{"ts":"2026-04-22T01:03:05.960Z","tool":"store_round","msg":"Storing iter038_b256x64_s4_l216 (DISCARD 221.56 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:05.979Z","tool":"store_round","msg":"Stored iter038_b256x64_s4_l216: DISCARD 221.56 TFLOPS (round 38)","level":"info"}
+{"ts":"2026-04-22T01:03:06.360Z","tool":"store_round","msg":"Storing iter039_b64x512_s2_l216 (DISCARD 220.95 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:06.380Z","tool":"store_round","msg":"Stored iter039_b64x512_s2_l216: DISCARD 220.95 TFLOPS (round 39)","level":"info"}
+{"ts":"2026-04-22T01:03:06.772Z","tool":"store_round","msg":"Storing iter040_b256x64x32_s4_l216 (DISCARD 219.65 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:06.791Z","tool":"store_round","msg":"Stored iter040_b256x64x32_s4_l216: DISCARD 219.65 TFLOPS (round 40)","level":"info"}
+{"ts":"2026-04-22T01:03:07.125Z","tool":"store_round","msg":"Storing iter041_b128x64_s4_l216 (DISCARD 217.04 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:07.142Z","tool":"store_round","msg":"Stored iter041_b128x64_s4_l216: DISCARD 217.04 TFLOPS (round 41)","level":"info"}
+{"ts":"2026-04-22T01:03:07.480Z","tool":"store_round","msg":"Storing iter042_b64x256_s3_l216 (DISCARD 215.69 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:07.499Z","tool":"store_round","msg":"Stored iter042_b64x256_s3_l216: DISCARD 215.69 TFLOPS (round 42)","level":"info"}
+{"ts":"2026-04-22T01:03:07.838Z","tool":"store_round","msg":"Storing iter043_b64x512x32_s3_l28 (DISCARD 215.37 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:07.856Z","tool":"store_round","msg":"Stored iter043_b64x512x32_s3_l28: DISCARD 215.37 TFLOPS (round 43)","level":"info"}
+{"ts":"2026-04-22T01:03:08.194Z","tool":"store_round","msg":"Storing iter044_b256x64_s3_l216 (DISCARD 210.34 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:08.213Z","tool":"store_round","msg":"Stored iter044_b256x64_s3_l216: DISCARD 210.34 TFLOPS (round 44)","level":"info"}
+{"ts":"2026-04-22T01:03:08.665Z","tool":"store_round","msg":"Storing iter045_b128x64_s4_l28 (DISCARD 209.04 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:08.684Z","tool":"store_round","msg":"Stored iter045_b128x64_s4_l28: DISCARD 209.04 TFLOPS (round 45)","level":"info"}
+{"ts":"2026-04-22T01:03:09.032Z","tool":"store_round","msg":"Storing iter046_b256x64x32_s4_l28 (DISCARD 208.52 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:09.051Z","tool":"store_round","msg":"Stored iter046_b256x64x32_s4_l28: DISCARD 208.52 TFLOPS (round 46)","level":"info"}
+{"ts":"2026-04-22T01:03:09.398Z","tool":"store_round","msg":"Storing iter047_b256x64_s2_l216 (DISCARD 208.26 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:09.417Z","tool":"store_round","msg":"Stored iter047_b256x64_s2_l216: DISCARD 208.26 TFLOPS (round 47)","level":"info"}
+{"ts":"2026-04-22T01:03:09.764Z","tool":"store_round","msg":"Storing iter048_b256x64_s4_l28 (DISCARD 207.60 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:09.783Z","tool":"store_round","msg":"Stored iter048_b256x64_s4_l28: DISCARD 207.60 TFLOPS (round 48)","level":"info"}
+{"ts":"2026-04-22T01:03:10.165Z","tool":"store_round","msg":"Storing iter049_b256x64_s2_l28 (DISCARD 206.34 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:10.184Z","tool":"store_round","msg":"Stored iter049_b256x64_s2_l28: DISCARD 206.34 TFLOPS (round 49)","level":"info"}
+{"ts":"2026-04-22T01:03:10.565Z","tool":"store_round","msg":"Storing iter050_b64x256_s4_l28 (DISCARD 206.01 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:10.585Z","tool":"store_round","msg":"Stored iter050_b64x256_s4_l28: DISCARD 206.01 TFLOPS (round 50)","level":"info"}
+{"ts":"2026-04-22T01:03:10.970Z","tool":"store_round","msg":"Storing iter051_b64x512_s2_l28 (DISCARD 201.27 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:10.989Z","tool":"store_round","msg":"Stored iter051_b64x512_s2_l28: DISCARD 201.27 TFLOPS (round 51)","level":"info"}
+{"ts":"2026-04-22T01:03:11.402Z","tool":"store_round","msg":"Storing iter052_b256x64_s3_l28 (DISCARD 197.54 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:11.421Z","tool":"store_round","msg":"Stored iter052_b256x64_s3_l28: DISCARD 197.54 TFLOPS (round 52)","level":"info"}
+{"ts":"2026-04-22T01:03:11.857Z","tool":"store_round","msg":"Storing iter053_b64x256_s3_l28 (DISCARD 196.66 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:11.876Z","tool":"store_round","msg":"Stored iter053_b64x256_s3_l28: DISCARD 196.66 TFLOPS (round 53)","level":"info"}
+{"ts":"2026-04-22T01:03:12.286Z","tool":"store_round","msg":"Storing iter054_b128x128x32_s2_l216 (DISCARD 191.79 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:12.305Z","tool":"store_round","msg":"Stored iter054_b128x128x32_s2_l216: DISCARD 191.79 TFLOPS (round 54)","level":"info"}
+{"ts":"2026-04-22T01:03:13.354Z","tool":"store_round","msg":"Storing iter055_b256x128x32_s2_l216 (DISCARD 181.48 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:13.373Z","tool":"store_round","msg":"Stored iter055_b256x128x32_s2_l216: DISCARD 181.48 TFLOPS (round 55)","level":"info"}
+{"ts":"2026-04-22T01:03:13.779Z","tool":"store_round","msg":"Storing iter056_b64x512x32_s2_l216 (DISCARD 176.95 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:13.797Z","tool":"store_round","msg":"Stored iter056_b64x512x32_s2_l216: DISCARD 176.95 TFLOPS (round 56)","level":"info"}
+{"ts":"2026-04-22T01:03:14.206Z","tool":"store_round","msg":"Storing iter057_b256x128x32_s2_l28 (DISCARD 175.97 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:14.225Z","tool":"store_round","msg":"Stored iter057_b256x128x32_s2_l28: DISCARD 175.97 TFLOPS (round 57)","level":"info"}
+{"ts":"2026-04-22T01:03:14.616Z","tool":"store_round","msg":"Storing iter058_b128x256x32_s2_l28 (DISCARD 174.93 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:14.636Z","tool":"store_round","msg":"Stored iter058_b128x256x32_s2_l28: DISCARD 174.93 TFLOPS (round 58)","level":"info"}
+{"ts":"2026-04-22T01:03:15.017Z","tool":"store_round","msg":"Storing iter059_b128x128x32_s2_l28 (DISCARD 174.40 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:15.036Z","tool":"store_round","msg":"Stored iter059_b128x128x32_s2_l28: DISCARD 174.40 TFLOPS (round 59)","level":"info"}
+{"ts":"2026-04-22T01:03:15.447Z","tool":"store_round","msg":"Storing iter060_b64x512x32_s2_l28 (DISCARD 162.82 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:15.465Z","tool":"store_round","msg":"Stored iter060_b64x512x32_s2_l28: DISCARD 162.82 TFLOPS (round 60)","level":"info"}
+{"ts":"2026-04-22T01:03:41.400Z","tool":"store_round","msg":"Storing iter061_b64x256_s2_l28 (DISCARD 146.13 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:41.419Z","tool":"store_round","msg":"Stored iter061_b64x256_s2_l28: DISCARD 146.13 TFLOPS (round 61)","level":"info"}
+{"ts":"2026-04-22T01:03:41.772Z","tool":"store_round","msg":"Storing iter062_b256x128x32_s4_l216 (DISCARD 125.56 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:41.792Z","tool":"store_round","msg":"Stored iter062_b256x128x32_s4_l216: DISCARD 125.56 TFLOPS (round 62)","level":"info"}
+{"ts":"2026-04-22T01:03:42.168Z","tool":"store_round","msg":"Storing iter063_b128x256x32_s4_l216 (DISCARD 111.90 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:42.187Z","tool":"store_round","msg":"Stored iter063_b128x256x32_s4_l216: DISCARD 111.90 TFLOPS (round 63)","level":"info"}
+{"ts":"2026-04-22T01:03:42.540Z","tool":"store_round","msg":"Storing iter064_b128x256x32_s4_l28 (DISCARD 105.91 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:42.559Z","tool":"store_round","msg":"Stored iter064_b128x256x32_s4_l28: DISCARD 105.91 TFLOPS (round 64)","level":"info"}
+{"ts":"2026-04-22T01:03:42.911Z","tool":"store_round","msg":"Storing iter065_b64x256x32_s3_l216 (DISCARD 105.02 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:42.930Z","tool":"store_round","msg":"Stored iter065_b64x256x32_s3_l216: DISCARD 105.02 TFLOPS (round 65)","level":"info"}
+{"ts":"2026-04-22T01:03:43.280Z","tool":"store_round","msg":"Storing iter066_b128x256x32_s3_l216 (DISCARD 104.96 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:43.300Z","tool":"store_round","msg":"Stored iter066_b128x256x32_s3_l216: DISCARD 104.96 TFLOPS (round 66)","level":"info"}
+{"ts":"2026-04-22T01:03:43.656Z","tool":"store_round","msg":"Storing iter067_b128x256_s3_l28 (DISCARD 104.43 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:43.676Z","tool":"store_round","msg":"Stored iter067_b128x256_s3_l28: DISCARD 104.43 TFLOPS (round 67)","level":"info"}
+{"ts":"2026-04-22T01:03:44.026Z","tool":"store_round","msg":"Storing iter068_b64x256x32_s4_l216 (DISCARD 104.20 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:44.045Z","tool":"store_round","msg":"Stored iter068_b64x256x32_s4_l216: DISCARD 104.20 TFLOPS (round 68)","level":"info"}
+{"ts":"2026-04-22T01:03:44.396Z","tool":"store_round","msg":"Storing iter069_b64x512_s3_l28 (DISCARD 104.20 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:44.416Z","tool":"store_round","msg":"Stored iter069_b64x512_s3_l28: DISCARD 104.20 TFLOPS (round 69)","level":"info"}
+{"ts":"2026-04-22T01:03:44.766Z","tool":"store_round","msg":"Storing iter070_b64x256x32_s4_l28 (DISCARD 104.06 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:44.785Z","tool":"store_round","msg":"Stored iter070_b64x256x32_s4_l28: DISCARD 104.06 TFLOPS (round 70)","level":"info"}
+{"ts":"2026-04-22T01:03:45.137Z","tool":"store_round","msg":"Storing iter071_b256x128_s3_l28 (DISCARD 103.84 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:45.156Z","tool":"store_round","msg":"Stored iter071_b256x128_s3_l28: DISCARD 103.84 TFLOPS (round 71)","level":"info"}
+{"ts":"2026-04-22T01:03:45.508Z","tool":"store_round","msg":"Storing iter072_b64x512_s3_l216 (DISCARD 102.83 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:45.526Z","tool":"store_round","msg":"Stored iter072_b64x512_s3_l216: DISCARD 102.83 TFLOPS (round 72)","level":"info"}
+{"ts":"2026-04-22T01:03:45.878Z","tool":"store_round","msg":"Storing iter073_b64x128_s2_l216 (DISCARD 98.15 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:45.897Z","tool":"store_round","msg":"Stored iter073_b64x128_s2_l216: DISCARD 98.15 TFLOPS (round 73)","level":"info"}
+{"ts":"2026-04-22T01:03:46.266Z","tool":"store_round","msg":"Storing iter074_b64x128_s3_l216 (DISCARD 98.05 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:46.284Z","tool":"store_round","msg":"Stored iter074_b64x128_s3_l216: DISCARD 98.05 TFLOPS (round 74)","level":"info"}
+{"ts":"2026-04-22T01:03:46.634Z","tool":"store_round","msg":"Storing iter075_b128x256_s2_l216 (DISCARD 97.50 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:46.653Z","tool":"store_round","msg":"Stored iter075_b128x256_s2_l216: DISCARD 97.50 TFLOPS (round 75)","level":"info"}
+{"ts":"2026-04-22T01:03:47.005Z","tool":"store_round","msg":"Storing iter076_b64x256x32_s3_l28 (DISCARD 97.45 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:47.024Z","tool":"store_round","msg":"Stored iter076_b64x256x32_s3_l28: DISCARD 97.45 TFLOPS (round 76)","level":"info"}
+{"ts":"2026-04-22T01:03:47.402Z","tool":"store_round","msg":"Storing iter077_b64x128x32_s3_l216 (DISCARD 97.40 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:47.423Z","tool":"store_round","msg":"Stored iter077_b64x128x32_s3_l216: DISCARD 97.40 TFLOPS (round 77)","level":"info"}
+{"ts":"2026-04-22T01:03:47.775Z","tool":"store_round","msg":"Storing iter078_b64x128x32_s4_l216 (DISCARD 97.30 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:47.794Z","tool":"store_round","msg":"Stored iter078_b64x128x32_s4_l216: DISCARD 97.30 TFLOPS (round 78)","level":"info"}
+{"ts":"2026-04-22T01:03:48.144Z","tool":"store_round","msg":"Storing iter079_b128x256x32_s3_l28 (DISCARD 97.18 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:48.163Z","tool":"store_round","msg":"Stored iter079_b128x256x32_s3_l28: DISCARD 97.18 TFLOPS (round 79)","level":"info"}
+{"ts":"2026-04-22T01:03:48.532Z","tool":"store_round","msg":"Storing iter080_b64x128_s3_l28 (DISCARD 96.39 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:48.551Z","tool":"store_round","msg":"Stored iter080_b64x128_s3_l28: DISCARD 96.39 TFLOPS (round 80)","level":"info"}
+{"ts":"2026-04-22T01:03:48.906Z","tool":"store_round","msg":"Storing iter081_b64x128_s2_l28 (DISCARD 95.91 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:48.924Z","tool":"store_round","msg":"Stored iter081_b64x128_s2_l28: DISCARD 95.91 TFLOPS (round 81)","level":"info"}
+{"ts":"2026-04-22T01:03:49.272Z","tool":"store_round","msg":"Storing iter082_b64x128x32_s4_l28 (DISCARD 95.59 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:49.291Z","tool":"store_round","msg":"Stored iter082_b64x128x32_s4_l28: DISCARD 95.59 TFLOPS (round 82)","level":"info"}
+{"ts":"2026-04-22T01:03:49.647Z","tool":"store_round","msg":"Storing iter083_b64x128x32_s3_l28 (DISCARD 95.21 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:49.666Z","tool":"store_round","msg":"Stored iter083_b64x128x32_s3_l28: DISCARD 95.21 TFLOPS (round 83)","level":"info"}
+{"ts":"2026-04-22T01:03:50.016Z","tool":"store_round","msg":"Storing iter084_b128x64_s3_l28 (DISCARD 94.55 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:50.035Z","tool":"store_round","msg":"Stored iter084_b128x64_s3_l28: DISCARD 94.55 TFLOPS (round 84)","level":"info"}
+{"ts":"2026-04-22T01:03:50.383Z","tool":"store_round","msg":"Storing iter085_b256x128_s3_l216 (DISCARD 93.43 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:50.401Z","tool":"store_round","msg":"Stored iter085_b256x128_s3_l216: DISCARD 93.43 TFLOPS (round 85)","level":"info"}
+{"ts":"2026-04-22T01:03:50.752Z","tool":"store_round","msg":"Storing iter086_b64x128_s4_l216 (DISCARD 90.78 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:50.771Z","tool":"store_round","msg":"Stored iter086_b64x128_s4_l216: DISCARD 90.78 TFLOPS (round 86)","level":"info"}
+{"ts":"2026-04-22T01:03:51.279Z","tool":"store_round","msg":"Storing iter087_b256x128_s2_l28 (DISCARD 90.16 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:51.298Z","tool":"store_round","msg":"Stored iter087_b256x128_s2_l28: DISCARD 90.16 TFLOPS (round 87)","level":"info"}
+{"ts":"2026-04-22T01:03:51.664Z","tool":"store_round","msg":"Storing iter088_b128x256_s2_l28 (DISCARD 89.60 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:51.682Z","tool":"store_round","msg":"Stored iter088_b128x256_s2_l28: DISCARD 89.60 TFLOPS (round 88)","level":"info"}
+{"ts":"2026-04-22T01:03:52.029Z","tool":"store_round","msg":"Storing iter089_b128x64_s2_l28 (DISCARD 88.97 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:52.048Z","tool":"store_round","msg":"Stored iter089_b128x64_s2_l28: DISCARD 88.97 TFLOPS (round 89)","level":"info"}
+{"ts":"2026-04-22T01:03:52.400Z","tool":"store_round","msg":"Storing iter090_b256x128_s2_l216 (DISCARD 88.83 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:52.418Z","tool":"store_round","msg":"Stored iter090_b256x128_s2_l216: DISCARD 88.83 TFLOPS (round 90)","level":"info"}
+{"ts":"2026-04-22T01:03:52.841Z","tool":"store_round","msg":"Storing iter091_b64x128_s4_l28 (DISCARD 88.47 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:52.860Z","tool":"store_round","msg":"Stored iter091_b64x128_s4_l28: DISCARD 88.47 TFLOPS (round 91)","level":"info"}
+{"ts":"2026-04-22T01:03:53.248Z","tool":"store_round","msg":"Storing iter092_b128x64x32_s3_l28 (DISCARD 88.22 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:53.268Z","tool":"store_round","msg":"Stored iter092_b128x64x32_s3_l28: DISCARD 88.22 TFLOPS (round 92)","level":"info"}
+{"ts":"2026-04-22T01:03:53.657Z","tool":"store_round","msg":"Storing iter093_b128x64_s2_l216 (DISCARD 87.45 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:53.677Z","tool":"store_round","msg":"Stored iter093_b128x64_s2_l216: DISCARD 87.45 TFLOPS (round 93)","level":"info"}
+{"ts":"2026-04-22T01:03:54.087Z","tool":"store_round","msg":"Storing iter094_b128x64x32_s4_l216 (DISCARD 87.37 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:54.107Z","tool":"store_round","msg":"Stored iter094_b128x64x32_s4_l216: DISCARD 87.37 TFLOPS (round 94)","level":"info"}
+{"ts":"2026-04-22T01:03:54.516Z","tool":"store_round","msg":"Storing iter095_b128x64x32_s3_l216 (DISCARD 87.07 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:54.535Z","tool":"store_round","msg":"Stored iter095_b128x64x32_s3_l216: DISCARD 87.07 TFLOPS (round 95)","level":"info"}
+{"ts":"2026-04-22T01:03:54.965Z","tool":"store_round","msg":"Storing iter096_b128x256x32_s2_l216 (DISCARD 84.15 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:54.984Z","tool":"store_round","msg":"Stored iter096_b128x256x32_s2_l216: DISCARD 84.15 TFLOPS (round 96)","level":"info"}
+{"ts":"2026-04-22T01:03:55.388Z","tool":"store_round","msg":"Storing iter097_b64x256x32_s2_l216 (DISCARD 83.09 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:55.406Z","tool":"store_round","msg":"Stored iter097_b64x256x32_s2_l216: DISCARD 83.09 TFLOPS (round 97)","level":"info"}
+{"ts":"2026-04-22T01:03:55.808Z","tool":"store_round","msg":"Storing iter098_b64x128x32_s2_l216 (DISCARD 82.72 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:55.827Z","tool":"store_round","msg":"Stored iter098_b64x128x32_s2_l216: DISCARD 82.72 TFLOPS (round 98)","level":"info"}
+{"ts":"2026-04-22T01:03:56.211Z","tool":"store_round","msg":"Storing iter099_b64x64_s2_l216 (DISCARD 82.45 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:56.232Z","tool":"store_round","msg":"Stored iter099_b64x64_s2_l216: DISCARD 82.45 TFLOPS (round 99)","level":"info"}
+{"ts":"2026-04-22T01:03:56.619Z","tool":"store_round","msg":"Storing iter100_b128x64x32_s4_l28 (DISCARD 81.74 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:03:56.639Z","tool":"store_round","msg":"Stored iter100_b128x64x32_s4_l28: DISCARD 81.74 TFLOPS (round 100)","level":"info"}
+{"ts":"2026-04-22T01:04:39.469Z","tool":"store_round","msg":"Storing iter101_b128x256_best (DISCARD 281.40 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:04:39.488Z","tool":"store_round","msg":"Stored iter101_b128x256_best: DISCARD 281.40 TFLOPS (round 101)","level":"info"}
+{"ts":"2026-04-22T01:04:39.876Z","tool":"store_round","msg":"Storing iter102_b128x256_w4 (DISCARD 58.71 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:04:39.896Z","tool":"store_round","msg":"Stored iter102_b128x256_w4: DISCARD 58.71 TFLOPS (round 102)","level":"info"}
+{"ts":"2026-04-22T01:04:40.289Z","tool":"store_round","msg":"Storing iter103_b64x128_w4 (DISCARD 218.27 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:04:40.307Z","tool":"store_round","msg":"Stored iter103_b64x128_w4: DISCARD 218.27 TFLOPS (round 103)","level":"info"}
+{"ts":"2026-04-22T01:04:40.658Z","tool":"store_round","msg":"Storing iter104_b256x256x32_s3 (DISCARD 27.88 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:04:40.676Z","tool":"store_round","msg":"Stored iter104_b256x256x32_s3: DISCARD 27.88 TFLOPS (round 104)","level":"info"}
+{"ts":"2026-04-22T01:04:41.014Z","tool":"store_round","msg":"Storing iter105_b64x64_s4 (DISCARD 167.90 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:04:41.032Z","tool":"store_round","msg":"Stored iter105_b64x64_s4: DISCARD 167.90 TFLOPS (round 105)","level":"info"}
+{"ts":"2026-04-22T01:04:41.372Z","tool":"store_round","msg":"Storing iter106_b32x256_s4 (DISCARD 139.95 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:04:41.391Z","tool":"store_round","msg":"Stored iter106_b32x256_s4: DISCARD 139.95 TFLOPS (round 106)","level":"info"}
+{"ts":"2026-04-22T01:04:41.733Z","tool":"store_round","msg":"Storing iter107_b128x128_l24 (DISCARD 234.18 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:04:41.752Z","tool":"store_round","msg":"Stored iter107_b128x128_l24: DISCARD 234.18 TFLOPS (round 107)","level":"info"}
+{"ts":"2026-04-22T01:04:42.273Z","tool":"store_round","msg":"Storing iter108_b256x256_s2 (DISCARD 20.54 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:04:42.292Z","tool":"store_round","msg":"Stored iter108_b256x256_s2: DISCARD 20.54 TFLOPS (round 108)","level":"info"}
+{"ts":"2026-04-22T01:04:42.656Z","tool":"store_round","msg":"Storing iter109_b128x256_repeat (DISCARD 114.22 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:04:42.675Z","tool":"store_round","msg":"Stored iter109_b128x256_repeat: DISCARD 114.22 TFLOPS (round 109)","level":"info"}
+{"ts":"2026-04-22T01:04:43.024Z","tool":"store_round","msg":"Storing iter110_final_best (DISCARD 280.00 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T01:04:43.043Z","tool":"store_round","msg":"Stored iter110_final_best: DISCARD 280.00 TFLOPS (round 110)","level":"info"}
