@@ -6,7 +6,7 @@
   "agent_type": null,
   "device": "NVIDIA H800 PCIe",
   "mode": "opencode",
-  "status": "running",
+  "status": "waiting",
   "request_budget": 1,
   "request_number": 0,
   "max_iterations": 30,
