@@ -1,2 +1,0 @@
-iter	kernel	tflops	decision	bottleneck	idea_summary
-iter000	iter000_cublas	418.3308	KEEP	baseline	cuBLAS reference baseline
