@@ -66,6 +66,26 @@ algebra, TMA copy primitives, warp specialization primitives.
 
 **Forbidden:** `cutlass.gemm.device.Gemm`, cuBLAS bindings, `torch.mm`/`torch.bmm`.
 
+## Import Template
+
+```python
+import torch
+from cutlass import cute
+
+# Kernel definition with @cute.jit decorator
+@cute.jit
+def matmul_kernel(A: cute.Tensor, B: cute.Tensor, C: cute.Tensor):
+    # Implementation using CuTe primitives
+    ...
+
+# Compile with explicit config (for profiling)
+compiled_kernel = cute.compile(
+    matmul_kernel,
+    A=A_tensor, B=B_tensor, C=C_tensor,
+    # MMA tiler, cluster shape, pipeline stages configured here
+)
+```
+
 ## IDEA Menu
 
 | Bottleneck | Ideas |
