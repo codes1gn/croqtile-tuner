@@ -1,11 +1,14 @@
 ---
-name: croq-dsl-cutile
-description: DSL-specific tuning contract for CuTile (CUTLASS template) kernels. Loaded by croq-tune when dsl=cutile.
+name: croq-dsl-cute-cpp
+description: DSL-specific tuning contract for CuTe/CUTLASS C++ template kernels. Loaded by croq-tune when dsl=cute-cpp.
 ---
 
-# Croq-DSL: CuTile
+# Croq-DSL: CuTe C++ (CUTLASS Templates)
 
 Source extension: `.cu` or `.cpp` | Compiler: `nvcc` (CUTLASS templates) | Group: compiled-binary
+
+> **Note:** This is the **C++** CuTe/CUTLASS template interface.
+> For Python JIT via CuTe DSL, use `cute-dsl` instead.
 
 ## Environment Validation
 
@@ -20,16 +23,16 @@ python3 -c "import cutlass"  # optional, for Python template instantiation
 #!/usr/bin/env bash
 set -e
 nvcc -O3 -arch=sm_90 -std=c++17 -I/usr/local/cuda/include \
-     -o tuning/<gpu>/cutile/bin/<shape_key>/<model>/iter<NNN>_<tag> \
-     tuning/<gpu>/cutile/srcs/<shape_key>/<model>/iter<NNN>_<tag>.cu \
-     2>&1 | tee tuning/<gpu>/cutile/perf/<shape_key>/<model>/build_iter<NNN>.txt
+     -o tuning/<gpu>/cute-cpp/bin/<shape_key>/<model>/iter<NNN>_<tag> \
+     tuning/<gpu>/cute-cpp/srcs/<shape_key>/<model>/iter<NNN>_<tag>.cu \
+     2>&1 | tee tuning/<gpu>/cute-cpp/perf/<shape_key>/<model>/build_iter<NNN>.txt
 ```
 
 **run_iter\<NNN\>.sh:**
 ```bash
 #!/usr/bin/env bash
-tuning/<gpu>/cutile/bin/<shape_key>/<model>/iter<NNN>_<tag> \
-    2>&1 | tee tuning/<gpu>/cutile/perf/<shape_key>/<model>/timing_iter<NNN>.txt
+tuning/<gpu>/cute-cpp/bin/<shape_key>/<model>/iter<NNN>_<tag> \
+    2>&1 | tee tuning/<gpu>/cute-cpp/perf/<shape_key>/<model>/timing_iter<NNN>.txt
 ```
 
 Binary must print: `TFLOPS: <value>   time_ms: <value>`
@@ -38,13 +41,13 @@ Binary must print: `TFLOPS: <value>   time_ms: <value>`
 
 ```bash
 ncu --set full \
-    --export tuning/<gpu>/cutile/perf/<shape_key>/<model>/ncu_iter<NNN>.ncu-rep \
+    --export tuning/<gpu>/cute-cpp/perf/<shape_key>/<model>/ncu_iter<NNN>.ncu-rep \
     --force-overwrite \
-    tuning/<gpu>/cutile/bin/<shape_key>/<model>/iter<NNN>_<tag> [args]
+    tuning/<gpu>/cute-cpp/bin/<shape_key>/<model>/iter<NNN>_<tag> [args]
 
-ncu --import tuning/<gpu>/cutile/perf/<shape_key>/<model>/ncu_iter<NNN>.ncu-rep \
+ncu --import tuning/<gpu>/cute-cpp/perf/<shape_key>/<model>/ncu_iter<NNN>.ncu-rep \
     --csv --page raw \
-    > tuning/<gpu>/cutile/perf/<shape_key>/<model>/ncu_iter<NNN>.csv
+    > tuning/<gpu>/cute-cpp/perf/<shape_key>/<model>/ncu_iter<NNN>.csv
 ```
 
 ## Pure Implementation Rule

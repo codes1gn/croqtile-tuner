@@ -19,11 +19,11 @@ DSL=""
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --dsl) DSL="$2"; shift 2 ;;
-    *) echo "[validate_env] ERROR: unknown arg: $1" >&2; echo "[SUGGESTION] Use your judgement to decide autonomously. Remove '$1' and retry. Only valid arg: --dsl <dsl_name> (cuda/croqtile/triton/cute/cutile/helion/tilelang)." >&2; exit 1 ;;
+    *) echo "[validate_env] ERROR: unknown arg: $1" >&2; echo "[SUGGESTION] Use your judgement to decide autonomously. Remove '$1' and retry. Only valid arg: --dsl <dsl_name> (cuda/croqtile/triton/cute-dsl/cute-cpp/helion/tilelang)." >&2; exit 1 ;;
   esac
 done
 
-[[ -z "$DSL" ]] && { echo "[validate_env] ERROR: --dsl required" >&2; echo "[SUGGESTION] Use your judgement to decide autonomously. Provide --dsl with the DSL name: cuda, croqtile, triton, cute, cutile, helion, or tilelang." >&2; exit 1; }
+[[ -z "$DSL" ]] && { echo "[validate_env] ERROR: --dsl required" >&2; echo "[SUGGESTION] Use your judgement to decide autonomously. Provide --dsl with the DSL name: cuda, croqtile, triton, cute-dsl, cute-cpp, helion, or tilelang." >&2; exit 1; }
 
 ERRORS=()
 WARNINGS=()
@@ -166,13 +166,22 @@ case "$DSL" in
       echo "[validate_env] FAIL: triton not importable" >&2
     fi
     ;;
-  cute|cutile)
+  cute-dsl)
     if python3 -c "import cutlass; print(cutlass.__version__)" &>/dev/null; then
       CUTLASS_VER=$(python3 -c "import cutlass; print(cutlass.__version__)" 2>/dev/null)
-      echo "[validate_env] OK: cutlass $CUTLASS_VER" >&2
+      echo "[validate_env] OK: cutlass $CUTLASS_VER (for CuTe DSL)" >&2
     else
-      ERRORS+=("python3 'import cutlass' failed")
-      echo "[validate_env] FAIL: cutlass not importable" >&2
+      ERRORS+=("python3 'import cutlass' failed - install nvidia-cutlass-dsl")
+      echo "[validate_env] FAIL: cutlass not importable (required for CuTe DSL)" >&2
+    fi
+    ;;
+  cute-cpp)
+    if [[ -d "$CUTLASS_DIR/include/cute" ]]; then
+      echo "[validate_env] OK: CUTLASS C++ headers found at $CUTLASS_DIR" >&2
+    elif [[ -d "/usr/local/cutlass/include/cute" ]]; then
+      echo "[validate_env] OK: CUTLASS C++ headers found at /usr/local/cutlass" >&2
+    else
+      echo "[validate_env] WARN: CUTLASS C++ headers not found (expected at CUTLASS_DIR/include/cute)" >&2
     fi
     ;;
   helion)

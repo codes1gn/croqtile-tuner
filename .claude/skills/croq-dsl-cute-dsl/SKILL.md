@@ -1,11 +1,14 @@
 ---
-name: croq-dsl-cute
-description: DSL-specific tuning contract for CuTe DSL kernels. Loaded by croq-tune when dsl=cute.
+name: croq-dsl-cute-dsl
+description: DSL-specific tuning contract for CuTe DSL (Python JIT) kernels. Loaded by croq-tune when dsl=cute-dsl.
 ---
 
-# Croq-DSL: CuTe
+# Croq-DSL: CuTe DSL (Python JIT)
 
 Source extension: `.py` | Compiler: `cute.compile()` -> PTX | Group: python-jit
+
+> **Note:** This is the **Python** CuTe DSL interface (`pip install nvidia-cutlass-dsl`).
+> For C++ CUTLASS templates, use `cute-cpp` instead.
 
 ## Environment Validation
 
@@ -34,8 +37,8 @@ the same as a compile failure (bounded retry budget, then `attempt<AAAA>`).
 ```bash
 #!/usr/bin/env bash
 export PYTHONPATH="${PYTHONPATH}:$(pwd)"
-python3 tuning/<gpu>/cute/srcs/<shape_key>/<model>/iter<NNN>_<tag>.py \
-    2>&1 | tee tuning/<gpu>/cute/perf/<shape_key>/<model>/timing_iter<NNN>.txt
+python3 tuning/<gpu>/cute-dsl/srcs/<shape_key>/<model>/iter<NNN>_<tag>.py \
+    2>&1 | tee tuning/<gpu>/cute-dsl/perf/<shape_key>/<model>/timing_iter<NNN>.txt
 ```
 
 Script must print: `TFLOPS: <value>   time_ms: <value>`
@@ -45,13 +48,13 @@ Script must print: `TFLOPS: <value>   time_ms: <value>`
 ```bash
 ncu --target-processes all \
     --set full \
-    --export tuning/<gpu>/cute/perf/<shape_key>/<model>/ncu_iter<NNN>.ncu-rep \
+    --export tuning/<gpu>/cute-dsl/perf/<shape_key>/<model>/ncu_iter<NNN>.ncu-rep \
     --force-overwrite \
-    python3 tuning/<gpu>/cute/srcs/<shape_key>/<model>/iter<NNN>_<tag>.py
+    python3 tuning/<gpu>/cute-dsl/srcs/<shape_key>/<model>/iter<NNN>_<tag>.py
 
-ncu --import tuning/<gpu>/cute/perf/<shape_key>/<model>/ncu_iter<NNN>.ncu-rep \
+ncu --import tuning/<gpu>/cute-dsl/perf/<shape_key>/<model>/ncu_iter<NNN>.ncu-rep \
     --csv --page raw \
-    > tuning/<gpu>/cute/perf/<shape_key>/<model>/ncu_iter<NNN>.csv
+    > tuning/<gpu>/cute-dsl/perf/<shape_key>/<model>/ncu_iter<NNN>.csv
 ```
 
 **Pre-profiling pin:** Use `cute.compile()` with explicit config params (not the autotuner).

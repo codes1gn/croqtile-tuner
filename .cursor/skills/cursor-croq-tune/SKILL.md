@@ -1,7 +1,7 @@
 ---
 name: cursor-croq-tune
 description: Cursor-only kernel tuning entrypoint for GPU kernels. Use when the user asks to /croq-tune, continue tuning, resume tuning, ai-tune, auto-tune, optimize, or perf-tune a kernel in this repository. Profiles with ncu, iterates optimizations indefinitely until interrupted.
-argument-hint: <dsl: croqtile|cuda|cute|triton|tilelang|helion|cutile> <dtype: f16|e4m3|all> [shape_key]
+argument-hint: <dsl: croqtile|cuda|cute-dsl|cute-cpp|triton|tilelang|helion> <dtype: f16|e4m3|all> [shape_key]
 ---
 
 # Croq-Tune — Unified Kernel Tuning Loop

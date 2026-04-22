@@ -10,7 +10,7 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 
 
-ALL_DSLS = ["croqtile", "cuda", "cute", "triton", "tilelang", "helion", "cutile"]
+ALL_DSLS = ["croqtile", "cuda", "cute-dsl", "cute-cpp", "triton", "tilelang", "helion"]
 INCLUDE_PATTERN = re.compile(r'^\s*#include\s+"([^"]+)"')
 
 

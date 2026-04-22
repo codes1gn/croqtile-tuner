@@ -41,7 +41,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-[[ -z "$DSL" ]]      && { echo "[discover_baseline] ERROR: --dsl required" >&2; echo "[SUGGESTION] Use your judgement to decide autonomously. Provide --dsl (cuda/croqtile/triton/cute/cutile/helion/tilelang)." >&2; exit 1; }
+[[ -z "$DSL" ]]      && { echo "[discover_baseline] ERROR: --dsl required" >&2; echo "[SUGGESTION] Use your judgement to decide autonomously. Provide --dsl (cuda/croqtile/triton/cute-dsl/cute-cpp/helion/tilelang)." >&2; exit 1; }
 [[ -z "$OPERATOR" ]] && { echo "[discover_baseline] ERROR: --operator required" >&2; echo "[SUGGESTION] Use your judgement to decide autonomously. Provide --operator with the operation type (matmul/gemm/spmm/conv/attention)." >&2; exit 1; }
 
 # Detect GPU if not provided
@@ -53,8 +53,8 @@ fi
 case "$DSL" in
   croqtile) EXT="co" ;;
   cuda)     EXT="cu" ;;
-  triton|helion|tilelang) EXT="py" ;;
-  cute|cutile) EXT="cu" ;;
+  triton|helion|tilelang|cute-dsl) EXT="py" ;;
+  cute-cpp) EXT="cu" ;;
   *) EXT="*" ;;
 esac
 
