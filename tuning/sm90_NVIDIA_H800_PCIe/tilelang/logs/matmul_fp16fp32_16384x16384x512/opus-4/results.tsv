@@ -1,5 +1,5 @@
 iter	kernel	tflops	decision	bottleneck	idea_summary
-iter000	iter000_cublas	117.5774	KEEP	baseline	cuBLAS reference baseline
+iter000	iter000_cublas	403.3344	KEEP	baseline	cuBLAS reference baseline
 iter001	iter001_b128x128k64s4_baseline	79.15	KEEP	memory_bound	Initial adapted kernel from 16384x16384x16384 shape, using 128x128 tiles with K=
 iter002	iter002_b256x128k32	35.02	DISCARD	compute_bound	Larger tiles 256x128 with BLOCK_K=32 - actually worse due to register pressure
 iter003	iter003_b64x64k32s2	31.27	DISCARD	compute_bound	Smaller tiles 64x64 with BLOCK_K=32, num_stages=2 - even worse
