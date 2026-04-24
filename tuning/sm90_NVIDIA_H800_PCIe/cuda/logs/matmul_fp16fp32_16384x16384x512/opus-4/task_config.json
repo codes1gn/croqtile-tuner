@@ -20,7 +20,7 @@
       "agent_type": "cursor_cli",
       "model": "opus-4",
       "request_number": 0,
-      "started_at": "2026-04-22T02:29:37.501887",
+      "started_at": "2026-04-24T03:18:45.373917",
       "ended_at": null
     },
     {
@@ -30,7 +30,7 @@
       "agent_type": "cursor_cli",
       "model": "opus-4",
       "request_number": 0,
-      "started_at": "2026-04-22T02:29:37.501889",
+      "started_at": "2026-04-24T03:18:45.373919",
       "ended_at": null
     },
     {
@@ -40,7 +40,7 @@
       "agent_type": "cursor_cli",
       "model": "opus-4",
       "request_number": 0,
-      "started_at": "2026-04-22T02:29:37.501890",
+      "started_at": "2026-04-24T03:18:45.373919",
       "ended_at": null
     },
     {
@@ -50,7 +50,7 @@
       "agent_type": "cursor_cli",
       "model": "opus-4",
       "request_number": 0,
-      "started_at": "2026-04-22T02:29:37.501890",
+      "started_at": "2026-04-24T03:18:45.373920",
       "ended_at": null
     },
     {
@@ -60,7 +60,7 @@
       "agent_type": "cursor_cli",
       "model": "opus-4",
       "request_number": 0,
-      "started_at": "2026-04-22T02:29:37.501891",
+      "started_at": "2026-04-24T03:18:45.373920",
       "ended_at": null
     },
     {
@@ -70,7 +70,7 @@
       "agent_type": "cursor_cli",
       "model": "opus-4",
       "request_number": 0,
-      "started_at": "2026-04-22T02:29:37.501891",
+      "started_at": "2026-04-24T03:18:45.373921",
       "ended_at": null
     },
     {
@@ -80,7 +80,7 @@
       "agent_type": "cursor_cli",
       "model": "opus-4",
       "request_number": 0,
-      "started_at": "2026-04-22T02:29:37.501891",
+      "started_at": "2026-04-24T03:18:45.373921",
       "ended_at": null
     },
     {
@@ -90,7 +90,7 @@
       "agent_type": "cursor_cli",
       "model": "opus-4",
       "request_number": 0,
-      "started_at": "2026-04-22T02:29:37.501892",
+      "started_at": "2026-04-24T03:18:45.373922",
       "ended_at": null
     },
     {
@@ -100,7 +100,7 @@
       "agent_type": "cursor_cli",
       "model": "opus-4",
       "request_number": 0,
-      "started_at": "2026-04-22T02:29:37.501892",
+      "started_at": "2026-04-24T03:18:45.373922",
       "ended_at": null
     },
     {
@@ -110,7 +110,7 @@
       "agent_type": "cursor_cli",
       "model": "opus-4",
       "request_number": 0,
-      "started_at": "2026-04-22T02:29:37.501893",
+      "started_at": "2026-04-24T03:18:45.373922",
       "ended_at": null
     },
     {
@@ -120,7 +120,7 @@
       "agent_type": "cursor_cli",
       "model": "opus-4",
       "request_number": 0,
-      "started_at": "2026-04-22T02:29:37.501893",
+      "started_at": "2026-04-24T03:18:45.373923",
       "ended_at": null
     },
     {
@@ -130,7 +130,27 @@
       "agent_type": "cursor_cli",
       "model": "opus-4",
       "request_number": 0,
-      "started_at": "2026-04-22T02:29:37.501894",
+      "started_at": "2026-04-24T03:18:45.373923",
+      "ended_at": null
+    },
+    {
+      "id": 13,
+      "task_id": 1,
+      "session_id": "00c81c2c-cc41-4d82-9c39-022599d8f07b",
+      "agent_type": "cursor_cli",
+      "model": "opus-4",
+      "request_number": 0,
+      "started_at": "2026-04-24T03:18:45.373924",
+      "ended_at": null
+    },
+    {
+      "id": 14,
+      "task_id": 1,
+      "session_id": "a67d7d4b-0b66-4224-b9e0-39591c43aafe",
+      "agent_type": "cursor_cli",
+      "model": "opus-4",
+      "request_number": 0,
+      "started_at": "2026-04-24T03:18:45.373924",
       "ended_at": null
     }
   ]

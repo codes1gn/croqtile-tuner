@@ -19,3 +19,6 @@ iter027	iter027_b128x256x64_w16_s4	267.98	KEEP	compute_bound	block_sizes=[128,25
 iter034	iter034_b128x256_w8_s4v2	276.82	KEEP	compute_bound	block_sizes=[128,256,64] num_warps=8 num_stages=4 - new best! 8 warps better tha
 iter039	iter039_b128x256_w8_s3	277.48	KEEP	compute_bound	block_sizes=[128,256,64] num_warps=8 num_stages=3 - stages=3 slightly better
 iter044	iter044_b128x256_blkptr	277.65	KEEP	compute_bound	block_sizes=[128,256,64] num_warps=8 num_stages=3 indexing=block_ptr - TMA index
+iter121	iter121_l2group	317.43	KEEP	compute_bound	Add l2_groupings=[8] for L2 cache reuse
+iter122	iter122_l2g16	312.41	DISCARD	compute_bound	l2_groupings=[16] - larger grouping worse
+iter123	iter123_w16_l2g8	330.03	KEEP	compute_bound	num_warps=16 + l2_groupings=[8] - better parallelism

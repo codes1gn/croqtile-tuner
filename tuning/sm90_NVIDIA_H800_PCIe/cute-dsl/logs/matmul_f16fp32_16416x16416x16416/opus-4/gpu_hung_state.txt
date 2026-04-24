@@ -1,0 +1,35 @@
+GPU Hung State Report
+=====================
+Timestamp: 2026-04-22 ~03:15 UTC
+Shape: matmul_f16fp32_16416x16416x16416
+DSL: cute-dsl
+
+Issue Summary:
+- The GPU entered a hung state due to illegal memory access from kernel testing
+- CuTe DSL's async copy operations require 32-bit alignment which 16416 partially violates
+- Synchronous copy approach was attempted but without proper predication caused OOB access
+- 96x96 tiles (which evenly divide 16416) also hung during compilation/execution
+
+Root Cause Analysis:
+1. 16416 % 128 = 32 (not evenly divisible by common tile sizes 128, 256)
+2. 16416 % 96 = 0, 16416 % 48 = 0, 16416 % 32 = 0 (these work)
+3. CuTe DSL async copy requires 32-bit source alignment which the row-major F16 layout
+   with stride 16416 cannot satisfy in all copy patterns
+4. Using synchronous CopyUniversalOp works but predication is complex and buggy
+
+Recovery Required:
+- nvidia-smi and CUDA operations are timing out
+- GPU driver is hung
+- Requires: sudo nvidia-smi --gpu-reset or system reboot
+
+Next Steps After Recovery:
+1. Use TileLang instead of CuTe DSL (better non-aligned shape handling)
+2. Or use proper predication with CuTe DSL synchronous copies
+3. Or pad inputs to 16384 (nearest aligned size) and run with that shape
+
+cuBLAS Baseline (recorded before hang):
+- 414.81 TFLOPS at 16416³
+
+Files Created:
+- Baseline stored in results.tsv (iter000_cublas)
+- Multiple iter001 attempts in srcs/ (none working yet)

@@ -1,5 +1,5 @@
 {
-  "task_id": 15,
+  "task_id": 17,
   "task_uid": "helion-blockscale-e4m3fp16fp32-8192-20260421",
   "model": "opus-4",
   "variant": "",
@@ -14,13 +14,13 @@
   "opencode_session_id": "a0a21db7-eed8-477e-805c-544a1ac5ad03",
   "sessions": [
     {
-      "id": 27,
-      "task_id": 15,
+      "id": 29,
+      "task_id": 17,
       "session_id": "a0a21db7-eed8-477e-805c-544a1ac5ad03",
       "agent_type": "cursor_cli",
       "model": "opus-4",
       "request_number": 0,
-      "started_at": "2026-04-22T02:29:39.374004",
+      "started_at": "2026-04-24T03:18:47.266161",
       "ended_at": null
     }
   ]

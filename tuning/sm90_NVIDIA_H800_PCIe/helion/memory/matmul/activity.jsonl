@@ -2,3 +2,4 @@
 {"ts":"2026-04-21T14:57:55.243Z","tool":"discover_baseline","msg":"No candidates found — recommend from scratch","level":"info"}
 {"ts":"2026-04-22T00:31:11.189Z","tool":"discover_baseline","msg":"Scanning for matmul (helion) candidates","level":"info"}
 {"ts":"2026-04-22T00:31:49.896Z","tool":"discover_baseline","msg":"Scanning for matmul (helion) candidates","level":"info"}
+{"ts":"2026-04-22T02:48:06.667Z","tool":"discover_baseline","msg":"Scanning for matmul (helion) candidates","level":"info"}

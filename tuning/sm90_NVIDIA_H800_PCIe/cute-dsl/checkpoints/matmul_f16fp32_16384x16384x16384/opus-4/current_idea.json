@@ -1,0 +1,15 @@
+{
+  "schema": "croq-checkpoint-v1",
+  "timestamp": "2026-04-22T05:00:56Z",
+  "dsl": "cute-dsl",
+  "shape_key": "matmul_f16fp32_16384x16384x16384",
+  "iter": "iter036_k_8_stages_5",
+  "bottleneck": "compute_bound",
+  "idea": "512x64x8 with 512 threads, 5 stages and unroll=2 - smaller K for more stages",
+  "expected_gain": "+0.5-1 TFLOPS",
+  "levers": [
+    "bK",
+    "stages"
+  ],
+  "status": "PLANNED"
+}

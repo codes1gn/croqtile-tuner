@@ -55,3 +55,19 @@
 {"ts":"2026-04-22T00:52:03.788Z","tool":"store_round","msg":"Stored iter039_b128x256_w8_s3: KEEP 277.48 TFLOPS (round 39)","level":"info"}
 {"ts":"2026-04-22T00:53:23.727Z","tool":"store_round","msg":"Storing iter044_b128x256_blkptr (KEEP 277.65 TFLOPS)","level":"info"}
 {"ts":"2026-04-22T00:53:23.747Z","tool":"store_round","msg":"Stored iter044_b128x256_blkptr: KEEP 277.65 TFLOPS (round 44)","level":"info"}
+{"ts":"2026-04-22T02:47:58.645Z","tool":"store_baseline","msg":"Measuring cuBLAS baseline for f16fp32 16416x16416x16416","level":"info"}
+{"ts":"2026-04-22T02:48:05.570Z","tool":"resume_state","msg":"Loading tuning state for helion/matmul_f16fp32_16416x16416x16416","level":"info"}
+{"ts":"2026-04-22T02:48:32.143Z","tool":"ncu_profile","msg":"Capturing profile: python3 tuning/sm90_NVIDIA_H800_PCIe/helion/srcs/matmul_f16fp32_16416x16416x16416/opus-4/iter044_b128x256_blkptr.py","level":"info"}
+{"ts":"2026-04-22T02:48:40.312Z","tool":"ncu_profile","msg":"Capturing profile: /usr/bin/python3 /home/albert/workspace/croqtile-tuner/tuning/sm90_NVIDIA_H800_PCIe/helion/srcs/matmul_f16fp32_16416x16416x16416/opus-4/iter044_b128x256_blkptr.py","level":"info"}
+{"ts":"2026-04-22T02:49:17.712Z","tool":"profile_extract","msg":"Analyzing iter044_b128x256_blkptr from tuning/sm90_NVIDIA_H800_PCIe/helion/perf/matmul_f16fp32_16416x16416x16416/opus-4/ncu_iter044_round45.csv","level":"info"}
+{"ts":"2026-04-22T02:49:50.446Z","tool":"checkpoint_write","msg":"PLANNED iter045_l2group: Add l2_groupings to improve L2 cache reuse and reduce memory stalls","level":"info"}
+{"ts":"2026-04-22T02:49:57.157Z","tool":"next_iter","msg":"Resolved iter121_l2group","level":"info"}
+{"ts":"2026-04-22T02:50:35.502Z","tool":"store_round","msg":"Storing iter121_l2group (KEEP 317.43 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T02:50:35.521Z","tool":"store_round","msg":"Stored iter121_l2group: KEEP 317.43 TFLOPS (round 45)","level":"info"}
+{"ts":"2026-04-22T02:51:12.090Z","tool":"profile_extract","msg":"Analyzing iter121_l2group from tuning/sm90_NVIDIA_H800_PCIe/helion/perf/matmul_f16fp32_16416x16416x16416/opus-4/ncu_iter121_round46.csv","level":"info"}
+{"ts":"2026-04-22T02:51:19.511Z","tool":"checkpoint_write","msg":"PLANNED iter122_l2g16: Increase l2_groupings=[16] for larger L2 cache tile grouping","level":"info"}
+{"ts":"2026-04-22T02:51:53.228Z","tool":"store_round","msg":"Storing iter122_l2g16 (DISCARD 312.41 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T02:51:53.246Z","tool":"store_round","msg":"Stored iter122_l2g16: DISCARD 312.41 TFLOPS (round 46)","level":"info"}
+{"ts":"2026-04-22T02:52:03.144Z","tool":"checkpoint_write","msg":"PLANNED iter123_w16_l2g8: Combine num_warps=16 with l2_groupings=[8] for higher parallelism with cache reuse","level":"info"}
+{"ts":"2026-04-22T02:52:39.336Z","tool":"store_round","msg":"Storing iter123_w16_l2g8 (KEEP 330.03 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T02:52:39.355Z","tool":"store_round","msg":"Stored iter123_w16_l2g8: KEEP 330.03 TFLOPS (round 47)","level":"info"}

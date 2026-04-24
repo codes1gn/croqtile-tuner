@@ -1,15 +1,15 @@
 {
   "schema": "croq-checkpoint-v1",
-  "timestamp": "2026-04-22T00:35:44Z",
+  "timestamp": "2026-04-22T02:52:03Z",
   "dsl": "helion",
   "shape_key": "matmul_f16fp32_16416x16416x16416",
-  "iter": "iter003_b128x128_s4",
+  "iter": "iter123_w16_l2g8",
   "bottleneck": "compute_bound",
-  "idea": "Square block_sizes [128,128,64], increase num_stages=4 for better pipelining",
-  "expected_gain": "+20-50 TFLOPS",
+  "idea": "Combine num_warps=16 with l2_groupings=[8] for higher parallelism with cache reuse",
+  "expected_gain": "+10-20 TFLOPS",
   "levers": [
-    "block_sizes",
-    "num_stages"
+    "num_warps",
+    "l2_groupings"
   ],
   "status": "PLANNED"
 }

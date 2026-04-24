@@ -1,0 +1,124 @@
+{"ts":"2026-04-22T02:37:28.840Z","tool":"resume_state","msg":"Loading tuning state for cute-dsl/matmul_f16fp32_16384x16384x16384","level":"info"}
+{"ts":"2026-04-22T02:37:28.842Z","tool":"resume_state","msg":"No tuning artifacts found for cute-dsl/matmul_f16fp32_16384x16384x16384","level":"error"}
+{"ts":"2026-04-22T02:37:36.922Z","tool":"store_baseline","msg":"Measuring cuBLAS baseline for f16fp32 16384x16384x16384","level":"info"}
+{"ts":"2026-04-22T02:37:40.284Z","tool":"store_baseline","msg":"cuBLAS baseline: 423.1969 TFLOPS (saved to tuning/sm90_NVIDIA_H800_PCIe/cute-dsl/baseline/matmul_f16fp32_16384x16384x16384/opus-4/cublas_result.json)","level":"info"}
+{"ts":"2026-04-22T02:37:40.757Z","tool":"store_round","msg":"Storing iter000_cublas (KEEP 423.1969 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T02:37:40.776Z","tool":"store_round","msg":"Stored iter000_cublas: KEEP 423.1969 TFLOPS (round 0)","level":"info"}
+{"ts":"2026-04-22T02:37:40.788Z","tool":"store_baseline","msg":"Stored iter000_cublas: 423.1969 TFLOPS (baseline)","level":"info"}
+{"ts":"2026-04-22T02:57:43.309Z","tool":"store_baseline","msg":"Measuring cuBLAS baseline for f16fp32 16384x16384x16384","level":"info"}
+{"ts":"2026-04-22T02:57:50.358Z","tool":"resume_state","msg":"Loading tuning state for cute-dsl/matmul_f16fp32_16384x16384x16384","level":"info"}
+{"ts":"2026-04-22T02:58:07.405Z","tool":"store_round","msg":"Storing iter001_simt_base (KEEP 12.11 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T02:58:07.424Z","tool":"store_round","msg":"Stored iter001_simt_base: KEEP 12.11 TFLOPS (round 1)","level":"info"}
+{"ts":"2026-04-22T02:58:36.077Z","tool":"ncu_profile","msg":"Capturing profile: python3 tuning/sm90_NVIDIA_H800_PCIe/cute-dsl/srcs/matmul_f16fp32_16384x16384x16384/opus-4/iter001_simt_base.py","level":"info"}
+{"ts":"2026-04-22T02:58:44.131Z","tool":"ncu_profile","msg":"Capturing profile: /usr/bin/python3 /home/albert/workspace/croqtile-tuner/tuning/sm90_NVIDIA_H800_PCIe/cute-dsl/srcs/matmul_f16fp32_16384x16384x16384/opus-4/iter001_simt_base.py","level":"info"}
+{"ts":"2026-04-22T03:17:32.841Z","tool":"next_iter","msg":"Resolved iter002_wgmma_tma","level":"info"}
+{"ts":"2026-04-22T03:17:39.008Z","tool":"checkpoint_write","msg":"PLANNED iter002_wgmma_tma: Implement WGMMA tensor core kernel using sm90_utils.make_trivial_tiled_mma and TMA pipeline from NVIDIA hopper/dense_gemm.py reference","level":"info"}
+{"ts":"2026-04-22T03:53:48.787Z","tool":"resume_state","msg":"Loading tuning state for cute-dsl/matmul_f16fp32_16384x16384x16384","level":"info"}
+{"ts":"2026-04-22T03:53:55.666Z","tool":"checkpoint_write","msg":"READ checkpoint for IMPLEMENT","level":"info"}
+{"ts":"2026-04-22T04:02:14.283Z","tool":"store_round","msg":"Storing iter002_wgmma_tma (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:02:14.301Z","tool":"store_round","msg":"Stored iter002_wgmma_tma: COMPILE_FAIL 0 TFLOPS (round 2)","level":"info"}
+{"ts":"2026-04-22T04:02:38.565Z","tool":"ncu_profile","msg":"Capturing profile: python3 tuning/sm90_NVIDIA_H800_PCIe/cute-dsl/srcs/matmul_f16fp32_16384x16384x16384/opus-4/iter001_simt_base.py --bench-only","level":"info"}
+{"ts":"2026-04-22T04:08:58.746Z","tool":"checkpoint_write","msg":"PLANNED iter003_coalesced_store: Fix epilogue store coalescing: ensure warp threads write consecutive C elements by reordering register-to-global copy pattern","level":"info"}
+{"ts":"2026-04-22T04:09:17.832Z","tool":"next_iter","msg":"Resolved iter003_coalesced_store","level":"info"}
+{"ts":"2026-04-22T04:11:09.015Z","tool":"store_round","msg":"Storing iter003_coalesced_store (KEEP 17.95 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:11:09.035Z","tool":"store_round","msg":"Stored iter003_coalesced_store: KEEP 17.95 TFLOPS (round 3)","level":"info"}
+{"ts":"2026-04-22T04:15:29.768Z","tool":"checkpoint_write","msg":"PLANNED iter004_smaller_mn_tile: Reduce MN tile from 128x128 to 64x64 to reduce register pressure and local memory spills","level":"info"}
+{"ts":"2026-04-22T04:16:38.236Z","tool":"store_round","msg":"Storing iter004_smaller_mn_tile (KEEP 19.50 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:16:38.255Z","tool":"store_round","msg":"Stored iter004_smaller_mn_tile: KEEP 19.50 TFLOPS (round 4)","level":"info"}
+{"ts":"2026-04-22T04:21:09.298Z","tool":"checkpoint_write","msg":"PLANNED iter005_larger_k_tile: Increase K tile from 16 to 32 to improve arithmetic intensity and L1 reuse with 64x64 MN tiles","level":"info"}
+{"ts":"2026-04-22T04:22:17.365Z","tool":"store_round","msg":"Storing iter005_larger_k_tile (DISCARD 18.99 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:22:17.385Z","tool":"store_round","msg":"Stored iter005_larger_k_tile: DISCARD 18.99 TFLOPS (round 5)","level":"info"}
+{"ts":"2026-04-22T04:22:36.840Z","tool":"checkpoint_write","msg":"PLANNED iter006_more_stages: Increase pipeline stages from 4 to 6 to better hide memory latency with 64x64 MN tiles","level":"info"}
+{"ts":"2026-04-22T04:23:31.949Z","tool":"store_round","msg":"Storing iter006_more_stages (DISCARD 19.11 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:23:31.968Z","tool":"store_round","msg":"Stored iter006_more_stages: DISCARD 19.11 TFLOPS (round 6)","level":"info"}
+{"ts":"2026-04-22T04:23:51.500Z","tool":"checkpoint_write","msg":"PLANNED iter007_rect_tile: Rectangular 128x64 tiles with 128 threads - reduces per-thread work while maintaining larger M tile for better L2 reuse","level":"info"}
+{"ts":"2026-04-22T04:24:41.406Z","tool":"store_round","msg":"Storing iter007_rect_tile (KEEP 24.09 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:24:41.424Z","tool":"store_round","msg":"Stored iter007_rect_tile: KEEP 24.09 TFLOPS (round 7)","level":"info"}
+{"ts":"2026-04-22T04:25:03.584Z","tool":"checkpoint_write","msg":"PLANNED iter008_wider_m_tile: Wider M tile 256x64 with 128 threads - exploit the M dimension for more L2 reuse","level":"info"}
+{"ts":"2026-04-22T04:28:21.500Z","tool":"resume_state","msg":"Loading tuning state for cute-dsl/matmul_f16fp32_16384x16384x16384","level":"info"}
+{"ts":"2026-04-22T04:30:42.714Z","tool":"store_round","msg":"Storing iter008_wider_m_tile (HANG 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:30:42.732Z","tool":"store_round","msg":"Stored iter008_wider_m_tile: HANG 0 TFLOPS (round 8)","level":"info"}
+{"ts":"2026-04-22T04:31:06.618Z","tool":"checkpoint_write","msg":"PLANNED iter009_wgmma_f16: Implement proper WGMMA F16 kernel using MmaF16BF16Op based on NVIDIA tutorial patterns - F16 accumulator to avoid conversion issues","level":"info"}
+{"ts":"2026-04-22T04:34:20.556Z","tool":"store_round","msg":"Storing iter009_wgmma_f16 (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:34:20.576Z","tool":"store_round","msg":"Stored iter009_wgmma_f16: COMPILE_FAIL 0 TFLOPS (round 9)","level":"info"}
+{"ts":"2026-04-22T04:34:40.670Z","tool":"checkpoint_write","msg":"PLANNED iter010_balanced_tiles: Try 64x128 tiles with 128 threads - balance M and N dimensions for better cache utilization","level":"info"}
+{"ts":"2026-04-22T04:35:41.299Z","tool":"store_round","msg":"Storing iter010_balanced_tiles (DISCARD 17.00 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:35:41.318Z","tool":"store_round","msg":"Stored iter010_balanced_tiles: DISCARD 17.00 TFLOPS (round 10)","level":"info"}
+{"ts":"2026-04-22T04:35:52.521Z","tool":"checkpoint_write","msg":"PLANNED iter011_larger_m: 192x64 tiles - push M dimension further for more L2 reuse","level":"info"}
+{"ts":"2026-04-22T04:37:41.069Z","tool":"store_round","msg":"Storing iter011_larger_m (HANG 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:37:41.087Z","tool":"store_round","msg":"Stored iter011_larger_m: HANG 0 TFLOPS (round 11)","level":"info"}
+{"ts":"2026-04-22T04:37:51.537Z","tool":"checkpoint_write","msg":"PLANNED iter012_larger_k: 128x64x32 tiles with 5 stages - double K-tile for more compute per memory access","level":"info"}
+{"ts":"2026-04-22T04:39:20.317Z","tool":"store_round","msg":"Storing iter012_larger_k (DISCARD 17.64 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:39:20.335Z","tool":"store_round","msg":"Stored iter012_larger_k: DISCARD 17.64 TFLOPS (round 12)","level":"info"}
+{"ts":"2026-04-22T04:39:27.247Z","tool":"checkpoint_write","msg":"PLANNED iter013_more_threads: 128x64x16 tiles with 256 threads - more parallelism for global memory access","level":"info"}
+{"ts":"2026-04-22T04:40:12.350Z","tool":"store_round","msg":"Storing iter013_more_threads (DISCARD 23.18 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:40:12.369Z","tool":"store_round","msg":"Stored iter013_more_threads: DISCARD 23.18 TFLOPS (round 13)","level":"info"}
+{"ts":"2026-04-22T04:40:18.905Z","tool":"checkpoint_write","msg":"PLANNED iter014_fewer_threads: 128x64x16 tiles with 64 threads - more work per thread","level":"info"}
+{"ts":"2026-04-22T04:41:33.849Z","tool":"store_round","msg":"Storing iter014_fewer_threads (HANG 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:41:33.867Z","tool":"store_round","msg":"Stored iter014_fewer_threads: HANG 0 TFLOPS (round 14)","level":"info"}
+{"ts":"2026-04-22T04:41:41.624Z","tool":"checkpoint_write","msg":"PLANNED iter015_smem_padding: 128x64x16 with 128 threads and 8-element SMEM padding to reduce bank conflicts","level":"info"}
+{"ts":"2026-04-22T04:42:41.137Z","tool":"store_round","msg":"Storing iter015_smem_padding (DISCARD 22.24 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:42:41.156Z","tool":"store_round","msg":"Stored iter015_smem_padding: DISCARD 22.24 TFLOPS (round 15)","level":"info"}
+{"ts":"2026-04-22T04:42:48.798Z","tool":"checkpoint_write","msg":"PLANNED iter016_smaller_k_less_stages: 128x64x8 with 3 stages and 128 threads - smaller K-tile and fewer stages to reduce register pressure","level":"info"}
+{"ts":"2026-04-22T04:43:31.771Z","tool":"store_round","msg":"Storing iter016_smaller_k_less_stages (DISCARD 23.82 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:43:31.790Z","tool":"store_round","msg":"Stored iter016_smaller_k_less_stages: DISCARD 23.82 TFLOPS (round 16)","level":"info"}
+{"ts":"2026-04-22T04:43:38.354Z","tool":"checkpoint_write","msg":"PLANNED iter017_more_stages: 128x64x16 with 5 stages - more pipelining to hide memory latency","level":"info"}
+{"ts":"2026-04-22T04:44:20.803Z","tool":"store_round","msg":"Storing iter017_more_stages (DISCARD 23.40 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:44:20.822Z","tool":"store_round","msg":"Stored iter017_more_stages: DISCARD 23.40 TFLOPS (round 17)","level":"info"}
+{"ts":"2026-04-22T04:44:31.417Z","tool":"checkpoint_write","msg":"PLANNED iter018_fewer_stages: 128x64x16 with 3 stages - reduce SMEM usage to allow more occupancy","level":"info"}
+{"ts":"2026-04-22T04:45:05.402Z","tool":"store_round","msg":"Storing iter018_fewer_stages (DISCARD 23.75 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:45:05.420Z","tool":"store_round","msg":"Stored iter018_fewer_stages: DISCARD 23.75 TFLOPS (round 18)","level":"info"}
+{"ts":"2026-04-22T04:45:16.216Z","tool":"checkpoint_write","msg":"PLANNED iter019_square_tiles: 128x128x16 with 128 threads and 4 stages - square tiles for balanced L2 utilization","level":"info"}
+{"ts":"2026-04-22T04:46:23.770Z","tool":"store_round","msg":"Storing iter019_square_tiles (HANG 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:46:23.788Z","tool":"store_round","msg":"Stored iter019_square_tiles: HANG 0 TFLOPS (round 19)","level":"info"}
+{"ts":"2026-04-22T04:46:35.219Z","tool":"checkpoint_write","msg":"PLANNED iter020_bigger_m_more_threads: 160x64x16 with 160 threads and 4 stages - larger M dimension with matching threads","level":"info"}
+{"ts":"2026-04-22T04:46:53.358Z","tool":"store_round","msg":"Storing iter020_bigger_m_more_threads (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:46:53.377Z","tool":"store_round","msg":"Stored iter020_bigger_m_more_threads: DISCARD 0 TFLOPS (round 20)","level":"info"}
+{"ts":"2026-04-22T04:47:00.695Z","tool":"checkpoint_write","msg":"PLANNED iter021_vectorized_copy: 128x64x16 with vectorized 64-bit copies for global memory transfers","level":"info"}
+{"ts":"2026-04-22T04:47:55.539Z","tool":"store_round","msg":"Storing iter021_vectorized_copy (COMPILE_FAIL 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:47:55.558Z","tool":"store_round","msg":"Stored iter021_vectorized_copy: COMPILE_FAIL 0 TFLOPS (round 21)","level":"info"}
+{"ts":"2026-04-22T04:48:07.088Z","tool":"checkpoint_write","msg":"PLANNED iter022_unroll_k: 128x64x16 with full K-loop unrolling for better ILP","level":"info"}
+{"ts":"2026-04-22T04:49:09.518Z","tool":"store_round","msg":"Storing iter022_unroll_k (KEEP 25.14 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:49:09.537Z","tool":"store_round","msg":"Stored iter022_unroll_k: KEEP 25.14 TFLOPS (round 22)","level":"info"}
+{"ts":"2026-04-22T04:49:19.928Z","tool":"checkpoint_write","msg":"PLANNED iter023_unroll_4: 128x64x16 with outer loop unroll=4 for more ILP","level":"info"}
+{"ts":"2026-04-22T04:49:53.220Z","tool":"store_round","msg":"Storing iter023_unroll_4 (DISCARD 24.83 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:49:53.239Z","tool":"store_round","msg":"Stored iter023_unroll_4: DISCARD 24.83 TFLOPS (round 23)","level":"info"}
+{"ts":"2026-04-22T04:50:04.433Z","tool":"checkpoint_write","msg":"PLANNED iter024_larger_k_unroll: 128x64x32 with unroll=2 - combine larger K with unrolling","level":"info"}
+{"ts":"2026-04-22T04:50:41.835Z","tool":"store_round","msg":"Storing iter024_larger_k_unroll (DISCARD 22.22 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:50:41.855Z","tool":"store_round","msg":"Stored iter024_larger_k_unroll: DISCARD 22.22 TFLOPS (round 24)","level":"info"}
+{"ts":"2026-04-22T04:50:53.996Z","tool":"checkpoint_write","msg":"PLANNED iter025_small_square_unroll: 64x64x16 with unroll=2 - smaller square tiles might benefit from unrolling","level":"info"}
+{"ts":"2026-04-22T04:51:34.300Z","tool":"store_round","msg":"Storing iter025_small_square_unroll (DISCARD 18.91 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:51:34.320Z","tool":"store_round","msg":"Stored iter025_small_square_unroll: DISCARD 18.91 TFLOPS (round 25)","level":"info"}
+{"ts":"2026-04-22T04:51:45.527Z","tool":"checkpoint_write","msg":"PLANNED iter026_wide_rect_unroll: 128x96x16 with 192 threads and unroll=2 - widen N dimension","level":"info"}
+{"ts":"2026-04-22T04:52:20.195Z","tool":"store_round","msg":"Storing iter026_wide_rect_unroll (SEGFAULT 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:52:20.214Z","tool":"store_round","msg":"Stored iter026_wide_rect_unroll: SEGFAULT 0 TFLOPS (round 26)","level":"info"}
+{"ts":"2026-04-22T04:52:31.983Z","tool":"checkpoint_write","msg":"PLANNED iter027_narrow_rect_unroll: 128x48x16 with 96 threads and unroll=2 - narrow N dimension for more CTAs","level":"info"}
+{"ts":"2026-04-22T04:52:59.679Z","tool":"store_round","msg":"Storing iter027_narrow_rect_unroll (SEGFAULT 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:52:59.697Z","tool":"store_round","msg":"Stored iter027_narrow_rect_unroll: SEGFAULT 0 TFLOPS (round 27)","level":"info"}
+{"ts":"2026-04-22T04:53:11.875Z","tool":"checkpoint_write","msg":"PLANNED iter028_narrow_pow2: 128x32x16 with 64 threads and unroll=2 - power-of-2 narrow tiles","level":"info"}
+{"ts":"2026-04-22T04:53:47.675Z","tool":"store_round","msg":"Storing iter028_narrow_pow2 (SEGFAULT 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:53:47.693Z","tool":"store_round","msg":"Stored iter028_narrow_pow2: SEGFAULT 0 TFLOPS (round 28)","level":"info"}
+{"ts":"2026-04-22T04:53:59.742Z","tool":"checkpoint_write","msg":"PLANNED iter029_big_m_256thr: 256x64x16 with 256 threads and unroll=2 - larger M with more threads","level":"info"}
+{"ts":"2026-04-22T04:54:47.659Z","tool":"store_round","msg":"Storing iter029_big_m_256thr (KEEP 25.83 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:54:47.677Z","tool":"store_round","msg":"Stored iter029_big_m_256thr: KEEP 25.83 TFLOPS (round 29)","level":"info"}
+{"ts":"2026-04-22T04:54:59.764Z","tool":"checkpoint_write","msg":"PLANNED iter030_bigger_m: 384x64x16 with 384 threads and unroll=2 - push M dimension further","level":"info"}
+{"ts":"2026-04-22T04:55:11.745Z","tool":"store_round","msg":"Storing iter030_bigger_m (DISCARD 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:55:11.764Z","tool":"store_round","msg":"Stored iter030_bigger_m: DISCARD 0 TFLOPS (round 30)","level":"info"}
+{"ts":"2026-04-22T04:55:40.586Z","tool":"checkpoint_write","msg":"PLANNED iter031_big_512: 512x64x16 with 512 threads and unroll=2 - max power-of-2 M","level":"info"}
+{"ts":"2026-04-22T04:56:13.141Z","tool":"store_round","msg":"Storing iter031_big_512 (KEEP 27.16 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:56:13.160Z","tool":"store_round","msg":"Stored iter031_big_512: KEEP 27.16 TFLOPS (round 31)","level":"info"}
+{"ts":"2026-04-22T04:56:24.971Z","tool":"checkpoint_write","msg":"PLANNED iter032_big_1024: 1024x64x16 with 1024 threads and unroll=2 - push M even larger","level":"info"}
+{"ts":"2026-04-22T04:56:37.972Z","tool":"store_round","msg":"Storing iter032_big_1024 (SEGFAULT 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:56:37.993Z","tool":"store_round","msg":"Stored iter032_big_1024: SEGFAULT 0 TFLOPS (round 32)","level":"info"}
+{"ts":"2026-04-22T04:56:49.391Z","tool":"checkpoint_write","msg":"PLANNED iter033_wide_n_512thr: 512x128x16 with 512 threads and unroll=2 - increase N to match M","level":"info"}
+{"ts":"2026-04-22T04:58:57.674Z","tool":"store_round","msg":"Storing iter033_wide_n_512thr (HANG 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:58:57.693Z","tool":"store_round","msg":"Stored iter033_wide_n_512thr: HANG 0 TFLOPS (round 33)","level":"info"}
+{"ts":"2026-04-22T04:59:08.588Z","tool":"checkpoint_write","msg":"PLANNED iter034_narrow_n_512thr: 512x32x16 with 512 threads and unroll=2 - smaller N for more CTAs","level":"info"}
+{"ts":"2026-04-22T04:59:43.540Z","tool":"store_round","msg":"Storing iter034_narrow_n_512thr (SEGFAULT 0 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T04:59:43.559Z","tool":"store_round","msg":"Stored iter034_narrow_n_512thr: SEGFAULT 0 TFLOPS (round 34)","level":"info"}
+{"ts":"2026-04-22T04:59:59.492Z","tool":"checkpoint_write","msg":"PLANNED iter035_unroll_4_best: 512x64x16 with 512 threads and unroll=4 - try more unrolling on best config","level":"info"}
+{"ts":"2026-04-22T05:00:36.632Z","tool":"store_round","msg":"Storing iter035_unroll_4_best (DISCARD 23.52 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T05:00:36.650Z","tool":"store_round","msg":"Stored iter035_unroll_4_best: DISCARD 23.52 TFLOPS (round 35)","level":"info"}
+{"ts":"2026-04-22T05:00:56.609Z","tool":"checkpoint_write","msg":"PLANNED iter036_k_8_stages_5: 512x64x8 with 512 threads, 5 stages and unroll=2 - smaller K for more stages","level":"info"}
+{"ts":"2026-04-22T05:01:34.927Z","tool":"store_round","msg":"Storing iter036_k_8_stages_5 (DISCARD 20.77 TFLOPS)","level":"info"}
+{"ts":"2026-04-22T05:01:34.948Z","tool":"store_round","msg":"Stored iter036_k_8_stages_5: DISCARD 20.77 TFLOPS (round 36)","level":"info"}

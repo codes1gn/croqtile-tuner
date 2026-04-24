@@ -4,7 +4,7 @@
   "model": "cursor/claude-4.6-opus-max",
   "device": "NVIDIA H800 PCIe",
   "status": "completed",
-  "task_id": 23,
+  "task_id": 25,
   "variant": "max",
   "agent_type": "cursor_cli",
   "mode": "cursor_cli",
@@ -18,13 +18,13 @@
   "opencode_session_id": "ses_261b0c646ffeQ3TdQL4vF9f80C",
   "sessions": [
     {
-      "id": 44,
-      "task_id": 23,
+      "id": 46,
+      "task_id": 25,
       "session_id": "59fe0370-378a-42e1-a4e8-32c45bda79b8",
       "agent_type": "cursor_cli",
       "model": "cursor/claude-4.6-opus-max",
       "request_number": 1,
-      "started_at": "2026-04-22T02:29:39.669422",
+      "started_at": "2026-04-24T03:18:47.549194",
       "ended_at": null
     }
   ]

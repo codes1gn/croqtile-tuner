@@ -1,0 +1,38 @@
+iter	kernel	tflops	decision	bottleneck	idea_summary
+iter000	iter000_cublas	423.1969	KEEP	baseline	cuBLAS reference baseline
+iter001	iter001_simt_base	12.11	KEEP	compute_bound	SIMT FP32 FMA baseline kernel - async copy + named barrier pipeline
+iter002	iter002_wgmma_tma	0	COMPILE_FAIL	memory_bound	WGMMA+TMA kernel - CuTe DSL limitation: TMA shape mismatch, cpasync F16 alignmen
+iter003	iter003_coalesced_store	17.95	KEEP	memory_bound	Larger K tile (16) and more pipeline stages (4) - improves memory latency hiding
+iter004	iter004_smaller_mn_tile	19.50	KEEP	memory_bound	Reduced MN tiles 64x64 - reduces register pressure and local memory spills
+iter005	iter005_larger_k_tile	18.99	DISCARD	memory_bound	MN=64x64, K=32 - larger K tile reduced performance, possibly more register press
+iter006	iter006_more_stages	19.11	DISCARD	memory_bound	6 pipeline stages - slight regression, more stages increased SMEM pressure
+iter007	iter007_rect_tile	24.09	KEEP	memory_bound	128x64 tiles, 128 threads - better per-thread work distribution and L2 reuse
+iter008	iter008_wider_m_tile	0	HANG	memory_bound	256x64 tiles - compilation/execution timeout
+iter009	iter009_wgmma_f16	0	COMPILE_FAIL	compute_bound	WGMMA F16 - CuTe DSL copy partition shape mismatch with swizzled SMEM layouts
+iter010	iter010_balanced_tiles	17.00	DISCARD	memory_bound	64x128 tiles - worse M dimension is better for L2
+iter011	iter011_larger_m	0	HANG	memory_bound	192x64 tiles - non-power-of-2 M causes timeout
+iter012	iter012_larger_k	17.64	DISCARD	memory_bound	128x64x32 with 5 stages - larger K hurts with 128 threads
+iter013	iter013_more_threads	23.18	DISCARD	memory_bound	256 threads worse than 128 threads
+iter014	iter014_fewer_threads	0	HANG	memory_bound	64 threads causes compilation timeout
+iter015	iter015_smem_padding	22.24	DISCARD	memory_bound	8-element padding worse - original no padding is better
+iter016	iter016_smaller_k_less_stages	23.82	DISCARD	memory_bound	K=8 3 stages worse than K=16 4 stages
+iter017	iter017_more_stages	23.40	DISCARD	memory_bound	5 stages worse than 4 stages
+iter018	iter018_fewer_stages	23.75	DISCARD	memory_bound	3 stages worse than 4 stages
+iter019	iter019_square_tiles	0	HANG	memory_bound	128x128 times out with 128 threads
+iter020	iter020_bigger_m_more_threads	0	DISCARD	memory_bound	160x64 with 160 threads - verification failed (wrong result)
+iter021	iter021_vectorized_copy	0	COMPILE_FAIL	memory_bound	128-bit copy requires 128-bit aligned source - not available for row-major FP32
+iter022	iter022_unroll_k	25.14	KEEP	compute_bound	Unroll outer loop by 2 improves ILP
+iter023	iter023_unroll_4	24.83	DISCARD	compute_bound	unroll=4 worse than unroll=2
+iter024	iter024_larger_k_unroll	22.22	DISCARD	compute_bound	128x64x32 with unroll=2 - larger K hurts
+iter025	iter025_small_square_unroll	18.91	DISCARD	compute_bound	64x64 256 threads with unroll=2 - much worse
+iter026	iter026_wide_rect_unroll	0	SEGFAULT	compute_bound	128x96 192 threads - illegal memory access
+iter027	iter027_narrow_rect_unroll	0	SEGFAULT	compute_bound	128x48 96 threads - illegal memory access (non-power-of-2)
+iter028	iter028_narrow_pow2	0	SEGFAULT	compute_bound	128x32 64 threads - illegal memory access (64 threads is incompatible)
+iter029	iter029_big_m_256thr	25.83	KEEP	compute_bound	256x64 256 threads unroll=2 - best so far!
+iter030	iter030_bigger_m	0	DISCARD	compute_bound	384x64 384 threads - verification failed (non-power-of-2)
+iter031	iter031_big_512	27.16	KEEP	compute_bound	512x64 512 threads unroll=2 - best yet!
+iter032	iter032_big_1024	0	SEGFAULT	compute_bound	1024 threads exceeds max threads per block
+iter033	iter033_wide_n_512thr	0	HANG	compute_bound	512x128 compilation timeout
+iter034	iter034_narrow_n_512thr	0	SEGFAULT	compute_bound	512x32 crashes - N must be >= 64
+iter035	iter035_unroll_4_best	23.52	DISCARD	compute_bound	unroll=4 worse than unroll=2
+iter036	iter036_k_8_stages_5	20.77	DISCARD	compute_bound	K=8 5 stages worse
