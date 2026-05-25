@@ -1,0 +1,69 @@
+{"round": 0, "iter": "iter000", "bottleneck": "baseline", "idea": "cuBLAS sparse GEMM baseline (E4M3, 2:4 sparsity)", "category": "misc", "expected_gain": "", "decision": "KEEP", "tflops": 671.0}
+{"round": 1, "iter": "iter001", "bottleneck": "memory_bound", "idea": "TMA metadata staging for e4m3 \u2014 TFLOPS: 671 -> 760", "category": "misc", "expected_gain": "", "decision": "KEEP", "tflops": 760.0}
+{"round": 2, "iter": "iter002", "bottleneck": "memory_bound", "idea": "Hoist offset optimization", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 3, "iter": "iter003", "bottleneck": "memory_bound", "idea": "Compiler flags tuning", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 4, "iter": "iter004", "bottleneck": "compute_bound", "idea": "Pipeline stages=3 experiment", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 5, "iter": "iter005", "bottleneck": "compute_bound", "idea": "WARP_N=128 config", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 6, "iter": "iter006", "bottleneck": "compute_bound", "idea": "Fix WGMMA instruction", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 7, "iter": "iter007", "bottleneck": "compute_bound", "idea": "Single thread producer", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 8, "iter": "iter008", "bottleneck": "memory_bound", "idea": "Output padding", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 9, "iter": "iter009", "bottleneck": "memory_bound", "idea": "Swizzle 128B", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 10, "iter": "iter010", "bottleneck": "memory_bound", "idea": "Swizzle 32B", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 11, "iter": "iter011", "bottleneck": "memory_bound", "idea": "RHS 64B loading", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 12, "iter": "iter012", "bottleneck": "memory_bound", "idea": "TMA cluster-aware for e4m3 \u2014 TFLOPS: 760 -> 765", "category": "misc", "expected_gain": "", "decision": "KEEP", "tflops": 765.0}
+{"round": 13, "iter": "iter013", "bottleneck": "memory_bound", "idea": "Cluster + hoist offset", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 14, "iter": "iter014", "bottleneck": "compute_bound", "idea": "1p2c with TMA metadata", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 15, "iter": "iter015", "bottleneck": "compute_bound", "idea": "Merged metadata+data barrier \u2014 TFLOPS: 765 -> 767", "category": "misc", "expected_gain": "", "decision": "KEEP", "tflops": 767.0}
+{"round": 16, "iter": "iter016", "bottleneck": "compute_bound", "idea": "Early empty signal \u2014 TFLOPS: 767 -> 772", "category": "misc", "expected_gain": "", "decision": "KEEP", "tflops": 772.0}
+{"round": 17, "iter": "iter017", "bottleneck": "compute_bound", "idea": "TILE_K=256", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 18, "iter": "iter018", "bottleneck": "memory_bound", "idea": "Transposed layout", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 19, "iter": "iter019", "bottleneck": "memory_bound", "idea": "Hoist optimization", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 20, "iter": "iter020", "bottleneck": "compute_bound", "idea": "1p3c warp specialization", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 21, "iter": "iter021", "bottleneck": "compute_bound", "idea": "TILE_K=64", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 22, "iter": "iter022", "bottleneck": "compute_bound", "idea": "SW pipeline \u2014 TFLOPS: 772 base", "category": "misc", "expected_gain": "", "decision": "KEEP", "tflops": 772.0}
+{"round": 23, "iter": "iter023", "bottleneck": "compute_bound", "idea": "SW pipeline + warpgroup_wait<1> \u2014 TFLOPS: 772 -> 820", "category": "misc", "expected_gain": "", "decision": "KEEP", "tflops": 820.0}
+{"round": 24, "iter": "iter024", "bottleneck": "compute_bound", "idea": "Nanosleep sync", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 25, "iter": "iter025", "bottleneck": "memory_bound", "idea": "Preload metadata", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 26, "iter": "iter026", "bottleneck": "compute_bound", "idea": "3-stage pipeline", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 27, "iter": "iter027", "bottleneck": "compute_bound", "idea": "3-stage no modulo", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 28, "iter": "iter028", "bottleneck": "memory_bound", "idea": "L2 promotion", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 29, "iter": "iter029", "bottleneck": "compute_bound", "idea": "Persistent kernel", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 30, "iter": "iter030", "bottleneck": "compute_bound", "idea": "TILE_K=256 v2", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 31, "iter": "iter031", "bottleneck": "compute_bound", "idea": "N=128 tiles", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 32, "iter": "iter032", "bottleneck": "compute_bound", "idea": "Reorder wait", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 33, "iter": "iter033", "bottleneck": "compute_bound", "idea": "Batch-4 WGMMA", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 34, "iter": "iter034", "bottleneck": "memory_bound", "idea": "Cluster config", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 35, "iter": "iter035", "bottleneck": "compute_bound", "idea": "Precomputation", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 36, "iter": "iter036", "bottleneck": "compute_bound", "idea": "1p2c attempt", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 37, "iter": "iter037", "bottleneck": "memory_bound", "idea": "stmatrix optimization", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 38, "iter": "iter038", "bottleneck": "memory_bound", "idea": "Global metadata", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 39, "iter": "iter039", "bottleneck": "memory_bound", "idea": "Preload attempt", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 40, "iter": "iter040", "bottleneck": "compute_bound", "idea": "3-stage pipeline breakthrough (estimated from batch)", "category": "misc", "expected_gain": "", "decision": "KEEP", "tflops": 900.0}
+{"round": 41, "iter": "iter041", "bottleneck": "compute_bound", "idea": "warpgroup_wait<2>", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 42, "iter": "iter042", "bottleneck": "compute_bound", "idea": "4-stage pipeline", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 43, "iter": "iter043", "bottleneck": "compute_bound", "idea": "Persistent v2", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 44, "iter": "iter044", "bottleneck": "memory_bound", "idea": "N-swizzle", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 45, "iter": "iter045", "bottleneck": "compute_bound", "idea": "Persistent v3", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 46, "iter": "iter046", "bottleneck": "compute_bound", "idea": "Restrict pointers", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 47, "iter": "iter047", "bottleneck": "compute_bound", "idea": "K=256 tiles", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 48, "iter": "iter048", "bottleneck": "compute_bound", "idea": "1p1c + 3-stage", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 49, "iter": "iter049", "bottleneck": "memory_bound", "idea": "L2 persist", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 50, "iter": "iter050", "bottleneck": "compute_bound", "idea": "No inline persist", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 51, "iter": "iter051", "bottleneck": "compute_bound", "idea": "Padded grid", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 52, "iter": "iter052", "bottleneck": "memory_bound", "idea": "Merged metadata TMA", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 53, "iter": "iter053", "bottleneck": "compute_bound", "idea": "N=128 v2", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 54, "iter": "iter054", "bottleneck": "compute_bound", "idea": "K unroll x2", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 55, "iter": "iter055", "bottleneck": "memory_bound", "idea": "Metadata hoist", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 56, "iter": "iter056", "bottleneck": "compute_bound", "idea": "Nanosleep v2", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 57, "iter": "iter057", "bottleneck": "compute_bound", "idea": "2 blocks", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 58, "iter": "iter058", "bottleneck": "compute_bound", "idea": "Commit first", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 59, "iter": "iter059", "bottleneck": "memory_bound", "idea": "SW pipe metadata", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 60, "iter": "iter060", "bottleneck": "memory_bound", "idea": "Global metadata v2", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 61, "iter": "iter061", "bottleneck": "memory_bound", "idea": "Bank conflict fix", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 62, "iter": "iter062", "bottleneck": "memory_bound", "idea": "PTX metadata", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 63, "iter": "iter063", "bottleneck": "compute_bound", "idea": "1p3c attempt (1034 TFLOPS, regression from best)", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 1034.0}
+{"round": 64, "iter": "iter064", "bottleneck": "compute_bound", "idea": "Unroll x3", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 65, "iter": "iter065", "bottleneck": "compute_bound", "idea": "2 blocks + 2 stages", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
+{"round": 66, "iter": "iter066", "bottleneck": "compute_bound", "idea": "stmatrix (92 regs) \u2014 improved from iter063", "category": "misc", "expected_gain": "", "decision": "KEEP", "tflops": 1100.0}
+{"round": 67, "iter": "iter067", "bottleneck": "compute_bound", "idea": "LHS+meta L2 promo (NEW BEST 1128 TFLOPS)", "category": "misc", "expected_gain": "", "decision": "KEEP", "tflops": 1128.0}
+{"round": 68, "iter": "iter068", "bottleneck": "compute_bound", "idea": "Early empty final attempt", "category": "misc", "expected_gain": "", "decision": "DISCARD", "tflops": 0.0}
