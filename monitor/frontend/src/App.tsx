@@ -72,11 +72,11 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gray-950">
-      <header className="border-b border-gray-800 bg-gray-900/80 backdrop-blur sticky top-0 z-40">
-        <div className="max-w-screen-2xl mx-auto px-6 py-4 flex items-center justify-between">
+      <header className="sticky top-0 z-40 border-b border-gray-800/50 bg-gray-900/90 backdrop-blur-sm shadow-[0_1px_0_0_rgba(6,182,212,0.12),0_8px_32px_-8px_rgba(0,0,0,0.5)]">
+        <div className="max-w-screen-2xl mx-auto px-6 py-5 flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold text-gray-100 tracking-tight">CroqTuner</h1>
-            <p className="text-xs text-gray-500">GPU Kernel Tuning Agent</p>
+            <h1 className="text-xl font-bold text-gray-50 tracking-[0.06em]">CroqTuner</h1>
+            <p className="text-xs text-gray-500 mt-0.5 tracking-wide">GPU Kernel Tuning Agent</p>
           </div>
           <button
             onClick={() => setShowAdd(true)}

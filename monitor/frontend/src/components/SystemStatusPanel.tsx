@@ -89,7 +89,7 @@ export function SystemStatusPanel({ health, onRefresh }: Props) {
 
   if (!health) {
     return (
-      <section className="rounded-2xl border border-gray-800 bg-gray-900/80 p-4 text-sm text-gray-500">
+      <section className="rounded-2xl border border-gray-800 bg-slate-900/70 p-5 text-sm text-gray-500">
         Loading system status...
       </section>
     );
@@ -104,19 +104,21 @@ export function SystemStatusPanel({ health, onRefresh }: Props) {
   ];
 
   return (
-    <section className="rounded-2xl border border-gray-800 bg-gradient-to-br from-gray-900 via-gray-900 to-slate-950 p-4 shadow-[0_20px_80px_rgba(0,0,0,0.35)]">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div>
-          <div className="text-xs uppercase tracking-[0.3em] text-cyan-500">System</div>
-          <div className="mt-1 flex items-center gap-3">
-            <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${health.scheduler_running ? "bg-emerald-500/20 text-emerald-300" : "bg-red-500/20 text-red-300"}`}>
-              {health.scheduler_running ? "Scheduler running" : "Scheduler stopped"}
-            </span>
-            <span className="text-sm text-gray-400">
-              Active: {health.active_task_ids?.length ? health.active_task_ids.join(", ") : "none"}
-            </span>
+    <section className="rounded-2xl border border-gray-800 bg-slate-900/70 p-5">
+      <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+        <div className="space-y-3">
+          <div>
+            <div className="text-xs uppercase tracking-[0.3em] text-cyan-500">System</div>
+            <div className="mt-1.5 flex flex-wrap items-center gap-3">
+              <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${health.scheduler_running ? "bg-emerald-500/20 text-emerald-300" : "bg-red-500/20 text-red-300"}`}>
+                {health.scheduler_running ? "Scheduler running" : "Scheduler stopped"}
+              </span>
+              <span className="text-sm text-gray-400">
+                Active: {health.active_task_ids?.length ? health.active_task_ids.join(", ") : "none"}
+              </span>
+            </div>
           </div>
-          <div className="mt-2 flex items-center gap-3">
+          <div className="flex items-center gap-3">
             <AutoWakeToggle
               enabled={health.auto_wake_enabled}
               onToggle={handleAutoWakeToggle}
@@ -131,31 +133,31 @@ export function SystemStatusPanel({ health, onRefresh }: Props) {
             </span>
           </div>
           {!health.auto_wake_enabled && (health.task_counts.pending ?? 0) > 0 && (
-            <div className="mt-2 text-xs text-amber-400 bg-amber-950/30 border border-amber-800/50 rounded px-2 py-1 inline-block">
+            <div className="text-xs text-amber-400 bg-amber-950/30 border border-amber-800/50 rounded px-2 py-1 inline-block">
               {health.task_counts.pending} pending task{(health.task_counts.pending ?? 0) !== 1 ? "s" : ""} waiting — enable Auto-wake to start them
             </div>
           )}
           {health.read_only_mode && (
-            <div className="mt-2 text-xs text-cyan-300 bg-cyan-950/30 border border-cyan-800/50 rounded px-2 py-1 inline-block">
+            <div className="text-xs text-cyan-300 bg-cyan-950/30 border border-cyan-800/50 rounded px-2 py-1 inline-block">
               Read-only mode — task changes, model changes, proxy changes, and auto-wake writes are disabled
             </div>
           )}
-          <div className="mt-3 text-sm text-gray-300">
+          <div className="text-sm text-gray-400">
             Model assignment is task-scoped. Pick model + variant when creating or editing a task.
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
+        <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-5">
           {queueItems.map((item) => (
-            <div key={item.label} className="rounded-lg border border-gray-800 bg-black/20 px-3 py-2 text-center">
-              <div className="text-[10px] uppercase tracking-wider text-gray-500">{item.label}</div>
-              <div className={`mt-0.5 text-xl font-semibold ${item.color}`}>{item.value}</div>
+            <div key={item.label} className="rounded-lg border border-gray-700/50 bg-gray-950/40 px-3 py-2.5 text-center">
+              <div className="text-[10px] uppercase tracking-wider text-gray-500 font-medium">{item.label}</div>
+              <div className={`mt-1 text-2xl font-bold tabular-nums ${item.color}`}>{item.value}</div>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="mt-4 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+      <div className="mt-5 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="rounded-xl border border-gray-800 bg-black/20 px-4 py-3 text-sm text-gray-300 lg:flex-1">
           <div className="text-[11px] uppercase tracking-[0.25em] text-gray-500">GPU</div>
           {health.gpu_info && health.gpu_info !== "nvidia-smi not available" ? (

@@ -73,18 +73,18 @@ export function TaskList({ tasks, activeTaskIds }: Props) {
     <div className="overflow-x-auto rounded-xl border border-gray-800 bg-gray-900/50">
       <table className="w-full text-sm table-fixed">
         <thead>
-          <tr className="text-left text-gray-400 border-b border-gray-700 text-xs uppercase tracking-wider">
-            <th className="py-2.5 px-3 w-24">Status</th>
-            <th className="py-2.5 px-3 w-20">UID</th>
-            <th className="py-2.5 px-3 w-24">Op</th>
-            <th className="py-2.5 px-3 w-36">Shape</th>
-            <th className="py-2.5 px-3 w-36">Model</th>
-            <th className="py-2.5 px-3 w-20">DSL</th>
-            <th className="py-2.5 px-3 w-28">Device</th>
-            <th className="py-2.5 px-3 w-14">Iter</th>
-            <th className="py-2.5 px-3 w-40">vs Baseline</th>
-            <th className="py-2.5 px-3 w-24">Best</th>
-            <th className="py-2.5 px-3 w-36">Created</th>
+          <tr className="text-left text-gray-300 border-b border-gray-700/80 bg-gray-900/80 text-[11px] uppercase tracking-wider font-semibold">
+            <th className="py-3 px-4 w-24">Status</th>
+            <th className="py-3 px-4 w-20">UID</th>
+            <th className="py-3 px-4 w-24">Op</th>
+            <th className="py-3 px-4 w-36">Shape</th>
+            <th className="py-3 px-4 w-36">Model</th>
+            <th className="py-3 px-4 w-20">DSL</th>
+            <th className="py-3 px-4 w-28">Device</th>
+            <th className="py-3 px-4 w-14">Iter</th>
+            <th className="py-3 px-4 w-40">vs Baseline</th>
+            <th className="py-3 px-4 w-24">Best</th>
+            <th className="py-3 px-4 w-36">Created</th>
           </tr>
         </thead>
         <tbody>
@@ -101,9 +101,9 @@ export function TaskList({ tasks, activeTaskIds }: Props) {
               <tr
                 key={task.task_uid}
                 onClick={() => navigate(`/tasks/${task.id}`)}
-                className={`border-b border-gray-800 hover:bg-gray-800/50 cursor-pointer transition ${activeTaskIds.includes(task.id) ? "bg-cyan-950/20" : ""}`}
+                className={`border-b border-gray-800 hover:bg-gray-800/50 cursor-pointer transition border-l-[3px] ${activeTaskIds.includes(task.id) ? "bg-cyan-950/30 border-l-cyan-500" : "border-l-transparent"}`}
               >
-                <td className="py-2 px-3">
+                <td className="py-3 px-4">
                   <div className="flex flex-col gap-1">
                     <StatusBadge status={task.status} />
                     {task.error_message && task.status !== "running" && (
@@ -116,13 +116,13 @@ export function TaskList({ tasks, activeTaskIds }: Props) {
                     )}
                   </div>
                 </td>
-                <td className="py-2 px-3 font-mono text-cyan-400/80 text-[10px]" title={`UID: ${task.task_uid}`}>{task.task_uid.slice(0, 8)}</td>
-                <td className="py-2 px-3 font-mono text-gray-200 uppercase">{task.op_type ?? "—"}</td>
-                <td className="py-2 px-3 font-mono text-gray-300 text-xs whitespace-nowrap">
+                <td className="py-3 px-4 font-mono text-cyan-400/80 text-[10px]" title={`UID: ${task.task_uid}`}>{task.task_uid.slice(0, 8)}</td>
+                <td className="py-3 px-4 font-mono text-gray-200 uppercase">{task.op_type ?? "—"}</td>
+                <td className="py-3 px-4 font-mono text-gray-300 text-xs whitespace-nowrap">
                   {task.m}×{task.n}×{task.k}
                   <DtypeTag dtype={task.dtype} />
                 </td>
-                <td className="py-2 px-3 text-gray-300">
+                <td className="py-3 px-4 text-gray-300">
                   {task.model ? (
                     <>
                       <div className="truncate max-w-[10rem]" title={task.model}>{modelShortLabel(task.model)}</div>
@@ -136,36 +136,36 @@ export function TaskList({ tasks, activeTaskIds }: Props) {
                     <div className="text-gray-600">N/A</div>
                   )}
                 </td>
-                <td className="py-2 px-3 text-gray-300">
+                <td className="py-3 px-4 text-gray-300">
                   {DSL_LABELS[task.dsl ?? ""] ?? task.dsl ?? DSL_LABELS[task.mode] ?? task.mode}
                 </td>
-                <td className="py-2 px-3 text-gray-400 text-xs">
+                <td className="py-3 px-4 text-gray-400 text-xs">
                   {task.device ?? "—"}
                 </td>
-                <td className="py-2 px-3 font-mono text-gray-400 text-sm">
+                <td className="py-3 px-4 font-mono text-gray-400 text-sm">
                   {task.current_iteration}
                 </td>
-                <td className="py-2 px-3">
+                <td className="py-3 px-4">
                   {task.baseline_tflops != null ? (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2.5">
                       <div className="w-20 bg-gray-700 rounded-full h-2">
                         <div
                           className={`${barColor} h-2 rounded-full transition-all`}
                           style={{ width: `${barWidth}%` }}
                         />
                       </div>
-                      <span className="text-gray-400 text-xs whitespace-nowrap">
+                      <span className="text-gray-300 text-sm font-medium tabular-nums whitespace-nowrap">
                         {perfPct != null ? `${perfPct}%` : "—"}
                       </span>
                     </div>
                   ) : (
-                    <span className="text-gray-600 text-xs">no baseline</span>
+                    <span className="text-gray-600 text-sm">no baseline</span>
                   )}
                 </td>
-                <td className="py-2 px-3 font-mono text-gray-300">
+                <td className="py-3 px-4 font-mono text-gray-300">
                   {task.best_tflops != null ? `${task.best_tflops.toFixed(1)}` : "--"}
                 </td>
-                <td className="py-2 px-3 text-gray-500 text-xs whitespace-nowrap">
+                <td className="py-3 px-4 text-gray-500 text-xs whitespace-nowrap">
                   {task.created_at ? new Date(task.created_at).toLocaleString() : "--"}
                 </td>
               </tr>
