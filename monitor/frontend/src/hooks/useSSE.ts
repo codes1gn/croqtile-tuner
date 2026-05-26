@@ -10,24 +10,30 @@ export function useSSE(onEvent: (event: SSEEvent) => void) {
   cbRef.current = onEvent;
 
   const connect = useCallback(() => {
-    const es = new EventSource("/api/events");
-    es.onmessage = (e) => {
-      try {
-        const parsed: SSEEvent = JSON.parse(e.data);
-        cbRef.current(parsed);
-      } catch {
-        // skip malformed events
-      }
-    };
-    es.onerror = () => {
-      es.close();
-      setTimeout(connect, 3000);
-    };
+    let es: EventSource | null = null;
+    try {
+      es = new EventSource("/api/events");
+      es.onmessage = (e) => {
+        try {
+          const parsed: SSEEvent = JSON.parse(e.data);
+          cbRef.current(parsed);
+        } catch {
+          // skip malformed events
+        }
+      };
+      es.onerror = () => {
+        es?.close();
+        // In static mode, don't reconnect aggressively
+        setTimeout(connect, 30000);
+      };
+    } catch {
+      // SSE not available (static hosting)
+    }
     return es;
   }, []);
 
   useEffect(() => {
     const es = connect();
-    return () => es.close();
+    return () => es?.close();
   }, [connect]);
 }

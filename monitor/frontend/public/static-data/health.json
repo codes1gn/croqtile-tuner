@@ -1,0 +1,1 @@
+{"status": "static", "scheduler_running": false, "read_only_mode": true, "active_task_id": null, "active_task_ids": [], "auto_wake_enabled": false, "use_proxy": false, "gpu_info": "H800 PCIe (exported snapshot)", "default_model": "", "default_variant": "", "available_models": [], "available_variants": [], "task_counts": {"waiting": 26, "completed": 13, "cancelled": 1}}

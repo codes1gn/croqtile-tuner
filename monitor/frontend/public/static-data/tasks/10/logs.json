@@ -1,0 +1,1 @@
+[{"id": 813, "task_id": 10, "iteration": 0, "request_number": null, "kernel_path": "iter000_cublas", "tflops": 414.8055, "decision": "BASELINE", "bottleneck": "baseline", "idea_summary": "cuBLAS reference baseline", "logged_at": "2026-05-21 03:38:22.199013"}]

@@ -1,4 +1,23 @@
 const BASE = "/api";
+const STATIC_BASE = import.meta.env.BASE_URL + "static-data";
+let staticMode: boolean | null = null;
+
+async function isStaticMode(): Promise<boolean> {
+  if (staticMode !== null) return staticMode;
+  try {
+    const res = await fetch(`${BASE}/health`, { signal: AbortSignal.timeout(3000) });
+    staticMode = !res.ok;
+  } catch {
+    staticMode = true;
+  }
+  return staticMode;
+}
+
+async function staticFetch<T>(path: string): Promise<T> {
+  const res = await fetch(`${STATIC_BASE}${path}`);
+  if (!res.ok) throw new Error(`Static: ${res.status}`);
+  return res.json();
+}
 
 export interface TaskData {
   id: number;
@@ -134,7 +153,40 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return res.json();
 }
 
-export const api = {
+const staticApi = {
+  listTasks: async (_status?: string) => {
+    const tasks = await staticFetch<TaskData[]>("/tasks.json");
+    return _status ? tasks.filter((t) => t.status === _status) : tasks;
+  },
+  createTask: async () => { throw new Error("Read-only mode"); },
+  updateTask: async () => { throw new Error("Read-only mode"); },
+  getTask: async (id: number) => {
+    const tasks = await staticFetch<TaskData[]>("/tasks.json");
+    const t = tasks.find((t) => t.id === id);
+    if (!t) throw new Error("Task not found");
+    return t;
+  },
+  cancelTask: async () => { throw new Error("Read-only mode"); },
+  promoteTask: async () => { throw new Error("Read-only mode"); },
+  retryTask: async () => { throw new Error("Read-only mode"); },
+  resumeTask: async () => { throw new Error("Read-only mode"); },
+  deleteTask: async () => { throw new Error("Read-only mode"); },
+  getIterationLogs: (id: number) => staticFetch<IterationLogData[]>(`/tasks/${id}/logs.json`),
+  getAgentLogs: async () => [] as AgentLogData[],
+  getSessionHistory: async () => ({ session_id: null, session_title: null, session_directory: null, entries: [] }) as SessionHistoryData,
+  getTaskSessions: (id: number) => staticFetch<TaskSessionData[]>(`/tasks/${id}/sessions.json`),
+  getActivityLog: async () => [] as ActivityLogEntry[],
+  getHealth: () => staticFetch<HealthData>("/health.json"),
+  getModelSettings: async () => ({ default_model: "", default_variant: "", available_models: [], available_variants: [] }) as ModelSettingsData,
+  setDefaultModel: async () => { throw new Error("Read-only mode"); },
+  refreshModels: async () => { throw new Error("Read-only mode"); },
+  getAutoWakeSettings: async () => ({ auto_wake_enabled: false }) as AutoWakeSettingsData,
+  setAutoWakeEnabled: async () => { throw new Error("Read-only mode"); },
+  getProxySettings: async () => ({ use_proxy: false }) as ProxySettingsData,
+  setUseProxy: async () => { throw new Error("Read-only mode"); },
+};
+
+const liveApi = {
   listTasks: (status?: string) =>
     request<TaskData[]>(`/tasks${status ? `?status=${status}` : ""}`),
 
@@ -221,3 +273,22 @@ export const api = {
       body: JSON.stringify({ use_proxy }),
     }),
 };
+
+type ApiType = typeof liveApi;
+
+function createProxy(): ApiType {
+  return new Proxy(liveApi, {
+    get(target, prop: keyof ApiType) {
+      return async (...args: unknown[]) => {
+        if (await isStaticMode()) {
+          const fn = staticApi[prop] as (...a: unknown[]) => unknown;
+          return fn(...args);
+        }
+        const fn = target[prop] as (...a: unknown[]) => unknown;
+        return fn(...args);
+      };
+    },
+  }) as ApiType;
+}
+
+export const api = createProxy();

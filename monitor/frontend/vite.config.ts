@@ -1,7 +1,8 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-const repoBase = process.env.GITHUB_PAGES === "true" ? "/croqtile-tuner/" : "/";
+const isGHPages = process.env.GITHUB_PAGES === "true";
+const repoBase = isGHPages ? "/croqtile-tuner/" : "/";
 
 export default defineConfig({
   base: repoBase,
@@ -12,7 +13,6 @@ export default defineConfig({
       "/api/events": {
         target: "http://localhost:8642",
         changeOrigin: true,
-        // SSE requires no response buffering
         configure: (proxy) => {
           proxy.on("proxyRes", (proxyRes) => {
             proxyRes.headers["cache-control"] = "no-cache";
