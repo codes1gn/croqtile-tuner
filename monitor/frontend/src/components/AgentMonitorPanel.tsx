@@ -26,13 +26,14 @@ export function AgentMonitorPanel() {
 
   const fetchAgents = useCallback(async () => {
     try {
-      const res = await fetch("/api/agents");
+      const res = await fetch("/api/agents", { signal: AbortSignal.timeout(3000) });
       if (!res.ok) throw new Error("Failed to fetch agents");
       const data = await res.json();
       setAgents(data);
       setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error");
+    } catch {
+      setAgents({ cursor_cli: [], opencode: [] });
+      setError(null);
     } finally {
       setLoading(false);
     }
