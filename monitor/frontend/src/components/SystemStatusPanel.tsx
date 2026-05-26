@@ -89,7 +89,7 @@ export function SystemStatusPanel({ health, onRefresh }: Props) {
 
   if (!health) {
     return (
-      <section className="rounded-2xl border border-gray-800 bg-slate-900/70 p-5 text-sm text-gray-500">
+      <section className="rounded-2xl p-5 text-sm" style={{ border: "1px solid var(--c-border)", backgroundColor: "var(--c-bgSurface)", color: "var(--c-textFaint)" }}>
         Loading system status...
       </section>
     );
@@ -104,11 +104,11 @@ export function SystemStatusPanel({ health, onRefresh }: Props) {
   ];
 
   return (
-    <section className="rounded-2xl border border-gray-800 bg-slate-900/70 p-5">
+    <section className="rounded-2xl p-5" style={{ border: "1px solid var(--c-border)", backgroundColor: "var(--c-bgSurface)" }}>
       <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
         <div className="space-y-3">
           <div>
-            <div className="text-xs uppercase tracking-[0.3em] text-cyan-500">System</div>
+            <div className="text-xs uppercase tracking-[0.3em]" style={{ color: "var(--c-accent)" }}>System</div>
             <div className="mt-1.5 flex flex-wrap items-center gap-3">
               <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${health.scheduler_running ? "bg-emerald-500/20 text-emerald-300" : "bg-red-500/20 text-red-300"}`}>
                 {health.scheduler_running ? "Scheduler running" : "Scheduler stopped"}
@@ -149,8 +149,8 @@ export function SystemStatusPanel({ health, onRefresh }: Props) {
 
         <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-5">
           {queueItems.map((item) => (
-            <div key={item.label} className="rounded-lg border border-gray-700/50 bg-gray-950/40 px-3 py-2.5 text-center">
-              <div className="text-[10px] uppercase tracking-wider text-gray-500 font-medium">{item.label}</div>
+            <div key={item.label} className="rounded-lg px-3 py-2.5 text-center" style={{ border: "1px solid var(--c-borderSubtle)", backgroundColor: "var(--c-bgElevated)" }}>
+              <div className="text-[10px] uppercase tracking-wider font-medium" style={{ color: "var(--c-textFaint)" }}>{item.label}</div>
               <div className={`mt-1 text-2xl font-bold tabular-nums ${item.color}`}>{item.value}</div>
             </div>
           ))}
@@ -158,8 +158,8 @@ export function SystemStatusPanel({ health, onRefresh }: Props) {
       </div>
 
       <div className="mt-5 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div className="rounded-xl border border-gray-800 bg-black/20 px-4 py-3 text-sm text-gray-300 lg:flex-1">
-          <div className="text-[11px] uppercase tracking-[0.25em] text-gray-500">GPU</div>
+        <div className="rounded-xl px-4 py-3 text-sm lg:flex-1" style={{ border: "1px solid var(--c-border)", backgroundColor: "var(--c-bgElevated)", color: "var(--c-textMuted)" }}>
+          <div className="text-[11px] uppercase tracking-[0.25em]" style={{ color: "var(--c-textFaint)" }}>GPU</div>
           {health.gpu_info && health.gpu_info !== "nvidia-smi not available" ? (
             <GpuInfoDisplay raw={health.gpu_info} />
           ) : (
@@ -168,13 +168,14 @@ export function SystemStatusPanel({ health, onRefresh }: Props) {
         </div>
 
         <div className="lg:w-[32rem]">
-          <div className="rounded-xl border border-cyan-800/60 bg-cyan-950/20 px-4 py-3">
-            <div className="text-[11px] uppercase tracking-[0.25em] text-cyan-400">Default Model for AutoTune <span className="text-gray-500 normal-case tracking-normal">(OpenCode)</span></div>
+          <div className="rounded-xl px-4 py-3" style={{ border: "1px solid var(--c-accentMuted)", backgroundColor: "var(--c-accentBg)" }}>
+            <div className="text-[11px] uppercase tracking-[0.25em]" style={{ color: "var(--c-accent)" }}>Default Model for AutoTune <span className="normal-case tracking-normal" style={{ color: "var(--c-textFaint)" }}>(OpenCode)</span></div>
             <div className="mt-2 flex items-center gap-2">
               <select
                 value={selectedModel}
                 onChange={(e) => setSelectedModel(e.target.value)}
-                className="flex-1 bg-gray-800 rounded px-2 py-1.5 text-sm text-gray-100 border border-gray-700 focus:border-cyan-500 focus:outline-none"
+                className="flex-1 rounded px-2 py-1.5 text-sm focus:outline-none"
+                style={{ backgroundColor: "var(--c-bgElevated)", color: "var(--c-text)", border: "1px solid var(--c-border)" }}
               >
                 {(health?.available_models ?? []).filter((m) => m.startsWith("opencode/") || m.startsWith("github-copilot/")).map((m) => (
                   <option key={m} value={m}>{m}</option>
@@ -183,7 +184,8 @@ export function SystemStatusPanel({ health, onRefresh }: Props) {
               <select
                 value={selectedVariant}
                 onChange={(e) => setSelectedVariant(e.target.value)}
-                className="w-24 bg-gray-800 rounded px-2 py-1.5 text-sm text-gray-100 border border-gray-700 focus:border-cyan-500 focus:outline-none"
+                className="w-24 rounded px-2 py-1.5 text-sm focus:outline-none"
+                style={{ backgroundColor: "var(--c-bgElevated)", color: "var(--c-text)", border: "1px solid var(--c-border)" }}
               >
                 {(health?.available_variants ?? [""]).map((v) => (
                   <option key={v} value={v}>{v || "(none)"}</option>
@@ -193,7 +195,8 @@ export function SystemStatusPanel({ health, onRefresh }: Props) {
                 type="button"
                 onClick={handleModelSave}
                 disabled={health.read_only_mode || savingModel || (selectedModel === health?.default_model && selectedVariant === health?.default_variant)}
-                className="px-3 py-1.5 rounded text-xs font-medium bg-cyan-700 hover:bg-cyan-600 text-white transition disabled:opacity-40 disabled:cursor-not-allowed"
+                className="px-3 py-1.5 rounded text-xs font-medium text-white transition disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{ backgroundColor: "var(--c-accent)" }}
               >
                 {savingModel ? "..." : "Save"}
               </button>

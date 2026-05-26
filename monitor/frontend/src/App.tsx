@@ -7,6 +7,7 @@ import { TaskDetail } from "./components/TaskDetail";
 import { AddTaskForm } from "./components/AddTaskForm";
 import { SystemStatusPanel } from "./components/SystemStatusPanel";
 import { AgentMonitorPanel } from "./components/AgentMonitorPanel";
+import { ThemeSwitcher } from "./components/ThemeSwitcher";
 
 export default function App() {
   const [tasks, setTasks] = useState<TaskData[]>([]);
@@ -71,17 +72,21 @@ export default function App() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-950">
-      <header className="sticky top-0 z-40 border-b border-gray-800/50 bg-gray-900/90 backdrop-blur-sm shadow-[0_1px_0_0_rgba(6,182,212,0.12),0_8px_32px_-8px_rgba(0,0,0,0.5)]">
+    <div className="min-h-screen" style={{ backgroundColor: "var(--c-bg)" }}>
+      <header className="sticky top-0 z-40 backdrop-blur-sm" style={{ backgroundColor: "var(--c-headerBg)", borderBottom: "1px solid var(--c-headerBorder)" }}>
         <div className="max-w-screen-2xl mx-auto px-6 py-5 flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold text-gray-50 tracking-[0.06em]">CroqTuner</h1>
-            <p className="text-xs text-gray-500 mt-0.5 tracking-wide">GPU Kernel Tuning Agent</p>
+          <div className="flex items-center gap-6">
+            <div>
+              <h1 className="text-xl font-bold tracking-[0.06em]" style={{ color: "var(--c-text)" }}>CroqTuner</h1>
+              <p className="text-xs mt-0.5 tracking-wide" style={{ color: "var(--c-textFaint)" }}>GPU Kernel Tuning Agent</p>
+            </div>
+            <ThemeSwitcher />
           </div>
           <button
             onClick={() => setShowAdd(true)}
             disabled={health?.read_only_mode}
-            className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-40"
+            className="px-4 py-2 rounded-lg text-white text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-40"
+            style={{ backgroundColor: "var(--c-accent)" }}
           >
             {health?.read_only_mode ? "Read-only" : "+ Add Task"}
           </button>
@@ -90,7 +95,7 @@ export default function App() {
 
       <main className="max-w-screen-2xl mx-auto px-6 py-6">
         {(tasksError || healthError) && (
-          <div className="mb-4 rounded-lg border border-amber-700 bg-amber-950/30 px-4 py-3 text-sm text-amber-200">
+          <div className="mb-4 rounded-lg px-4 py-3 text-sm" style={{ border: "1px solid var(--c-warning)", backgroundColor: "color-mix(in srgb, var(--c-warning) 10%, transparent)", color: "var(--c-warning)" }}>
             <div className="font-semibold">Monitor data is partially unavailable</div>
             {tasksError && <div className="mt-1">Tasks: {tasksError}</div>}
             {healthError && <div className="mt-1">Health: {healthError}</div>}

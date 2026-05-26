@@ -1,3 +1,28 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --c-bg: #101114;
+  --c-bgSurface: #171a1e;
+  --c-bgElevated: #1e2228;
+  --c-border: #2a3038;
+  --c-borderSubtle: #23282f80;
+  --c-text: #e8ecf0;
+  --c-textMuted: #9ba4b0;
+  --c-textFaint: #556070;
+  --c-accent: #38bdf8;
+  --c-accentMuted: #0e7490;
+  --c-accentBg: #0c2d3f;
+  --c-headerBg: #171a1eee;
+  --c-headerBorder: #2a3038;
+  --c-success: #34d399;
+  --c-warning: #fbbf24;
+  --c-error: #f87171;
+}
+
+body {
+  background-color: var(--c-bg);
+  color: var(--c-text);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}

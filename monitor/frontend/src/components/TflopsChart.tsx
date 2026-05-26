@@ -36,8 +36,8 @@ export function TflopsChart({ logs, baseline }: Props) {
     .sort((a, b) => a.iteration - b.iteration);
 
   let runningBest = 0;
-  const keepPoints: { iteration: number; tflops: number; best: number; kernel: string | null }[] = [];
-  const discardPoints: { iteration: number; tflops: number; kernel: string | null }[] = [];
+  const newBestPoints: { iteration: number; tflops: number; best: number; kernel: string | null }[] = [];
+  const normalPoints: { iteration: number; tflops: number; kernel: string | null }[] = [];
   const failPoints: { iteration: number; tflops: number; decision: string; kernel: string | null }[] = [];
 
   for (const l of tuningIters) {
@@ -46,19 +46,36 @@ export function TflopsChart({ logs, baseline }: Props) {
     const isFail = dec === "COMPILE_FAIL" || dec === "SEGFAULT" || dec === "HANG" || tf === 0;
     if (isFail) {
       failPoints.push({ iteration: l.iteration, tflops: 0, decision: dec, kernel: l.kernel_path });
-    } else if (dec === "KEEP" && tf > runningBest) {
+    } else if (tf > runningBest) {
       runningBest = tf;
-      keepPoints.push({ iteration: l.iteration, tflops: tf, best: runningBest, kernel: l.kernel_path });
+      newBestPoints.push({ iteration: l.iteration, tflops: tf, best: runningBest, kernel: l.kernel_path });
     } else {
-      discardPoints.push({ iteration: l.iteration, tflops: tf, kernel: l.kernel_path });
+      normalPoints.push({ iteration: l.iteration, tflops: tf, kernel: l.kernel_path });
     }
   }
 
-  const bestStaircase = keepPoints.map((p) => ({ iteration: p.iteration, best: p.best }));
+  const allItersRaw = [
+    ...newBestPoints.map((d) => d.iteration),
+    ...normalPoints.map((d) => d.iteration),
+    ...failPoints.map((d) => d.iteration),
+  ];
+  const lastIteration = allItersRaw.length ? Math.max(...allItersRaw) : 0;
+
+  const bestStaircase: { iteration: number; best: number }[] = [];
+  if (newBestPoints.length > 0) {
+    for (const p of newBestPoints) {
+      bestStaircase.push({ iteration: p.iteration, best: p.best });
+    }
+    const lastBest = newBestPoints[newBestPoints.length - 1].best;
+    const lastBestIter = newBestPoints[newBestPoints.length - 1].iteration;
+    if (lastIteration > lastBestIter) {
+      bestStaircase.push({ iteration: lastIteration, best: lastBest });
+    }
+  }
 
   const rooftop = baseline ?? null;
 
-  if (keepPoints.length === 0 && discardPoints.length === 0 && failPoints.length === 0) {
+  if (newBestPoints.length === 0 && normalPoints.length === 0 && failPoints.length === 0) {
     return (
       <div className="h-48 flex items-center justify-center text-gray-600 text-sm">
         No iteration data yet.
@@ -67,8 +84,8 @@ export function TflopsChart({ logs, baseline }: Props) {
   }
 
   const allTflops = [
-    ...keepPoints.map((d) => d.tflops),
-    ...discardPoints.map((d) => d.tflops),
+    ...newBestPoints.map((d) => d.tflops),
+    ...normalPoints.map((d) => d.tflops),
     rooftop ?? 0,
   ].filter((t) => t > 0);
   const maxTflops = Math.max(...allTflops, 1);
@@ -76,12 +93,7 @@ export function TflopsChart({ logs, baseline }: Props) {
   const yMin = Math.max(0, Math.floor(minPositive * 0.8));
   const yMax = Math.ceil(maxTflops * 1.1) || 1;
 
-  const allIters = [
-    ...keepPoints.map((d) => d.iteration),
-    ...discardPoints.map((d) => d.iteration),
-    ...failPoints.map((d) => d.iteration),
-  ];
-  const xMax = allIters.length ? Math.max(...allIters) : 1;
+  const xMax = lastIteration || 1;
   const xDomainMax = xMax + Math.max(1, Math.ceil(xMax * 0.05));
   const xTickCount = Math.min(xDomainMax, 20);
 
@@ -138,16 +150,18 @@ export function TflopsChart({ logs, baseline }: Props) {
             type="stepAfter"
             dataKey="best"
             stroke="#3b82f6"
-            strokeWidth={2}
+            strokeWidth={2.5}
             dot={false}
             activeDot={false}
-            isAnimationActive={false}
+            isAnimationActive={true}
+            animationDuration={600}
+            animationEasing="ease-out"
           />
         )}
 
-        {/* KEEP iterations: green circles */}
+        {/* New-best iterations: green circles */}
         <Scatter
-          data={keepPoints}
+          data={newBestPoints}
           dataKey="tflops"
           name="tflops"
           shape={((props: unknown) => {
@@ -157,14 +171,14 @@ export function TflopsChart({ logs, baseline }: Props) {
           isAnimationActive={false}
         />
 
-        {/* DISCARD iterations: dim red circles */}
+        {/* Non-best iterations: dim circles */}
         <Scatter
-          data={discardPoints}
+          data={normalPoints}
           dataKey="tflops"
           name="tflops"
           shape={((props: unknown) => {
             const { cx, cy } = props as { cx: number; cy: number };
-            return <circle cx={cx} cy={cy} r={4} fill="#f87171" stroke="#1f2937" strokeWidth={1.5} />;
+            return <circle cx={cx} cy={cy} r={3.5} fill="#6b7280" stroke="#1f2937" strokeWidth={1} opacity={0.7} />;
           }) as (props: unknown) => React.JSX.Element}
           isAnimationActive={false}
         />

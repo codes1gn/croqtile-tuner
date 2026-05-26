@@ -70,10 +70,10 @@ export function TaskList({ tasks, activeTaskIds }: Props) {
   }
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-gray-800 bg-gray-900/50">
+    <div className="overflow-x-auto rounded-xl" style={{ border: "1px solid var(--c-border)", backgroundColor: "var(--c-bgSurface)" }}>
       <table className="w-full text-sm table-fixed">
         <thead>
-          <tr className="text-left text-gray-300 border-b border-gray-700/80 bg-gray-900/80 text-[11px] uppercase tracking-wider font-semibold">
+          <tr className="text-left text-[11px] uppercase tracking-wider font-semibold" style={{ color: "var(--c-textMuted)", borderBottom: "1px solid var(--c-border)", backgroundColor: "var(--c-bgElevated)" }}>
             <th className="py-3 px-4 w-24">Status</th>
             <th className="py-3 px-4 w-20">UID</th>
             <th className="py-3 px-4 w-24">Op</th>
@@ -97,11 +97,19 @@ export function TaskList({ tasks, activeTaskIds }: Props) {
               : perfPct >= 90 ? "bg-green-500"
               : perfPct >= 50 ? "bg-yellow-500"
               : "bg-red-500";
+            const isActive = activeTaskIds.includes(task.id);
             return (
               <tr
                 key={task.task_uid}
                 onClick={() => navigate(`/tasks/${task.id}`)}
-                className={`border-b border-gray-800 hover:bg-gray-800/50 cursor-pointer transition border-l-[3px] ${activeTaskIds.includes(task.id) ? "bg-cyan-950/30 border-l-cyan-500" : "border-l-transparent"}`}
+                className="cursor-pointer transition border-l-[3px]"
+                style={{
+                  borderBottom: "1px solid var(--c-border)",
+                  borderLeftColor: isActive ? "var(--c-accent)" : "transparent",
+                  backgroundColor: isActive ? "var(--c-accentBg)" : undefined,
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--c-bgElevated)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = isActive ? "var(--c-accentBg)" : ""; }}
               >
                 <td className="py-3 px-4">
                   <div className="flex flex-col gap-1">
