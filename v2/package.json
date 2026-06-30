@@ -1,0 +1,17 @@
+{
+  "name": "croqtile-tuner",
+  "module": "src/main.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "bun run src/main.ts",
+    "test": "bun run src/test-faux.ts"
+  },
+  "dependencies": {
+    "@earendil-works/pi-ai": "^0.80.2",
+    "@earendil-works/pi-coding-agent": "^0.80.2"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3"
+  }
+}
