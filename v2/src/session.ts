@@ -33,11 +33,31 @@ export async function createSession(config: SessionConfig): Promise<SessionResul
   const authStorage = AuthStorage.create(`${agentDir}/auth.json`);
   const modelRegistry = ModelRegistry.inMemory(authStorage);
 
-  const apiKey = resolveApiKey(provider);
-  if (!apiKey) {
-    throw new Error(`API key required. Set one of: ANTHROPIC_API_KEY, GROQ_API_KEY, GOOGLE_API_KEY, or OPENAI_API_KEY`);
+  if (provider === "ollama") {
+    const baseUrl = process.env.OLLAMA_BASE_URL ?? "http://127.0.0.1:11434/v1";
+    modelRegistry.registerProvider("ollama", {
+      baseUrl,
+      apiKey: "ollama",
+      api: "openai-completions",
+      models: [{
+        id: modelId,
+        name: modelId,
+        reasoning: false,
+        input: ["text"],
+        cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+        contextWindow: 32768,
+        maxTokens: 4096,
+        compat: { supportsDeveloperRole: false, maxTokensField: "max_tokens" },
+      }],
+    });
+    authStorage.setRuntimeApiKey("ollama", "ollama");
+  } else {
+    const apiKey = resolveApiKey(provider);
+    if (!apiKey) {
+      throw new Error(`API key required. Set one of: ANTHROPIC_API_KEY, GROQ_API_KEY, GOOGLE_API_KEY, or OPENAI_API_KEY`);
+    }
+    authStorage.setRuntimeApiKey(provider, apiKey);
   }
-  authStorage.setRuntimeApiKey(provider, apiKey);
 
   const model = modelRegistry.find(provider, modelId);
   if (!model) {

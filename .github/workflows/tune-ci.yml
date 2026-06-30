@@ -1,0 +1,59 @@
+name: Tuner CI
+
+on:
+  push:
+    paths: ['v2/**']
+  pull_request:
+    paths: ['v2/**']
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install
+        working-directory: v2
+      - run: npm test
+        working-directory: v2
+
+  ollama-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Ollama
+        run: curl -fsSL https://ollama.com/install.sh | sh
+
+      - name: Cache Ollama model
+        uses: actions/cache@v4
+        with:
+          path: ~/.ollama/models
+          key: ollama-qwen3-0.6b
+
+      - name: Start Ollama and pull model
+        run: |
+          ollama serve &
+          for i in $(seq 1 10); do
+            curl -sf http://127.0.0.1:11434/api/tags > /dev/null 2>&1 && break
+            sleep 1
+          done
+          ollama pull qwen3:0.6b
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: v2
+
+      - name: Run ollama integration tests
+        run: npm run test:ollama
+        working-directory: v2
+        env:
+          CROQTILE_PROVIDER: ollama
+          CROQTILE_MODEL: qwen3:0.6b
+          OLLAMA_BASE_URL: http://127.0.0.1:11434/v1
