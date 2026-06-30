@@ -1,39 +1,66 @@
-import { mkdirSync, existsSync, readFileSync } from "fs";
 import { loadEnv } from "./env.ts";
-import { createSession } from "./session.ts";
+import { tune } from "./tuner.ts";
+import type { TuneTask } from "./task.ts";
 
 loadEnv();
 
-const cwd = process.env.CROQTILE_WORKSPACE ?? "/tmp/croqtile-tuner/workspace";
-mkdirSync(cwd, { recursive: true });
+const args = process.argv.slice(2);
 
-const { session, model } = await createSession({ cwd });
+if (args.length === 0 || args.includes("--help")) {
+  console.log(`croqtile-tuner v2
 
-try {
-  console.log(`Session ready. Model: ${model.provider}/${model.id}`);
-  console.log("Prompting: 'Write hello.cu'...\n");
+Usage:
+  croqtile-tuner --kernel <path> --build <cmd> --profile <cmd> [--rounds N] [--cwd <dir>]
 
-  session.subscribe((event) => {
-    if (event.type === "message_update") {
-      const e = event.assistantMessageEvent;
-      if (e.type === "text_delta") {
-        process.stdout.write(e.delta);
-      }
-    } else if (event.type === "tool_execution_start") {
-      process.stdout.write(`\n[tool: ${event.toolName}]\n`);
-    }
-  });
-
-  await session.prompt("Write a file called hello.cu with a minimal CUDA hello world kernel that prints from GPU.");
-  console.log("\n\n--- Agent finished ---");
-
-  const helloPath = cwd + "/hello.cu";
-  if (existsSync(helloPath)) {
-    console.log(`\nhello.cu exists (${readFileSync(helloPath).length} bytes)`);
-  } else {
-    console.error("hello.cu was NOT created!");
-    process.exit(1);
-  }
-} finally {
-  session.dispose();
+Options:
+  --kernel    Path to kernel source file
+  --build     Build/compile command
+  --profile   Profile/benchmark command
+  --rounds    Number of optimization rounds (default: 3)
+  --cwd       Working directory (default: current)
+  --provider  LLM provider (default: from .env)
+  --model     Model ID (default: from .env)`);
+  process.exit(0);
 }
+
+function getArg(name: string): string | undefined {
+  const idx = args.indexOf(`--${name}`);
+  return idx >= 0 ? args[idx + 1] : undefined;
+}
+
+const kernel = getArg("kernel");
+const build = getArg("build");
+const profile = getArg("profile");
+
+if (!kernel || !build || !profile) {
+  console.error("Error: --kernel, --build, and --profile are required");
+  process.exit(1);
+}
+
+const task: TuneTask = {
+  name: kernel.replace(/^.*\//, "").replace(/\.[^.]+$/, ""),
+  cwd: getArg("cwd") ?? process.cwd(),
+  kernelPath: kernel,
+  buildCmd: build,
+  profileCmd: profile,
+};
+
+const rounds = parseInt(getArg("rounds") ?? "3", 10);
+const provider = getArg("provider");
+const modelId = getArg("model");
+
+console.log(`Tuning: ${task.name} (${rounds} rounds)`);
+console.log(`  kernel:  ${task.kernelPath}`);
+console.log(`  build:   ${task.buildCmd}`);
+console.log(`  profile: ${task.profileCmd}\n`);
+
+const results = await tune({ task, rounds, provider, modelId });
+
+console.log("\n=== Summary ===");
+for (const r of results) {
+  console.log(`  Round ${r.round + 1}: ${r.success ? "✓" : "✗"} ${r.errorMessage ?? ""}`);
+}
+
+const passed = results.filter(r => r.success).length;
+console.log(`\n${passed}/${results.length} rounds completed successfully.`);
+process.exit(passed === results.length ? 0 : 1);
