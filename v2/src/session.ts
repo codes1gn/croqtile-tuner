@@ -2,9 +2,8 @@ import {
   type AgentSession,
   AuthStorage,
   createAgentSession,
-  createExtensionRuntime,
+  DefaultResourceLoader,
   ModelRegistry,
-  type ResourceLoader,
   SessionManager,
   SettingsManager,
 } from "@earendil-works/pi-coding-agent";
@@ -49,17 +48,18 @@ export async function createSession(config: SessionConfig): Promise<SessionResul
     throw new Error(`Model ${provider}/${modelId} not found. Available: ${available.join(", ")}`);
   }
 
-  const resourceLoader: ResourceLoader = {
-    getExtensions: () => ({ extensions: [], errors: [], runtime: createExtensionRuntime() }),
-    getSkills: () => ({ skills: [], diagnostics: [] }),
-    getPrompts: () => ({ prompts: [], diagnostics: [] }),
-    getThemes: () => ({ themes: [], diagnostics: [] }),
-    getAgentsFiles: () => ({ agentsFiles: [] }),
-    getSystemPrompt: () => systemPrompt,
-    getAppendSystemPrompt: () => [],
-    extendResources: () => {},
-    reload: async () => {},
-  };
+  const settingsManager = SettingsManager.inMemory({
+    compaction: { enabled: false },
+    retry: { enabled: true, maxRetries: 2 },
+  });
+
+  const resourceLoader = new DefaultResourceLoader({
+    cwd,
+    agentDir,
+    settingsManager,
+    systemPromptOverride: () => systemPrompt,
+  });
+  await resourceLoader.reload();
 
   const { session } = await createAgentSession({
     cwd,
@@ -71,10 +71,7 @@ export async function createSession(config: SessionConfig): Promise<SessionResul
     resourceLoader,
     tools: ["read", "write", "bash"],
     sessionManager: SessionManager.inMemory(cwd),
-    settingsManager: SettingsManager.inMemory({
-      compaction: { enabled: false },
-      retry: { enabled: true, maxRetries: 2 },
-    }),
+    settingsManager,
   });
 
   return { session, model: { provider: model.provider, id: model.id } };

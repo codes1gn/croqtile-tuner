@@ -4,8 +4,9 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "start": "bun run src/main.ts",
-    "test": "bun run src/test-faux.ts"
+    "start": "node --experimental-strip-types --no-warnings src/main.ts",
+    "test": "node --experimental-strip-types --no-warnings --test tests/faux.test.ts",
+    "test:live": "node --experimental-strip-types --no-warnings --test tests/live.test.ts"
   },
   "dependencies": {
     "@earendil-works/pi-ai": "^0.80.2",

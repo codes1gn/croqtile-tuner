@@ -1,5 +1,8 @@
 import { mkdirSync, existsSync, readFileSync } from "fs";
+import { loadEnv } from "./env.ts";
 import { createSession } from "./session.ts";
+
+loadEnv();
 
 const cwd = process.env.CROQTILE_WORKSPACE ?? "/tmp/croqtile-tuner/workspace";
 mkdirSync(cwd, { recursive: true });
