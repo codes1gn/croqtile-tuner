@@ -5,13 +5,15 @@
   "private": true,
   "scripts": {
     "start": "node --experimental-strip-types --no-warnings src/main.ts",
-    "test": "node --experimental-strip-types --no-warnings --test tests/faux.test.ts tests/tuner.test.ts tests/measure.test.ts tests/decide.test.ts tests/dsl.test.ts tests/store.test.ts tests/trajectory.test.ts",
+    "test": "node --experimental-strip-types --no-warnings --test tests/faux.test.ts tests/tuner.test.ts tests/measure.test.ts tests/decide.test.ts tests/dsl.test.ts tests/store.test.ts tests/trajectory.test.ts tests/config.test.ts",
     "test:ollama": "node --experimental-strip-types --no-warnings --test tests/ollama.test.ts",
     "test:live": "node --experimental-strip-types --no-warnings --test tests/live.test.ts"
   },
   "dependencies": {
     "@earendil-works/pi-ai": "0.80.2",
-    "@earendil-works/pi-coding-agent": "0.80.2"
+    "@earendil-works/pi-coding-agent": "0.80.2",
+    "yaml": "^2.9.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "typescript": "^6.0.3"

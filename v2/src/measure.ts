@@ -7,10 +7,12 @@ export interface MeasureResult {
   error?: string;
 }
 
-const MEASURE_TIMEOUT_MS = 300_000; // TODO(Iter 5): configurable timeout + process-group kill
+const MEASURE_TIMEOUT_MS = 300_000; // TODO(Iter 6): configurable timeout + process-group kill
 const OUTPUT_CAP = 100_000; // chars kept from combined stdout+stderr
 
-export function runMeasure(cmd: string, cwd: string): Promise<MeasureResult> {
+// Runs a shell command with a timeout, capturing combined output.
+// With expectTflops, ok additionally requires a parseable TFLOPS value.
+export function runCommand(cmd: string, cwd: string, expectTflops: boolean): Promise<MeasureResult> {
   return new Promise(resolve => {
     const child = spawn(cmd, { shell: true, cwd });
     let out = "";
@@ -39,10 +41,14 @@ export function runMeasure(cmd: string, cwd: string): Promise<MeasureResult> {
       const output = tail();
       const tflops = parseTflops(output);
       if (code !== 0) resolve({ ok: false, output, error: `exit code ${code}` });
-      else if (tflops === undefined) resolve({ ok: false, output, error: "no TFLOPS found in output" });
+      else if (expectTflops && tflops === undefined) resolve({ ok: false, output, error: "no TFLOPS found in output" });
       else resolve({ ok: true, tflops, output });
     });
   });
+}
+
+export function runMeasure(cmd: string, cwd: string): Promise<MeasureResult> {
+  return runCommand(cmd, cwd, true);
 }
 
 // Accepts both "TFLOPS: 36.12" (DSL contract) and "277.65 TFLOPS (67.4% cuBLAS)".

@@ -1,0 +1,27 @@
+# croqtile-tuner — example configuration (copy to config.yaml and edit)
+
+# Model endpoint (any Pi-supported provider; env keys still work as fallback)
+model:
+  provider: ollama            # anthropic | groq | google | openai | openrouter | deepseek | together | ollama
+  model: qwen2.5-coder:1.5b   # defaults to CROQTILE_MODEL env var
+  # api_key: sk-...           # optional; usually set via <PROVIDER>_API_KEY env
+
+# The tuning task — required section
+task:
+  kernel: iter000_swizzle.co              # path to the kernel source
+  build: "bash build_iter.sh"             # command that compiles the kernel
+  profile: "./iter000_swizzle 2048 2048 2048"  # command that prints "TFLOPS: <value>"
+  dsl: croqtile                           # optional: injects the DSL contract into the agent prompt
+  gpu: sm86_NVIDIA_GeForce_RTX_3070       # optional: stored results tag (auto-detected if omitted)
+  shape_key: matmul_f16_2048              # optional: tuning/ directory shape key
+  # name: my_task                         # optional: overrides the kernel file name
+  # cwd: /path/to/workspace               # optional: working directory (default: current)
+
+# Tuning loop behavior
+orchestrator:
+  rounds: 5                # number of optimization rounds (default 3)
+  store: true              # persist each round via store_round.sh into tuning/ (default false)
+  round_timeout_s: 600     # per-round agent timeout in seconds (default 600)
+
+# All fields above can be overridden per-run with CLI flags:
+#   --kernel --build --profile --dsl --gpu --shape-key --cwd --rounds --provider --model --store

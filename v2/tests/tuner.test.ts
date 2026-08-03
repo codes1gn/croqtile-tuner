@@ -169,3 +169,26 @@ test("round timeout: hanging agent is killed and round fails", async () => {
   assert.equal(results[0].decision, "unknown");
   assert.match(results[0].errorMessage ?? "", /timed out after/);
 });
+
+test("build gate: compile failure fails the round", async () => {
+  cleanDir(CWD);
+  writeFileSync(`${CWD}/kernel.cu`, "__global__ void k() { /* v0 */ }\n");
+
+  const brokenTask = { ...TASK, buildCmd: "exit 2" };
+
+  const session = await createFauxSession({
+    cwd: CWD,
+    responses: [
+      fauxAssistantMessage([fauxToolCall("write", { path: "kernel.cu", content: "__global__ void k() { /* broken */ }\n" })]),
+      fauxAssistantMessage("done"),
+    ],
+  });
+
+  const results = await tune({ task: brokenTask, rounds: 2, session });
+  session.dispose();
+
+  assert.equal(results.length, 1);
+  assert.equal(results[0].success, false);
+  assert.equal(results[0].decision, "unknown");
+  assert.match(results[0].errorMessage ?? "", /build failed: exit code 2/);
+});

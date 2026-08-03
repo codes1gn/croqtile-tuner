@@ -1,7 +1,7 @@
 import type { AgentSession } from "@earendil-works/pi-coding-agent";
 import type { TuneTask, TuneResult } from "./task.ts";
 import { createSession } from "./session.ts";
-import { runMeasure } from "./measure.ts";
+import { runMeasure, runCommand } from "./measure.ts";
 import { decide } from "./decide.ts";
 import { saveIter, restoreIter } from "./iters.ts";
 import { loadDslKnowledge } from "./dsl.ts";
@@ -17,6 +17,7 @@ export interface TuneConfig {
   dsl?: string;
   store?: boolean; // persist each measured round via store_round.sh
   roundTimeoutMs?: number; // per-round agent timeout; default 600s
+  signal?: AbortSignal; // aborts between rounds (SIGINT graceful shutdown)
 }
 
 const PROMPT_OUTPUT_CAP = 1500; // chars of the last measurement fed back to the agent
@@ -55,6 +56,10 @@ export async function tune(config: TuneConfig): Promise<TuneResult[]> {
     let lastOutput = "";
 
     for (let round = 0; round < rounds; round++) {
+      if (config.signal?.aborted) {
+        console.log("Tuning interrupted — state saved to <cwd>/iters/.");
+        break;
+      }
       console.log(`\n=== Round ${round + 1}/${rounds} ===\n`);
       const prompt = round === 0
         ? buildFirstRoundPrompt(task, baseline)
@@ -75,6 +80,15 @@ export async function tune(config: TuneConfig): Promise<TuneResult[]> {
       const agentError = agentErrorOf(session);
       if (agentError) {
         pushResult(results, task, session, { round, success: false, decision: "unknown", errorMessage: agentError });
+        break;
+      }
+
+      // Deterministic compile gate (PRD dual-layer robustness): the orchestrator
+      // verifies the round's kernel actually builds — otherwise the benchmark
+      // could measure a stale binary.
+      const build = await runCommand(task.buildCmd, task.cwd, false);
+      if (!build.ok) {
+        pushResult(results, task, session, { round, success: false, decision: "unknown", errorMessage: `build failed: ${build.error}` });
         break;
       }
 
