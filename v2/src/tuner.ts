@@ -1,6 +1,9 @@
 import type { AgentSession } from "@earendil-works/pi-coding-agent";
 import type { TuneTask, TuneResult } from "./task.ts";
 import { createSession } from "./session.ts";
+import { runMeasure } from "./measure.ts";
+import { decide } from "./decide.ts";
+import { saveIter, restoreIter } from "./iters.ts";
 
 export interface TuneConfig {
   task: TuneTask;
@@ -9,6 +12,8 @@ export interface TuneConfig {
   modelId?: string;
   session?: AgentSession;
 }
+
+const PROMPT_OUTPUT_CAP = 1500; // chars of the last measurement fed back to the agent
 
 export async function tune(config: TuneConfig): Promise<TuneResult[]> {
   const { task, rounds } = config;
@@ -23,16 +28,63 @@ export async function tune(config: TuneConfig): Promise<TuneResult[]> {
   })).session;
 
   try {
+    await saveIter(task, 0); // baseline snapshot (iter000)
+    const baseline = await runMeasure(task.profileCmd, task.cwd);
+    if (baseline.tflops !== undefined) {
+      console.log(`Baseline: ${baseline.tflops} TFLOPS`);
+    } else {
+      console.log(`Warning: baseline measurement failed (${baseline.error ?? "unknown error"}) — continuing without comparisons`);
+    }
+
+    let best = baseline.tflops;
+    let bestIter = 0;
+    let lastOutput = "";
+
     for (let round = 0; round < rounds; round++) {
       console.log(`\n=== Round ${round + 1}/${rounds} ===\n`);
-      const prompt = round === 0 ? buildFirstRoundPrompt(task) : buildNextRoundPrompt(task, round);
+      const prompt = round === 0
+        ? buildFirstRoundPrompt(task, baseline)
+        : buildNextRoundPrompt(task, round, best, bestIter, results.at(-1), lastOutput);
       await session.prompt(prompt);
 
-      const result = extractResult(session, round);
-      results.push(result);
-      console.log(`Round ${round + 1}: ${result.success ? "OK" : "FAIL"}`);
+      const agentError = agentErrorOf(session);
+      if (agentError) {
+        results.push({ round, success: false, decision: "unknown", errorMessage: agentError });
+        break;
+      }
 
-      if (!result.success) break;
+      try {
+        await saveIter(task, round + 1); // iteration artifact (iter00N)
+      } catch (err) {
+        results.push({ round, success: false, decision: "unknown", errorMessage: `failed to save iteration artifact: ${errMsg(err)}` });
+        break;
+      }
+
+      const measured = await runMeasure(task.profileCmd, task.cwd);
+      const tflops = measured.tflops;
+      const decision = decide(tflops, best);
+      const prev = results.at(-1);
+
+      if (decision === "keep" && tflops !== undefined && (best === undefined || tflops > best)) {
+        best = tflops;
+        bestIter = round + 1;
+      }
+
+      let errorMessage = measured.error;
+      if (decision === "reject") {
+        try {
+          await restoreIter(task, bestIter);
+          errorMessage = `regressed ${fmtPct(tflops, best)} vs best — reverted to iter${String(bestIter).padStart(3, "0")}`;
+        } catch (err) {
+          errorMessage = `regressed ${fmtPct(tflops, best)} vs best, restore failed: ${errMsg(err)}`;
+        }
+      }
+
+      console.log(`  Measured: ${fmtTflops(tflops)}, ${fmtPct(tflops, baseline.tflops)} vs baseline, ${fmtPct(tflops, prev?.tflops)} vs prev → ${decision.toUpperCase()}`);
+      if (decision === "reject") console.log(`  Rejected — kernel restored to iter${String(bestIter).padStart(3, "0")}`);
+      if (tflops !== undefined && measured.ok) lastOutput = measured.output.slice(-PROMPT_OUTPUT_CAP);
+
+      results.push({ round, success: decision !== "reject", tflops, decision, errorMessage });
     }
   } finally {
     if (ownsSession) session.dispose();
@@ -49,53 +101,65 @@ Tools available: read, write, bash.
 Working directory: ${task.cwd}
 
 Build: ${task.buildCmd}
-Profile: ${task.profileCmd}
 
 Rules:
-- Profile first, then optimize, then verify.
 - Make one focused change per round.
-- After editing, always rebuild and re-profile to confirm improvement.
-- If a change regresses performance, revert it.`;
+- After editing, always rebuild to confirm the kernel still compiles.
+- The tuner benchmarks after your round — you only need to make the kernel fast and correct.
+- If unsure what to change, run the profile command for analysis, but don't rely on it as the official measurement.`;
 }
 
-function buildFirstRoundPrompt(task: TuneTask): string {
+function buildFirstRoundPrompt(task: TuneTask, baseline: { tflops?: number }): string {
   return `Start optimizing ${task.kernelPath}.
 
 1. Read the current kernel source
-2. Profile the current baseline: ${task.profileCmd}
-3. Identify the top bottleneck from the profile output
-4. Make ONE targeted optimization to address it
-5. Rebuild: ${task.buildCmd}
-6. Re-profile and report the before/after comparison`;
+2. Make ONE targeted optimization (tiling, pipeline, memory layout, launch config, ...)
+3. Rebuild to verify it compiles: ${task.buildCmd}
+
+Baseline measured by the tuner: ${baseline.tflops ?? "unknown"} TFLOPS.
+The tuner benchmarks automatically after your round.`;
 }
 
-function buildNextRoundPrompt(task: TuneTask, round: number): string {
+function buildNextRoundPrompt(
+  task: TuneTask,
+  round: number,
+  best: number | undefined,
+  bestIter: number,
+  prev: TuneResult | undefined,
+  lastOutput: string,
+): string {
+  const prevLine = prev?.tflops !== undefined
+    ? ` Previous round: ${prev.tflops} TFLOPS (${prev.decision}).`
+    : "";
   return `Continue optimization (round ${round + 1}).
 
-1. Profile the current state: ${task.profileCmd}
-2. Identify the next bottleneck
-3. Make ONE targeted change
-4. Rebuild and re-profile
-5. Report before/after`;
+Best so far: ${best ?? "unknown"} TFLOPS (iter${String(bestIter).padStart(3, "0")}).
+${prevLine}
+The current kernel is the best-known version — start from it.
+
+1. Make ONE targeted change to beat ${best ?? "the current kernel"}
+2. Rebuild to verify it compiles: ${task.buildCmd}
+
+${lastOutput ? `Last benchmark output:\n${lastOutput}\n` : ""}`;
 }
 
-function extractResult(session: AgentSession, round: number): TuneResult {
-  const messages = session.messages;
-  const last = messages[messages.length - 1];
+function agentErrorOf(session: AgentSession): string | undefined {
+  const last = session.messages.at(-1);
+  if (last?.role !== "assistant") return undefined;
+  const asst = last as { stopReason?: string; errorMessage?: string };
+  return asst.stopReason === "error" ? (asst.errorMessage ?? "agent stopped with error") : undefined;
+}
 
-  if (last?.role === "assistant") {
-    const asst = last as { stopReason?: string; errorMessage?: string; content: unknown[] };
-    if (asst.stopReason === "error") {
-      return { round, success: false, profileOutput: "", errorMessage: asst.errorMessage };
-    }
-  }
+function fmtTflops(tflops: number | undefined): string {
+  return tflops !== undefined ? `${tflops} TFLOPS` : "no measurement";
+}
 
-  const textContent = messages
-    .filter(m => m.role === "assistant")
-    .flatMap(m => m.content)
-    .filter((c): c is { type: "text"; text: string } => c.type === "text")
-    .map(c => c.text)
-    .join("\n");
+function fmtPct(a: number | undefined, b: number | undefined): string {
+  if (a === undefined || b === undefined) return "n/a";
+  const delta = ((a - b) / b) * 100;
+  return `${delta >= 0 ? "+" : ""}${delta.toFixed(1)}%`;
+}
 
-  return { round, success: true, profileOutput: textContent.slice(-2000) };
+function errMsg(err: unknown): string {
+  return err instanceof Error ? err.message : String(err);
 }

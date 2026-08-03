@@ -1,3 +1,5 @@
+import type { Decision } from "./decide.ts";
+
 export interface TuneTask {
   name: string;
   cwd: string;
@@ -9,6 +11,7 @@ export interface TuneTask {
 export interface TuneResult {
   round: number;
   success: boolean;
-  profileOutput: string;
+  decision: Decision;
+  tflops?: number;
   errorMessage?: string;
 }

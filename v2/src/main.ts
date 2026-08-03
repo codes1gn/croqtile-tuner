@@ -1,6 +1,6 @@
 import { loadEnv } from "./env.ts";
 import { tune } from "./tuner.ts";
-import type { TuneTask } from "./task.ts";
+import type { TuneTask, TuneResult } from "./task.ts";
 
 loadEnv();
 
@@ -15,11 +15,15 @@ Usage:
 Options:
   --kernel    Path to kernel source file
   --build     Build/compile command
-  --profile   Profile/benchmark command
+  --profile   Benchmark command that prints "TFLOPS: <value>"
   --rounds    Number of optimization rounds (default: 3)
   --cwd       Working directory (default: current)
   --provider  LLM provider (default: from .env)
-  --model     Model ID (default: from .env)`);
+  --model     Model ID (default: from .env)
+
+Per-round kernel snapshots are saved to <cwd>/iters/ (iter000.* = baseline).
+The tuner benchmarks after each round; regressions are rejected and the
+kernel is reverted to the best-known iteration.`);
   process.exit(0);
 }
 
@@ -54,11 +58,19 @@ console.log(`  kernel:  ${task.kernelPath}`);
 console.log(`  build:   ${task.buildCmd}`);
 console.log(`  profile: ${task.profileCmd}\n`);
 
-const results = await tune({ task, rounds, provider, modelId });
+let results: TuneResult[];
+try {
+  results = await tune({ task, rounds, provider, modelId });
+} catch (err) {
+  console.error(`Error: ${err instanceof Error ? err.message : err}`);
+  process.exit(1);
+}
 
 console.log("\n=== Summary ===");
 for (const r of results) {
-  console.log(`  Round ${r.round + 1}: ${r.success ? "✓" : "✗"} ${r.errorMessage ?? ""}`);
+  const perf = r.tflops !== undefined ? ` ${r.tflops} TFLOPS` : "";
+  const err = r.errorMessage ? ` — ${r.errorMessage}` : "";
+  console.log(`  Round ${r.round + 1}: ${r.success ? "✓" : "✗"} ${r.decision}${perf}${err}`);
 }
 
 const passed = results.filter(r => r.success).length;
