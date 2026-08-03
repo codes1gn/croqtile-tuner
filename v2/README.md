@@ -24,6 +24,17 @@ npm start -- --kernel kernel.co \
 Requires either an LLM API key (`<PROVIDER>_API_KEY` env or `model.api_key`
 in config) or a local ollama server (`model.provider: ollama`).
 
+## Standalone binary
+
+```bash
+npm run build           # needs bun: curl -fsSL https://bun.sh/install | bash
+./dist/croqtile-tuner --version
+./dist/croqtile-tuner --config config.yaml
+```
+
+The binary embeds everything except the repo's `.claude/skills/` files —
+run it from the repo root when using `--dsl` or `--store`.
+
 ## How it works
 
 Each round: the agent (Pi SDK, read/write/bash tools) makes **one** targeted
