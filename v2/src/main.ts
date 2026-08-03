@@ -27,7 +27,8 @@ Options:
 
 Per-round kernel snapshots are saved to <cwd>/iters/ (iter000.* = baseline).
 The tuner benchmarks after each round; regressions are rejected and the
-kernel is reverted to the best-known iteration.`);
+kernel is reverted to the best-known iteration.
+Agent trajectory (every tool call + response) → <cwd>/iters/trajectory.jsonl`);
   process.exit(0);
 }
 

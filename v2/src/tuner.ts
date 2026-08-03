@@ -6,6 +6,7 @@ import { decide } from "./decide.ts";
 import { saveIter, restoreIter } from "./iters.ts";
 import { loadDslKnowledge } from "./dsl.ts";
 import { storeRound } from "./store.ts";
+import { recordTrajectory } from "./trajectory.ts";
 
 export interface TuneConfig {
   task: TuneTask;
@@ -58,14 +59,14 @@ export async function tune(config: TuneConfig): Promise<TuneResult[]> {
 
       const agentError = agentErrorOf(session);
       if (agentError) {
-        results.push({ round, success: false, decision: "unknown", errorMessage: agentError });
+        pushResult(results, task, session, { round, success: false, decision: "unknown", errorMessage: agentError });
         break;
       }
 
       try {
         await saveIter(task, round + 1); // iteration artifact (iter00N)
       } catch (err) {
-        results.push({ round, success: false, decision: "unknown", errorMessage: `failed to save iteration artifact: ${errMsg(err)}` });
+        pushResult(results, task, session, { round, success: false, decision: "unknown", errorMessage: `failed to save iteration artifact: ${errMsg(err)}` });
         break;
       }
 
@@ -101,7 +102,7 @@ export async function tune(config: TuneConfig): Promise<TuneResult[]> {
         if (stored) console.log(`  Stored: ${iterTag(round + 1)} (${decision})`);
       }
 
-      results.push({ round, success: decision !== "reject", tflops, decision, errorMessage });
+      pushResult(results, task, session, { round, success: decision !== "reject", tflops, decision, errorMessage });
     }
   } finally {
     if (ownsSession) session.dispose();
@@ -170,6 +171,11 @@ function agentErrorOf(session: AgentSession): string | undefined {
   if (last?.role !== "assistant") return undefined;
   const asst = last as { stopReason?: string; errorMessage?: string };
   return asst.stopReason === "error" ? (asst.errorMessage ?? "agent stopped with error") : undefined;
+}
+
+function pushResult(results: TuneResult[], task: TuneTask, session: AgentSession, result: TuneResult): void {
+  results.push(result);
+  recordTrajectory(task, session, result);
 }
 
 // Last assistant text — used as the "idea" summary when storing a round.
