@@ -2,6 +2,7 @@ import { after, test } from "node:test";
 import assert from "node:assert/strict";
 import { writeFileSync, readFileSync, existsSync } from "fs";
 import { resolve } from "path";
+import type { AgentSession } from "@earendil-works/pi-coding-agent";
 import { createFauxSession, cleanDir, cleanStoreTraces, fauxAssistantMessage, fauxToolCall } from "./helpers.ts";
 import { tune } from "../src/tuner.ts";
 
@@ -149,4 +150,22 @@ test("store: round results persist via store_round.sh into tuning/", async () =>
   assert.equal(results[0].decision, "keep");
   const tsv = readFileSync(resolve(CWD, "tuning", "sm00_test", "croqtile", "logs", "kernel", "auto", "results.tsv"), "utf-8");
   assert.match(tsv, /^iter001\titer001_auto\t1\tKEEP\tunknown\tIncreased tile size\.$/m);
+});
+
+test("round timeout: hanging agent is killed and round fails", async () => {
+  cleanDir(CWD);
+  writeFileSync(`${CWD}/kernel.cu`, "__global__ void k() { /* v0 */ }\n");
+
+  // a session whose prompt never settles
+  const hanging = {
+    messages: [],
+    prompt: () => new Promise<void>(() => {}),
+  } as unknown as AgentSession;
+
+  const results = await tune({ task: TASK, rounds: 2, session: hanging, roundTimeoutMs: 100 });
+
+  assert.equal(results.length, 1);
+  assert.equal(results[0].success, false);
+  assert.equal(results[0].decision, "unknown");
+  assert.match(results[0].errorMessage ?? "", /timed out after/);
 });

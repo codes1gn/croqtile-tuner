@@ -16,14 +16,18 @@ export interface TuneConfig {
   session?: AgentSession;
   dsl?: string;
   store?: boolean; // persist each measured round via store_round.sh
+  roundTimeoutMs?: number; // per-round agent timeout; default 600s
 }
 
 const PROMPT_OUTPUT_CAP = 1500; // chars of the last measurement fed back to the agent
+const DEFAULT_ROUND_TIMEOUT_MS = 600_000; // TODO: make configurable via config file (Iter 6)
 
 export async function tune(config: TuneConfig): Promise<TuneResult[]> {
   const { task, rounds } = config;
+  const roundTimeoutMs = config.roundTimeoutMs ?? DEFAULT_ROUND_TIMEOUT_MS;
   const results: TuneResult[] = [];
   const ownsSession = !config.session;
+  let sessionAlive = true;
 
   const dslKnowledge = config.dsl !== undefined ? loadDslKnowledge(config.dsl) : undefined;
   if (config.dsl !== undefined && dslKnowledge === undefined) {
@@ -55,7 +59,18 @@ export async function tune(config: TuneConfig): Promise<TuneResult[]> {
       const prompt = round === 0
         ? buildFirstRoundPrompt(task, baseline)
         : buildNextRoundPrompt(task, round, best, bestIter, results.at(-1), lastOutput);
-      await session.prompt(prompt);
+
+      const timedOut = !(await withTimeout(session.prompt(prompt), roundTimeoutMs));
+      if (timedOut) {
+        const errorMessage = `agent timed out after ${Math.round(roundTimeoutMs / 1000)}s`;
+        pushResult(results, task, session, { round, success: false, decision: "unknown", errorMessage });
+        if (ownsSession) {
+          session.dispose(); // kill the agent so in-flight work stops
+          sessionAlive = false;
+        }
+        // TODO: retry the round once with a fresh session (Iter 5.1 "kill and retry")
+        break;
+      }
 
       const agentError = agentErrorOf(session);
       if (agentError) {
@@ -105,10 +120,22 @@ export async function tune(config: TuneConfig): Promise<TuneResult[]> {
       pushResult(results, task, session, { round, success: decision !== "reject", tflops, decision, errorMessage });
     }
   } finally {
-    if (ownsSession) session.dispose();
+    if (ownsSession && sessionAlive) session.dispose();
   }
 
   return results;
+}
+
+// Resolves true when the promise settles (success or error), false on timeout.
+// The underlying promise is abandoned on timeout — dispose() stops in-flight work.
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<boolean> {
+  return new Promise(resolve => {
+    const timer = setTimeout(() => resolve(false), ms);
+    promise.then(
+      () => { clearTimeout(timer); resolve(true); },
+      () => { clearTimeout(timer); resolve(true); },
+    );
+  });
 }
 
 function buildSystemPrompt(task: TuneTask, dslKnowledge?: string): string {
