@@ -23,6 +23,8 @@ npm start -- --kernel kernel.co \
 
 Requires either an LLM API key (`<PROVIDER>_API_KEY` env or `model.api_key`
 in config) or a local ollama server (`model.provider: ollama`).
+Any OpenAI-compatible endpoint can be used by setting `<PROVIDER>_BASE_URL`
+(e.g. `OPENAI_BASE_URL=http://127.0.0.1:8787/v1` with a local gateway).
 
 ## Standalone binary
 

@@ -57,6 +57,26 @@ export async function createSession(config: SessionConfig): Promise<SessionResul
       throw new Error(`API key required. Set one of: ANTHROPIC_API_KEY, GROQ_API_KEY, GOOGLE_API_KEY, or OPENAI_API_KEY`);
     }
     authStorage.setRuntimeApiKey(provider, apiKey);
+
+    // <PROVIDER>_BASE_URL override → OpenAI-compatible endpoint (local gateway, proxy, self-hosted)
+    const baseUrl = process.env[`${provider.toUpperCase().replace(/-/g, "_")}_BASE_URL`];
+    if (baseUrl) {
+      modelRegistry.registerProvider(provider, {
+        baseUrl,
+        apiKey,
+        api: "openai-completions",
+        models: [{
+          id: modelId,
+          name: modelId,
+          reasoning: false,
+          input: ["text"],
+          cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+          contextWindow: 200_000,
+          maxTokens: 16_384,
+          compat: { supportsDeveloperRole: true, maxTokensField: "max_tokens" },
+        }],
+      });
+    }
   }
 
   const model = modelRegistry.find(provider, modelId);
