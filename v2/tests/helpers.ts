@@ -1,4 +1,5 @@
 import { mkdirSync, rmSync } from "fs";
+import { resolve } from "path";
 import {
   type AgentSession,
   AuthStorage,
@@ -9,6 +10,7 @@ import {
   SettingsManager,
 } from "@earendil-works/pi-coding-agent";
 import { createFauxCore, fauxAssistantMessage, fauxToolCall } from "@earendil-works/pi-ai/providers/faux";
+import { REPO_ROOT } from "../src/repo.ts";
 
 export { fauxAssistantMessage, fauxToolCall };
 
@@ -66,4 +68,10 @@ export async function createFauxSession(opts: FauxSessionOptions): Promise<Agent
 export function cleanDir(path: string): void {
   rmSync(path, { recursive: true, force: true });
   mkdirSync(path, { recursive: true });
+}
+
+// store_round.sh writes activity traces into the repo's tuning/ — activity_trace.sh
+// resolves project_root from the script location, not cwd. Tests remove the residue.
+export function cleanStoreTraces(): void {
+  rmSync(resolve(REPO_ROOT, "tuning", "sm00_test"), { recursive: true, force: true });
 }

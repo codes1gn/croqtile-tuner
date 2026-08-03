@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "start": "node --experimental-strip-types --no-warnings src/main.ts",
-    "test": "node --experimental-strip-types --no-warnings --test tests/faux.test.ts tests/tuner.test.ts tests/measure.test.ts tests/decide.test.ts",
+    "test": "node --experimental-strip-types --no-warnings --test tests/faux.test.ts tests/tuner.test.ts tests/measure.test.ts tests/decide.test.ts tests/dsl.test.ts tests/store.test.ts",
     "test:ollama": "node --experimental-strip-types --no-warnings --test tests/ollama.test.ts",
     "test:live": "node --experimental-strip-types --no-warnings --test tests/live.test.ts"
   },

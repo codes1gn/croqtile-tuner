@@ -20,6 +20,10 @@ Options:
   --cwd       Working directory (default: current)
   --provider  LLM provider (default: from .env)
   --model     Model ID (default: from .env)
+  --dsl       DSL name (croqtile, cuda, ...) — injects the DSL contract into the agent prompt
+  --gpu       GPU tag for stored results (default: detect_gpu.sh)
+  --shape-key Tuning directory shape key (default: kernel file name)
+  --store     Persist each round via store_round.sh into tuning/
 
 Per-round kernel snapshots are saved to <cwd>/iters/ (iter000.* = baseline).
 The tuner benchmarks after each round; regressions are rejected and the
@@ -47,20 +51,26 @@ const task: TuneTask = {
   kernelPath: kernel,
   buildCmd: build,
   profileCmd: profile,
+  dsl: getArg("dsl"),
+  gpu: getArg("gpu"),
+  shapeKey: getArg("shape-key"),
 };
 
 const rounds = parseInt(getArg("rounds") ?? "3", 10);
 const provider = getArg("provider");
 const modelId = getArg("model");
+const store = args.includes("--store");
 
 console.log(`Tuning: ${task.name} (${rounds} rounds)`);
 console.log(`  kernel:  ${task.kernelPath}`);
 console.log(`  build:   ${task.buildCmd}`);
-console.log(`  profile: ${task.profileCmd}\n`);
+console.log(`  profile: ${task.profileCmd}`);
+if (task.dsl) console.log(`  dsl:     ${task.dsl}`);
+if (store) console.log(`  store:   results → tuning/`);
 
 let results: TuneResult[];
 try {
-  results = await tune({ task, rounds, provider, modelId });
+  results = await tune({ task, rounds, provider, modelId, dsl: task.dsl, store });
 } catch (err) {
   console.error(`Error: ${err instanceof Error ? err.message : err}`);
   process.exit(1);

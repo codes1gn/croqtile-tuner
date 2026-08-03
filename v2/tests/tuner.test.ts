@@ -1,8 +1,11 @@
-import { test } from "node:test";
+import { after, test } from "node:test";
 import assert from "node:assert/strict";
 import { writeFileSync, readFileSync, existsSync } from "fs";
-import { createFauxSession, cleanDir, fauxAssistantMessage, fauxToolCall } from "./helpers.ts";
+import { resolve } from "path";
+import { createFauxSession, cleanDir, cleanStoreTraces, fauxAssistantMessage, fauxToolCall } from "./helpers.ts";
 import { tune } from "../src/tuner.ts";
+
+after(cleanStoreTraces); // store_round.sh leaves activity traces in repo tuning/
 
 const CWD = "/tmp/croqtile-tuner-test/tuner";
 const SCORE = "/tmp/croqtile-tuner-test/score";
@@ -120,4 +123,30 @@ test("regression round is rejected and kernel reverted to best", async () => {
   // kernel reverted to the best-known version (round 1's v2)
   assert.match(readFileSync(`${CWD}/kernel.cu`, "utf-8"), /v2/);
   assert.ok(!readFileSync(`${CWD}/kernel.cu`, "utf-8").includes("v1"));
+});
+
+test("store: round results persist via store_round.sh into tuning/", async () => {
+  cleanDir(CWD);
+  writeFileSync(`${CWD}/kernel.cu`, "__global__ void k() { /* v0 */ }\n");
+
+  const storeTask = {
+    ...TASK,
+    dsl: "croqtile",
+    gpu: "sm00_test",
+  };
+
+  const session = await createFauxSession({
+    cwd: CWD,
+    responses: [
+      fauxAssistantMessage([fauxToolCall("write", { path: "kernel.cu", content: "__global__ void k() { /* v1 */ }\n" })]),
+      fauxAssistantMessage("Increased tile size."),
+    ],
+  });
+
+  const results = await tune({ task: storeTask, rounds: 1, session, dsl: "croqtile", store: true });
+  session.dispose();
+
+  assert.equal(results[0].decision, "keep");
+  const tsv = readFileSync(resolve(CWD, "tuning", "sm00_test", "croqtile", "logs", "kernel", "auto", "results.tsv"), "utf-8");
+  assert.match(tsv, /^iter001\titer001_auto\t1\tKEEP\tunknown\tIncreased tile size\.$/m);
 });

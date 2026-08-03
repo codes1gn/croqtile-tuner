@@ -4,6 +4,8 @@ import { createSession } from "./session.ts";
 import { runMeasure } from "./measure.ts";
 import { decide } from "./decide.ts";
 import { saveIter, restoreIter } from "./iters.ts";
+import { loadDslKnowledge } from "./dsl.ts";
+import { storeRound } from "./store.ts";
 
 export interface TuneConfig {
   task: TuneTask;
@@ -11,6 +13,8 @@ export interface TuneConfig {
   provider?: string;
   modelId?: string;
   session?: AgentSession;
+  dsl?: string;
+  store?: boolean; // persist each measured round via store_round.sh
 }
 
 const PROMPT_OUTPUT_CAP = 1500; // chars of the last measurement fed back to the agent
@@ -20,11 +24,16 @@ export async function tune(config: TuneConfig): Promise<TuneResult[]> {
   const results: TuneResult[] = [];
   const ownsSession = !config.session;
 
+  const dslKnowledge = config.dsl !== undefined ? loadDslKnowledge(config.dsl) : undefined;
+  if (config.dsl !== undefined && dslKnowledge === undefined) {
+    console.warn(`Warning: no DSL knowledge found for '${config.dsl}' — continuing with generic prompt`);
+  }
+
   const session = config.session ?? (await createSession({
     cwd: task.cwd,
     provider: config.provider,
     modelId: config.modelId,
-    systemPrompt: buildSystemPrompt(task),
+    systemPrompt: buildSystemPrompt(task, dslKnowledge),
   })).session;
 
   try {
@@ -84,6 +93,14 @@ export async function tune(config: TuneConfig): Promise<TuneResult[]> {
       if (decision === "reject") console.log(`  Rejected — kernel restored to iter${String(bestIter).padStart(3, "0")}`);
       if (tflops !== undefined && measured.ok) lastOutput = measured.output.slice(-PROMPT_OUTPUT_CAP);
 
+      if (config.store) {
+        const stored = storeRound({
+          task, model: config.modelId ?? process.env.CROQTILE_MODEL ?? "auto",
+          round, tflops: tflops ?? 0, decision, idea: agentIdea(session),
+        });
+        if (stored) console.log(`  Stored: ${iterTag(round + 1)} (${decision})`);
+      }
+
       results.push({ round, success: decision !== "reject", tflops, decision, errorMessage });
     }
   } finally {
@@ -93,7 +110,7 @@ export async function tune(config: TuneConfig): Promise<TuneResult[]> {
   return results;
 }
 
-function buildSystemPrompt(task: TuneTask): string {
+function buildSystemPrompt(task: TuneTask, dslKnowledge?: string): string {
   return `You are a GPU kernel performance engineer.
 Your goal: maximize throughput of the kernel at ${task.kernelPath}.
 
@@ -106,7 +123,12 @@ Rules:
 - Make one focused change per round.
 - After editing, always rebuild to confirm the kernel still compiles.
 - The tuner benchmarks after your round — you only need to make the kernel fast and correct.
-- If unsure what to change, run the profile command for analysis, but don't rely on it as the official measurement.`;
+- If unsure what to change, run the profile command for analysis, but don't rely on it as the official measurement.
+${dslKnowledge !== undefined ? `
+--- DSL CONTRACT (croq-dsl-${task.dsl ?? "?"}) ---
+${dslKnowledge}
+--- END DSL CONTRACT ---
+` : ""}`;
 }
 
 function buildFirstRoundPrompt(task: TuneTask, baseline: { tflops?: number }): string {
@@ -148,6 +170,20 @@ function agentErrorOf(session: AgentSession): string | undefined {
   if (last?.role !== "assistant") return undefined;
   const asst = last as { stopReason?: string; errorMessage?: string };
   return asst.stopReason === "error" ? (asst.errorMessage ?? "agent stopped with error") : undefined;
+}
+
+// Last assistant text — used as the "idea" summary when storing a round.
+function agentIdea(session: AgentSession): string {
+  const texts = session.messages
+    .filter(m => m.role === "assistant")
+    .flatMap(m => m.content)
+    .filter((c): c is { type: "text"; text: string } => c.type === "text")
+    .map(c => c.text);
+  return texts.at(-1) ?? "no idea";
+}
+
+function iterTag(n: number): string {
+  return `iter${String(n).padStart(3, "0")}`;
 }
 
 function fmtTflops(tflops: number | undefined): string {
