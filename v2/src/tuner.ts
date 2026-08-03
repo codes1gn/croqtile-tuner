@@ -85,11 +85,15 @@ export async function tune(config: TuneConfig): Promise<TuneResult[]> {
 
       // Deterministic compile gate (PRD dual-layer robustness): the orchestrator
       // verifies the round's kernel actually builds — otherwise the benchmark
-      // could measure a stale binary.
+      // could measure a stale binary. A broken kernel fails the round but the
+      // tuning continues from the best-known version.
       const build = await runCommand(task.buildCmd, task.cwd, false);
       if (!build.ok) {
         pushResult(results, task, session, { round, success: false, decision: "unknown", errorMessage: `build failed: ${build.error}` });
-        break;
+        try {
+          await restoreIter(task, bestIter); // kernel on disk is broken — start next round from best
+        } catch { /* iter000 baseline always exists */ }
+        continue;
       }
 
       try {
@@ -110,12 +114,18 @@ export async function tune(config: TuneConfig): Promise<TuneResult[]> {
       }
 
       let errorMessage = measured.error;
-      if (decision === "reject") {
+      if (decision === "reject" || tflops === undefined) {
+        // Rejected or unmeasurable → the kernel on disk is not the best-known;
+        // restore so the next round starts from it (the prompt says so).
         try {
           await restoreIter(task, bestIter);
-          errorMessage = `regressed ${fmtPct(tflops, best)} vs best — reverted to iter${String(bestIter).padStart(3, "0")}`;
+          if (decision === "reject") {
+            errorMessage = `regressed ${fmtPct(tflops, best)} vs best — reverted to iter${String(bestIter).padStart(3, "0")}`;
+          } else {
+            console.log(`  Kernel unmeasurable — restored iter${String(bestIter).padStart(3, "0")} (best-known)`);
+          }
         } catch (err) {
-          errorMessage = `regressed ${fmtPct(tflops, best)} vs best, restore failed: ${errMsg(err)}`;
+          errorMessage = `restore failed: ${errMsg(err)}`;
         }
       }
 

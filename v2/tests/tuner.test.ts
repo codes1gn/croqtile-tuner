@@ -170,25 +170,58 @@ test("round timeout: hanging agent is killed and round fails", async () => {
   assert.match(results[0].errorMessage ?? "", /timed out after/);
 });
 
-test("build gate: compile failure fails the round", async () => {
+test("build gate: failed compile fails the round but tuning continues from best", async () => {
   cleanDir(CWD);
   writeFileSync(`${CWD}/kernel.cu`, "__global__ void k() { /* v0 */ }\n");
 
-  const brokenTask = { ...TASK, buildCmd: "exit 2" };
+  // fails only while the kernel contains the "broken" marker
+  const brokenTask = { ...TASK, buildCmd: "grep -q broken kernel.cu && exit 2; echo 'build ok'" };
 
   const session = await createFauxSession({
     cwd: CWD,
     responses: [
       fauxAssistantMessage([fauxToolCall("write", { path: "kernel.cu", content: "__global__ void k() { /* broken */ }\n" })]),
-      fauxAssistantMessage("done"),
+      fauxAssistantMessage("Round 1 done."),
+      fauxAssistantMessage([fauxToolCall("write", { path: "kernel.cu", content: "__global__ void k() { /* v2 */ }\n" })]),
+      fauxAssistantMessage("Round 2 done."),
     ],
   });
 
   const results = await tune({ task: brokenTask, rounds: 2, session });
   session.dispose();
 
-  assert.equal(results.length, 1);
+  assert.equal(results.length, 2); // the loop survived the bad round
   assert.equal(results[0].success, false);
   assert.equal(results[0].decision, "unknown");
   assert.match(results[0].errorMessage ?? "", /build failed: exit code 2/);
+  assert.equal(results[1].success, true);
+  assert.equal(results[1].decision, "keep");
+  // round 2's kernel is on disk
+  assert.match(readFileSync(`${CWD}/kernel.cu`, "utf-8"), /v2/);
+});
+
+test("unmeasurable round restores best kernel and continues", async () => {
+  cleanDir(CWD);
+  writeFileSync(`${CWD}/kernel.cu`, "__global__ void k() { /* v0 */ }\n");
+
+  const unmeasurableTask = { ...TASK, profileCmd: "echo 'no numbers here'" };
+
+  const session = await createFauxSession({
+    cwd: CWD,
+    responses: [
+      fauxAssistantMessage([fauxToolCall("write", { path: "kernel.cu", content: "__global__ void k() { /* v1 */ }\n" })]),
+      fauxAssistantMessage("Round 1 done."),
+      fauxAssistantMessage([fauxToolCall("write", { path: "kernel.cu", content: "__global__ void k() { /* v2 */ }\n" })]),
+      fauxAssistantMessage("Round 2 done."),
+    ],
+  });
+
+  const results = await tune({ task: unmeasurableTask, rounds: 2, session });
+  session.dispose();
+
+  assert.equal(results.length, 2);
+  assert.ok(results.every(r => r.decision === "unknown")); // no measurement, not a failure
+  assert.ok(results.every(r => r.success));
+  // kernel on disk is the best-known version (baseline v0), not the last agent write
+  assert.match(readFileSync(`${CWD}/kernel.cu`, "utf-8"), /v0/);
 });

@@ -46,7 +46,7 @@ export async function createSession(config: SessionConfig): Promise<SessionResul
         input: ["text"],
         cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
         contextWindow: 32768,
-        maxTokens: 4096,
+        maxTokens: 8192, // full-file writes need headroom beyond the default 4096
         compat: { supportsDeveloperRole: false, maxTokensField: "max_tokens" },
       }],
     });
