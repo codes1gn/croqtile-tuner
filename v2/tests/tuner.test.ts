@@ -6,7 +6,7 @@ import type { AgentSession } from "@earendil-works/pi-coding-agent";
 import { createFauxSession, cleanDir, cleanStoreTraces, fauxAssistantMessage, fauxToolCall } from "./helpers.ts";
 import { tune } from "../src/tuner.ts";
 
-after(cleanStoreTraces); // store_round.sh leaves activity traces in repo tuning/
+after(() => cleanStoreTraces("sm00_tuner_test")); // store_round.sh leaves activity traces in repo tuning/
 
 const CWD = "/tmp/croqtile-tuner-test/tuner";
 const SCORE = "/tmp/croqtile-tuner-test/score";
@@ -133,7 +133,7 @@ test("store: round results persist via store_round.sh into tuning/", async () =>
   const storeTask = {
     ...TASK,
     dsl: "croqtile",
-    gpu: "sm00_test",
+    gpu: "sm00_tuner_test",
   };
 
   const session = await createFauxSession({
@@ -148,7 +148,7 @@ test("store: round results persist via store_round.sh into tuning/", async () =>
   session.dispose();
 
   assert.equal(results[0].decision, "keep");
-  const tsv = readFileSync(resolve(CWD, "tuning", "sm00_test", "croqtile", "logs", "kernel", "auto", "results.tsv"), "utf-8");
+  const tsv = readFileSync(resolve(CWD, "tuning", "sm00_tuner_test", "croqtile", "logs", "kernel", "auto", "results.tsv"), "utf-8");
   assert.match(tsv, /^iter001\titer001_auto\t1\tKEEP\tunknown\tIncreased tile size\.$/m);
 });
 

@@ -1,10 +1,21 @@
 import { readFileSync, existsSync } from "fs";
 import { resolve } from "path";
+import { REPO_ROOT } from "./repo.ts";
 
 export function loadEnv(dir?: string): void {
-  const envPath = resolve(dir ?? process.cwd(), ".env");
-  if (!existsSync(envPath)) return;
+  // Explicit dir, or every plausible .env location: the cwd, the module's dir
+  // (dev runs), the module's parent (v2/ when started from repo root), and
+  // v2/ via REPO_ROOT (standalone binary run from the repo root).
+  const candidates = dir
+    ? [dir]
+    : [process.cwd(), import.meta.dirname, resolve(import.meta.dirname, ".."), resolve(REPO_ROOT, "v2")];
+  for (const d of candidates) {
+    const envPath = resolve(d, ".env");
+    if (existsSync(envPath)) loadEnvFile(envPath);
+  }
+}
 
+function loadEnvFile(envPath: string): void {
   const content = readFileSync(envPath, "utf-8");
   for (const line of content.split("\n")) {
     const trimmed = line.trim();

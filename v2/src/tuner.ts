@@ -44,6 +44,12 @@ export async function tune(config: TuneConfig): Promise<TuneResult[]> {
 
   try {
     await saveIter(task, 0); // baseline snapshot (iter000)
+    // Rebuild before measuring so the baseline reflects the kernel as written,
+    // not a stale binary left in the workspace by a previous session.
+    const baselineBuild = await runCommand(task.buildCmd, task.cwd, false);
+    if (!baselineBuild.ok) {
+      console.warn(`Warning: baseline build failed (${baselineBuild.error}) — continuing without comparisons`);
+    }
     const baseline = await runMeasure(task.profileCmd, task.cwd);
     if (baseline.tflops !== undefined) {
       console.log(`Baseline: ${baseline.tflops} TFLOPS`);

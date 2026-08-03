@@ -1,10 +1,6 @@
-# croqtile-tuner — example configuration (copy to config.yaml and edit)
-
-# Model endpoint (any Pi-supported provider; env keys still work as fallback)
 model:
-  provider: ollama            # anthropic | groq | google | openai | openrouter | deepseek | together | ollama
-  model: qwen2.5-coder:1.5b   # defaults to CROQTILE_MODEL env var
-  # api_key: sk-...           # optional; usually set via <PROVIDER>_API_KEY env
+  provider: openai            # uses OPENAI_BASE_URL + OPENAI_API_KEY from v2/.env
+  model: deepseek-v4-flash    # defaults to CROQTILE_MODEL env var
 
 # The tuning task — required section
 task:

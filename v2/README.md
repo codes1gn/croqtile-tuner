@@ -9,22 +9,15 @@ monitorable binary.
 ```bash
 npm install
 cp config.example.yaml config.yaml   # edit task fields
+cp .env.example .env                 # LLM endpoint: local gateway → deepseek-v4-flash
 npm start -- --config config.yaml
 ```
 
-Or fully CLI-driven:
-
-```bash
-npm start -- --kernel kernel.co \
-  --build "bash build_iter.sh" \
-  --profile "./iter000_swizzle 2048 2048 2048" \
-  --dsl croqtile --rounds 5 --store
-```
-
-Requires either an LLM API key (`<PROVIDER>_API_KEY` env or `model.api_key`
-in config) or a local ollama server (`model.provider: ollama`).
-Any OpenAI-compatible endpoint can be used by setting `<PROVIDER>_BASE_URL`
-(e.g. `OPENAI_BASE_URL=http://127.0.0.1:8787/v1` with a local gateway).
+The default LLM setup is the local Claude Code gateway
+(`OPENAI_BASE_URL=http://127.0.0.1:8787/v1`) with `deepseek-v4-flash` —
+see `.env.example` for all supported providers (Groq, OpenRouter, Gemini,
+Anthropic, Ollama). Any `<PROVIDER>_BASE_URL` points a provider at an
+OpenAI-compatible endpoint.
 
 ## Standalone binary
 

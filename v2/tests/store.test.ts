@@ -5,7 +5,7 @@ import { resolve } from "path";
 import { cleanDir, cleanStoreTraces } from "./helpers.ts";
 import { storeRound } from "../src/store.ts";
 
-after(cleanStoreTraces); // store_round.sh leaves activity traces in repo tuning/
+after(() => cleanStoreTraces("sm00_store_test")); // store_round.sh leaves activity traces in repo tuning/
 
 const CWD = "/tmp/croqtile-tuner-test/store";
 
@@ -16,11 +16,11 @@ const TASK = {
   buildCmd: "true",
   profileCmd: "true",
   dsl: "croqtile",
-  gpu: "sm00_test",
+  gpu: "sm00_store_test",
 };
 
 function tsvPath(model: string): string {
-  return resolve(CWD, "tuning", "sm00_test", "croqtile", "logs", "matmul_f16_2048", model, "results.tsv");
+  return resolve(CWD, "tuning", "sm00_store_test", "croqtile", "logs", "matmul_f16_2048", model, "results.tsv");
 }
 
 test("storeRound: writes results.tsv + idea-log.jsonl for KEEP", () => {
@@ -31,7 +31,7 @@ test("storeRound: writes results.tsv + idea-log.jsonl for KEEP", () => {
   const tsv = readFileSync(tsvPath("test-model"), "utf-8");
   assert.match(tsv, /^iter001\titer001_auto\t0\.122\tKEEP\tunknown\tswizzle tile scheduling$/m);
 
-  const log = readFileSync(resolve(CWD, "tuning", "sm00_test", "croqtile", "logs", "matmul_f16_2048", "test-model", "idea-log.jsonl"), "utf-8");
+  const log = readFileSync(resolve(CWD, "tuning", "sm00_store_test", "croqtile", "logs", "matmul_f16_2048", "test-model", "idea-log.jsonl"), "utf-8");
   assert.match(log, /"round": 1/);
   assert.match(log, /"tflops": 0\.122/);
   assert.match(log, /"decision": "KEEP"/);

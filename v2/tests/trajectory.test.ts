@@ -6,7 +6,7 @@ import { createFauxSession, cleanDir, cleanStoreTraces, fauxAssistantMessage, fa
 import { tune } from "../src/tuner.ts";
 import { buildTrajectoryRecord } from "../src/trajectory.ts";
 
-after(cleanStoreTraces);
+after(() => cleanStoreTraces());
 
 const CWD = "/tmp/croqtile-tuner-test/trajectory";
 

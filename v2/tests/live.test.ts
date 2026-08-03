@@ -8,7 +8,7 @@ loadEnv();
 
 const CWD = "/tmp/croqtile-tuner-test/live-workspace";
 
-test("live: write tool creates file via real API", { skip: !process.env.GOOGLE_API_KEY && !process.env.OPENROUTER_API_KEY }, async () => {
+test("live: write tool creates file via real API", { skip: !process.env.GOOGLE_API_KEY && !process.env.OPENROUTER_API_KEY && !process.env.OPENAI_API_KEY }, async () => {
   mkdirSync(CWD, { recursive: true });
   rmSync(`${CWD}/test.cu`, { force: true });
 

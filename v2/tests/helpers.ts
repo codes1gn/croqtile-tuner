@@ -72,6 +72,7 @@ export function cleanDir(path: string): void {
 
 // store_round.sh writes activity traces into the repo's tuning/ — activity_trace.sh
 // resolves project_root from the script location, not cwd. Tests remove the residue.
-export function cleanStoreTraces(): void {
-  rmSync(resolve(REPO_ROOT, "tuning", "sm00_test"), { recursive: true, force: true });
+// Distinct gpu tags per test file avoid races between parallel test files.
+export function cleanStoreTraces(gpu = "sm00_test"): void {
+  rmSync(resolve(REPO_ROOT, "tuning", gpu), { recursive: true, force: true });
 }
