@@ -1,7 +1,8 @@
 import { loadEnv } from "./env.ts";
 import { tune } from "./tuner.ts";
 import type { TuneTask, TuneResult } from "./task.ts";
-import { loadConfig, type Config } from "./config.ts";
+import { loadConfig, type Config, DEFAULT_ROUNDS, DEFAULT_STORE, DEFAULT_ROUND_TIMEOUT_S } from "./config.ts";
+import { errMsg } from "./util.ts";
 
 loadEnv();
 
@@ -58,11 +59,6 @@ if (configFile) {
     process.exit(1);
   }
   cfg = loaded.value;
-  const apiKey = cfg.model.api_key;
-  if (apiKey) {
-    const envName = `${cfg.model.provider.toUpperCase().replace(/-/g, "_")}_API_KEY`;
-    process.env[envName] ??= apiKey;
-  }
 }
 
 const kernel = getArg("kernel") ?? cfg?.task.kernel;
@@ -85,11 +81,11 @@ const task: TuneTask = {
   shapeKey: getArg("shape-key") ?? cfg?.task.shape_key,
 };
 
-const rounds = parseInt(getArg("rounds") ?? String(cfg?.orchestrator.rounds ?? 3), 10);
+const rounds = parseInt(getArg("rounds") ?? String(cfg?.orchestrator.rounds ?? DEFAULT_ROUNDS), 10);
 const provider = getArg("provider") ?? cfg?.model.provider;
 const modelId = getArg("model") ?? cfg?.model.model;
-const store = args.includes("--store") || (cfg?.orchestrator.store ?? false);
-const roundTimeoutMs = Math.round((cfg?.orchestrator.round_timeout_s ?? 600) * 1000);
+const store = args.includes("--store") || (cfg?.orchestrator.store ?? DEFAULT_STORE);
+const roundTimeoutMs = Math.round((cfg?.orchestrator.round_timeout_s ?? DEFAULT_ROUND_TIMEOUT_S) * 1000);
 
 console.log(`Tuning: ${task.name} (${rounds} rounds)`);
 console.log(`  kernel:  ${task.kernelPath}`);
@@ -107,9 +103,9 @@ process.on("SIGINT", () => {
 
 let results: TuneResult[];
 try {
-  results = await tune({ task, rounds, provider, modelId, dsl: task.dsl, store, roundTimeoutMs, signal: interrupt.signal });
+  results = await tune({ task, rounds, provider, modelId, apiKey: cfg?.model.api_key, store, roundTimeoutMs, signal: interrupt.signal });
 } catch (err) {
-  console.error(`Error: ${err instanceof Error ? err.message : err}`);
+  console.error(`Error: ${errMsg(err)}`);
   process.exit(1);
 }
 

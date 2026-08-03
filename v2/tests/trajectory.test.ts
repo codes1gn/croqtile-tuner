@@ -115,4 +115,6 @@ test("recordTrajectory: one JSONL line per round during tune()", async () => {
 
   const round2 = JSON.parse(lines[1]!) as { round: number; messages: unknown[] };
   assert.equal(round2.round, 1);
+  // delta recording: round 2's record excludes round 1's messages
+  assert.ok(!JSON.stringify(round2.messages).includes("Tiled the inner loop."));
 });

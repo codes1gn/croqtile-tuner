@@ -7,6 +7,7 @@ import {
   SessionManager,
   SettingsManager,
 } from "@earendil-works/pi-coding-agent";
+import { providerEnvName } from "./env.ts";
 
 export interface SessionConfig {
   cwd: string;
@@ -14,14 +15,10 @@ export interface SessionConfig {
   modelId?: string;
   systemPrompt?: string;
   agentDir?: string;
+  apiKey?: string; // overrides the <PROVIDER>_API_KEY env resolution
 }
 
-export interface SessionResult {
-  session: AgentSession;
-  model: { provider: string; id: string };
-}
-
-export async function createSession(config: SessionConfig): Promise<SessionResult> {
+export async function createSession(config: SessionConfig): Promise<AgentSession> {
   const {
     cwd,
     provider = process.env.CROQTILE_PROVIDER ?? "anthropic",
@@ -34,47 +31,30 @@ export async function createSession(config: SessionConfig): Promise<SessionResul
   const modelRegistry = ModelRegistry.inMemory(authStorage);
 
   if (provider === "ollama") {
-    const baseUrl = process.env.OLLAMA_BASE_URL ?? "http://127.0.0.1:11434/v1";
-    modelRegistry.registerProvider("ollama", {
-      baseUrl,
-      apiKey: "ollama",
-      api: "openai-completions",
-      models: [{
-        id: modelId,
-        name: modelId,
-        reasoning: false,
-        input: ["text"],
-        cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
-        contextWindow: 32768,
-        maxTokens: 8192, // full-file writes need headroom beyond the default 4096
-        compat: { supportsDeveloperRole: false, maxTokensField: "max_tokens" },
-      }],
+    registerOpenAiCompatible(modelRegistry, "ollama", modelId, {
+      baseUrl: process.env.OLLAMA_BASE_URL ?? "http://127.0.0.1:11434/v1",
+      apiKey: "ollama", // local server, no key
+      contextWindow: 32768,
+      maxTokens: 8192, // full-file writes need headroom beyond the default 4096
+      supportsDeveloperRole: false,
     });
     authStorage.setRuntimeApiKey("ollama", "ollama");
   } else {
-    const apiKey = resolveApiKey(provider);
+    const apiKey = config.apiKey ?? resolveApiKey(provider);
     if (!apiKey) {
-      throw new Error(`API key required. Set one of: ANTHROPIC_API_KEY, GROQ_API_KEY, GOOGLE_API_KEY, or OPENAI_API_KEY`);
+      throw new Error(`API key required. Set <PROVIDER>_API_KEY (or model.api_key in config)`);
     }
     authStorage.setRuntimeApiKey(provider, apiKey);
 
     // <PROVIDER>_BASE_URL override → OpenAI-compatible endpoint (local gateway, proxy, self-hosted)
-    const baseUrl = process.env[`${provider.toUpperCase().replace(/-/g, "_")}_BASE_URL`];
+    const baseUrl = process.env[providerEnvName(provider, "BASE_URL")];
     if (baseUrl) {
-      modelRegistry.registerProvider(provider, {
+      registerOpenAiCompatible(modelRegistry, provider, modelId, {
         baseUrl,
         apiKey,
-        api: "openai-completions",
-        models: [{
-          id: modelId,
-          name: modelId,
-          reasoning: false,
-          input: ["text"],
-          cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
-          contextWindow: 200_000,
-          maxTokens: 16_384,
-          compat: { supportsDeveloperRole: true, maxTokensField: "max_tokens" },
-        }],
+        contextWindow: 200_000,
+        maxTokens: 16_384,
+        supportsDeveloperRole: true,
       });
     }
   }
@@ -114,21 +94,39 @@ export async function createSession(config: SessionConfig): Promise<SessionResul
     settingsManager,
   });
 
-  return { session, model: { provider: model.provider, id: model.id } };
+  return session;
+}
+
+// One registration path for OpenAI-compatible endpoints (ollama, <PROVIDER>_BASE_URL
+// overrides). Per-provider differences live in the options, not in the control flow.
+interface CompatOptions {
+  baseUrl: string;
+  apiKey: string;
+  contextWindow: number;
+  maxTokens: number;
+  supportsDeveloperRole: boolean;
+}
+
+function registerOpenAiCompatible(registry: ModelRegistry, provider: string, modelId: string, opts: CompatOptions): void {
+  registry.registerProvider(provider, {
+    baseUrl: opts.baseUrl,
+    apiKey: opts.apiKey,
+    api: "openai-completions",
+    models: [{
+      id: modelId,
+      name: modelId,
+      reasoning: false,
+      input: ["text"],
+      cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+      contextWindow: opts.contextWindow,
+      maxTokens: opts.maxTokens,
+      compat: { supportsDeveloperRole: opts.supportsDeveloperRole, maxTokensField: "max_tokens" },
+    }],
+  });
 }
 
 function resolveApiKey(provider: string): string | undefined {
-  const envMap: Record<string, string> = {
-    anthropic: "ANTHROPIC_API_KEY",
-    groq: "GROQ_API_KEY",
-    google: "GOOGLE_API_KEY",
-    openai: "OPENAI_API_KEY",
-    openrouter: "OPENROUTER_API_KEY",
-    deepseek: "DEEPSEEK_API_KEY",
-    together: "TOGETHER_API_KEY",
-  };
-  const envVar = envMap[provider] ?? `${provider.toUpperCase().replace(/-/g, "_")}_API_KEY`;
-  return process.env[envVar];
+  return process.env[providerEnvName(provider, "API_KEY")];
 }
 
 const DEFAULT_SYSTEM_PROMPT = `You are a GPU kernel engineer assistant.

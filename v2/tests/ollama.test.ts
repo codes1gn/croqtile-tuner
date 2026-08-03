@@ -34,13 +34,11 @@ const skipCuda = skip || !hasNvcc();
 if (skip) console.log("Skipping ollama tests: server not reachable or qwen3 model not pulled");
 
 test("ollama session: creates and finds model", { skip }, async () => {
-  const { session, model } = await createSession({
+  const session = await createSession({
     cwd: "/tmp",
     provider: "ollama",
     modelId: "qwen3:0.6b",
   });
-  assert.equal(model.provider, "ollama");
-  assert.equal(model.id, "qwen3:0.6b");
   session.dispose();
 });
 
@@ -48,17 +46,13 @@ test("ollama session: responds to prompt with tool calls", { skip }, async () =>
   const cwd = "/tmp/ollama-test-toolcall";
   cleanDir(cwd);
 
-  const { session } = await createSession({
-    cwd,
-    provider: "ollama",
-    modelId: "qwen3:0.6b",
-  });
+  const session = await createSession({ cwd, provider: "ollama", modelId: "qwen3:0.6b" });
 
   await session.prompt("Write a file at hello.txt with content: hello from ollama test");
 
   const messages = session.messages;
   const hasToolCall = messages.some(m =>
-    m.role === "assistant" && m.content.some((c: any) => c.type === "toolCall")
+    m.role === "assistant" && m.content.some((c: { type: string }) => c.type === "toolCall")
   );
   const fileWritten = existsSync(`${cwd}/hello.txt`);
 

@@ -1,5 +1,6 @@
 import { readFileSync } from "fs";
 import { resolve } from "path";
+import { stripFrontmatter } from "@earendil-works/pi-coding-agent";
 import { REPO_ROOT } from "./repo.ts";
 
 // Loads the DSL contract from .claude/skills/croq-dsl-<dsl>/SKILL.md
@@ -12,10 +13,4 @@ export function loadDslKnowledge(dsl: string): string | undefined {
   } catch {
     return undefined;
   }
-}
-
-export function stripFrontmatter(text: string): string {
-  if (!text.startsWith("---")) return text;
-  const end = text.indexOf("\n---", 3);
-  return end < 0 ? text : text.slice(end + 4).replace(/^\n/, "");
 }

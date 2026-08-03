@@ -2,6 +2,11 @@ import { readFileSync, existsSync } from "fs";
 import { resolve } from "path";
 import { REPO_ROOT } from "./repo.ts";
 
+// Provider name → env var, e.g. providerEnvName("openai", "BASE_URL") → "OPENAI_BASE_URL".
+export function providerEnvName(provider: string, suffix: "API_KEY" | "BASE_URL"): string {
+  return `${provider.toUpperCase().replace(/-/g, "_")}_${suffix}`;
+}
+
 export function loadEnv(dir?: string): void {
   // Explicit dir, or every plausible .env location: the cwd, the module's dir
   // (dev runs), the module's parent (v2/ when started from repo root), and

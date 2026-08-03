@@ -57,7 +57,7 @@ export async function createFauxSession(opts: FauxSessionOptions): Promise<Agent
     authStorage,
     modelRegistry,
     resourceLoader: rl,
-    tools: (opts.tools ?? ["read", "write", "bash"]) as any,
+    tools: opts.tools ?? ["read", "write", "bash"],
     sessionManager: SessionManager.inMemory(opts.cwd),
     settingsManager: sm,
   });

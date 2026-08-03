@@ -1,4 +1,5 @@
 import { spawn } from "node:child_process";
+import { tailCap } from "./util.ts";
 
 export interface MeasureResult {
   ok: boolean;
@@ -7,7 +8,7 @@ export interface MeasureResult {
   error?: string;
 }
 
-const MEASURE_TIMEOUT_MS = 300_000; // TODO(Iter 6): configurable timeout + process-group kill
+const MEASURE_TIMEOUT_MS = 300_000; // TODO: configurable timeout + process-group kill
 const OUTPUT_CAP = 100_000; // chars kept from combined stdout+stderr
 
 // Runs a shell command with a timeout, capturing combined output.
@@ -16,33 +17,28 @@ export function runCommand(cmd: string, cwd: string, expectTflops: boolean): Pro
   return new Promise(resolve => {
     const child = spawn(cmd, { shell: true, cwd });
     let out = "";
-    let capped = false;
 
     const append = (chunk: Buffer | string) => {
-      if (capped) return;
-      out += chunk.toString();
-      if (out.length > OUTPUT_CAP * 4) capped = true;
+      out = tailCap(out + chunk.toString(), OUTPUT_CAP);
     };
-    const tail = () => out.slice(-OUTPUT_CAP);
 
     const timer = setTimeout(() => {
       child.kill();
-      resolve({ ok: false, output: tail(), error: `timed out after ${MEASURE_TIMEOUT_MS / 1000}s` });
+      resolve({ ok: false, output: out, error: `timed out after ${MEASURE_TIMEOUT_MS / 1000}s` });
     }, MEASURE_TIMEOUT_MS);
 
     child.stdout.on("data", append);
     child.stderr.on("data", append);
     child.on("error", err => {
       clearTimeout(timer);
-      resolve({ ok: false, output: tail(), error: err.message });
+      resolve({ ok: false, output: out, error: err.message });
     });
     child.on("close", code => {
       clearTimeout(timer);
-      const output = tail();
-      const tflops = parseTflops(output);
-      if (code !== 0) resolve({ ok: false, output, error: `exit code ${code}` });
-      else if (expectTflops && tflops === undefined) resolve({ ok: false, output, error: "no TFLOPS found in output" });
-      else resolve({ ok: true, tflops, output });
+      const tflops = parseTflops(out);
+      if (code !== 0) resolve({ ok: false, output: out, error: `exit code ${code}` });
+      else if (expectTflops && tflops === undefined) resolve({ ok: false, output: out, error: "no TFLOPS found in output" });
+      else resolve({ ok: true, tflops, output: out });
     });
   });
 }

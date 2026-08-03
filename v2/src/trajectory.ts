@@ -2,13 +2,16 @@ import { appendFileSync, mkdirSync } from "fs";
 import { resolve } from "path";
 import type { AgentSession } from "@earendil-works/pi-coding-agent";
 import type { TuneTask, TuneResult } from "./task.ts";
+import { tailCap } from "./util.ts";
 
 const CONTENT_CAP = 5000; // chars kept per content block — tool outputs are the noisy ones
 
 // Pure: one trajectory record from the session state + round outcome.
 // Every tool call and response is captured so "why did the agent do X"
 // is answerable later (PRD: Trajectory Recorder → RL/grey-testing data).
-export function buildTrajectoryRecord(session: AgentSession, result: TuneResult): unknown {
+// fromIndex slices the session to the messages added since the last record,
+// so the file grows linearly with rounds instead of quadratically.
+export function buildTrajectoryRecord(session: AgentSession, result: TuneResult, fromIndex = 0): unknown {
   return {
     ts: new Date().toISOString(),
     round: result.round,
@@ -16,15 +19,15 @@ export function buildTrajectoryRecord(session: AgentSession, result: TuneResult)
     decision: result.decision,
     tflops: result.tflops,
     errorMessage: result.errorMessage,
-    messages: session.messages.map(serializeMessage),
+    messages: session.messages.slice(fromIndex).map(serializeMessage),
   };
 }
 
 // IO: append one JSONL line to <cwd>/iters/trajectory.jsonl (next to kernel snapshots).
-export function recordTrajectory(task: TuneTask, session: AgentSession, result: TuneResult): void {
+export function recordTrajectory(task: TuneTask, session: AgentSession, result: TuneResult, fromIndex = 0): void {
   const file = resolve(task.cwd, "iters", "trajectory.jsonl");
   mkdirSync(resolve(task.cwd, "iters"), { recursive: true });
-  appendFileSync(file, JSON.stringify(buildTrajectoryRecord(session, result)) + "\n");
+  appendFileSync(file, JSON.stringify(buildTrajectoryRecord(session, result, fromIndex)) + "\n");
 }
 
 type TracedMessage = {
@@ -67,6 +70,7 @@ function serializeBlock(block: unknown): unknown {
 }
 
 function cap(v: unknown): unknown {
-  const s = typeof v === "string" ? v : JSON.stringify(v);
-  return s === undefined || s.length <= CONTENT_CAP ? v : s.slice(-CONTENT_CAP);
+  if (typeof v === "string") return tailCap(v, CONTENT_CAP);
+  const s = JSON.stringify(v);
+  return s === undefined || s.length <= CONTENT_CAP ? v : tailCap(s, CONTENT_CAP);
 }

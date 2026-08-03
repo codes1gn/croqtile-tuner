@@ -6,7 +6,9 @@ import { resolve } from "path";
 // contain .claude — fall back to the working directory (run from repo root).
 function findRepoRoot(): string {
   const fromModule = resolve(import.meta.dirname, "..", "..");
-  return existsSync(resolve(fromModule, ".claude")) ? fromModule : process.cwd();
+  if (existsSync(resolve(fromModule, ".claude"))) return fromModule;
+  console.warn("Warning: .claude/skills not found next to the binary — using cwd as the repo root (run from the repo root when using --dsl/--store)");
+  return process.cwd();
 }
 
 export const REPO_ROOT = findRepoRoot();

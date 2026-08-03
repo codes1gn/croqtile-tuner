@@ -1,6 +1,13 @@
 import { readFileSync } from "fs";
 import { z } from "zod";
 import { parse } from "yaml";
+import { errMsg } from "./util.ts";
+
+// Shared defaults — referenced by both the schema and main.ts's CLI fallbacks
+// so changing a default means one edit.
+export const DEFAULT_ROUNDS = 3;
+export const DEFAULT_STORE = false;
+export const DEFAULT_ROUND_TIMEOUT_S = 600;
 
 // Config schema — the fields emerged from practice (PLAN: schema emerges,
 // never pre-designed). One file controls everything (Iter 6.1).
@@ -21,10 +28,10 @@ export const ConfigSchema = z.object({
     shape_key: z.string().optional(),
   }),
   orchestrator: z.object({
-    rounds: z.number().int().positive().default(3),
-    store: z.boolean().default(false),
-    round_timeout_s: z.number().positive().default(600),
-  }).default({ rounds: 3, store: false, round_timeout_s: 600 }),
+    rounds: z.number().int().positive().default(DEFAULT_ROUNDS),
+    store: z.boolean().default(DEFAULT_STORE),
+    round_timeout_s: z.number().positive().default(DEFAULT_ROUND_TIMEOUT_S),
+  }).default({ rounds: DEFAULT_ROUNDS, store: DEFAULT_STORE, round_timeout_s: DEFAULT_ROUND_TIMEOUT_S }),
 });
 
 export type Config = z.infer<typeof ConfigSchema>;
@@ -43,7 +50,7 @@ export function loadConfig(path: string): ConfigResult {
   try {
     parsed = parse(text);
   } catch (err) {
-    return { ok: false, error: `YAML parse error: ${err instanceof Error ? err.message : err}` };
+    return { ok: false, error: `YAML parse error: ${errMsg(err)}` };
   }
 
   const result = ConfigSchema.safeParse(parsed ?? {});

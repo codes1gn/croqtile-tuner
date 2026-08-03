@@ -144,7 +144,7 @@ test("store: round results persist via store_round.sh into tuning/", async () =>
     ],
   });
 
-  const results = await tune({ task: storeTask, rounds: 1, session, dsl: "croqtile", store: true });
+  const results = await tune({ task: storeTask, rounds: 1, session, store: true });
   session.dispose();
 
   assert.equal(results[0].decision, "keep");
@@ -223,5 +223,35 @@ test("unmeasurable round restores best kernel and continues", async () => {
   assert.ok(results.every(r => r.decision === "unknown")); // no measurement, not a failure
   assert.ok(results.every(r => r.success));
   // kernel on disk is the best-known version (baseline v0), not the last agent write
+  assert.match(readFileSync(`${CWD}/kernel.cu`, "utf-8"), /v0/);
+});
+
+test("keep within tolerance restores the best kernel for the next round", async () => {
+  cleanDir(CWD);
+  writeFileSync(`${CWD}/kernel.cu`, "__global__ void k() { /* v0 */ }\n");
+  writeFileSync(SCORE, "2.0"); // baseline
+
+  const counterTask = {
+    ...TASK,
+    profileCmd: `echo "TFLOPS: $(cat ${SCORE})"`,
+  };
+
+  const session = await createFauxSession({
+    cwd: CWD,
+    responses: [
+      fauxAssistantMessage([fauxToolCall("bash", { command: `echo 1.99 > ${SCORE}` })]),
+      fauxAssistantMessage([fauxToolCall("write", { path: "kernel.cu", content: "__global__ void k() { /* v1 */ }\n" })]),
+      fauxAssistantMessage([fauxToolCall("bash", { command: "echo 'build ok'" })]),
+      fauxAssistantMessage("Round 1 done."),
+    ],
+  });
+
+  const results = await tune({ task: counterTask, rounds: 1, session });
+  session.dispose();
+
+  assert.equal(results[0].decision, "keep"); // 1.99 is within 0.5% of 2.0
+  assert.equal(results[0].tflops, 1.99);
+  assert.ok(results[0].success);
+  // kept-but-not-best: disk holds the best-known kernel, not the round's
   assert.match(readFileSync(`${CWD}/kernel.cu`, "utf-8"), /v0/);
 });

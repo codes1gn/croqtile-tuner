@@ -3,6 +3,7 @@ import { resolve } from "path";
 import { REPO_ROOT } from "./repo.ts";
 import type { TuneTask } from "./task.ts";
 import type { Decision } from "./decide.ts";
+import { iterTag } from "./iters.ts";
 
 const STORE_SCRIPT = resolve(REPO_ROOT, ".claude", "skills", "croq-tune", "tools", "store_round.sh");
 const DETECT_GPU = resolve(REPO_ROOT, ".claude", "skills", "croq-tune", "tools", "detect_gpu.sh");
@@ -30,15 +31,14 @@ export function storeRound(opts: StoreOptions): boolean {
   const decision = DECISION_TO_STORE[opts.decision];
   if (decision === undefined || task.dsl === undefined) return false;
 
-  const iter = `iter${String(round + 1).padStart(3, "0")}`;
   const result = spawnSync("bash", [
     STORE_SCRIPT,
     "--gpu", task.gpu ?? detectGpu(),
     "--dsl", task.dsl,
     "--shape-key", task.shapeKey ?? task.name,
     "--model", opts.model,
-    "--iter", iter,
-    "--kernel", `${iter}_auto`,
+    "--iter", iterTag(round + 1),
+    "--kernel", `${iterTag(round + 1)}_auto`,
     "--tflops", String(opts.tflops),
     "--decision", decision,
     "--bottleneck", "unknown",
@@ -56,7 +56,11 @@ export function storeRound(opts: StoreOptions): boolean {
   return true;
 }
 
+let cachedGpu: string | undefined; // the GPU never changes mid-session
+
 function detectGpu(): string {
+  if (cachedGpu !== undefined) return cachedGpu;
   const out = spawnSync("bash", [DETECT_GPU], { encoding: "utf-8" });
-  return out.status === 0 && out.stdout.trim() ? out.stdout.trim() : "sm00_unknown";
+  cachedGpu = out.status === 0 && out.stdout.trim() ? out.stdout.trim() : "sm00_unknown";
+  return cachedGpu;
 }

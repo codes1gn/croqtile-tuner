@@ -9,3 +9,10 @@ export function decide(tflops: number | undefined, best: number | undefined): De
   if (best === undefined) return "keep";
   return tflops >= best * ACCEPT_TOLERANCE ? "keep" : "reject";
 }
+
+// Whether the round's kernel becomes the new reference on disk: kept AND at
+// least as fast as the best known (equal counts — no reason to revert an
+// equally-fast kernel). Kept-but-slightly-worse rounds must be reverted.
+export function becomesReference(decision: Decision, tflops: number | undefined, best: number | undefined): boolean {
+  return decision === "keep" && tflops !== undefined && (best === undefined || tflops >= best);
+}

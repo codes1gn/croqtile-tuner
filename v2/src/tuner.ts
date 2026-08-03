@@ -2,45 +2,53 @@ import type { AgentSession } from "@earendil-works/pi-coding-agent";
 import type { TuneTask, TuneResult } from "./task.ts";
 import { createSession } from "./session.ts";
 import { runMeasure, runCommand } from "./measure.ts";
-import { decide } from "./decide.ts";
-import { saveIter, restoreIter } from "./iters.ts";
+import { decide, becomesReference } from "./decide.ts";
+import { saveIter, restoreIter, iterTag } from "./iters.ts";
 import { loadDslKnowledge } from "./dsl.ts";
 import { storeRound } from "./store.ts";
 import { recordTrajectory } from "./trajectory.ts";
+import { errMsg, tailCap } from "./util.ts";
+import { DEFAULT_ROUND_TIMEOUT_S } from "./config.ts";
 
 export interface TuneConfig {
   task: TuneTask;
   rounds: number;
   provider?: string;
   modelId?: string;
+  apiKey?: string; // passed through to the agent session
   session?: AgentSession;
-  dsl?: string;
   store?: boolean; // persist each measured round via store_round.sh
   roundTimeoutMs?: number; // per-round agent timeout; default 600s
   signal?: AbortSignal; // aborts between rounds (SIGINT graceful shutdown)
 }
 
 const PROMPT_OUTPUT_CAP = 1500; // chars of the last measurement fed back to the agent
-const DEFAULT_ROUND_TIMEOUT_MS = 600_000; // TODO: make configurable via config file (Iter 6)
 
 export async function tune(config: TuneConfig): Promise<TuneResult[]> {
   const { task, rounds } = config;
-  const roundTimeoutMs = config.roundTimeoutMs ?? DEFAULT_ROUND_TIMEOUT_MS;
+  const roundTimeoutMs = config.roundTimeoutMs ?? DEFAULT_ROUND_TIMEOUT_S * 1000;
   const results: TuneResult[] = [];
   const ownsSession = !config.session;
-  let sessionAlive = true;
+  let lastTrajectoryFrom = 0;
 
-  const dslKnowledge = config.dsl !== undefined ? loadDslKnowledge(config.dsl) : undefined;
-  if (config.dsl !== undefined && dslKnowledge === undefined) {
-    console.warn(`Warning: no DSL knowledge found for '${config.dsl}' — continuing with generic prompt`);
+  const dslKnowledge = task.dsl !== undefined ? loadDslKnowledge(task.dsl) : undefined;
+  if (task.dsl !== undefined && dslKnowledge === undefined) {
+    console.warn(`Warning: no DSL knowledge found for '${task.dsl}' — continuing with generic prompt`);
   }
 
-  const session = config.session ?? (await createSession({
+  let session: AgentSession | undefined = config.session ?? await createSession({
     cwd: task.cwd,
     provider: config.provider,
     modelId: config.modelId,
+    apiKey: config.apiKey,
     systemPrompt: buildSystemPrompt(task, dslKnowledge),
-  })).session;
+  });
+
+  const pushResult = (sess: AgentSession, result: TuneResult): void => {
+    results.push(result);
+    recordTrajectory(task, sess, result, lastTrajectoryFrom);
+    lastTrajectoryFrom = sess.messages.length;
+  };
 
   try {
     await saveIter(task, 0); // baseline snapshot (iter000)
@@ -66,6 +74,7 @@ export async function tune(config: TuneConfig): Promise<TuneResult[]> {
         console.log("Tuning interrupted — state saved to <cwd>/iters/.");
         break;
       }
+      if (session === undefined) break; // disposed by an earlier round timeout
       console.log(`\n=== Round ${round + 1}/${rounds} ===\n`);
       const prompt = round === 0
         ? buildFirstRoundPrompt(task, baseline)
@@ -74,10 +83,10 @@ export async function tune(config: TuneConfig): Promise<TuneResult[]> {
       const timedOut = !(await withTimeout(session.prompt(prompt), roundTimeoutMs));
       if (timedOut) {
         const errorMessage = `agent timed out after ${Math.round(roundTimeoutMs / 1000)}s`;
-        pushResult(results, task, session, { round, success: false, decision: "unknown", errorMessage });
+        pushResult(session, { round, success: false, decision: "unknown", errorMessage });
         if (ownsSession) {
           session.dispose(); // kill the agent so in-flight work stops
-          sessionAlive = false;
+          session = undefined;
         }
         // TODO: retry the round once with a fresh session (Iter 5.1 "kill and retry")
         break;
@@ -85,7 +94,7 @@ export async function tune(config: TuneConfig): Promise<TuneResult[]> {
 
       const agentError = agentErrorOf(session);
       if (agentError) {
-        pushResult(results, task, session, { round, success: false, decision: "unknown", errorMessage: agentError });
+        pushResult(session, { round, success: false, decision: "unknown", errorMessage: agentError });
         break;
       }
 
@@ -95,7 +104,7 @@ export async function tune(config: TuneConfig): Promise<TuneResult[]> {
       // tuning continues from the best-known version.
       const build = await runCommand(task.buildCmd, task.cwd, false);
       if (!build.ok) {
-        pushResult(results, task, session, { round, success: false, decision: "unknown", errorMessage: `build failed: ${build.error}` });
+        pushResult(session, { round, success: false, decision: "unknown", errorMessage: `build failed: ${build.error}` });
         try {
           await restoreIter(task, bestIter); // kernel on disk is broken — start next round from best
         } catch { /* iter000 baseline always exists */ }
@@ -105,7 +114,7 @@ export async function tune(config: TuneConfig): Promise<TuneResult[]> {
       try {
         await saveIter(task, round + 1); // iteration artifact (iter00N)
       } catch (err) {
-        pushResult(results, task, session, { round, success: false, decision: "unknown", errorMessage: `failed to save iteration artifact: ${errMsg(err)}` });
+        pushResult(session, { round, success: false, decision: "unknown", errorMessage: `failed to save iteration artifact: ${errMsg(err)}` });
         break;
       }
 
@@ -113,22 +122,21 @@ export async function tune(config: TuneConfig): Promise<TuneResult[]> {
       const tflops = measured.tflops;
       const decision = decide(tflops, best);
       const prev = results.at(-1);
+      let errorMessage = measured.error;
 
-      if (decision === "keep" && tflops !== undefined && (best === undefined || tflops > best)) {
+      // Settlement: the round's kernel is the new reference iff it became the
+      // best (kept AND >= best); otherwise restore the best-known version to
+      // disk so the next round always starts from the best kernel.
+      if (becomesReference(decision, tflops, best)) {
         best = tflops;
         bestIter = round + 1;
-      }
-
-      let errorMessage = measured.error;
-      if (decision === "reject" || tflops === undefined) {
-        // Rejected or unmeasurable → the kernel on disk is not the best-known;
-        // restore so the next round starts from it (the prompt says so).
+      } else {
         try {
           await restoreIter(task, bestIter);
           if (decision === "reject") {
-            errorMessage = `regressed ${fmtPct(tflops, best)} vs best — reverted to iter${String(bestIter).padStart(3, "0")}`;
+            errorMessage = `regressed ${fmtPct(tflops, best)} vs best — reverted to iter${iterTag(bestIter)}`;
           } else {
-            console.log(`  Kernel unmeasurable — restored iter${String(bestIter).padStart(3, "0")} (best-known)`);
+            console.log(`  Kernel unmeasurable — restored iter${iterTag(bestIter)} (best-known)`);
           }
         } catch (err) {
           errorMessage = `restore failed: ${errMsg(err)}`;
@@ -136,8 +144,8 @@ export async function tune(config: TuneConfig): Promise<TuneResult[]> {
       }
 
       console.log(`  Measured: ${fmtTflops(tflops)}, ${fmtPct(tflops, baseline.tflops)} vs baseline, ${fmtPct(tflops, prev?.tflops)} vs prev → ${decision.toUpperCase()}`);
-      if (decision === "reject") console.log(`  Rejected — kernel restored to iter${String(bestIter).padStart(3, "0")}`);
-      if (tflops !== undefined && measured.ok) lastOutput = measured.output.slice(-PROMPT_OUTPUT_CAP);
+      if (decision === "reject") console.log(`  Rejected — kernel restored to iter${iterTag(bestIter)}`);
+      if (measured.ok) lastOutput = tailCap(measured.output, PROMPT_OUTPUT_CAP);
 
       if (config.store) {
         const stored = storeRound({
@@ -147,25 +155,13 @@ export async function tune(config: TuneConfig): Promise<TuneResult[]> {
         if (stored) console.log(`  Stored: ${iterTag(round + 1)} (${decision})`);
       }
 
-      pushResult(results, task, session, { round, success: decision !== "reject", tflops, decision, errorMessage });
+      pushResult(session, { round, success: decision !== "reject", tflops, decision, errorMessage });
     }
   } finally {
-    if (ownsSession && sessionAlive) session.dispose();
+    if (ownsSession && session) session.dispose();
   }
 
   return results;
-}
-
-// Resolves true when the promise settles (success or error), false on timeout.
-// The underlying promise is abandoned on timeout — dispose() stops in-flight work.
-function withTimeout<T>(promise: Promise<T>, ms: number): Promise<boolean> {
-  return new Promise(resolve => {
-    const timer = setTimeout(() => resolve(false), ms);
-    promise.then(
-      () => { clearTimeout(timer); resolve(true); },
-      () => { clearTimeout(timer); resolve(true); },
-    );
-  });
 }
 
 function buildSystemPrompt(task: TuneTask, dslKnowledge?: string): string {
@@ -179,11 +175,11 @@ Build: ${task.buildCmd}
 
 Rules:
 - Make one focused change per round.
-- After editing, always rebuild to confirm the kernel still compiles.
-- The tuner benchmarks after your round — you only need to make the kernel fast and correct.
+- Make sure the kernel compiles — run the build yourself whenever you need compile feedback.
+- The tuner re-builds and benchmarks after your round — you only need to make the kernel fast and correct.
 - If unsure what to change, run the profile command for analysis, but don't rely on it as the official measurement.
 ${dslKnowledge !== undefined ? `
---- DSL CONTRACT (croq-dsl-${task.dsl ?? "?"}) ---
+--- DSL CONTRACT (croq-dsl-${task.dsl}) ---
 ${dslKnowledge}
 --- END DSL CONTRACT ---
 ` : ""}`;
@@ -194,7 +190,7 @@ function buildFirstRoundPrompt(task: TuneTask, baseline: { tflops?: number }): s
 
 1. Read the current kernel source
 2. Make ONE targeted optimization (tiling, pipeline, memory layout, launch config, ...)
-3. Rebuild to verify it compiles: ${task.buildCmd}
+3. Make sure it compiles (run the build yourself for feedback)
 
 Baseline measured by the tuner: ${baseline.tflops ?? "unknown"} TFLOPS.
 The tuner benchmarks automatically after your round.`;
@@ -213,12 +209,12 @@ function buildNextRoundPrompt(
     : "";
   return `Continue optimization (round ${round + 1}).
 
-Best so far: ${best ?? "unknown"} TFLOPS (iter${String(bestIter).padStart(3, "0")}).
+Best so far: ${best ?? "unknown"} TFLOPS (iter${iterTag(bestIter)}).
 ${prevLine}
 The current kernel is the best-known version — start from it.
 
 1. Make ONE targeted change to beat ${best ?? "the current kernel"}
-2. Rebuild to verify it compiles: ${task.buildCmd}
+2. Make sure it compiles (run the build yourself for feedback)
 
 ${lastOutput ? `Last benchmark output:\n${lastOutput}\n` : ""}`;
 }
@@ -226,27 +222,21 @@ ${lastOutput ? `Last benchmark output:\n${lastOutput}\n` : ""}`;
 function agentErrorOf(session: AgentSession): string | undefined {
   const last = session.messages.at(-1);
   if (last?.role !== "assistant") return undefined;
-  const asst = last as { stopReason?: string; errorMessage?: string };
-  return asst.stopReason === "error" ? (asst.errorMessage ?? "agent stopped with error") : undefined;
-}
-
-function pushResult(results: TuneResult[], task: TuneTask, session: AgentSession, result: TuneResult): void {
-  results.push(result);
-  recordTrajectory(task, session, result);
+  return last.stopReason === "error" ? (last.errorMessage ?? "agent stopped with error") : undefined;
 }
 
 // Last assistant text — used as the "idea" summary when storing a round.
+// Reverse scan from the tail: the round's final message is usually it.
 function agentIdea(session: AgentSession): string {
-  const texts = session.messages
-    .filter(m => m.role === "assistant")
-    .flatMap(m => m.content)
-    .filter((c): c is { type: "text"; text: string } => c.type === "text")
-    .map(c => c.text);
-  return texts.at(-1) ?? "no idea";
-}
-
-function iterTag(n: number): string {
-  return `iter${String(n).padStart(3, "0")}`;
+  for (let i = session.messages.length - 1; i >= 0; i--) {
+    const message = session.messages[i];
+    if (message?.role !== "assistant" || !Array.isArray(message.content)) continue;
+    for (let j = message.content.length - 1; j >= 0; j--) {
+      const block = message.content[j] as { type?: string; text?: string } | undefined;
+      if (block?.type === "text" && block.text) return block.text;
+    }
+  }
+  return "no idea";
 }
 
 function fmtTflops(tflops: number | undefined): string {
@@ -259,6 +249,14 @@ function fmtPct(a: number | undefined, b: number | undefined): string {
   return `${delta >= 0 ? "+" : ""}${delta.toFixed(1)}%`;
 }
 
-function errMsg(err: unknown): string {
-  return err instanceof Error ? err.message : String(err);
+// Resolves true when the promise settles (success or error), false on timeout.
+// The underlying promise is abandoned on timeout — dispose() stops in-flight work.
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<boolean> {
+  return new Promise(resolve => {
+    const timer = setTimeout(() => resolve(false), ms);
+    promise.then(
+      () => { clearTimeout(timer); resolve(true); },
+      () => { clearTimeout(timer); resolve(true); },
+    );
+  });
 }
